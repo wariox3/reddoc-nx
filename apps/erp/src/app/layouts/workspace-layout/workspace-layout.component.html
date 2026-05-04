@@ -1,5 +1,8 @@
 <header class="app-header">
   <div class="app-header__brand">
+    <button class="app-header__hamburger" (click)="toggleDrawer()" aria-label="Abrir menú">
+      <i class="pi pi-bars"></i>
+    </button>
     <img src="/logos/reddoc.svg" alt="RedDoc" class="app-header__logo" />
   </div>
   <div class="app-header__actions">
@@ -10,16 +13,7 @@
 <div class="workspace-body">
   <aside class="workspace-sidebar">
     <nav class="workspace-nav">
-      @for (item of navItems; track item.path) {
-        <a
-          class="workspace-nav__item"
-          [routerLink]="item.path"
-          routerLinkActive="workspace-nav__item--active"
-        >
-          <i class="workspace-nav__icon {{ item.icon }}"></i>
-          <span class="workspace-nav__label">{{ item.label }}</span>
-        </a>
-      }
+      <ng-container *ngTemplateOutlet="navTpl" />
     </nav>
   </aside>
 
@@ -27,3 +21,30 @@
     <router-outlet />
   </main>
 </div>
+
+<!-- Drawer móvil -->
+<p-drawer
+  [visible]="drawerVisible()"
+  (visibleChange)="drawerVisible.set($event)"
+  position="left"
+  header="Menú"
+>
+  <nav class="workspace-nav">
+    <ng-container *ngTemplateOutlet="navTpl; context: { $implicit: true }" />
+  </nav>
+</p-drawer>
+
+<!-- Template de navegación compartido entre sidebar y drawer -->
+<ng-template #navTpl let-inDrawer>
+  @for (item of navItems; track item.path) {
+    <a
+      class="workspace-nav__item"
+      [routerLink]="item.path"
+      routerLinkActive="workspace-nav__item--active"
+      (click)="inDrawer && drawerVisible.set(false)"
+    >
+      <i class="workspace-nav__icon {{ item.icon }}"></i>
+      <span class="workspace-nav__label">{{ item.label }}</span>
+    </a>
+  }
+</ng-template>
