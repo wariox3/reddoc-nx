@@ -1,17 +1,17 @@
-import { Component, OnInit, inject, output } from '@angular/core';
+import { Component, OnInit, inject, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
+import { DividerModule } from 'primeng/divider';
 import { AuthService } from '../../../auth/services/auth.service';
 import { PerfilService } from '../../services/perfil.service';
-import { signal } from '@angular/core';
 import { extractErrorMessage } from '@reddoc/core';
 
 @Component({
   selector: 'app-perfil-form',
   standalone: true,
-  imports: [ReactiveFormsModule, ButtonModule, InputTextModule, MessageModule],
+  imports: [ReactiveFormsModule, ButtonModule, InputTextModule, MessageModule, DividerModule],
   templateUrl: './perfil-form.component.html',
   styleUrl: './perfil-form.component.scss',
 })
@@ -22,13 +22,15 @@ export class PerfilFormComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly perfilService = inject(PerfilService);
 
-  readonly isLoading = signal(false);
+  readonly isSaving = signal(false);
   readonly errorMessage = signal<string | null>(null);
+  readonly isPristine = signal(true);
 
   readonly form = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
     apellidos: [''],
     numero_identificacion: [''],
+    email: [{ value: '', disabled: true }],
   });
 
   ngOnInit(): void {
@@ -38,8 +40,15 @@ export class PerfilFormComponent implements OnInit {
         name: user.name ?? '',
         apellidos: user.apellidos ?? '',
         numero_identificacion: user.numero_identificacion ?? '',
+        email: user.email,
       });
+      this.form.markAsPristine();
+      this.isPristine.set(true);
     }
+
+    this.form.valueChanges.subscribe(() => {
+      this.isPristine.set(this.form.pristine);
+    });
   }
 
   onSubmit(): void {
@@ -48,19 +57,21 @@ export class PerfilFormComponent implements OnInit {
       return;
     }
 
-    this.isLoading.set(true);
+    this.isSaving.set(true);
     this.errorMessage.set(null);
 
     const { name, apellidos, numero_identificacion } = this.form.getRawValue();
 
     this.perfilService.updatePerfil({ name: name!, apellidos, numero_identificacion }).subscribe({
       next: () => {
-        this.isLoading.set(false);
+        this.isSaving.set(false);
+        this.form.markAsPristine();
+        this.isPristine.set(true);
         this.saved.emit();
       },
       error: (err) => {
         this.errorMessage.set(extractErrorMessage(err, 'No se pudo guardar los cambios.'));
-        this.isLoading.set(false);
+        this.isSaving.set(false);
       },
     });
   }

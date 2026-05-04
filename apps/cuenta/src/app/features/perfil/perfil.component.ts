@@ -30,8 +30,6 @@ export class PerfilComponent {
 
   readonly user = this.authService.currentUser;
   readonly profileImage = this.perfilService.profileImage;
-
-  readonly editDialogVisible = signal(false);
   readonly imageDialogVisible = signal(false);
 
   readonly initials = computed(() => {
@@ -52,31 +50,22 @@ export class PerfilComponent {
     return [u.name, u.apellidos].filter(Boolean).join(' ') || u.email;
   });
 
-  openEdit(): void {
-    this.editDialogVisible.set(true);
-  }
-
   openImageCropper(): void {
     this.imageDialogVisible.set(true);
   }
 
   deleteImage(): void {
     this.perfilService.deleteImage();
-    this.messageService.add({ severity: 'success', summary: 'Foto eliminada' });
+    this.messageService.add({ severity: 'success', summary: 'Foto eliminada', life: 3000 });
   }
 
   onProfileSaved(): void {
-    this.editDialogVisible.set(false);
-    this.messageService.add({ severity: 'success', summary: 'Perfil actualizado' });
+    this.messageService.add({ severity: 'success', summary: 'Perfil actualizado', life: 3000 });
   }
 
   onImageSaved(base64: string): void {
     this.perfilService.uploadImage(base64);
     this.imageDialogVisible.set(false);
-    this.messageService.add({ severity: 'success', summary: 'Foto actualizada' });
-  }
-
-  onImageCancelled(): void {
-    this.imageDialogVisible.set(false);
+    this.messageService.add({ severity: 'success', summary: 'Foto actualizada', life: 3000 });
   }
 }

@@ -1,54 +1,92 @@
-<form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="pf-form">
-  @if (errorMessage()) {
-    <p-message severity="error" [text]="errorMessage()!" styleClass="w-full" />
-  }
+<div class="pf-card">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+    @if (errorMessage()) {
+      <p-message severity="error" [text]="errorMessage()!" styleClass="w-full pf-error" />
+    }
 
-  <div class="pf-form__grid">
-    <div class="field">
-      <label for="pf-name" class="field__label">Nombre <span class="field__req">*</span></label>
-      <input
-        pInputText
-        id="pf-name"
-        formControlName="name"
-        placeholder="Sebastián"
-        fluid
-        [invalid]="nameControl.invalid && nameControl.touched"
-      />
-      @if (nameControl.invalid && nameControl.touched) {
-        <small class="form-error">El nombre es requerido.</small>
-      }
+    <!-- Personal info section -->
+    <div class="pf-section">
+      <h2 class="pf-section__title">
+        <i class="pi pi-id-card"></i>
+        Información personal
+      </h2>
+
+      <div class="pf-grid">
+        <div class="field">
+          <label for="pf-name" class="field__label">
+            Nombre <span class="field__req">*</span>
+          </label>
+          <input
+            pInputText
+            id="pf-name"
+            formControlName="name"
+            placeholder="Sebastián"
+            fluid
+            [invalid]="nameControl.invalid && nameControl.touched"
+          />
+          @if (nameControl.invalid && nameControl.touched) {
+            <small class="field__error">
+              @if (nameControl.hasError('required')) {
+                El nombre es obligatorio.
+              } @else if (nameControl.hasError('minlength')) {
+                Mínimo 2 caracteres.
+              }
+            </small>
+          }
+        </div>
+
+        <div class="field">
+          <label for="pf-apellidos" class="field__label">Apellidos</label>
+          <input
+            pInputText
+            id="pf-apellidos"
+            formControlName="apellidos"
+            placeholder="García López"
+            fluid
+          />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="pf-id" class="field__label">Número de identificación</label>
+        <input
+          pInputText
+          id="pf-id"
+          formControlName="numero_identificacion"
+          placeholder="12345678"
+          fluid
+        />
+      </div>
     </div>
 
-    <div class="field">
-      <label for="pf-apellidos" class="field__label">Apellidos</label>
-      <input
-        pInputText
-        id="pf-apellidos"
-        formControlName="apellidos"
-        placeholder="García López"
-        fluid
-      />
+    <p-divider />
+
+    <!-- Contact section -->
+    <div class="pf-section">
+      <h2 class="pf-section__title">
+        <i class="pi pi-envelope"></i>
+        Contacto
+      </h2>
+
+      <div class="field">
+        <label for="pf-email" class="field__label">Correo electrónico</label>
+        <input pInputText id="pf-email" formControlName="email" fluid />
+        <small class="field__hint">
+          <i class="pi pi-lock"></i>
+          El correo electrónico no se puede modificar
+        </small>
+      </div>
     </div>
 
-    <div class="field">
-      <label for="pf-id" class="field__label">N° de identificación</label>
-      <input
-        pInputText
-        id="pf-id"
-        formControlName="numero_identificacion"
-        placeholder="12345678"
-        fluid
+    <!-- Actions -->
+    <div class="pf-actions">
+      <p-button
+        type="submit"
+        label="Guardar cambios"
+        icon="pi pi-check"
+        [loading]="isSaving()"
+        [disabled]="isPristine() || isSaving()"
       />
     </div>
-  </div>
-
-  <div class="pf-form__footer">
-    <p-button
-      type="submit"
-      label="Guardar cambios"
-      icon="pi pi-check"
-      [loading]="isLoading()"
-      [disabled]="isLoading()"
-    />
-  </div>
-</form>
+  </form>
+</div>

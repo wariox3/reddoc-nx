@@ -1,87 +1,65 @@
 <div class="perfil-page">
-  <!-- Header -->
-  <div class="perfil-page__header">
-    <h1 class="perfil-page__title">Perfil</h1>
+  <!-- Page header -->
+  <div class="page-header">
+    <div class="page-header__text">
+      <h1 class="page-header__title">Mi perfil</h1>
+      <p class="page-header__subtitle">Consulta y actualiza tu información personal</p>
+    </div>
   </div>
 
-  <!-- Profile card -->
-  <div class="profile-card">
-    <!-- Avatar section -->
-    <div class="profile-card__avatar-wrap">
-      <div class="avatar-container">
-        @if (profileImage()) {
-          <img [src]="profileImage()!" alt="Foto de perfil" class="avatar-img" />
-        } @else {
-          <p-avatar [label]="initials()" shape="circle" styleClass="avatar-placeholder" />
-        }
-      </div>
+  <div class="perfil-layout">
+    <!-- Profile header card -->
+    <div class="profile-header-card">
+      <div class="profile-header-card__banner"></div>
 
-      <div class="avatar-actions">
-        <button
-          class="avatar-btn avatar-btn--edit"
-          pTooltip="Cambiar foto"
-          tooltipPosition="bottom"
-          (click)="openImageCropper()"
-        >
-          <i class="pi pi-pencil"></i>
-        </button>
-        @if (profileImage()) {
-          <button
-            class="avatar-btn avatar-btn--delete"
-            pTooltip="Eliminar foto"
-            tooltipPosition="bottom"
-            (click)="deleteImage()"
-          >
-            <i class="pi pi-trash"></i>
-          </button>
-        }
-      </div>
-    </div>
+      <div class="profile-header-card__info">
+        <!-- Avatar with actions -->
+        <div class="avatar-group">
+          <div class="avatar-ring">
+            @if (profileImage()) {
+              <img [src]="profileImage()!" alt="Foto de perfil" class="avatar-ring__img" />
+            } @else {
+              <p-avatar [label]="initials()" shape="circle" styleClass="avatar-ring__placeholder" />
+            }
+          </div>
 
-    <!-- Info section -->
-    <div class="profile-card__info">
-      <div class="profile-card__name">{{ displayName() }}</div>
+          <div class="avatar-controls">
+            <button
+              class="avatar-ctrl avatar-ctrl--edit"
+              pTooltip="Cambiar foto"
+              tooltipPosition="top"
+              (click)="openImageCropper()"
+            >
+              <i class="pi pi-camera"></i>
+            </button>
+            @if (profileImage()) {
+              <button
+                class="avatar-ctrl avatar-ctrl--delete"
+                pTooltip="Eliminar foto"
+                tooltipPosition="top"
+                (click)="deleteImage()"
+              >
+                <i class="pi pi-trash"></i>
+              </button>
+            }
+          </div>
+        </div>
 
-      <div class="profile-card__meta">
-        <span class="meta-item">
-          <i class="pi pi-envelope"></i>
-          {{ user()?.email }}
-        </span>
-
-        @if (user()?.numero_identificacion) {
-          <span class="meta-item">
-            <i class="pi pi-id-card"></i>
-            {{ user()?.numero_identificacion }}
-          </span>
-        }
+        <!-- User info -->
+        <div class="profile-header-card__details">
+          <p class="profile-header-card__name">{{ displayName() }}</p>
+          <p class="profile-header-card__email">
+            <i class="pi pi-envelope"></i>
+            {{ user()?.email }}
+          </p>
+        </div>
       </div>
     </div>
 
-    <!-- Edit button -->
-    <div class="profile-card__actions">
-      <p-button
-        label="Editar perfil"
-        icon="pi pi-user-edit"
-        severity="secondary"
-        [outlined]="true"
-        (onClick)="openEdit()"
-      />
-    </div>
+    <!-- Form card -->
+    <app-perfil-form (saved)="onProfileSaved()" />
   </div>
 </div>
-
-<!-- Edit profile dialog -->
-<p-dialog
-  header="Editar perfil"
-  [(visible)]="editDialogVisible"
-  [modal]="true"
-  [style]="{ width: '520px' }"
-  [draggable]="false"
->
-  @if (editDialogVisible()) {
-    <app-perfil-form (saved)="onProfileSaved()" />
-  }
-</p-dialog>
 
 <!-- Image cropper dialog -->
 <p-dialog
@@ -92,6 +70,9 @@
   [draggable]="false"
 >
   @if (imageDialogVisible()) {
-    <app-image-cropper (imageSaved)="onImageSaved($event)" (cancelled)="onImageCancelled()" />
+    <app-image-cropper
+      (imageSaved)="onImageSaved($event)"
+      (cancelled)="imageDialogVisible.set(false)"
+    />
   }
 </p-dialog>
