@@ -26,6 +26,7 @@ import {
 import { AuthService } from './features/auth/services/auth.service';
 import { API_ENDPOINTS } from './core/constants/api-endpoints.constants';
 import { ROUTE_PATHS } from './core/constants/route-paths.constants';
+import { jwtInterceptor } from './core/interceptors/jwt.interceptor';
 
 const ReddocPreset = definePreset(Aura, {
   primitive: {
@@ -84,7 +85,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(appRoutes),
-    provideHttpClient(withInterceptors([authInterceptor, errorInterceptor])),
+    provideHttpClient(withInterceptors([jwtInterceptor, authInterceptor, errorInterceptor])),
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {

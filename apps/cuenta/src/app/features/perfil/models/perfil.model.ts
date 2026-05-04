@@ -1,5 +1,5 @@
 export interface UpdatePerfilRequest {
-  name?: string;
-  apellidos?: string | null;
+  nombre_corto?: string | null;
+  celular?: string | null;
   numero_identificacion?: string | null;
 }

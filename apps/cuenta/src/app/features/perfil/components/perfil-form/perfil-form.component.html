@@ -11,51 +11,39 @@
         Información personal
       </h2>
 
-      <div class="pf-grid">
-        <div class="field">
-          <label for="pf-name" class="field__label">
-            Nombre <span class="field__req">*</span>
-          </label>
-          <input
-            pInputText
-            id="pf-name"
-            formControlName="name"
-            placeholder="Sebastián"
-            fluid
-            [invalid]="nameControl.invalid && nameControl.touched"
-          />
-          @if (nameControl.invalid && nameControl.touched) {
-            <small class="field__error">
-              @if (nameControl.hasError('required')) {
-                El nombre es obligatorio.
-              } @else if (nameControl.hasError('minlength')) {
-                Mínimo 2 caracteres.
-              }
-            </small>
-          }
-        </div>
-
-        <div class="field">
-          <label for="pf-apellidos" class="field__label">Apellidos</label>
-          <input
-            pInputText
-            id="pf-apellidos"
-            formControlName="apellidos"
-            placeholder="García López"
-            fluid
-          />
-        </div>
-      </div>
-
       <div class="field">
-        <label for="pf-id" class="field__label">Número de identificación</label>
+        <label for="pf-nombre" class="field__label">Nombre corto</label>
         <input
           pInputText
-          id="pf-id"
-          formControlName="numero_identificacion"
-          placeholder="12345678"
+          id="pf-nombre"
+          formControlName="nombre_corto"
+          placeholder="Ej. María García"
           fluid
         />
+      </div>
+
+      <div class="pf-grid">
+        <div class="field">
+          <label for="pf-celular" class="field__label">Celular</label>
+          <input
+            pInputText
+            id="pf-celular"
+            formControlName="celular"
+            placeholder="+57 300 000 0000"
+            fluid
+          />
+        </div>
+
+        <div class="field">
+          <label for="pf-id" class="field__label">Número de identificación</label>
+          <input
+            pInputText
+            id="pf-id"
+            formControlName="numero_identificacion"
+            placeholder="12345678"
+            fluid
+          />
+        </div>
       </div>
     </div>
 

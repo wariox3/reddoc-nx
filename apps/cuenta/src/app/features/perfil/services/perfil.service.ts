@@ -15,6 +15,13 @@ export class PerfilService {
 
   readonly profileImage = signal<string | null>(null);
 
+  loadPerfil(): Observable<unknown> {
+    const userId = this.authService.currentUser()?.id;
+    return this.http
+      .get(`${this.env.apiUrl}${API_ENDPOINTS.perfil.update}${userId}/`)
+      .pipe(tap((data) => console.log('[PerfilService] GET usuario:', data)));
+  }
+
   // TODO: connect to backend once endpoint is ready
   updatePerfil(data: UpdatePerfilRequest): Observable<unknown> {
     const userId = this.authService.currentUser()?.id;

@@ -100,6 +100,10 @@ export abstract class BaseAuthService<TUser extends BaseUsuario> {
     });
   }
 
+  protected setCurrentUser(user: TUser | null): void {
+    this._currentUser.set(user);
+  }
+
   clearSession(): void {
     this._currentUser.set(null);
     this.tokenRefresh.reset();

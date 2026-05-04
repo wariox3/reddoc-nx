@@ -1,7 +1,7 @@
 export interface BaseUsuario {
   id: number;
   email: string;
-  role: string;
+  role?: string;
 }
 
 export interface LoginRequest {

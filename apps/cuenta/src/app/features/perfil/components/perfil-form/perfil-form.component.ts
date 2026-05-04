@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, output, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
@@ -27,8 +27,8 @@ export class PerfilFormComponent implements OnInit {
   readonly isPristine = signal(true);
 
   readonly form = this.fb.group({
-    name: ['', [Validators.required, Validators.minLength(2)]],
-    apellidos: [''],
+    nombre_corto: [''],
+    celular: [''],
     numero_identificacion: [''],
     email: [{ value: '', disabled: true }],
   });
@@ -37,8 +37,8 @@ export class PerfilFormComponent implements OnInit {
     const user = this.authService.currentUser();
     if (user) {
       this.form.patchValue({
-        name: user.name ?? '',
-        apellidos: user.apellidos ?? '',
+        nombre_corto: user.nombre_corto ?? '',
+        celular: user.celular ?? '',
         numero_identificacion: user.numero_identificacion ?? '',
         email: user.email,
       });
@@ -60,9 +60,9 @@ export class PerfilFormComponent implements OnInit {
     this.isSaving.set(true);
     this.errorMessage.set(null);
 
-    const { name, apellidos, numero_identificacion } = this.form.getRawValue();
+    const { nombre_corto, celular, numero_identificacion } = this.form.getRawValue();
 
-    this.perfilService.updatePerfil({ name: name!, apellidos, numero_identificacion }).subscribe({
+    this.perfilService.updatePerfil({ nombre_corto, celular, numero_identificacion }).subscribe({
       next: () => {
         this.isSaving.set(false);
         this.form.markAsPristine();
@@ -76,11 +76,11 @@ export class PerfilFormComponent implements OnInit {
     });
   }
 
-  get nameControl() {
-    return this.form.controls.name;
+  get nombreCortoControl() {
+    return this.form.controls.nombre_corto;
   }
-  get apellidosControl() {
-    return this.form.controls.apellidos;
+  get celularControl() {
+    return this.form.controls.celular;
   }
   get identificacionControl() {
     return this.form.controls.numero_identificacion;
