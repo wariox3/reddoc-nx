@@ -10,6 +10,8 @@ export type {
   AuthResponse,
   ResendVerificationRequest,
 } from './lib/models/auth.model';
+export { BaseHttpService, buildHttpParams } from './lib/services/base-http.service';
+export type { ParamValue } from './lib/services/base-http.service';
 export { TokenRefreshService } from './lib/services/token-refresh.service';
 export { ToastService } from './lib/services/toast.service';
 export { ENVIRONMENT, ROUTE_PATHS_TOKEN, AUTH_SERVICE, AUTH_SKIP_URLS } from './lib/tokens';
