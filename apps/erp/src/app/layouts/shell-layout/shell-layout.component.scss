@@ -26,29 +26,11 @@
     gap: 0.5rem;
   }
 
-  &__dot {
-    width: 22px;
-    height: 22px;
-    border-radius: 6px;
-    background: var(--brand-navy);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    &::after {
-      content: '';
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--brand-blue);
-    }
-  }
-
-  &__wordmark {
-    font-size: 0.9rem;
-    font-weight: 700;
-    letter-spacing: -0.03em;
-    color: var(--brand-navy);
+  &__logo {
+    height: 24px;
+    width: auto;
+    object-fit: contain;
+    display: block;
   }
 
   &__actions {
