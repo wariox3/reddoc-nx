@@ -1,0 +1,35 @@
+<div class="verify-layout">
+  <div class="verify-card">
+    @if (isLoading()) {
+      <div class="verify-state">
+        <div class="verify-state__icon verify-state__icon--loading">
+          <i class="pi pi-spin pi-spinner"></i>
+        </div>
+        <h2 class="verify-state__title">Verificando tu cuenta...</h2>
+        <p class="verify-state__desc">Por favor espera un momento.</p>
+      </div>
+    } @else if (verified()) {
+      <div class="verify-state">
+        <div class="verify-state__icon verify-state__icon--success">
+          <i class="pi pi-check-circle"></i>
+        </div>
+        <h2 class="verify-state__title">¡Cuenta verificada!</h2>
+        <p class="verify-state__desc">
+          Tu cuenta fue verificada correctamente. Ya puedes iniciar sesión.
+        </p>
+        <a routerLink="/auth/login" class="verify-state__action">Ir al login</a>
+      </div>
+    } @else {
+      <div class="verify-state">
+        <div class="verify-state__icon verify-state__icon--error">
+          <i class="pi pi-times-circle"></i>
+        </div>
+        <h2 class="verify-state__title">Error al verificar</h2>
+        <p class="verify-state__desc">{{ errorMessage() }}</p>
+        <a routerLink="/auth/resend-verification" class="verify-state__action"
+          >Reenviar verificación</a
+        >
+      </div>
+    }
+  </div>
+</div>

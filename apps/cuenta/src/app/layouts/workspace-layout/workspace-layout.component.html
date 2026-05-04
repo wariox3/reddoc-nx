@@ -1,0 +1,29 @@
+<header class="app-header">
+  <div class="app-header__brand">
+    <img src="/logos/reddoc.svg" alt="RedDoc" class="app-header__logo" />
+  </div>
+  <div class="app-header__actions">
+    <app-user-menu />
+  </div>
+</header>
+
+<div class="workspace-body">
+  <aside class="workspace-sidebar">
+    <nav class="workspace-nav">
+      @for (item of navItems; track item.path) {
+        <a
+          class="workspace-nav__item"
+          [routerLink]="item.path"
+          routerLinkActive="workspace-nav__item--active"
+        >
+          <i class="workspace-nav__icon {{ item.icon }}"></i>
+          <span class="workspace-nav__label">{{ item.label }}</span>
+        </a>
+      }
+    </nav>
+  </aside>
+
+  <main class="workspace-main">
+    <router-outlet />
+  </main>
+</div>

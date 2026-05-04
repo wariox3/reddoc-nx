@@ -1,0 +1,17 @@
+<button
+  type="button"
+  class="user-menu__trigger"
+  (click)="toggle($event)"
+  [attr.aria-label]="'Menú de usuario, ' + displayName()"
+>
+  <p-avatar [label]="initials()" shape="circle" styleClass="user-menu__avatar" />
+</button>
+
+<p-menu #menu [popup]="true" [model]="items" appendTo="body">
+  <ng-template #start>
+    <div class="user-menu__header">
+      <p class="user-menu__name">{{ displayName() }}</p>
+      <p class="user-menu__email">{{ email() }}</p>
+    </div>
+  </ng-template>
+</p-menu>

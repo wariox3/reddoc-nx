@@ -1,0 +1,88 @@
+@font-face {
+  font-family: 'Geist';
+  src: url('/fonts/geist/Geist-Variable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Geist';
+  src: url('/fonts/geist/Geist-Italic[wght].woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+@import 'primeicons/primeicons.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Geist', system-ui, sans-serif;
+  background: var(--p-surface-ground);
+  color: var(--p-text-color);
+  overflow-x: hidden;
+}
+
+:root {
+  // Brand palette
+  --brand-navy: #143049;
+  --brand-navy-deep: #0d2035;
+  --brand-blue: #77aad7;
+  --brand-white: #ffffff;
+
+  // Semantic
+  --brand-bg: #f4f7fb;
+  --brand-surface: #ffffff;
+  --brand-surface-2: #eaf0f7;
+  --brand-text: #143049;
+  --brand-muted: #4a6a85;
+  --brand-muted-2: #8aafc9;
+  --brand-border: rgba(20 48 73 / 0.1);
+  --brand-border-hover: rgba(20 48 73 / 0.2);
+
+  // PrimeNG font override
+  --p-font-family: 'Geist', system-ui, sans-serif;
+}
+
+// ─── Auth shared: logo + back link ───────────────────────────────────────────
+.form-panel__logo-img {
+  height: 25px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+  margin-bottom: 2rem;
+  align-self: flex-end;
+}
+
+.form-panel__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--brand-muted);
+  text-decoration: none;
+  margin-bottom: 2.5rem;
+  align-self: flex-start;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: var(--brand-text);
+
+    .pi {
+      transform: translateX(-3px);
+    }
+  }
+
+  .pi {
+    font-size: 0.8em;
+    transition: transform 0.2s ease;
+  }
+}

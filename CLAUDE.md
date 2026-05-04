@@ -10,6 +10,7 @@ All tasks run through Nx. Use `npx nx <target> <project>`.
 # Serve
 npx nx serve landing          # Landing SSR dev server → http://localhost:4200
 npx nx serve erp              # ERP SPA dev server   → http://localhost:4201
+npx nx serve cuenta           # Cuenta SPA dev server → http://localhost:4203
 
 # Build
 npx nx build landing          # Static + SSR build
