@@ -40,6 +40,13 @@ export class AuthService extends BaseAuthService<Usuario> {
 
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
+
+      if (payload.exp && Date.now() / 1000 > payload.exp) {
+        localStorage.removeItem(ACCESS_TOKEN_KEY);
+        this.setCurrentUser(null);
+        return of(null);
+      }
+
       const userId: string | undefined = payload.user_id;
       if (!userId) return super.me();
 
