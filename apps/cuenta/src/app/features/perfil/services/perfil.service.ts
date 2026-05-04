@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { switchMap } from 'rxjs/operators';
 import { BaseHttpService } from '@reddoc/core';
 import { AuthService } from '../../auth/services/auth.service';
 import { API_ENDPOINTS } from '../../../core/constants/api-endpoints.constants';
@@ -15,7 +15,7 @@ export class PerfilService extends BaseHttpService {
   updatePerfil(data: UpdatePerfilRequest): Observable<unknown> {
     const userId = this.authService.currentUser()?.id;
     return this.patch(`${API_ENDPOINTS.perfil.update}${userId}/`, data).pipe(
-      tap(() => this.authService.me().subscribe()),
+      switchMap(() => this.authService.me()),
     );
   }
 
