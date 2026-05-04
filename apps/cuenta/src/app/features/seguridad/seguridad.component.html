@@ -37,6 +37,26 @@
             Cambiar contraseña
           </h2>
 
+          <!-- Contraseña actual -->
+          <div class="field">
+            <label for="seg-actual" class="field__label">
+              Contraseña actual <span class="field__req">*</span>
+            </label>
+            <p-password
+              inputId="seg-actual"
+              formControlName="passwordActual"
+              [toggleMask]="true"
+              [feedback]="false"
+              fluid
+              [invalid]="actualControl.invalid && actualControl.touched"
+            />
+            @if (actualControl.invalid && actualControl.touched) {
+              <small class="field__error">La contraseña actual es obligatoria.</small>
+            }
+          </div>
+
+          <p-divider />
+
           <div class="seg-grid">
             <!-- Nueva contraseña -->
             <div class="field">

@@ -16,6 +16,6 @@ export const API_ENDPOINTS = {
     deleteImage: '/seguridad/usuario/eliminar-imagen/',
   },
   seguridad: {
-    cambiarClave: '/seguridad/usuario/cambio-clave/',
+    cambiarClave: '/seguridad/usuario/cambiar-clave/',
   },
 };

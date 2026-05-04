@@ -52,12 +52,16 @@ export class SeguridadComponent {
 
   readonly form = this.fb.group(
     {
+      passwordActual: ['', Validators.required],
       passwordNueva: ['', [Validators.required, Validators.minLength(8)]],
-      passwordConfirmar: ['', [Validators.required]],
+      passwordConfirmar: ['', Validators.required],
     },
     { validators: [passwordsMatchValidator()] },
   );
 
+  get actualControl() {
+    return this.form.controls.passwordActual;
+  }
   get nuevaControl() {
     return this.form.controls.passwordNueva;
   }
@@ -74,7 +78,8 @@ export class SeguridadComponent {
     this.isSaving.set(true);
     this.errorMessage.set(null);
 
-    this.seguridadService.cambiarClave(this.form.getRawValue().passwordNueva!).subscribe({
+    const { passwordActual, passwordNueva } = this.form.getRawValue();
+    this.seguridadService.cambiarClave(passwordActual!, passwordNueva!).subscribe({
       next: () => {
         this.isSaving.set(false);
         this.form.reset();
