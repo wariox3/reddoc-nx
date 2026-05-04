@@ -1,0 +1,54 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="pf-form">
+  @if (errorMessage()) {
+    <p-message severity="error" [text]="errorMessage()!" styleClass="w-full" />
+  }
+
+  <div class="pf-form__grid">
+    <div class="field">
+      <label for="pf-name" class="field__label">Nombre <span class="field__req">*</span></label>
+      <input
+        pInputText
+        id="pf-name"
+        formControlName="name"
+        placeholder="Sebastián"
+        fluid
+        [invalid]="nameControl.invalid && nameControl.touched"
+      />
+      @if (nameControl.invalid && nameControl.touched) {
+        <small class="form-error">El nombre es requerido.</small>
+      }
+    </div>
+
+    <div class="field">
+      <label for="pf-apellidos" class="field__label">Apellidos</label>
+      <input
+        pInputText
+        id="pf-apellidos"
+        formControlName="apellidos"
+        placeholder="García López"
+        fluid
+      />
+    </div>
+
+    <div class="field">
+      <label for="pf-id" class="field__label">N° de identificación</label>
+      <input
+        pInputText
+        id="pf-id"
+        formControlName="numero_identificacion"
+        placeholder="12345678"
+        fluid
+      />
+    </div>
+  </div>
+
+  <div class="pf-form__footer">
+    <p-button
+      type="submit"
+      label="Guardar cambios"
+      icon="pi pi-check"
+      [loading]="isLoading()"
+      [disabled]="isLoading()"
+    />
+  </div>
+</form>

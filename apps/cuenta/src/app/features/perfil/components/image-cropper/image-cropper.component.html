@@ -1,0 +1,50 @@
+<div class="cropper-wrap">
+  <input
+    #fileInput
+    type="file"
+    accept="image/*"
+    class="hidden-input"
+    (change)="onFileChange($event)"
+  />
+
+  @if (!imageChangedEvent()) {
+    <div class="cropper-empty">
+      <i class="pi pi-image cropper-empty__icon"></i>
+      <p class="cropper-empty__text">Selecciona una imagen para recortar</p>
+      <p-button label="Elegir imagen" icon="pi pi-upload" (onClick)="selectFile()" />
+    </div>
+  } @else {
+    <image-cropper
+      [imageChangedEvent]="imageChangedEvent()"
+      [maintainAspectRatio]="true"
+      [aspectRatio]="1"
+      [roundCropper]="true"
+      format="jpeg"
+      (imageCropped)="onImageCropped($event)"
+      class="cropper-canvas"
+    />
+  }
+
+  @if (tooBig()) {
+    <p-message
+      severity="error"
+      text="La imagen supera los 2MB. Elige una más pequeña."
+      styleClass="w-full"
+    />
+  }
+
+  <div class="cropper-actions">
+    <p-button label="Cancelar" severity="secondary" [outlined]="true" (onClick)="cancel()" />
+    @if (imageChangedEvent() && !imageChangedEvent()) {}
+    @if (!imageChangedEvent()) {
+      <span></span>
+    } @else {
+      <p-button
+        label="Guardar"
+        icon="pi pi-check"
+        [disabled]="!croppedImage() || tooBig()"
+        (onClick)="save()"
+      />
+    }
+  </div>
+</div>

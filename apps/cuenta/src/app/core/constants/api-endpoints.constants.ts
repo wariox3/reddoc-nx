@@ -10,4 +10,9 @@ export const API_ENDPOINTS = {
     forgotPassword: '/seguridad/usuario/recuperar-clave/',
     resetPassword: '/seguridad/usuario/restablecer-clave/',
   },
+  perfil: {
+    update: '/seguridad/usuario/', // PATCH /:id/
+    uploadImage: '/seguridad/usuario/cargar-imagen/',
+    deleteImage: '/seguridad/usuario/eliminar-imagen/',
+  },
 };
