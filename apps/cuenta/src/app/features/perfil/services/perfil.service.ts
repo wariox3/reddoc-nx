@@ -12,13 +12,6 @@ export class PerfilService extends BaseHttpService {
 
   readonly profileImage = signal<string | null>(null);
 
-  loadPerfil(): Observable<unknown> {
-    const userId = this.authService.currentUser()?.id;
-    return this.get(`${API_ENDPOINTS.perfil.update}${userId}/`).pipe(
-      tap((data) => console.log('[PerfilService] GET usuario:', data)),
-    );
-  }
-
   updatePerfil(data: UpdatePerfilRequest): Observable<unknown> {
     const userId = this.authService.currentUser()?.id;
     return this.patch(`${API_ENDPOINTS.perfil.update}${userId}/`, data).pipe(

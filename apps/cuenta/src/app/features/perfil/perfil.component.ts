@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { AvatarModule } from 'primeng/avatar';
@@ -23,7 +23,7 @@ import { ImageCropperComponent } from './components/image-cropper/image-cropper.
   templateUrl: './perfil.component.html',
   styleUrl: './perfil.component.scss',
 })
-export class PerfilComponent implements OnInit {
+export class PerfilComponent {
   private readonly authService = inject(AuthService);
   private readonly perfilService = inject(PerfilService);
   private readonly messageService = inject(MessageService);
@@ -44,10 +44,6 @@ export class PerfilComponent implements OnInit {
     if (!u) return '';
     return u.nombre_corto?.trim() || u.email;
   });
-
-  ngOnInit(): void {
-    this.perfilService.loadPerfil().subscribe();
-  }
 
   openImageCropper(): void {
     this.imageDialogVisible.set(true);
