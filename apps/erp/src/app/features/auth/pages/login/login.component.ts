@@ -56,7 +56,6 @@ export class LoginComponent {
       .login({
         email: email!,
         password: password!,
-        client_type: 'web',
         turnstile_token: this.captchaToken()!,
       })
       .subscribe({
@@ -64,7 +63,7 @@ export class LoginComponent {
           this.turnstile()?.reset();
           const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
           const safeUrl =
-            returnUrl?.startsWith('/') && !returnUrl.startsWith('//') ? returnUrl : '/dashboard';
+            returnUrl?.startsWith('/') && !returnUrl.startsWith('//') ? returnUrl : '/contenedores';
           this.router.navigateByUrl(safeUrl);
         },
         error: (err) => {

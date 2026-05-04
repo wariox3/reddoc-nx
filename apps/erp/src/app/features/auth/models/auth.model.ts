@@ -7,11 +7,9 @@ export interface Usuario extends BaseUsuario {
 }
 
 export interface RegisterRequest {
+  nombre_corto: string;
   email: string;
   password: string;
-  nombres: string;
-  apellidos: string;
-  numero_identificacion: string;
   turnstile_token?: string;
 }
 

@@ -7,12 +7,13 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { MessageModule } from 'primeng/message';
 import { CheckboxModule } from 'primeng/checkbox';
+import { DialogModule } from 'primeng/dialog';
 import { AuthService } from '../../services/auth.service';
 import { extractErrorMessage } from '@reddoc/core';
 import { TurnstileComponent } from '../../../../shared/turnstile/turnstile.component';
@@ -37,6 +38,7 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
     PasswordModule,
     MessageModule,
     CheckboxModule,
+    DialogModule,
     TurnstileComponent,
   ],
   templateUrl: './register.component.html',
@@ -45,7 +47,6 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
 export class RegisterComponent {
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
-  private readonly router = inject(Router);
   private readonly turnstile = viewChild(TurnstileComponent);
 
   readonly isLoading = signal(false);
@@ -53,12 +54,11 @@ export class RegisterComponent {
   readonly submitted = signal(false);
   readonly captchaToken = signal<string | null>(null);
   readonly termsAccepted = signal(false);
+  readonly termsDialogVisible = signal(false);
 
   readonly form = this.fb.group(
     {
-      nombres: ['', [Validators.required, Validators.minLength(2)]],
-      apellidos: ['', [Validators.required, Validators.minLength(2)]],
-      numero_identificacion: ['', [Validators.required]],
+      nombre_corto: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],
       confirmPassword: ['', Validators.required],
@@ -75,13 +75,11 @@ export class RegisterComponent {
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
-    const { nombres, apellidos, numero_identificacion, email, password } = this.form.getRawValue();
+    const { nombre_corto, email, password } = this.form.getRawValue();
 
     this.authService
       .register({
-        nombres: nombres!,
-        apellidos: apellidos!,
-        numero_identificacion: numero_identificacion!,
+        nombre_corto: nombre_corto!,
         email: email!,
         password: password!,
         turnstile_token: this.captchaToken()!,
@@ -103,14 +101,8 @@ export class RegisterComponent {
       });
   }
 
-  get nombresControl() {
-    return this.form.controls.nombres;
-  }
-  get apellidosControl() {
-    return this.form.controls.apellidos;
-  }
-  get identificacionControl() {
-    return this.form.controls.numero_identificacion;
+  get nombreCortoControl() {
+    return this.form.controls.nombre_corto;
   }
   get emailControl() {
     return this.form.controls.email;

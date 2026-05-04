@@ -7,7 +7,6 @@ export interface BaseUsuario {
 export interface LoginRequest {
   email: string;
   password: string;
-  client_type: 'api' | 'web';
   turnstile_token?: string;
 }
 

@@ -98,7 +98,7 @@ export const appConfig: ApplicationConfig = {
       provide: ROUTE_PATHS_TOKEN,
       useValue: {
         auth: { login: ROUTE_PATHS.auth.login },
-        dashboard: { root: ROUTE_PATHS.dashboard.root },
+        dashboard: { root: ROUTE_PATHS.contenedores.root },
       },
     },
     { provide: AUTH_SERVICE, useExisting: AuthService },

@@ -10,4 +10,7 @@ export const ROUTE_PATHS = {
   dashboard: {
     root: '/dashboard',
   },
+  contenedores: {
+    root: '/contenedores',
+  },
 };

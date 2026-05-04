@@ -1,7 +1,7 @@
 {
   "/api": {
-    "target": "http://localhost:8000",
-    "secure": false,
+    "target": "https://reddocapi.uk",
+    "secure": true,
     "changeOrigin": true,
     "pathRewrite": { "^/api": "" },
     "logLevel": "info"

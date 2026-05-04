@@ -9,7 +9,7 @@
       <div class="brand-panel__logo"></div>
       <div class="brand-panel__bottom">
         <div class="brand-panel__body">
-          <h1 class="brand-panel__title">ERP<br />Reddoc</h1>
+          <h1 class="brand-panel__title">ERP<br />RedDoc</h1>
           <p class="brand-panel__desc">Gestiona tu empresa desde un solo lugar.</p>
         </div>
       </div>
@@ -35,62 +35,24 @@
           }
 
           <div class="field">
-            <label for="nombres" class="field__label">Nombres</label>
+            <label for="nombre_corto" class="field__label">Nombre</label>
             <input
               pInputText
-              id="nombres"
+              id="nombre_corto"
               type="text"
-              formControlName="nombres"
+              formControlName="nombre_corto"
               fluid
-              placeholder="Juan"
-              [invalid]="nombresControl.invalid && nombresControl.touched"
+              placeholder="Juan Pérez"
+              [invalid]="nombreCortoControl.invalid && nombreCortoControl.touched"
             />
-            @if (nombresControl.invalid && nombresControl.touched) {
+            @if (nombreCortoControl.invalid && nombreCortoControl.touched) {
               <small class="form-error">
-                @if (nombresControl.hasError('required')) {
-                  Los nombres son requeridos.
-                } @else if (nombresControl.hasError('minlength')) {
+                @if (nombreCortoControl.hasError('required')) {
+                  El nombre es requerido.
+                } @else if (nombreCortoControl.hasError('minlength')) {
                   Mínimo 2 caracteres.
                 }
               </small>
-            }
-          </div>
-
-          <div class="field">
-            <label for="apellidos" class="field__label">Apellidos</label>
-            <input
-              pInputText
-              id="apellidos"
-              type="text"
-              formControlName="apellidos"
-              fluid
-              placeholder="Pérez"
-              [invalid]="apellidosControl.invalid && apellidosControl.touched"
-            />
-            @if (apellidosControl.invalid && apellidosControl.touched) {
-              <small class="form-error">
-                @if (apellidosControl.hasError('required')) {
-                  Los apellidos son requeridos.
-                } @else if (apellidosControl.hasError('minlength')) {
-                  Mínimo 2 caracteres.
-                }
-              </small>
-            }
-          </div>
-
-          <div class="field">
-            <label for="numero_identificacion" class="field__label">Número de identificación</label>
-            <input
-              pInputText
-              id="numero_identificacion"
-              type="text"
-              formControlName="numero_identificacion"
-              fluid
-              placeholder="1234567890"
-              [invalid]="identificacionControl.invalid && identificacionControl.touched"
-            />
-            @if (identificacionControl.invalid && identificacionControl.touched) {
-              <small class="form-error">El número de identificación es requerido.</small>
             }
           </div>
 
@@ -173,7 +135,12 @@
               (ngModelChange)="termsAccepted.set($event)"
               inputId="terms"
             />
-            <label for="terms" class="field__terms-label">Acepto los términos y condiciones</label>
+            <label for="terms" class="field__terms-label">
+              Acepto los
+              <a (click)="termsDialogVisible.set(true); $event.preventDefault()" href="#">
+                términos y condiciones
+              </a>
+            </label>
           </div>
 
           <app-turnstile
@@ -210,3 +177,115 @@
     </div>
   </div>
 </div>
+
+<p-dialog
+  header="Términos y condiciones"
+  [(visible)]="termsDialogVisible"
+  [modal]="true"
+  [dismissableMask]="true"
+  [style]="{ width: '680px', maxHeight: '80vh' }"
+  [breakpoints]="{ '768px': '95vw' }"
+>
+  <div class="terms-content">
+    <section>
+      <h3>1. Aceptación de términos</h3>
+      <p>
+        Al acceder y utilizar el ERP de RedDoc (en adelante "RedDoc" o "la plataforma"), usted
+        acepta cumplir con los presentes términos y condiciones de uso. Si no está de acuerdo con
+        alguna parte de estos términos, le solicitamos abstenerse de utilizar la plataforma.
+      </p>
+    </section>
+
+    <section>
+      <h3>2. Descripción del servicio</h3>
+      <p>
+        RedDoc es una plataforma web de gestión empresarial que permite a usuarios y administradores
+        acceder a servicios como:
+      </p>
+      <ul>
+        <li>Gestión de documentos y contenedores.</li>
+        <li>Administración de usuarios y permisos.</li>
+        <li>Consulta y generación de reportes.</li>
+        <li>Seguimiento de operaciones empresariales.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h3>3. Cuentas y credenciales</h3>
+      <p>
+        Para acceder a la plataforma, usted debe registrarse con un correo electrónico válido y
+        crear una contraseña segura. Usted es responsable de:
+      </p>
+      <ul>
+        <li>Mantener la confidencialidad de sus credenciales de acceso.</li>
+        <li>Notificar de inmediato cualquier uso no autorizado de su cuenta.</li>
+        <li>Toda la actividad que ocurra bajo su cuenta, sea o no autorizada por usted.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h3>4. Uso aceptable</h3>
+      <p>
+        El usuario se compromete a utilizar la plataforma únicamente para los fines empresariales
+        previstos. Queda prohibido:
+      </p>
+      <ul>
+        <li>Intentar acceder a información de otros usuarios o cuentas sin autorización.</li>
+        <li>Utilizar la plataforma para actividades ilegales, fraudulentas o no autorizadas.</li>
+        <li>Interferir con el funcionamiento normal de la plataforma.</li>
+        <li>Reproducir, distribuir o modificar cualquier contenido sin autorización.</li>
+        <li>Utilizar herramientas automatizadas para extraer información de la plataforma.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h3>5. Propiedad intelectual</h3>
+      <p>
+        Todo el contenido de la plataforma es propiedad de RedDoc o de sus licenciantes y está
+        protegido por las leyes de propiedad intelectual de Colombia y los tratados internacionales
+        aplicables.
+      </p>
+    </section>
+
+    <section>
+      <h3>6. Disponibilidad del servicio</h3>
+      <p>
+        RedDoc se esfuerza por mantener la plataforma disponible las 24 horas del día, los 7 días de
+        la semana. Sin embargo, no garantizamos que el servicio será ininterrumpido o libre de
+        errores.
+      </p>
+    </section>
+
+    <section>
+      <h3>7. Limitación de responsabilidad</h3>
+      <p>
+        RedDoc no será responsable por daños directos, indirectos, incidentales, consecuentes o
+        punitivos que resulten del uso o la imposibilidad de uso de la plataforma.
+      </p>
+    </section>
+
+    <section>
+      <h3>8. Modificaciones a los términos</h3>
+      <p>
+        RedDoc se reserva el derecho de modificar estos términos de uso en cualquier momento. Las
+        modificaciones entrarán en vigencia a partir de su publicación en esta página.
+      </p>
+    </section>
+
+    <section>
+      <h3>9. Ley aplicable y jurisdicción</h3>
+      <p>
+        Los presentes términos se rigen por las leyes de la República de Colombia. Cualquier
+        controversia será sometida a la jurisdicción de los tribunales de Bogotá D.C., Colombia.
+      </p>
+    </section>
+
+    <section>
+      <h3>10. Contacto</h3>
+      <p>Para consultas sobre estos términos:</p>
+      <ul>
+        <li><strong>Correo:</strong> soporte&#64;reddoc.com.co</li>
+      </ul>
+    </section>
+  </div>
+</p-dialog>
