@@ -9,10 +9,8 @@ import {
 } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { PasswordModule } from 'primeng/password';
-import { MessageModule } from 'primeng/message';
 import { DividerModule } from 'primeng/divider';
-import { MessageService } from 'primeng/api';
-import { extractErrorMessage } from '@reddoc/core';
+import { ToastService, extractErrorMessage } from '@reddoc/core';
 import { SeguridadService } from './services/seguridad.service';
 
 function passwordsMatchValidator(): ValidatorFn {
@@ -38,17 +36,16 @@ function passwordsMatchValidator(): ValidatorFn {
 @Component({
   selector: 'app-seguridad',
   standalone: true,
-  imports: [ReactiveFormsModule, ButtonModule, PasswordModule, MessageModule, DividerModule],
+  imports: [ReactiveFormsModule, ButtonModule, PasswordModule, DividerModule],
   templateUrl: './seguridad.component.html',
   styleUrl: './seguridad.component.scss',
 })
 export class SeguridadComponent {
   private readonly fb = inject(FormBuilder);
   private readonly seguridadService = inject(SeguridadService);
-  private readonly messageService = inject(MessageService);
+  private readonly toast = inject(ToastService);
 
   readonly isSaving = signal(false);
-  readonly errorMessage = signal<string | null>(null);
 
   readonly form = this.fb.group(
     {
@@ -76,22 +73,19 @@ export class SeguridadComponent {
     }
 
     this.isSaving.set(true);
-    this.errorMessage.set(null);
 
     const { passwordActual, passwordNueva } = this.form.getRawValue();
     this.seguridadService.cambiarClave(passwordActual!, passwordNueva!).subscribe({
       next: () => {
         this.isSaving.set(false);
         this.form.reset();
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Contraseña actualizada',
-          detail: 'Tu contraseña ha sido cambiada correctamente.',
-          life: 3000,
-        });
+        this.toast.success(
+          'Contraseña actualizada',
+          'Tu contraseña ha sido cambiada correctamente.',
+        );
       },
       error: (err) => {
-        this.errorMessage.set(extractErrorMessage(err, 'No se pudo cambiar la contraseña.'));
+        this.toast.error('Error', extractErrorMessage(err, 'No se pudo cambiar la contraseña.'));
         this.isSaving.set(false);
       },
     });

@@ -2,16 +2,15 @@ import { Component, OnInit, inject, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { MessageModule } from 'primeng/message';
 import { DividerModule } from 'primeng/divider';
 import { AuthService } from '../../../auth/services/auth.service';
 import { PerfilService } from '../../services/perfil.service';
-import { extractErrorMessage } from '@reddoc/core';
+import { ToastService, extractErrorMessage } from '@reddoc/core';
 
 @Component({
   selector: 'app-perfil-form',
   standalone: true,
-  imports: [ReactiveFormsModule, ButtonModule, InputTextModule, MessageModule, DividerModule],
+  imports: [ReactiveFormsModule, ButtonModule, InputTextModule, DividerModule],
   templateUrl: './perfil-form.component.html',
   styleUrl: './perfil-form.component.scss',
 })
@@ -21,9 +20,9 @@ export class PerfilFormComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
   private readonly perfilService = inject(PerfilService);
+  private readonly toast = inject(ToastService);
 
   readonly isSaving = signal(false);
-  readonly errorMessage = signal<string | null>(null);
   readonly isPristine = signal(true);
 
   readonly form = this.fb.group({
@@ -58,7 +57,6 @@ export class PerfilFormComponent implements OnInit {
     }
 
     this.isSaving.set(true);
-    this.errorMessage.set(null);
 
     const { nombre_corto, celular, numero_identificacion } = this.form.getRawValue();
 
@@ -70,7 +68,7 @@ export class PerfilFormComponent implements OnInit {
         this.saved.emit();
       },
       error: (err) => {
-        this.errorMessage.set(extractErrorMessage(err, 'No se pudo guardar los cambios.'));
+        this.toast.error('Error', extractErrorMessage(err, 'No se pudo guardar los cambios.'));
         this.isSaving.set(false);
       },
     });

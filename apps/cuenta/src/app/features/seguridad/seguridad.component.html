@@ -27,10 +27,6 @@
     <!-- Change password card -->
     <div class="seg-form-card">
       <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
-        @if (errorMessage()) {
-          <p-message severity="error" [text]="errorMessage()!" styleClass="w-full seg-error" />
-        }
-
         <div class="seg-section">
           <h2 class="seg-section__title">
             <i class="pi pi-lock"></i>

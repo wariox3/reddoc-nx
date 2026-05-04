@@ -1,9 +1,5 @@
 <div class="pf-card">
   <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
-    @if (errorMessage()) {
-      <p-message severity="error" [text]="errorMessage()!" styleClass="w-full pf-error" />
-    }
-
     <!-- Personal info section -->
     <div class="pf-section">
       <h2 class="pf-section__title">
