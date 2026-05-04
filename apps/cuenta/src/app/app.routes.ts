@@ -12,7 +12,7 @@ export const appRoutes: Route[] = [
 
   {
     path: '',
-    canActivate: [],
+    canActivate: [], //TODO: agregar guard
     loadComponent: () =>
       import('./layouts/workspace-layout/workspace-layout.component').then(
         (m) => m.WorkspaceLayoutComponent,

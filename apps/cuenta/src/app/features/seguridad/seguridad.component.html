@@ -1,0 +1,109 @@
+<div class="seg-page">
+  <!-- Page header -->
+  <div class="page-header">
+    <h1 class="page-header__title">Seguridad</h1>
+    <p class="page-header__subtitle">Gestiona la seguridad de tu cuenta</p>
+  </div>
+
+  <div class="seg-layout">
+    <!-- Security status card -->
+    <div class="seg-status-card">
+      <div class="seg-status-card__banner"></div>
+
+      <div class="seg-status-card__info">
+        <div class="seg-badge">
+          <i class="pi pi-shield"></i>
+        </div>
+
+        <div class="seg-status-card__details">
+          <p class="seg-status-card__name">Tu cuenta está protegida</p>
+          <p class="seg-status-card__sub">
+            Actualiza tu contraseña periódicamente para mantener tu cuenta segura
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Change password card -->
+    <div class="seg-form-card">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+        @if (errorMessage()) {
+          <p-message severity="error" [text]="errorMessage()!" styleClass="w-full seg-error" />
+        }
+
+        <div class="seg-section">
+          <h2 class="seg-section__title">
+            <i class="pi pi-lock"></i>
+            Cambiar contraseña
+          </h2>
+
+          <div class="seg-grid">
+            <!-- Nueva contraseña -->
+            <div class="field">
+              <label for="seg-nueva" class="field__label">
+                Nueva contraseña <span class="field__req">*</span>
+              </label>
+              <p-password
+                inputId="seg-nueva"
+                formControlName="passwordNueva"
+                [toggleMask]="true"
+                [feedback]="true"
+                promptLabel="Ingresa una contraseña"
+                weakLabel="Débil"
+                mediumLabel="Media"
+                strongLabel="Fuerte"
+                fluid
+                [invalid]="nuevaControl.invalid && nuevaControl.touched"
+              />
+              @if (nuevaControl.invalid && nuevaControl.touched) {
+                <small class="field__error">
+                  @if (nuevaControl.hasError('required')) {
+                    La nueva contraseña es obligatoria.
+                  } @else if (nuevaControl.hasError('minlength')) {
+                    Mínimo 8 caracteres.
+                  }
+                </small>
+              }
+            </div>
+
+            <!-- Confirmar contraseña -->
+            <div class="field">
+              <label for="seg-confirmar" class="field__label">
+                Confirmar contraseña <span class="field__req">*</span>
+              </label>
+              <p-password
+                inputId="seg-confirmar"
+                formControlName="passwordConfirmar"
+                [toggleMask]="true"
+                [feedback]="false"
+                fluid
+                [invalid]="confirmarControl.invalid && confirmarControl.touched"
+              />
+              @if (confirmarControl.invalid && confirmarControl.touched) {
+                <small class="field__error">
+                  @if (confirmarControl.hasError('required')) {
+                    Debes confirmar la contraseña.
+                  } @else if (confirmarControl.hasError('notMatching')) {
+                    Las contraseñas no coinciden.
+                  }
+                </small>
+              }
+            </div>
+          </div>
+        </div>
+
+        <p-divider />
+
+        <div class="seg-actions">
+          <p-button
+            type="submit"
+            label="Actualizar contraseña"
+            icon="pi pi-check"
+            [loading]="isSaving()"
+            [disabled]="form.invalid || isSaving()"
+          />
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -15,4 +15,7 @@ export const API_ENDPOINTS = {
     uploadImage: '/seguridad/usuario/cargar-imagen/',
     deleteImage: '/seguridad/usuario/eliminar-imagen/',
   },
+  seguridad: {
+    cambiarClave: '/seguridad/usuario/cambio-clave/',
+  },
 };
