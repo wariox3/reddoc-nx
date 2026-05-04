@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, output, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
@@ -28,8 +28,8 @@ export class PerfilFormComponent implements OnInit {
 
   readonly form = this.fb.group({
     nombre_corto: [''],
-    celular: [''],
-    numero_identificacion: [''],
+    celular: ['', Validators.required],
+    numero_identificacion: ['', Validators.required],
     email: [{ value: '', disabled: true }],
   });
 

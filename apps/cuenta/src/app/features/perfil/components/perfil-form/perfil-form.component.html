@@ -24,7 +24,9 @@
 
       <div class="pf-grid">
         <div class="field">
-          <label for="pf-celular" class="field__label">Celular</label>
+          <label for="pf-celular" class="field__label">
+            Celular <span class="field__req">*</span>
+          </label>
           <input
             pInputText
             id="pf-celular"
@@ -32,10 +34,15 @@
             placeholder="+57 300 000 0000"
             fluid
           />
+          @if (celularControl.invalid && celularControl.touched) {
+            <small class="field__error">Este campo es obligatorio</small>
+          }
         </div>
 
         <div class="field">
-          <label for="pf-id" class="field__label">Número de identificación</label>
+          <label for="pf-id" class="field__label">
+            Número de identificación <span class="field__req">*</span>
+          </label>
           <input
             pInputText
             id="pf-id"
@@ -43,6 +50,9 @@
             placeholder="12345678"
             fluid
           />
+          @if (identificacionControl.invalid && identificacionControl.touched) {
+            <small class="field__error">Este campo es obligatorio</small>
+          }
         </div>
       </div>
     </div>
@@ -73,7 +83,7 @@
         label="Guardar cambios"
         icon="pi pi-check"
         [loading]="isSaving()"
-        [disabled]="isPristine() || isSaving()"
+        [disabled]="isPristine() || isSaving() || form.invalid"
       />
     </div>
   </form>
