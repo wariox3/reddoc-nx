@@ -36,15 +36,22 @@
 
 <!-- Template de navegación compartido entre sidebar y drawer -->
 <ng-template #navTpl let-inDrawer>
-  @for (item of navItems; track item.path) {
-    <a
-      class="workspace-nav__item"
-      [routerLink]="item.path"
-      routerLinkActive="workspace-nav__item--active"
-      (click)="inDrawer && drawerVisible.set(false)"
-    >
-      <i class="workspace-nav__icon {{ item.icon }}"></i>
-      <span class="workspace-nav__label">{{ item.label }}</span>
-    </a>
+  @for (item of navItems; track item.label) {
+    @if (item.externalUrl) {
+      <a class="workspace-nav__item" [href]="item.externalUrl" target="_blank" rel="noopener">
+        <i class="workspace-nav__icon {{ item.icon }}"></i>
+        <span class="workspace-nav__label">{{ item.label }}</span>
+      </a>
+    } @else {
+      <a
+        class="workspace-nav__item"
+        [routerLink]="item.path"
+        routerLinkActive="workspace-nav__item--active"
+        (click)="inDrawer && drawerVisible.set(false)"
+      >
+        <i class="workspace-nav__icon {{ item.icon }}"></i>
+        <span class="workspace-nav__label">{{ item.label }}</span>
+      </a>
+    }
   }
 </ng-template>

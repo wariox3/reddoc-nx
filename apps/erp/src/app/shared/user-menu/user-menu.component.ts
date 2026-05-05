@@ -2,6 +2,7 @@ import { Component, ViewChild, computed, inject } from '@angular/core';
 import { AvatarModule } from 'primeng/avatar';
 import { Menu, MenuModule } from 'primeng/menu';
 import { MenuItem } from 'primeng/api';
+import { ENVIRONMENT } from '@reddoc/core';
 import { AuthService } from '../../features/auth/services/auth.service';
 
 @Component({
@@ -13,6 +14,7 @@ import { AuthService } from '../../features/auth/services/auth.service';
 })
 export class UserMenuComponent {
   private readonly authService = inject(AuthService);
+  private readonly env = inject(ENVIRONMENT);
 
   @ViewChild('menu') menu!: Menu;
 
@@ -36,6 +38,12 @@ export class UserMenuComponent {
   readonly email = computed(() => this.authService.currentUser()?.email ?? '');
 
   readonly items: MenuItem[] = [
+    {
+      label: 'Gestionar cuenta',
+      icon: 'pi pi-user',
+      url: this.env.cuentaUrl,
+      target: '_blank',
+    },
     {
       label: 'Cerrar sesión',
       icon: 'pi pi-sign-out',

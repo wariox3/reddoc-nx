@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 export interface ReddocEnvironment {
   apiUrl: string;
   turnstileSiteKey: string;
+  cuentaUrl?: string;
 }
 
 export interface RoutePaths {
