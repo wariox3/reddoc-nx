@@ -9,6 +9,9 @@ export type {
   LoginRequest,
   AuthResponse,
   ResendVerificationRequest,
+  RegisterRequest,
+  RegisteredUser,
+  RegisterResponse,
 } from './lib/models/auth.model';
 export { BaseHttpService, buildHttpParams } from './lib/services/base-http.service';
 export type { ParamValue } from './lib/services/base-http.service';

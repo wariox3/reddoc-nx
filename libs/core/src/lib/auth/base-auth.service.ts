@@ -1,11 +1,12 @@
 import { computed, inject, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, catchError, of, tap } from 'rxjs';
+import { Observable, catchError, of, switchMap, tap } from 'rxjs';
 import {
-  AuthResponse,
   BaseUsuario,
   LoginRequest,
+  RegisterRequest,
+  RegisterResponse,
   ResendVerificationRequest,
 } from '../models/auth.model';
 import { ENVIRONMENT } from '../tokens';
@@ -13,6 +14,7 @@ import { TokenRefreshService } from '../services/token-refresh.service';
 
 export interface AuthApiEndpoints {
   login: string;
+  register: string;
   logout: string;
   refresh: string;
   me: string;
@@ -35,16 +37,10 @@ export abstract class BaseAuthService<TUser extends BaseUsuario> {
   readonly currentUser = this._currentUser.asReadonly();
   readonly isAuthenticated = computed(() => !!this._currentUser());
 
-  login(credentials: LoginRequest): Observable<AuthResponse<TUser>> {
+  login(credentials: LoginRequest): Observable<TUser | null> {
     return this.http
-      .post<
-        AuthResponse<TUser>
-      >(`${this.environment.apiUrl}${this.apiEndpoints.login}`, credentials)
-      .pipe(
-        tap((response) => {
-          this._currentUser.set(response.user);
-        }),
-      );
+      .post(`${this.environment.apiUrl}${this.apiEndpoints.login}`, credentials)
+      .pipe(switchMap(() => this.me()));
   }
 
   me(): Observable<TUser | null> {
@@ -89,6 +85,13 @@ export abstract class BaseAuthService<TUser extends BaseUsuario> {
   resendVerification(data: ResendVerificationRequest): Observable<void> {
     return this.http.post<void>(
       `${this.environment.apiUrl}${this.apiEndpoints.resendVerification}`,
+      data,
+    );
+  }
+
+  register(data: RegisterRequest): Observable<RegisterResponse> {
+    return this.http.post<RegisterResponse>(
+      `${this.environment.apiUrl}${this.apiEndpoints.register}`,
       data,
     );
   }
