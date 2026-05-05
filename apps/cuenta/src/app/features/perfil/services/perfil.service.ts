@@ -11,9 +11,23 @@ export class PerfilService extends BaseHttpService {
   private readonly authService = inject(AuthService);
 
   private readonly localImage = signal<string | null>(null);
+  private readonly uploadTimestamp = signal<number | null>(null);
+
+  private withBuster(url: string | null | undefined): string | null {
+    if (!url) return null;
+    const ts = this.uploadTimestamp();
+    return ts ? `${url}?t=${ts}` : url;
+  }
 
   readonly profileImage = computed(
-    () => this.localImage() ?? this.authService.currentUser()?.imagen_thumbnail ?? null,
+    () => this.localImage() ?? this.withBuster(this.authService.currentUser()?.imagen_thumbnail),
+  );
+
+  readonly fullProfileImage = computed(
+    () =>
+      this.localImage() ??
+      this.withBuster(this.authService.currentUser()?.imagen) ??
+      this.profileImage(),
   );
 
   updatePerfil(data: UpdatePerfilRequest): Observable<unknown> {
@@ -28,7 +42,10 @@ export class PerfilService extends BaseHttpService {
     form.append('foto', blob, 'foto.jpg');
     return this.post<void>(API_ENDPOINTS.perfil.foto, form).pipe(
       switchMap(() => this.authService.me()),
-      tap(() => this.localImage.set(null)),
+      tap(() => {
+        this.localImage.set(null);
+        this.uploadTimestamp.set(Date.now());
+      }),
       map(() => void 0),
     );
   }

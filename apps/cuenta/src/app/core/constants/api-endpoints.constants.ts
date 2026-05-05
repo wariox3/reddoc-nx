@@ -12,8 +12,7 @@ export const API_ENDPOINTS = {
   },
   perfil: {
     update: '/seguridad/usuario/', // PATCH /:id/
-    uploadImage: '/seguridad/usuario/cargar-imagen/',
-    deleteImage: '/seguridad/usuario/eliminar-imagen/',
+    foto: '/seguridad/usuario/foto/',
   },
   seguridad: {
     cambiarClave: '/seguridad/usuario/cambiar-clave/',

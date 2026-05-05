@@ -4,7 +4,11 @@
   (click)="toggle($event)"
   [attr.aria-label]="'Menú de usuario, ' + displayName()"
 >
-  <p-avatar [label]="initials()" shape="circle" styleClass="user-menu__avatar" />
+  @if (avatarImage()) {
+    <p-avatar [image]="avatarImage()!" shape="circle" styleClass="user-menu__avatar" />
+  } @else {
+    <p-avatar [label]="initials()" shape="circle" styleClass="user-menu__avatar" />
+  }
 </button>
 
 <p-menu #menu [popup]="true" [model]="items" appendTo="body">

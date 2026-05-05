@@ -3,6 +3,7 @@ import { AvatarModule } from 'primeng/avatar';
 import { Menu, MenuModule } from 'primeng/menu';
 import { MenuItem } from 'primeng/api';
 import { AuthService } from '../../features/auth/services/auth.service';
+import { PerfilService } from '../../features/perfil/services/perfil.service';
 
 @Component({
   selector: 'app-user-menu',
@@ -13,6 +14,7 @@ import { AuthService } from '../../features/auth/services/auth.service';
 })
 export class UserMenuComponent {
   private readonly authService = inject(AuthService);
+  private readonly perfilService = inject(PerfilService);
 
   @ViewChild('menu') menu!: Menu;
 
@@ -23,7 +25,7 @@ export class UserMenuComponent {
     return name ? name[0].toUpperCase() : user.email.charAt(0).toUpperCase();
   });
 
-  readonly avatarImage = computed(() => this.authService.currentUser()?.imagen_thumbnail ?? null);
+  readonly avatarImage = this.perfilService.profileImage;
 
   readonly displayName = computed(() => {
     const user = this.authService.currentUser();

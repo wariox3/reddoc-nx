@@ -28,8 +28,7 @@ export class PerfilComponent {
   private readonly messageService = inject(MessageService);
 
   readonly user = this.authService.currentUser;
-  readonly profileImage = this.perfilService.profileImage;
-  readonly fullImage = computed(() => this.user()?.imagen ?? this.profileImage());
+  readonly fullImage = this.perfilService.fullProfileImage;
   readonly imageDialogVisible = signal(false);
   readonly uploading = signal(false);
 
