@@ -13,6 +13,7 @@ jobs:
     outputs:
       landing: ${{ steps.check.outputs.landing }}
       erp: ${{ steps.check.outputs.erp }}
+      cuenta: ${{ steps.check.outputs.cuenta }}
 
     steps:
       - name: Checkout
@@ -38,6 +39,7 @@ jobs:
           AFFECTED=$(npx nx show projects --affected --type=app 2>/dev/null || echo "")
           echo "landing=$(echo "$AFFECTED" | grep -q "^landing$" && echo true || echo false)" >> $GITHUB_OUTPUT
           echo "erp=$(echo "$AFFECTED" | grep -q "^erp$" && echo true || echo false)" >> $GITHUB_OUTPUT
+          echo "cuenta=$(echo "$AFFECTED" | grep -q "^cuenta$" && echo true || echo false)" >> $GITHUB_OUTPUT
 
   deploy-landing:
     needs: check-affected
@@ -171,6 +173,75 @@ jobs:
           rsync -avz --delete \
             -e "ssh -i ~/.ssh/deploy_key" \
             dist/apps/erp/browser/ \
+            ${{ env.DEPLOY_USER }}@${{ env.DEPLOY_HOST }}:${{ env.DEPLOY_PATH }}/
+
+      - name: Cleanup SSH key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
+
+  deploy-cuenta:
+    needs: check-affected
+    if: needs.check-affected.outputs.cuenta == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Build (staging)
+        if: github.ref == 'refs/heads/dev'
+        run: npx nx build cuenta --configuration=staging
+
+      - name: Build (prod)
+        if: github.ref == 'refs/heads/main'
+        run: npx nx build cuenta --configuration=production
+
+      - name: Set deploy variables (dev)
+        if: github.ref == 'refs/heads/dev'
+        run: |
+          echo "DEPLOY_HOST=${{ secrets.DEV_HOST }}" >> $GITHUB_ENV
+          echo "DEPLOY_USER=${{ secrets.DEV_SSH_USER }}" >> $GITHUB_ENV
+          echo "DEPLOY_PATH=${{ secrets.CUENTA_DEV_DEPLOY_PATH }}" >> $GITHUB_ENV
+
+      - name: Set deploy variables (prod)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          echo "DEPLOY_HOST=${{ secrets.PROD_HOST }}" >> $GITHUB_ENV
+          echo "DEPLOY_USER=${{ secrets.PROD_SSH_USER }}" >> $GITHUB_ENV
+          echo "DEPLOY_PATH=${{ secrets.CUENTA_PROD_DEPLOY_PATH }}" >> $GITHUB_ENV
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          if [ "${{ github.ref }}" = "refs/heads/dev" ]; then
+            echo "${{ secrets.DEV_SSH_KEY }}" > ~/.ssh/deploy_key
+          else
+            echo "${{ secrets.PROD_SSH_KEY }}" > ~/.ssh/deploy_key
+          fi
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ env.DEPLOY_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Validate deploy path
+        run: |
+          if [[ "$DEPLOY_PATH" == "/var/www/html" || "$DEPLOY_PATH" == "/var/www" || -z "$DEPLOY_PATH" ]]; then
+            echo "ERROR: DEPLOY_PATH '$DEPLOY_PATH' is too broad."
+            exit 1
+          fi
+
+      - name: Deploy via rsync
+        run: |
+          rsync -avz --delete \
+            -e "ssh -i ~/.ssh/deploy_key" \
+            dist/apps/cuenta/browser/ \
             ${{ env.DEPLOY_USER }}@${{ env.DEPLOY_HOST }}:${{ env.DEPLOY_PATH }}/
 
       - name: Cleanup SSH key
