@@ -23,7 +23,6 @@ import { TurnstileComponent } from '../../../../shared/turnstile/turnstile.compo
     TurnstileComponent,
   ],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.scss',
 })
 export class LoginComponent {
   private readonly fb = inject(FormBuilder);

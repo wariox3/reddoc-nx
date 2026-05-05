@@ -31,7 +31,7 @@
             "output": "/"
           }
         ],
-        "styles": ["apps/erp/src/styles.scss"]
+        "styles": ["apps/erp/src/tailwind.css", "apps/erp/src/styles.scss"]
       },
       "configurations": {
         "staging": {
