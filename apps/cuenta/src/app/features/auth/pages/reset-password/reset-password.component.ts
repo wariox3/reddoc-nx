@@ -35,7 +35,6 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
     TurnstileComponent,
   ],
   templateUrl: './reset-password.component.html',
-  styleUrl: './reset-password.component.scss',
 })
 export class ResetPasswordComponent implements OnInit {
   private readonly fb = inject(FormBuilder);

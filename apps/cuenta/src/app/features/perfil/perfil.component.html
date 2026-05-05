@@ -1,40 +1,75 @@
-<div class="perfil-page">
+<div class="p-8 max-[576px]:px-4 max-[576px]:py-5">
   <!-- Page header -->
-  <div class="page-header">
-    <div class="page-header__text">
-      <h1 class="page-header__title">Mi perfil</h1>
-      <p class="page-header__subtitle">Consulta y actualiza tu información personal</p>
-    </div>
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-brand-text tracking-tight m-0 mb-1">Mi perfil</h1>
+    <p class="text-sm text-brand-muted m-0">Consulta y actualiza tu información personal</p>
   </div>
 
-  <div class="perfil-layout">
+  <div class="flex flex-col gap-5 animate-fade-up">
     <!-- Profile header card -->
-    <div class="profile-header-card">
-      <div class="profile-header-card__banner"></div>
+    <div class="bg-brand-surface border border-[rgba(20,48,73,0.1)] rounded-xl overflow-hidden">
+      <!-- Banner -->
+      <div
+        class="h-24 max-[576px]:h-[72px] relative"
+        style="
+          background: linear-gradient(
+            135deg,
+            rgba(20, 48, 73, 0.15) 0%,
+            rgba(119, 170, 215, 0.12) 50%,
+            rgba(20, 48, 73, 0.08) 100%
+          );
+        "
+      >
+        <div
+          class="absolute inset-0"
+          style="
+            background-image:
+              linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+            background-size: 32px 32px;
+          "
+        ></div>
+      </div>
 
-      <div class="profile-header-card__info">
-        <!-- Avatar with actions -->
-        <div class="avatar-group">
-          <div class="avatar-ring">
-            @if (profileImage()) {
-              <img [src]="profileImage()!" alt="Foto de perfil" class="avatar-ring__img" />
+      <!-- Info row: avatar + details -->
+      <div
+        class="flex items-end gap-5 px-6 pb-6 -mt-8 max-[576px]:flex-col max-[576px]:items-center max-[576px]:px-5 max-[576px]:pb-5 max-[576px]:text-center"
+      >
+        <!-- Avatar group -->
+        <div class="avatar-group relative shrink-0">
+          <div
+            class="avatar-ring w-[72px] h-[72px] rounded-full border-[3px] border-brand-surface shadow-[0_2px_10px_rgba(20,48,73,0.18)] overflow-hidden bg-brand-navy"
+          >
+            @if (uploading()) {
+              <div
+                class="avatar-ring__uploading w-full h-full flex items-center justify-center text-white text-2xl opacity-80"
+              >
+                <i class="pi pi-spin pi-spinner"></i>
+              </div>
+            } @else if (fullImage()) {
+              <img
+                [src]="fullImage()!"
+                alt="Foto de perfil"
+                class="avatar-ring__img w-full h-full object-cover block"
+              />
             } @else {
               <p-avatar [label]="initials()" shape="circle" styleClass="avatar-ring__placeholder" />
             }
           </div>
 
-          <div class="avatar-controls">
+          <div class="avatar-controls absolute bottom-[-4px] right-[-4px] flex flex-col gap-[3px]">
             <button
-              class="avatar-ctrl avatar-ctrl--edit"
+              class="avatar-ctrl avatar-ctrl--edit w-6 h-6 rounded-full border-none bg-brand-navy text-white cursor-pointer flex items-center justify-center text-[0.65rem] shadow-[0_1px_4px_rgba(0,0,0,0.2)] transition-[opacity,transform] duration-150 hover:opacity-85 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
               pTooltip="Cambiar foto"
               tooltipPosition="top"
+              [disabled]="uploading()"
               (click)="openImageCropper()"
             >
               <i class="pi pi-camera"></i>
             </button>
-            @if (profileImage()) {
+            @if (fullImage()) {
               <button
-                class="avatar-ctrl avatar-ctrl--delete"
+                class="avatar-ctrl avatar-ctrl--delete w-6 h-6 rounded-full border-none bg-red-500 text-white cursor-pointer flex items-center justify-center text-[0.65rem] shadow-[0_1px_4px_rgba(0,0,0,0.2)] transition-[opacity,transform] duration-150 hover:opacity-85 hover:scale-110"
                 pTooltip="Eliminar foto"
                 tooltipPosition="top"
                 (click)="deleteImage()"
@@ -46,10 +81,14 @@
         </div>
 
         <!-- User info -->
-        <div class="profile-header-card__details">
-          <p class="profile-header-card__name">{{ displayName() }}</p>
-          <p class="profile-header-card__email">
-            <i class="pi pi-envelope"></i>
+        <div class="flex-1 min-w-0 pt-9 max-[576px]:pt-0">
+          <p class="text-xl font-bold text-brand-text tracking-tight m-0 mb-1 truncate">
+            {{ displayName() }}
+          </p>
+          <p
+            class="inline-flex items-center gap-[0.4rem] text-[0.85rem] text-brand-muted m-0 truncate"
+          >
+            <i class="pi pi-envelope text-[0.8rem] text-brand-muted-2 shrink-0"></i>
             {{ user()?.email }}
           </p>
         </div>

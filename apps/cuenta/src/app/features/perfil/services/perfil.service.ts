@@ -1,6 +1,6 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject, signal, computed } from '@angular/core';
 import { Observable } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, tap, map } from 'rxjs/operators';
 import { BaseHttpService } from '@reddoc/core';
 import { AuthService } from '../../auth/services/auth.service';
 import { API_ENDPOINTS } from '../../../core/constants/api-endpoints.constants';
@@ -10,7 +10,11 @@ import { UpdatePerfilRequest } from '../models/perfil.model';
 export class PerfilService extends BaseHttpService {
   private readonly authService = inject(AuthService);
 
-  readonly profileImage = signal<string | null>(null);
+  private readonly localImage = signal<string | null>(null);
+
+  readonly profileImage = computed(
+    () => this.localImage() ?? this.authService.currentUser()?.imagen_thumbnail ?? null,
+  );
 
   updatePerfil(data: UpdatePerfilRequest): Observable<unknown> {
     const userId = this.authService.currentUser()?.id;
@@ -19,11 +23,17 @@ export class PerfilService extends BaseHttpService {
     );
   }
 
-  uploadImage(base64: string): void {
-    this.profileImage.set(base64);
+  uploadFoto(blob: Blob): Observable<void> {
+    const form = new FormData();
+    form.append('foto', blob, 'foto.jpg');
+    return this.post<void>(API_ENDPOINTS.perfil.foto, form).pipe(
+      switchMap(() => this.authService.me()),
+      tap(() => this.localImage.set(null)),
+      map(() => void 0),
+    );
   }
 
-  deleteImage(): void {
-    this.profileImage.set(null);
+  setLocalPreview(url: string | null): void {
+    this.localImage.set(url);
   }
 }

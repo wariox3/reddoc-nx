@@ -38,7 +38,6 @@ function passwordsMatchValidator(): ValidatorFn {
   standalone: true,
   imports: [ReactiveFormsModule, ButtonModule, PasswordModule, DividerModule],
   templateUrl: './seguridad.component.html',
-  styleUrl: './seguridad.component.scss',
 })
 export class SeguridadComponent {
   private readonly fb = inject(FormBuilder);

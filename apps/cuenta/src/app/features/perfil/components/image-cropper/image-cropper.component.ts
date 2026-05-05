@@ -8,10 +8,9 @@ import { MessageModule } from 'primeng/message';
   standalone: true,
   imports: [NgxCropper, ButtonModule, MessageModule],
   templateUrl: './image-cropper.component.html',
-  styleUrl: './image-cropper.component.scss',
 })
 export class ImageCropperComponent {
-  readonly imageSaved = output<string>();
+  readonly imageSaved = output<Blob>();
   readonly cancelled = output<void>();
 
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
@@ -21,6 +20,7 @@ export class ImageCropperComponent {
   readonly tooBig = signal(false);
 
   private readonly MAX_BYTES = 2 * 1024 * 1024;
+  private croppedBlob: Blob | null = null;
 
   selectFile(): void {
     this.fileInput.nativeElement.click();
@@ -29,6 +29,7 @@ export class ImageCropperComponent {
   onFileChange(event: Event): void {
     this.imageChangedEvent.set(event);
     this.croppedImage.set(null);
+    this.croppedBlob = null;
     this.tooBig.set(false);
   }
 
@@ -36,6 +37,7 @@ export class ImageCropperComponent {
     if (event.blob) {
       this.tooBig.set(event.blob.size >= this.MAX_BYTES);
       if (!this.tooBig()) {
+        this.croppedBlob = event.blob;
         const reader = new FileReader();
         reader.onloadend = () => this.croppedImage.set(reader.result as string);
         reader.readAsDataURL(event.blob);
@@ -46,9 +48,8 @@ export class ImageCropperComponent {
   }
 
   save(): void {
-    const img = this.croppedImage();
-    if (img) {
-      this.imageSaved.emit(img);
+    if (this.croppedBlob) {
+      this.imageSaved.emit(this.croppedBlob);
     }
   }
 

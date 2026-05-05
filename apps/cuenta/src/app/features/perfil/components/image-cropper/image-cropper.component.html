@@ -1,16 +1,12 @@
-<div class="cropper-wrap">
-  <input
-    #fileInput
-    type="file"
-    accept="image/*"
-    class="hidden-input"
-    (change)="onFileChange($event)"
-  />
+<div class="flex flex-col gap-5">
+  <input #fileInput type="file" accept="image/*" class="hidden" (change)="onFileChange($event)" />
 
   @if (!imageChangedEvent()) {
-    <div class="cropper-empty">
-      <i class="pi pi-image cropper-empty__icon"></i>
-      <p class="cropper-empty__text">Selecciona una imagen para recortar</p>
+    <div
+      class="flex flex-col items-center justify-center gap-3 py-12 px-4 border-2 border-dashed border-[rgba(20,48,73,0.1)] rounded-xl bg-brand-bg"
+    >
+      <i class="pi pi-image text-[2.5rem] text-brand-muted-2"></i>
+      <p class="text-sm text-brand-muted m-0">Selecciona una imagen para recortar</p>
       <p-button label="Elegir imagen" icon="pi pi-upload" (onClick)="selectFile()" />
     </div>
   } @else {
@@ -21,7 +17,7 @@
       [roundCropper]="true"
       format="jpeg"
       (imageCropped)="onImageCropped($event)"
-      class="cropper-canvas"
+      class="max-h-80 rounded-lg overflow-hidden"
     />
   }
 
@@ -33,9 +29,8 @@
     />
   }
 
-  <div class="cropper-actions">
+  <div class="flex justify-end gap-3 pt-2 border-t border-[rgba(20,48,73,0.1)]">
     <p-button label="Cancelar" severity="secondary" [outlined]="true" (onClick)="cancel()" />
-    @if (imageChangedEvent() && !imageChangedEvent()) {}
     @if (!imageChangedEvent()) {
       <span></span>
     } @else {

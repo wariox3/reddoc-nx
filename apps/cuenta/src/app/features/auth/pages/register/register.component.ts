@@ -42,7 +42,6 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
     TurnstileComponent,
   ],
   templateUrl: './register.component.html',
-  styleUrl: './register.component.scss',
 })
 export class RegisterComponent {
   private readonly fb = inject(FormBuilder);

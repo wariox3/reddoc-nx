@@ -21,7 +21,6 @@ import { ImageCropperComponent } from './components/image-cropper/image-cropper.
     ImageCropperComponent,
   ],
   templateUrl: './perfil.component.html',
-  styleUrl: './perfil.component.scss',
 })
 export class PerfilComponent {
   private readonly authService = inject(AuthService);
@@ -30,7 +29,9 @@ export class PerfilComponent {
 
   readonly user = this.authService.currentUser;
   readonly profileImage = this.perfilService.profileImage;
+  readonly fullImage = computed(() => this.user()?.imagen ?? this.profileImage());
   readonly imageDialogVisible = signal(false);
+  readonly uploading = signal(false);
 
   readonly initials = computed(() => {
     const u = this.user();
@@ -50,7 +51,7 @@ export class PerfilComponent {
   }
 
   deleteImage(): void {
-    this.perfilService.deleteImage();
+    this.perfilService.setLocalPreview(null);
     this.messageService.add({ severity: 'success', summary: 'Foto eliminada', life: 3000 });
   }
 
@@ -58,9 +59,27 @@ export class PerfilComponent {
     this.messageService.add({ severity: 'success', summary: 'Perfil actualizado', life: 3000 });
   }
 
-  onImageSaved(base64: string): void {
-    this.perfilService.uploadImage(base64);
+  onImageSaved(blob: Blob): void {
     this.imageDialogVisible.set(false);
-    this.messageService.add({ severity: 'success', summary: 'Foto actualizada', life: 3000 });
+    const previewUrl = URL.createObjectURL(blob);
+    this.perfilService.setLocalPreview(previewUrl);
+    this.uploading.set(true);
+    this.perfilService.uploadFoto(blob).subscribe({
+      next: () => {
+        URL.revokeObjectURL(previewUrl);
+        this.uploading.set(false);
+        this.messageService.add({ severity: 'success', summary: 'Foto actualizada', life: 3000 });
+      },
+      error: () => {
+        URL.revokeObjectURL(previewUrl);
+        this.perfilService.setLocalPreview(null);
+        this.uploading.set(false);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error al subir la foto',
+          life: 4000,
+        });
+      },
+    });
   }
 }

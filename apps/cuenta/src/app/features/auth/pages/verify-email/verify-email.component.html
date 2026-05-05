@@ -1,34 +1,36 @@
-<div class="verify-layout">
-  <div class="verify-card">
+<div class="min-h-screen flex items-center justify-center bg-brand-bg p-8">
+  <div class="w-full max-w-[440px] animate-fade-up">
     @if (isLoading()) {
-      <div class="verify-state">
-        <div class="verify-state__icon verify-state__icon--loading">
-          <i class="pi pi-spin pi-spinner"></i>
-        </div>
-        <h2 class="verify-state__title">Verificando tu cuenta...</h2>
-        <p class="verify-state__desc">Por favor espera un momento.</p>
+      <div class="flex flex-col items-center text-center gap-4">
+        <i class="pi pi-spin pi-spinner text-[3.5rem] text-brand-muted"></i>
+        <h2 class="text-2xl font-extrabold text-brand-text m-0">Verificando tu cuenta...</h2>
+        <p class="text-sm text-brand-muted m-0">Por favor espera un momento.</p>
       </div>
     } @else if (verified()) {
-      <div class="verify-state">
-        <div class="verify-state__icon verify-state__icon--success">
-          <i class="pi pi-check-circle"></i>
-        </div>
-        <h2 class="verify-state__title">¡Cuenta verificada!</h2>
-        <p class="verify-state__desc">
+      <div class="flex flex-col items-center text-center gap-4">
+        <i class="pi pi-check-circle text-[3.5rem] text-green-500"></i>
+        <h2 class="text-2xl font-extrabold text-brand-text m-0">¡Cuenta verificada!</h2>
+        <p class="text-sm text-brand-muted m-0 max-w-[320px]">
           Tu cuenta fue verificada correctamente. Ya puedes iniciar sesión.
         </p>
-        <a routerLink="/auth/login" class="verify-state__action">Ir al login</a>
+        <a
+          routerLink="/auth/login"
+          class="text-sm font-semibold text-brand-blue no-underline mt-2 hover:opacity-75"
+        >
+          Ir al login
+        </a>
       </div>
     } @else {
-      <div class="verify-state">
-        <div class="verify-state__icon verify-state__icon--error">
-          <i class="pi pi-times-circle"></i>
-        </div>
-        <h2 class="verify-state__title">Error al verificar</h2>
-        <p class="verify-state__desc">{{ errorMessage() }}</p>
-        <a routerLink="/auth/resend-verification" class="verify-state__action"
-          >Reenviar verificación</a
+      <div class="flex flex-col items-center text-center gap-4">
+        <i class="pi pi-times-circle text-[3.5rem] text-red-500"></i>
+        <h2 class="text-2xl font-extrabold text-brand-text m-0">Error al verificar</h2>
+        <p class="text-sm text-brand-muted m-0 max-w-[320px]">{{ errorMessage() }}</p>
+        <a
+          routerLink="/auth/resend-verification"
+          class="text-sm font-semibold text-brand-blue no-underline mt-2 hover:opacity-75"
         >
+          Reenviar verificación
+        </a>
       </div>
     }
   </div>

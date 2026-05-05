@@ -21,7 +21,6 @@ import { TurnstileComponent } from '../../../../shared/turnstile/turnstile.compo
     TurnstileComponent,
   ],
   templateUrl: './forgot-password.component.html',
-  styleUrl: './forgot-password.component.scss',
 })
 export class ForgotPasswordComponent {
   private readonly fb = inject(FormBuilder);

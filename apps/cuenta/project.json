@@ -31,7 +31,7 @@
             "output": "/"
           }
         ],
-        "styles": ["apps/cuenta/src/styles.scss"]
+        "styles": ["apps/cuenta/src/tailwind.css", "apps/cuenta/src/styles.scss"]
       },
       "configurations": {
         "staging": {

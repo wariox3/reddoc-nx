@@ -61,6 +61,22 @@ body {
   align-self: flex-end;
 }
 
+// ─── PrimeNG global overrides ─────────────────────────────────────────────────
+
+.p-divider {
+  margin: 0.5rem 0 !important;
+}
+
+.avatar-ring__placeholder {
+  width: 100% !important;
+  height: 100% !important;
+  background: var(--brand-navy) !important;
+  color: var(--brand-white) !important;
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+  border-radius: 0 !important;
+}
+
 .form-panel__back {
   display: inline-flex;
   align-items: center;

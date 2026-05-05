@@ -12,7 +12,6 @@ import { ToastService, extractErrorMessage } from '@reddoc/core';
   standalone: true,
   imports: [ReactiveFormsModule, ButtonModule, InputTextModule, DividerModule],
   templateUrl: './perfil-form.component.html',
-  styleUrl: './perfil-form.component.scss',
 })
 export class PerfilFormComponent implements OnInit {
   readonly saved = output<void>();

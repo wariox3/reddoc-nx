@@ -23,6 +23,8 @@ export class UserMenuComponent {
     return name ? name[0].toUpperCase() : user.email.charAt(0).toUpperCase();
   });
 
+  readonly avatarImage = computed(() => this.authService.currentUser()?.imagen_thumbnail ?? null);
+
   readonly displayName = computed(() => {
     const user = this.authService.currentUser();
     if (!user) return '';

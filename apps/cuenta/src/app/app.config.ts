@@ -89,7 +89,10 @@ export const appConfig: ApplicationConfig = {
     providePrimeNG({
       theme: {
         preset: ReddocPreset,
-        options: { darkModeSelector: '.dark-mode' },
+        options: {
+          darkModeSelector: '.dark-mode',
+          cssLayer: { name: 'primeng', order: 'theme, base, primeng, utilities' },
+        },
       },
     }),
     MessageService,

@@ -20,7 +20,6 @@ import { TurnstileComponent } from '../../../../shared/turnstile/turnstile.compo
     TurnstileComponent,
   ],
   templateUrl: './resend-verification.component.html',
-  styleUrl: './resend-verification.component.scss',
 })
 export class ResendVerificationComponent implements OnInit, OnDestroy {
   private readonly fb = inject(FormBuilder);

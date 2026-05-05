@@ -1,23 +1,31 @@
-<header class="app-header">
-  <div class="app-header__brand">
-    <button class="app-header__hamburger" (click)="toggleDrawer()" aria-label="Abrir menú">
-      <i class="pi pi-bars"></i>
+<header
+  class="sticky top-0 z-50 h-14 bg-white/85 backdrop-blur-md border-b border-[rgba(20,48,73,0.08)] flex items-center justify-between px-6"
+>
+  <div class="flex items-center gap-2">
+    <button
+      class="md:hidden flex items-center justify-center w-8 h-8 border-none bg-transparent rounded-md text-brand-muted cursor-pointer transition-[background,color] duration-[120ms] hover:bg-[rgba(20,48,73,0.06)] hover:text-brand-text"
+      (click)="toggleDrawer()"
+      aria-label="Abrir menú"
+    >
+      <i class="pi pi-bars text-base"></i>
     </button>
-    <img src="/logos/reddoc.svg" alt="RedDoc" class="app-header__logo" />
+    <img src="/logos/reddoc.svg" alt="RedDoc" class="h-6 w-auto object-contain block" />
   </div>
-  <div class="app-header__actions">
+  <div class="flex items-center gap-3">
     <app-user-menu />
   </div>
 </header>
 
-<div class="workspace-body">
-  <aside class="workspace-sidebar">
-    <nav class="workspace-nav">
+<div class="flex flex-1 min-h-0">
+  <aside
+    class="hidden md:block w-60 shrink-0 bg-white border-r border-[rgba(20,48,73,0.08)] py-5 px-3 overflow-y-auto"
+  >
+    <nav class="flex flex-col gap-[0.15rem]">
       <ng-container *ngTemplateOutlet="navTpl" />
     </nav>
   </aside>
 
-  <main class="workspace-main">
+  <main class="flex-1 min-w-0 overflow-y-auto p-7 max-[768px]:p-5">
     <router-outlet />
   </main>
 </div>
@@ -29,7 +37,7 @@
   position="left"
   header="Menú"
 >
-  <nav class="workspace-nav">
+  <nav class="flex flex-col gap-[0.15rem]">
     <ng-container *ngTemplateOutlet="navTpl; context: { $implicit: true }" />
   </nav>
 </p-drawer>
@@ -38,13 +46,17 @@
 <ng-template #navTpl let-inDrawer>
   @for (item of navItems; track item.path) {
     <a
-      class="workspace-nav__item"
+      class="group flex items-center gap-[0.7rem] px-3 py-[0.55rem] rounded-lg text-[0.85rem] font-medium text-brand-muted no-underline transition-[background,color] duration-[120ms] hover:bg-[rgba(20,48,73,0.04)] hover:text-brand-text [&.is-active]:bg-[rgba(20,48,73,0.08)] [&.is-active]:text-brand-navy [&.is-active]:font-semibold"
       [routerLink]="item.path"
-      routerLinkActive="workspace-nav__item--active"
+      routerLinkActive="is-active"
       (click)="inDrawer && drawerVisible.set(false)"
     >
-      <i class="workspace-nav__icon {{ item.icon }}"></i>
-      <span class="workspace-nav__label">{{ item.label }}</span>
+      <i
+        class="{{
+          item.icon
+        }} text-[0.95rem] text-brand-muted-2 transition-colors group-[.is-active]:text-brand-blue"
+      ></i>
+      <span class="leading-none">{{ item.label }}</span>
     </a>
   }
 </ng-template>

@@ -1,42 +1,80 @@
-<div class="seg-page">
+<div class="p-8 max-[576px]:px-4 max-[576px]:py-5">
   <!-- Page header -->
-  <div class="page-header">
-    <h1 class="page-header__title">Seguridad</h1>
-    <p class="page-header__subtitle">Gestiona la seguridad de tu cuenta</p>
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-brand-text tracking-tight m-0 mb-1">Seguridad</h1>
+    <p class="text-sm text-brand-muted m-0">Gestiona la seguridad de tu cuenta</p>
   </div>
 
-  <div class="seg-layout">
+  <div class="flex flex-col gap-5 animate-fade-up">
     <!-- Security status card -->
-    <div class="seg-status-card">
-      <div class="seg-status-card__banner"></div>
+    <div class="bg-brand-surface border border-[rgba(20,48,73,0.1)] rounded-xl overflow-hidden">
+      <!-- Banner -->
+      <div
+        class="h-24 max-[576px]:h-[72px] relative"
+        style="
+          background: linear-gradient(
+            135deg,
+            rgba(20, 48, 73, 0.2) 0%,
+            rgba(30, 90, 150, 0.14) 50%,
+            rgba(20, 48, 73, 0.1) 100%
+          );
+        "
+      >
+        <div
+          class="absolute inset-0"
+          style="
+            background-image: repeating-linear-gradient(
+              -45deg,
+              rgba(255, 255, 255, 0.04) 0px,
+              rgba(255, 255, 255, 0.04) 1px,
+              transparent 1px,
+              transparent 18px
+            );
+          "
+        ></div>
+      </div>
 
-      <div class="seg-status-card__info">
-        <div class="seg-badge">
+      <!-- Info row -->
+      <div
+        class="flex items-end gap-5 px-6 pb-6 -mt-7 max-[576px]:flex-col max-[576px]:items-center max-[576px]:px-5 max-[576px]:pb-5 max-[576px]:text-center"
+      >
+        <!-- Shield badge -->
+        <div
+          class="w-16 h-16 rounded-[14px] border-[3px] border-brand-surface shadow-[0_2px_10px_rgba(20,48,73,0.2)] bg-brand-navy text-white flex items-center justify-center text-2xl shrink-0"
+        >
           <i class="pi pi-shield"></i>
         </div>
 
-        <div class="seg-status-card__details">
-          <p class="seg-status-card__name">Tu cuenta está protegida</p>
-          <p class="seg-status-card__sub">
+        <!-- Details -->
+        <div class="flex-1 min-w-0 pt-8 max-[576px]:pt-0">
+          <p class="text-lg font-bold text-brand-text tracking-tight m-0 mb-1">
+            Tu cuenta está protegida
+          </p>
+          <p class="text-[0.8125rem] text-brand-muted m-0">
             Actualiza tu contraseña periódicamente para mantener tu cuenta segura
           </p>
         </div>
       </div>
     </div>
 
-    <!-- Change password card -->
-    <div class="seg-form-card">
+    <!-- Change password form card -->
+    <div class="bg-brand-surface border border-[rgba(20,48,73,0.1)] rounded-xl p-8 max-[576px]:p-5">
       <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
-        <div class="seg-section">
-          <h2 class="seg-section__title">
-            <i class="pi pi-lock"></i>
+        <div class="flex flex-col gap-5 py-1">
+          <h2
+            class="flex items-center gap-2 text-[0.9375rem] font-bold text-brand-text tracking-tight m-0"
+          >
+            <i class="pi pi-lock text-brand-navy"></i>
             Cambiar contraseña
           </h2>
 
           <!-- Contraseña actual -->
-          <div class="field field--half">
-            <label for="seg-actual" class="field__label">
-              Contraseña actual <span class="field__req">*</span>
+          <div class="flex flex-col gap-1.5 max-w-[50%] max-[576px]:max-w-full">
+            <label
+              for="seg-actual"
+              class="text-[0.855rem] font-semibold text-brand-text tracking-tight"
+            >
+              Contraseña actual <span class="text-red-500 ml-px">*</span>
             </label>
             <p-password
               inputId="seg-actual"
@@ -47,17 +85,22 @@
               [invalid]="actualControl.invalid && actualControl.touched"
             />
             @if (actualControl.invalid && actualControl.touched) {
-              <small class="field__error">La contraseña actual es obligatoria.</small>
+              <small class="text-[0.78rem] text-red-500"
+                >La contraseña actual es obligatoria.</small
+              >
             }
           </div>
 
           <p-divider />
 
-          <div class="seg-grid">
+          <div class="grid grid-cols-2 gap-5 max-[576px]:grid-cols-1">
             <!-- Nueva contraseña -->
-            <div class="field">
-              <label for="seg-nueva" class="field__label">
-                Nueva contraseña <span class="field__req">*</span>
+            <div class="flex flex-col gap-1.5">
+              <label
+                for="seg-nueva"
+                class="text-[0.855rem] font-semibold text-brand-text tracking-tight"
+              >
+                Nueva contraseña <span class="text-red-500 ml-px">*</span>
               </label>
               <p-password
                 inputId="seg-nueva"
@@ -72,7 +115,7 @@
                 [invalid]="nuevaControl.invalid && nuevaControl.touched"
               />
               @if (nuevaControl.invalid && nuevaControl.touched) {
-                <small class="field__error">
+                <small class="text-[0.78rem] text-red-500">
                   @if (nuevaControl.hasError('required')) {
                     La nueva contraseña es obligatoria.
                   } @else if (nuevaControl.hasError('minlength')) {
@@ -83,9 +126,12 @@
             </div>
 
             <!-- Confirmar contraseña -->
-            <div class="field">
-              <label for="seg-confirmar" class="field__label">
-                Confirmar contraseña <span class="field__req">*</span>
+            <div class="flex flex-col gap-1.5">
+              <label
+                for="seg-confirmar"
+                class="text-[0.855rem] font-semibold text-brand-text tracking-tight"
+              >
+                Confirmar contraseña <span class="text-red-500 ml-px">*</span>
               </label>
               <p-password
                 inputId="seg-confirmar"
@@ -96,7 +142,7 @@
                 [invalid]="confirmarControl.invalid && confirmarControl.touched"
               />
               @if (confirmarControl.invalid && confirmarControl.touched) {
-                <small class="field__error">
+                <small class="text-[0.78rem] text-red-500">
                   @if (confirmarControl.hasError('required')) {
                     Debes confirmar la contraseña.
                   } @else if (confirmarControl.hasError('notMatching')) {
@@ -110,7 +156,7 @@
 
         <p-divider />
 
-        <div class="seg-actions">
+        <div class="flex justify-end pt-6 mt-1">
           <p-button
             type="submit"
             label="Actualizar contraseña"

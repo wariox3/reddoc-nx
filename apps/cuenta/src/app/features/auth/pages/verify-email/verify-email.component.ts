@@ -9,7 +9,6 @@ import { extractErrorMessage } from '@reddoc/core';
   standalone: true,
   imports: [RouterLink],
   templateUrl: './verify-email.component.html',
-  styleUrl: './verify-email.component.scss',
 })
 export class VerifyEmailComponent implements OnInit {
   private readonly authService = inject(AuthService);
