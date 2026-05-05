@@ -5,6 +5,8 @@ export interface Usuario extends BaseUsuario {
   numero_identificacion: string | null;
   celular: string | null;
   idioma: string;
-  is_active: boolean;
+  imagen: string | null;
+  imagen_thumbnail: string | null;
+  is_verified: boolean;
   fecha_creacion: string;
 }

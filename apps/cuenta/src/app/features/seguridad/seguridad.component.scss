@@ -193,6 +193,14 @@
   flex-direction: column;
   gap: 0.4rem;
 
+  &--half {
+    max-width: 50%;
+
+    @media (max-width: 576px) {
+      max-width: 100%;
+    }
+  }
+
   &__label {
     font-size: 0.855rem;
     font-weight: 600;
