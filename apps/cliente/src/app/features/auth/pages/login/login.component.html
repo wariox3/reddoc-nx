@@ -1,0 +1,166 @@
+<div class="grid grid-cols-1 min-[820px]:grid-cols-2 min-h-screen">
+  <div
+    class="relative bg-brand-navy overflow-hidden flex items-stretch max-[820px]:hidden"
+    aria-hidden="true"
+  >
+    <div class="absolute inset-0 pointer-events-none">
+      <div
+        class="absolute rounded-full blur-[80px] w-[400px] h-[400px] top-[-100px] right-[-100px] opacity-20 animate-drift1"
+        style="background: radial-gradient(circle, var(--color-brand-blue), transparent 70%)"
+      ></div>
+      <div
+        class="absolute rounded-full blur-[80px] w-[350px] h-[350px] bottom-[-80px] left-[-80px] opacity-[0.12] animate-drift2"
+        style="background: radial-gradient(circle, var(--color-brand-blue), transparent 70%)"
+      ></div>
+      <div
+        class="absolute inset-0"
+        style="
+          background-image:
+            linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+          background-size: 48px 48px;
+          mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, black 20%, transparent 100%);
+          -webkit-mask-image: radial-gradient(
+            ellipse 90% 80% at 50% 50%,
+            black 20%,
+            transparent 100%
+          );
+        "
+      ></div>
+    </div>
+
+    <div class="relative z-1 p-12 flex flex-col justify-between w-full h-full">
+      <div class="flex items-start"></div>
+      <div class="mt-auto">
+        <div class="mb-10">
+          <h1
+            class="text-[clamp(2rem,3.5vw,2.75rem)] font-extrabold tracking-tight leading-[1.1] text-white m-0 mb-5"
+          >
+            Cliente<br />RedDoc
+          </h1>
+          <p class="text-[0.95rem] leading-[1.75] text-white/60 m-0 max-w-[340px]">
+            Portal de clientes RedDoc — gestiona tu cuenta y servicios.
+          </p>
+        </div>
+        <div class="flex flex-col gap-2.5">
+          <div class="inline-flex items-center gap-2 text-[0.8rem] font-medium text-white/65">
+            <i class="pi pi-file-edit text-[0.85em] text-brand-blue"></i> Documentos y contratos
+          </div>
+          <div class="inline-flex items-center gap-2 text-[0.8rem] font-medium text-white/65">
+            <i class="pi pi-history text-[0.85em] text-brand-blue"></i> Historial de transacciones
+          </div>
+          <div class="inline-flex items-center gap-2 text-[0.8rem] font-medium text-white/65">
+            <i class="pi pi-shield text-[0.85em] text-brand-blue"></i> Acceso seguro
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-brand-bg flex items-center justify-center p-8">
+    <div class="w-full max-w-[400px] flex flex-col animate-fade-up">
+      <img src="/logos/reddoc.svg" alt="RedDoc" class="form-panel__logo-img" />
+      <a href="/" class="form-panel__back"> <i class="pi pi-arrow-left"></i> Volver al inicio </a>
+      <div class="mb-8">
+        <h2
+          class="text-[1.75rem] font-extrabold tracking-tight text-brand-text m-0 mb-2 leading-[1.15]"
+        >
+          Iniciar sesión
+        </h2>
+        <p class="text-sm text-brand-muted m-0">Ingresa tus credenciales para continuar</p>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="flex flex-col gap-5">
+        @if (errorMessage()) {
+          <p-message severity="error" [text]="errorMessage()!" styleClass="w-full" />
+        }
+
+        <div class="flex flex-col gap-1.5">
+          <label for="email" class="text-[0.855rem] font-semibold text-brand-text tracking-tight">
+            Correo electrónico
+          </label>
+          <input
+            pInputText
+            id="email"
+            type="email"
+            formControlName="email"
+            fluid
+            placeholder="usuario@ejemplo.com"
+            [invalid]="emailControl.invalid && emailControl.touched"
+            aria-describedby="email-error"
+          />
+          @if (emailControl.invalid && emailControl.touched) {
+            <small id="email-error" class="text-[0.78rem] text-red-500">
+              @if (emailControl.hasError('required')) {
+                El correo es requerido.
+              } @else if (emailControl.hasError('email')) {
+                Ingresa un correo válido.
+              }
+            </small>
+          }
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label
+            for="password"
+            class="text-[0.855rem] font-semibold text-brand-text tracking-tight"
+          >
+            Contraseña
+          </label>
+          <p-password
+            inputId="password"
+            formControlName="password"
+            fluid
+            [feedback]="false"
+            [toggleMask]="true"
+            placeholder="••••••••"
+            [invalid]="passwordControl.invalid && passwordControl.touched"
+            aria-describedby="password-error"
+          />
+          @if (passwordControl.invalid && passwordControl.touched) {
+            <small id="password-error" class="text-[0.78rem] text-red-500">
+              @if (passwordControl.hasError('required')) {
+                La contraseña es requerida.
+              } @else if (passwordControl.hasError('minlength')) {
+                Mínimo 6 caracteres.
+              }
+            </small>
+          }
+        </div>
+
+        <div class="flex justify-end -mt-2">
+          <a
+            routerLink="/auth/forgot-password"
+            class="text-[0.8rem] font-medium text-brand-muted no-underline transition-colors hover:text-brand-text"
+          >
+            ¿Olvidaste tu contraseña?
+          </a>
+        </div>
+
+        <app-turnstile
+          (verified)="captchaToken.set($event)"
+          (expired)="captchaToken.set(null)"
+          (errored)="captchaToken.set(null)"
+        />
+
+        <p-button
+          type="submit"
+          label="Ingresar"
+          fluid
+          [loading]="isLoading()"
+          [disabled]="isLoading() || !captchaToken()"
+        />
+
+        <p class="text-center text-[0.8rem] text-brand-muted m-0">
+          ¿No tienes cuenta?
+          <a
+            routerLink="/auth/register"
+            class="font-semibold text-brand-blue no-underline transition-opacity hover:opacity-75"
+          >
+            Regístrate
+          </a>
+        </p>
+      </form>
+    </div>
+  </div>
+</div>

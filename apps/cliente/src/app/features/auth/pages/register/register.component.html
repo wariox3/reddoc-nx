@@ -1,0 +1,298 @@
+<div class="grid grid-cols-1 min-[820px]:grid-cols-2 min-h-screen">
+  <div
+    class="relative bg-brand-navy overflow-hidden flex items-stretch max-[820px]:hidden"
+    aria-hidden="true"
+  >
+    <div class="absolute inset-0 pointer-events-none">
+      <div
+        class="absolute rounded-full blur-[80px] w-[400px] h-[400px] top-[-100px] right-[-100px] opacity-20 animate-drift1"
+        style="background: radial-gradient(circle, var(--color-brand-blue), transparent 70%)"
+      ></div>
+      <div
+        class="absolute rounded-full blur-[80px] w-[350px] h-[350px] bottom-[-80px] left-[-80px] opacity-[0.12] animate-drift2"
+        style="background: radial-gradient(circle, var(--color-brand-blue), transparent 70%)"
+      ></div>
+      <div
+        class="absolute inset-0"
+        style="
+          background-image:
+            linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+          background-size: 48px 48px;
+          mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, black 20%, transparent 100%);
+          -webkit-mask-image: radial-gradient(
+            ellipse 90% 80% at 50% 50%,
+            black 20%,
+            transparent 100%
+          );
+        "
+      ></div>
+    </div>
+
+    <div class="relative z-1 p-12 flex flex-col justify-between w-full h-full">
+      <div class="flex items-start"></div>
+      <div class="mt-auto">
+        <div class="mb-10">
+          <h1
+            class="text-[clamp(2rem,3.5vw,2.75rem)] font-extrabold tracking-tight leading-[1.1] text-white m-0 mb-5"
+          >
+            Cliente<br />RedDoc
+          </h1>
+          <p class="text-[0.95rem] leading-[1.75] text-white/60 m-0 max-w-[340px]">
+            Portal de clientes RedDoc — gestiona tu cuenta y servicios.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-brand-bg flex items-center justify-center p-8">
+    <div class="w-full max-w-[420px] flex flex-col py-8 animate-fade-up">
+      <img src="/logos/reddoc.svg" alt="RedDoc" class="form-panel__logo-img" />
+      <a routerLink="/auth/login" class="form-panel__back">
+        <i class="pi pi-arrow-left"></i>
+        Volver al login
+      </a>
+
+      @if (!submitted()) {
+        <div class="mb-6">
+          <h2
+            class="text-[1.75rem] font-extrabold tracking-tight text-brand-text m-0 mb-2 leading-[1.15]"
+          >
+            Crear cuenta
+          </h2>
+          <p class="text-sm text-brand-muted m-0">Completa tus datos para registrarte.</p>
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="flex flex-col gap-4">
+          @if (errorMessage()) {
+            <p-message severity="error" [text]="errorMessage()!" styleClass="w-full" />
+          }
+
+          <div class="flex flex-col gap-1.5">
+            <label
+              for="nombre_corto"
+              class="text-[0.855rem] font-semibold text-brand-text tracking-tight"
+            >
+              Nombre
+            </label>
+            <input
+              pInputText
+              id="nombre_corto"
+              type="text"
+              formControlName="nombre_corto"
+              fluid
+              placeholder="Juan Pérez"
+              [invalid]="nombreCortoControl.invalid && nombreCortoControl.touched"
+            />
+            @if (nombreCortoControl.invalid && nombreCortoControl.touched) {
+              <small class="text-[0.78rem] text-red-500">
+                @if (nombreCortoControl.hasError('required')) {
+                  El nombre es requerido.
+                } @else if (nombreCortoControl.hasError('minlength')) {
+                  Mínimo 2 caracteres.
+                }
+              </small>
+            }
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <label for="email" class="text-[0.855rem] font-semibold text-brand-text tracking-tight">
+              Correo electrónico
+            </label>
+            <input
+              pInputText
+              id="email"
+              type="email"
+              formControlName="email"
+              fluid
+              placeholder="usuario@ejemplo.com"
+              [invalid]="emailControl.invalid && emailControl.touched"
+            />
+            @if (emailControl.invalid && emailControl.touched) {
+              <small class="text-[0.78rem] text-red-500">
+                @if (emailControl.hasError('required')) {
+                  El correo es requerido.
+                } @else if (emailControl.hasError('email')) {
+                  Ingresa un correo válido.
+                }
+              </small>
+            }
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <label
+              for="password"
+              class="text-[0.855rem] font-semibold text-brand-text tracking-tight"
+            >
+              Contraseña
+            </label>
+            <p-password
+              inputId="password"
+              formControlName="password"
+              fluid
+              [toggleMask]="true"
+              placeholder="••••••••"
+              [invalid]="passwordControl.invalid && passwordControl.touched"
+            />
+            @if (passwordControl.invalid && passwordControl.touched) {
+              <small class="text-[0.78rem] text-red-500">
+                @if (passwordControl.hasError('required')) {
+                  La contraseña es requerida.
+                } @else if (passwordControl.hasError('minlength')) {
+                  Mínimo 8 caracteres.
+                }
+              </small>
+            }
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <label
+              for="confirmPassword"
+              class="text-[0.855rem] font-semibold text-brand-text tracking-tight"
+            >
+              Confirmar contraseña
+            </label>
+            <p-password
+              inputId="confirmPassword"
+              formControlName="confirmPassword"
+              fluid
+              [toggleMask]="true"
+              [feedback]="false"
+              placeholder="••••••••"
+              [invalid]="
+                (confirmPasswordControl.invalid && confirmPasswordControl.touched) ||
+                (form.hasError('passwordMismatch') && confirmPasswordControl.touched)
+              "
+            />
+            @if (
+              (confirmPasswordControl.invalid && confirmPasswordControl.touched) ||
+              (form.hasError('passwordMismatch') && confirmPasswordControl.touched)
+            ) {
+              <small class="text-[0.78rem] text-red-500">
+                @if (confirmPasswordControl.hasError('required')) {
+                  Debes confirmar la contraseña.
+                } @else if (form.hasError('passwordMismatch')) {
+                  Las contraseñas no coinciden.
+                }
+              </small>
+            }
+          </div>
+
+          <div class="flex flex-row items-center gap-2.5">
+            <p-checkbox
+              [binary]="true"
+              [ngModel]="termsAccepted()"
+              [ngModelOptions]="{ standalone: true }"
+              (ngModelChange)="termsAccepted.set($event)"
+              inputId="terms"
+            />
+            <label for="terms" class="text-[0.82rem] text-brand-muted cursor-pointer">
+              Acepto los
+              <a (click)="termsDialogVisible.set(true); $event.preventDefault()" href="#">
+                términos y condiciones
+              </a>
+            </label>
+          </div>
+
+          <app-turnstile
+            (verified)="captchaToken.set($event)"
+            (expired)="captchaToken.set(null)"
+            (errored)="captchaToken.set(null)"
+          />
+
+          <p-button
+            type="submit"
+            label="Crear cuenta"
+            fluid
+            [loading]="isLoading()"
+            [disabled]="isLoading() || !captchaToken() || !termsAccepted()"
+          />
+
+          <p class="text-center text-[0.8rem] text-brand-muted m-0">
+            ¿Ya tienes cuenta?
+            <a
+              routerLink="/auth/login"
+              class="font-semibold text-brand-blue no-underline transition-opacity hover:opacity-75"
+            >
+              Inicia sesión
+            </a>
+          </p>
+        </form>
+      } @else {
+        <div class="flex flex-col items-center text-center gap-4 py-8">
+          <i class="pi pi-check-circle text-5xl text-brand-blue"></i>
+          <h2 class="text-2xl font-extrabold text-brand-text m-0">¡Registro exitoso!</h2>
+          <p class="text-sm text-brand-muted m-0 max-w-[320px]">
+            Tu cuenta fue creada correctamente. Recibirás un correo de confirmación para verificar
+            tu cuenta.
+          </p>
+          <a
+            routerLink="/auth/login"
+            class="text-sm font-semibold text-brand-blue no-underline hover:opacity-75"
+          >
+            Ir al login ahora
+          </a>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
+<p-dialog
+  header="Términos y condiciones"
+  [(visible)]="termsDialogVisible"
+  [modal]="true"
+  [dismissableMask]="true"
+  [style]="{ width: '680px', maxHeight: '80vh' }"
+  [breakpoints]="{ '768px': '95vw' }"
+>
+  <div class="terms-content">
+    <section>
+      <h3>1. Aceptación de términos</h3>
+      <p>
+        Al acceder y utilizar el portal de clientes de RedDoc (en adelante "RedDoc" o "la
+        plataforma"), usted acepta cumplir con los presentes términos y condiciones de uso.
+      </p>
+    </section>
+
+    <section>
+      <h3>2. Descripción del servicio</h3>
+      <p>RedDoc Cliente es un portal que permite:</p>
+      <ul>
+        <li>Consulta de documentos y contratos.</li>
+        <li>Historial de transacciones y estados de cuenta.</li>
+        <li>Gestión de solicitudes y requerimientos.</li>
+        <li>Comunicación con el equipo de soporte.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h3>3. Cuentas y credenciales</h3>
+      <p>
+        Usted es responsable de mantener la confidencialidad de sus credenciales de acceso y de toda
+        la actividad que ocurra bajo su cuenta.
+      </p>
+    </section>
+
+    <section>
+      <h3>4. Uso aceptable</h3>
+      <p>
+        El usuario se compromete a utilizar la plataforma únicamente para los fines previstos y a no
+        interferir con su funcionamiento normal.
+      </p>
+    </section>
+
+    <section>
+      <h3>5. Ley aplicable</h3>
+      <p>Los presentes términos se rigen por las leyes de la República de Colombia.</p>
+    </section>
+
+    <section>
+      <h3>6. Contacto</h3>
+      <ul>
+        <li><strong>Correo:</strong> soporte&#64;reddoc.com.co</li>
+      </ul>
+    </section>
+  </div>
+</p-dialog>
