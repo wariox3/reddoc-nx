@@ -8,7 +8,7 @@ import { MessageModule } from 'primeng/message';
 import { AuthService } from '../../services/auth.service';
 import { extractErrorMessage } from '@reddoc/core';
 import { ROUTE_PATHS } from '../../../../core/constants/route-paths.constants';
-import { TurnstileComponent } from '../../../../shared/turnstile/turnstile.component';
+import { TurnstileComponent } from '@reddoc/ui';
 
 @Component({
   selector: 'app-login',

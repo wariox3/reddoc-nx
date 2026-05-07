@@ -7,7 +7,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { AuthService } from '../../services/auth.service';
 import { extractErrorMessage } from '@reddoc/core';
-import { TurnstileComponent } from '../../../../shared/turnstile/turnstile.component';
+import { TurnstileComponent } from '@reddoc/ui';
 
 @Component({
   selector: 'app-forgot-password',

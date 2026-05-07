@@ -13,7 +13,7 @@ import { MessageModule } from 'primeng/message';
 import { AuthService } from '../../services/auth.service';
 import { ROUTE_PATHS } from '../../../../core/constants/route-paths.constants';
 import { extractErrorMessage } from '@reddoc/core';
-import { TurnstileComponent } from '../../../../shared/turnstile/turnstile.component';
+import { TurnstileComponent } from '@reddoc/ui';
 
 function passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
   const password = control.get('password')?.value;

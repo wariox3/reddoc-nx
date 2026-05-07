@@ -16,7 +16,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { DialogModule } from 'primeng/dialog';
 import { AuthService } from '../../services/auth.service';
 import { extractErrorMessage } from '@reddoc/core';
-import { TurnstileComponent } from '../../../../shared/turnstile/turnstile.component';
+import { TurnstileComponent } from '@reddoc/ui';
 
 function passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
   const password = control.get('password')?.value;

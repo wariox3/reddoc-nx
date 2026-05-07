@@ -1,39 +1,36 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, filter, take } from 'rxjs';
+import { Injectable, signal } from '@angular/core';
+import { Observable, Subject, take } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class TokenRefreshService {
-  private isRefreshing = false;
-  private readonly refreshSubject$ = new BehaviorSubject<boolean | null>(null);
+  private readonly _refreshing = signal(false);
+  private readonly refreshResult$ = new Subject<boolean>();
+
+  readonly isRefreshing = this._refreshing.asReadonly();
 
   get refreshing(): boolean {
-    return this.isRefreshing;
+    return this._refreshing();
   }
 
   startRefresh(): void {
-    this.isRefreshing = true;
-    this.refreshSubject$.next(null);
+    this._refreshing.set(true);
   }
 
   completeRefresh(): void {
-    this.isRefreshing = false;
-    this.refreshSubject$.next(true);
+    this._refreshing.set(false);
+    this.refreshResult$.next(true);
   }
 
   failRefresh(): void {
-    this.isRefreshing = false;
-    this.refreshSubject$.next(false);
+    this._refreshing.set(false);
+    this.refreshResult$.next(false);
   }
 
   waitForRefresh(): Observable<boolean> {
-    return this.refreshSubject$.pipe(
-      filter((result): result is boolean => result !== null),
-      take(1),
-    );
+    return this.refreshResult$.pipe(take(1));
   }
 
   reset(): void {
-    this.isRefreshing = false;
-    this.refreshSubject$.next(null);
+    this._refreshing.set(false);
   }
 }

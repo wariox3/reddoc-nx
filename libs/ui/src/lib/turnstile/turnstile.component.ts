@@ -24,7 +24,7 @@ declare global {
 const TURNSTILE_SCRIPT_URL = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
 
 @Component({
-  selector: 'app-turnstile',
+  selector: 'lib-turnstile',
   standalone: true,
   template: `<div #turnstileContainer></div>`,
   styles: `

@@ -137,7 +137,7 @@
           </a>
         </div>
 
-        <app-turnstile
+        <lib-turnstile
           (verified)="captchaToken.set($event)"
           (expired)="captchaToken.set(null)"
           (errored)="captchaToken.set(null)"

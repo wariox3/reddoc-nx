@@ -1,1 +1,1 @@
-export * from './lib/ui/ui';
+export { TurnstileComponent } from './lib/turnstile/turnstile.component';
