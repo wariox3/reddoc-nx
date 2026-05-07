@@ -27,7 +27,7 @@
           },
           {
             "glob": "logos/**",
-            "input": "apps/landing/public",
+            "input": "libs/ui/src/assets",
             "output": "/"
           }
         ],

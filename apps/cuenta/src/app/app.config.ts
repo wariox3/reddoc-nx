@@ -14,6 +14,7 @@ import { firstValueFrom } from 'rxjs';
 import { appRoutes } from './app.routes';
 import { environment } from '../environments/environment';
 import {
+  APP_BRANDING,
   ENVIRONMENT,
   ROUTE_PATHS_TOKEN,
   AUTH_SERVICE,
@@ -47,9 +48,20 @@ export const appConfig: ApplicationConfig = {
     {
       provide: ROUTE_PATHS_TOKEN,
       useValue: {
-        auth: { login: ROUTE_PATHS.auth.login },
+        auth: {
+          login: ROUTE_PATHS.auth.login,
+          register: ROUTE_PATHS.auth.register,
+          forgotPassword: ROUTE_PATHS.auth.forgotPassword,
+          resetPassword: ROUTE_PATHS.auth.resetPassword,
+          resendVerification: ROUTE_PATHS.auth.resendVerification,
+          verifyEmail: ROUTE_PATHS.auth.verifyEmail,
+        },
         dashboard: { root: ROUTE_PATHS.perfil.root },
       },
+    },
+    {
+      provide: APP_BRANDING,
+      useValue: { appName: 'Cuenta', tagline: 'Gestiona tu cuenta y perfil.' },
     },
     { provide: AUTH_SERVICE, useExisting: AuthService },
     {

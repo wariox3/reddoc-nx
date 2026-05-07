@@ -5,13 +5,11 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { MessageModule } from 'primeng/message';
-import { AuthService } from '../../services/auth.service';
-import { extractErrorMessage } from '@reddoc/core';
-import { ROUTE_PATHS } from '../../../../core/constants/route-paths.constants';
-import { TurnstileComponent } from '@reddoc/ui';
+import { APP_BRANDING, AUTH_SERVICE, ROUTE_PATHS_TOKEN, extractErrorMessage } from '@reddoc/core';
+import { TurnstileComponent } from '../../turnstile/turnstile.component';
 
 @Component({
-  selector: 'app-login',
+  selector: 'lib-login',
   standalone: true,
   imports: [
     ReactiveFormsModule,
@@ -26,10 +24,16 @@ import { TurnstileComponent } from '@reddoc/ui';
 })
 export class LoginComponent {
   private readonly fb = inject(FormBuilder);
-  private readonly authService = inject(AuthService);
+  private readonly authService = inject(AUTH_SERVICE);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly routes = inject(ROUTE_PATHS_TOKEN);
   private readonly turnstile = viewChild(TurnstileComponent);
+
+  protected readonly branding = inject(APP_BRANDING, { optional: true }) ?? {
+    appName: 'Plataforma',
+    tagline: 'Gestiona tu empresa desde un solo lugar.',
+  };
 
   readonly isLoading = signal(false);
   readonly errorMessage = signal<string | null>(null);
@@ -62,7 +66,9 @@ export class LoginComponent {
           this.turnstile()?.reset();
           const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
           const safeUrl =
-            returnUrl?.startsWith('/') && !returnUrl.startsWith('//') ? returnUrl : '/dashboard';
+            returnUrl?.startsWith('/') && !returnUrl.startsWith('//')
+              ? returnUrl
+              : this.routes.dashboard.root;
           this.router.navigateByUrl(safeUrl);
         },
         error: (err) => {
@@ -70,7 +76,7 @@ export class LoginComponent {
           this.captchaToken.set(null);
 
           if (err.error?.error?.is_verified === false) {
-            this.router.navigate([ROUTE_PATHS.auth.resendVerification], {
+            this.router.navigate([this.routes.auth.resendVerification], {
               queryParams: { email: this.form.getRawValue().email, unverified: true },
             });
             return;

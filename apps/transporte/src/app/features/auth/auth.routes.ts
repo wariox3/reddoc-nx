@@ -1,11 +1,12 @@
 import { Routes } from '@angular/router';
 import { publicGuard } from '@reddoc/core';
+import { LoginComponent } from '@reddoc/ui';
 
 export const AUTH_ROUTES: Routes = [
   {
     path: 'login',
     canActivate: [publicGuard],
-    loadComponent: () => import('./pages/login/login.component').then((m) => m.LoginComponent),
+    component: LoginComponent,
   },
   {
     path: 'forgot-password',

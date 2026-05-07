@@ -36,18 +36,20 @@
           <h1
             class="text-[clamp(2rem,3.5vw,2.75rem)] font-extrabold tracking-tight leading-[1.1] text-white m-0 mb-5"
           >
-            Cliente<br />RedDoc
+            {{ branding.appName }}<br />RedDoc
           </h1>
-          <p class="text-[0.95rem] leading-[1.75] text-white/60 m-0 max-w-[340px]">
-            Portal de clientes RedDoc — gestiona tu cuenta y servicios.
-          </p>
+          @if (branding.tagline) {
+            <p class="text-[0.95rem] leading-[1.75] text-white/60 m-0 max-w-[340px]">
+              {{ branding.tagline }}
+            </p>
+          }
         </div>
         <div class="flex flex-col gap-2.5">
           <div class="inline-flex items-center gap-2 text-[0.8rem] font-medium text-white/65">
-            <i class="pi pi-file-edit text-[0.85em] text-brand-blue"></i> Documentos y contratos
+            <i class="pi pi-chart-bar text-[0.85em] text-brand-blue"></i> Reportes en tiempo real
           </div>
           <div class="inline-flex items-center gap-2 text-[0.8rem] font-medium text-white/65">
-            <i class="pi pi-history text-[0.85em] text-brand-blue"></i> Historial de transacciones
+            <i class="pi pi-users text-[0.85em] text-brand-blue"></i> Gestión de equipos
           </div>
           <div class="inline-flex items-center gap-2 text-[0.8rem] font-medium text-white/65">
             <i class="pi pi-shield text-[0.85em] text-brand-blue"></i> Acceso seguro
