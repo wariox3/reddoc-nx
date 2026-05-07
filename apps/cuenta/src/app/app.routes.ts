@@ -12,7 +12,7 @@ export const appRoutes: Route[] = [
 
   {
     path: '',
-    canActivate: [authGuard], //TODO: agregar guard
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./layouts/workspace-layout/workspace-layout.component').then(
         (m) => m.WorkspaceLayoutComponent,

@@ -1,48 +1,24 @@
 import { Routes } from '@angular/router';
 import { publicGuard } from '@reddoc/core';
-import { LoginComponent } from '@reddoc/ui';
+import {
+  ForgotPasswordComponent,
+  LoginComponent,
+  RegisterComponent,
+  ResendVerificationComponent,
+  ResetPasswordComponent,
+  VerifyEmailComponent,
+} from '@reddoc/ui';
 
 export const AUTH_ROUTES: Routes = [
-  {
-    path: 'login',
-    canActivate: [publicGuard],
-    component: LoginComponent,
-  },
-  {
-    path: 'forgot-password',
-    canActivate: [publicGuard],
-    loadComponent: () =>
-      import('./pages/forgot-password/forgot-password.component').then(
-        (m) => m.ForgotPasswordComponent,
-      ),
-  },
-  {
-    path: 'restablecer-clave',
-    canActivate: [publicGuard],
-    loadComponent: () =>
-      import('./pages/reset-password/reset-password.component').then(
-        (m) => m.ResetPasswordComponent,
-      ),
-  },
-  {
-    path: 'register',
-    canActivate: [publicGuard],
-    loadComponent: () =>
-      import('./pages/register/register.component').then((m) => m.RegisterComponent),
-  },
-  {
-    path: 'verify-email',
-    canActivate: [publicGuard],
-    loadComponent: () =>
-      import('./pages/verify-email/verify-email.component').then((m) => m.VerifyEmailComponent),
-  },
+  { path: 'login', canActivate: [publicGuard], component: LoginComponent },
+  { path: 'forgot-password', canActivate: [publicGuard], component: ForgotPasswordComponent },
+  { path: 'restablecer-clave', canActivate: [publicGuard], component: ResetPasswordComponent },
+  { path: 'register', canActivate: [publicGuard], component: RegisterComponent },
+  { path: 'verify-email', canActivate: [publicGuard], component: VerifyEmailComponent },
   {
     path: 'resend-verification',
     canActivate: [publicGuard],
-    loadComponent: () =>
-      import('./pages/resend-verification/resend-verification.component').then(
-        (m) => m.ResendVerificationComponent,
-      ),
+    component: ResendVerificationComponent,
   },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 ];

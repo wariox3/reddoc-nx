@@ -1,0 +1,101 @@
+<div class="login-layout">
+  <div class="brand-panel" aria-hidden="true">
+    <div class="brand-panel__bg">
+      <div class="brand-panel__orb brand-panel__orb--1"></div>
+      <div class="brand-panel__orb brand-panel__orb--2"></div>
+      <div class="brand-panel__grid"></div>
+    </div>
+    <div class="brand-panel__content">
+      <div class="brand-panel__logo"></div>
+      <div class="brand-panel__bottom">
+        <div class="brand-panel__body">
+          <h1 class="brand-panel__title">{{ branding.appName }}<br />RedDoc</h1>
+          @if (branding.tagline) {
+            <p class="brand-panel__desc">{{ branding.tagline }}</p>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-panel">
+    <div class="form-panel__inner">
+      <img src="/logos/reddoc.svg" alt="RedDoc" class="form-panel__logo-img" />
+      <a routerLink="/auth/login" class="form-panel__back">
+        <i class="pi pi-arrow-left"></i>
+        Volver al login
+      </a>
+
+      @if (isUnverified()) {
+        <p-message
+          severity="warn"
+          text="Tu cuenta aún no ha sido verificada. Reenvía el correo de verificación."
+          styleClass="w-full"
+        />
+      }
+
+      @if (!submitted()) {
+        <div class="form-panel__header">
+          <h2 class="form-panel__title">Reenviar verificación</h2>
+          <p class="form-panel__subtitle">Te enviaremos un nuevo correo de verificación.</p>
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="auth-form">
+          @if (errorMessage()) {
+            <p-message severity="error" [text]="errorMessage()!" styleClass="w-full" />
+          }
+
+          <div class="field">
+            <label for="email" class="field__label">Correo electrónico</label>
+            <input
+              pInputText
+              id="email"
+              type="email"
+              formControlName="email"
+              fluid
+              placeholder="usuario@ejemplo.com"
+              [invalid]="emailControl.invalid && emailControl.touched"
+            />
+            @if (emailControl.invalid && emailControl.touched) {
+              <small class="form-error">
+                @if (emailControl.hasError('required')) {
+                  El correo es requerido.
+                } @else if (emailControl.hasError('email')) {
+                  Ingresa un correo válido.
+                }
+              </small>
+            }
+          </div>
+
+          <lib-turnstile
+            (verified)="captchaToken.set($event)"
+            (expired)="captchaToken.set(null)"
+            (errored)="captchaToken.set(null)"
+          />
+
+          <p-button
+            type="submit"
+            label="Reenviar correo"
+            fluid
+            styleClass="auth-btn"
+            [loading]="isLoading()"
+            [disabled]="isLoading() || !captchaToken()"
+          />
+        </form>
+      } @else {
+        <div class="success-state">
+          <div class="success-state__icon"><i class="pi pi-envelope"></i></div>
+          <h2 class="success-state__title">Correo enviado</h2>
+          <p class="success-state__desc">
+            Revisa tu bandeja de entrada y sigue las instrucciones del correo de verificación.
+          </p>
+          @if (cooldown() > 0) {
+            <p class="success-state__cooldown">Puedes reenviar en {{ cooldown() }}s</p>
+          } @else {
+            <button class="success-state__back" (click)="resendAgain()">Reenviar de nuevo</button>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>
