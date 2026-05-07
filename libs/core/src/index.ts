@@ -17,6 +17,7 @@ export { BaseHttpService, buildHttpParams } from './lib/services/base-http.servi
 export type { ParamValue } from './lib/services/base-http.service';
 export { TokenRefreshService } from './lib/services/token-refresh.service';
 export { ToastService } from './lib/services/toast.service';
+export { ReddocPreset } from './lib/theme/reddoc-preset';
 export { ENVIRONMENT, ROUTE_PATHS_TOKEN, AUTH_SERVICE, AUTH_SKIP_URLS } from './lib/tokens';
 export type { ReddocEnvironment, RoutePaths, AuthServiceContract } from './lib/tokens';
 export { extractErrorMessage, parseApiError } from './lib/utils/error.utils';
