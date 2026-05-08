@@ -32,3 +32,10 @@ export { extractErrorMessage, parseApiError } from './lib/utils/error.utils';
 export type { ApiError, ApiErrorResponse } from './lib/utils/error.utils';
 export { I18nService, provideI18n, SUPPORTED_LANGS, DEFAULT_LANG } from './lib/i18n';
 export type { Lang } from './lib/i18n';
+export {
+  TenantService,
+  tenantGuard,
+  CONTENEDOR_ACCESS_SERVICE,
+  LAST_TENANT_KEY,
+} from './lib/tenant';
+export type { TenantSlug, ContenedorAccess, ContenedorAccessService } from './lib/tenant';

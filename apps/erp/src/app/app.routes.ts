@@ -1,9 +1,10 @@
 import { Route } from '@angular/router';
-import { authGuard } from '@reddoc/core';
+import { authGuard, tenantGuard } from '@reddoc/core';
 import { AUTH_ROUTES } from './features/auth/auth.routes';
+import { rootRedirectGuard } from './core/guards/root-redirect.guard';
 
 export const appRoutes: Route[] = [
-  { path: '', redirectTo: 'auth/login', pathMatch: 'full' },
+  { path: '', pathMatch: 'full', canActivate: [rootRedirectGuard], children: [] },
 
   // Auth — own layout
   {
@@ -11,10 +12,10 @@ export const appRoutes: Route[] = [
     loadChildren: () => AUTH_ROUTES,
   },
 
-  // Shell layout (simple nav, no sidebar)
+  // Shell layout (simple nav, no sidebar) — selección de contenedor
   {
     path: '',
-    canActivate: [],
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./layouts/shell-layout/shell-layout.component').then((m) => m.ShellLayoutComponent),
     children: [
@@ -26,15 +27,16 @@ export const appRoutes: Route[] = [
     ],
   },
 
-  // Workspace layout (sidebar + main)
+  // Workspace layout (sidebar + main) — anidado bajo el tenant slug
   {
-    path: '',
-    canActivate: [authGuard],
+    path: 't/:tenantSlug',
+    canActivate: [authGuard, tenantGuard],
     loadComponent: () =>
       import('./layouts/workspace-layout/workspace-layout.component').then(
         (m) => m.WorkspaceLayoutComponent,
       ),
     children: [
+      { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
       {
         path: 'dashboard',
         loadComponent: () =>
@@ -43,5 +45,5 @@ export const appRoutes: Route[] = [
     ],
   },
 
-  { path: '**', redirectTo: 'auth/login' },
+  { path: '**', redirectTo: '' },
 ];

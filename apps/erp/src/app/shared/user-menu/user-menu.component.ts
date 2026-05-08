@@ -2,7 +2,7 @@ import { Component, ViewChild, computed, effect, inject } from '@angular/core';
 import { AvatarModule } from 'primeng/avatar';
 import { Menu, MenuModule } from 'primeng/menu';
 import { MenuItem } from 'primeng/api';
-import { ENVIRONMENT, I18nService } from '@reddoc/core';
+import { ENVIRONMENT, I18nService, TenantService } from '@reddoc/core';
 import { LanguageToggleComponent } from '@reddoc/ui';
 import { AuthService } from '../../features/auth/services/auth.service';
 import type { AppDict } from '../../i18n';
@@ -17,6 +17,7 @@ import type { AppDict } from '../../i18n';
 export class UserMenuComponent {
   private readonly authService = inject(AuthService);
   private readonly env = inject(ENVIRONMENT);
+  private readonly tenant = inject(TenantService);
   private readonly i18n = inject<I18nService<AppDict>>(I18nService);
 
   protected readonly t = this.i18n.t;
@@ -55,7 +56,10 @@ export class UserMenuComponent {
         {
           label: labels.logout,
           icon: 'pi pi-sign-out',
-          command: () => this.authService.logout(),
+          command: () => {
+            this.tenant.clear();
+            this.authService.logout();
+          },
         },
       ];
     });

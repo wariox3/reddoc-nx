@@ -2,7 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Subject, startWith, switchMap } from 'rxjs';
-import { I18nService } from '@reddoc/core';
+import { I18nService, TenantService } from '@reddoc/core';
 import { AuthService } from '../../../auth/services/auth.service';
 import { Contenedor } from '../../models/contenedor.model';
 import { ContenedorService } from '../../services/contenedor.service';
@@ -21,6 +21,7 @@ export class ContenedoresListComponent {
   private readonly contenedorService = inject(ContenedorService);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly tenant = inject(TenantService);
   private readonly i18n = inject<I18nService<AppDict>>(I18nService);
 
   protected readonly t = this.i18n.t;
@@ -89,7 +90,8 @@ export class ContenedoresListComponent {
   }
 
   enterContenedor(item: Contenedor): void {
-    void item;
-    this.router.navigateByUrl(ROUTE_PATHS.dashboard.root);
+    this.tenant.setAccesos(this.contenedores());
+    this.tenant.setCurrent(item);
+    this.router.navigateByUrl(ROUTE_PATHS.tenant.dashboard(item.schema_name));
   }
 }

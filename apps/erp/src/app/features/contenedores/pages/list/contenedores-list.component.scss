@@ -146,9 +146,9 @@
   gap: 0.4rem;
   height: 34px;
   padding: 0 0.9rem;
-  background: transparent;
-  color: var(--brand-navy);
-  border: 1px solid rgba(20 48 73 / 0.2);
+  background: var(--brand-navy);
+  color: #fff;
+  border: 1px solid var(--brand-navy);
   border-radius: 8px;
   font-size: 0.78rem;
   font-weight: 600;
@@ -158,15 +158,15 @@
   flex-shrink: 0;
   transition:
     background 0.15s ease,
-    border-color 0.15s ease;
+    box-shadow 0.15s ease;
 
   .pi {
     font-size: 0.72em;
   }
 
   &:hover {
-    background: rgba(20 48 73 / 0.04);
-    border-color: rgba(20 48 73 / 0.35);
+    background: #0d2035;
+    box-shadow: 0 3px 10px rgba(20 48 73 / 0.28);
   }
 
   &:active {
