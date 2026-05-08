@@ -1,5 +1,7 @@
 import { Component, ViewChild, computed, effect, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { filter, map, startWith } from 'rxjs';
 import { Menu, MenuModule } from 'primeng/menu';
 import { MenuItem } from 'primeng/api';
 import { ENVIRONMENT, I18nService, TenantService } from '@reddoc/core';
@@ -21,6 +23,15 @@ export class UserMenuComponent {
   private readonly router = inject(Router);
   private readonly i18n = inject<I18nService<AppDict>>(I18nService);
 
+  private readonly currentUrl = toSignal(
+    this.router.events.pipe(
+      filter((e) => e instanceof NavigationEnd),
+      map((e) => (e as NavigationEnd).urlAfterRedirects),
+      startWith(this.router.url),
+    ),
+    { initialValue: this.router.url },
+  );
+
   protected readonly t = this.i18n.t;
 
   @ViewChild('menu') menu!: Menu;
@@ -38,12 +49,17 @@ export class UserMenuComponent {
   constructor() {
     effect(() => {
       const labels = this.t().layout.userMenu;
+      const onContainers = this.currentUrl().startsWith('/contenedores');
       this.items = [
-        {
-          label: labels.myContainers,
-          icon: 'pi pi-th-large',
-          command: () => this.router.navigate(['/contenedores']),
-        },
+        ...(!onContainers
+          ? [
+              {
+                label: labels.myContainers,
+                icon: 'pi pi-th-large',
+                command: () => this.router.navigate(['/contenedores']),
+              },
+            ]
+          : []),
         {
           label: labels.manageAccount,
           icon: 'pi pi-user',
