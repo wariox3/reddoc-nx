@@ -220,3 +220,10 @@
 <p-menu #rowMenu [model]="rowMenuItems" [popup]="true" appendTo="body" styleClass="cl-row-menu" />
 
 <app-contenedores-create-dialog [(visible)]="showCreate" (created)="onContenedorCreated()" />
+
+<app-contenedores-delete-dialog
+  [visible]="showDelete()"
+  (visibleChange)="showDelete.set($event)"
+  [contenedor]="contenedorToDelete()"
+  (deleted)="onContenedorDeleted()"
+/>

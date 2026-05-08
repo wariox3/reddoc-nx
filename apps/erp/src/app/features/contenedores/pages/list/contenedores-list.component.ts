@@ -9,13 +9,14 @@ import { AuthService } from '../../../auth/services/auth.service';
 import { Contenedor } from '../../models/contenedor.model';
 import { ContenedorService } from '../../services/contenedor.service';
 import { ContenedoresCreateDialogComponent } from '../../components/create-dialog/contenedores-create-dialog.component';
+import { ContenedoresDeleteDialogComponent } from '../../components/delete-dialog/contenedores-delete-dialog.component';
 import { ROUTE_PATHS } from '../../../../core/constants/route-paths.constants';
 import type { AppDict } from '../../../../i18n';
 
 @Component({
   selector: 'app-contenedores-list',
   standalone: true,
-  imports: [ContenedoresCreateDialogComponent, MenuModule],
+  imports: [ContenedoresCreateDialogComponent, ContenedoresDeleteDialogComponent, MenuModule],
   templateUrl: './contenedores-list.component.html',
   styleUrl: './contenedores-list.component.scss',
 })
@@ -29,6 +30,8 @@ export class ContenedoresListComponent {
   protected readonly t = this.i18n.t;
 
   readonly showCreate = signal(false);
+  readonly showDelete = signal(false);
+  readonly contenedorToDelete = signal<Contenedor | null>(null);
 
   readonly viewMode = signal<'list' | 'grid'>('list');
 
@@ -124,7 +127,13 @@ export class ContenedoresListComponent {
   }
 
   deleteContenedor(item: Contenedor): void {
-    // TODO: implement delete flow
-    console.log('[contenedores] delete', item);
+    this.contenedorToDelete.set(item);
+    this.showDelete.set(true);
+  }
+
+  onContenedorDeleted(): void {
+    this.showDelete.set(false);
+    this.contenedorToDelete.set(null);
+    this.reload$.next();
   }
 }

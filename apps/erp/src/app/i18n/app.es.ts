@@ -78,5 +78,25 @@ export const es: AppDict = {
         },
       },
     },
+    delete: {
+      title: 'Eliminar contenedor',
+      subtitle: 'Esta acción es permanente y no se puede deshacer.',
+      warning: 'Se eliminarán todos los datos asociados a este contenedor de forma irreversible.',
+      containerLabel: 'Contenedor a eliminar',
+      confirmLabel: 'Para confirmar, escribí el nombre exacto del contenedor',
+      confirmError: 'El nombre no coincide.',
+      submit: 'Eliminar',
+      cancel: 'Cancelar',
+      toasts: {
+        success: {
+          title: 'Contenedor eliminado',
+          desc: 'El contenedor fue eliminado correctamente.',
+        },
+        error: {
+          title: 'Error al eliminar',
+          desc: 'No se pudo eliminar el contenedor. Intentá de nuevo.',
+        },
+      },
+    },
   },
 };

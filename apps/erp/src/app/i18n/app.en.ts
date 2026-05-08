@@ -75,5 +75,19 @@ export const en: AppDict = {
         error: { title: 'Creation error', desc: 'Could not create the container. Try again.' },
       },
     },
+    delete: {
+      title: 'Delete container',
+      subtitle: 'This action is permanent and cannot be undone.',
+      warning: 'All data associated with this container will be permanently deleted.',
+      containerLabel: 'Container to delete',
+      confirmLabel: 'To confirm, type the exact name of the container',
+      confirmError: 'The name does not match.',
+      submit: 'Delete',
+      cancel: 'Cancel',
+      toasts: {
+        success: { title: 'Container deleted', desc: 'The container was deleted successfully.' },
+        error: { title: 'Deletion error', desc: 'Could not delete the container. Try again.' },
+      },
+    },
   },
 };
