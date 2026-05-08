@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BaseAuthService, AuthApiEndpoints } from '@reddoc/core';
-import { Usuario } from '../models/auth.model';
+import { BaseAuthService, AuthApiEndpoints, Usuario } from '@reddoc/core';
 import { API_ENDPOINTS } from '../../../core/constants/api-endpoints.constants';
 import { ROUTE_PATHS } from '../../../core/constants/route-paths.constants';
 

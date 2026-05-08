@@ -6,6 +6,7 @@ export { authInterceptor } from './lib/interceptors/auth.interceptor';
 export { errorInterceptor } from './lib/interceptors/error.interceptor';
 export type {
   BaseUsuario,
+  Usuario,
   LoginRequest,
   AuthResponse,
   ResendVerificationRequest,

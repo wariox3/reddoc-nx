@@ -21,18 +21,16 @@ export class UserMenuComponent {
   readonly initials = computed(() => {
     const user = this.authService.currentUser();
     if (!user) return '?';
-    if (user.name && user.apellidos) {
-      return (user.name[0] + user.apellidos[0]).toUpperCase();
-    }
-    if (user.name) return user.name[0].toUpperCase();
+    const parts = user.nombre_corto?.trim().split(/\s+/) ?? [];
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+    if (parts.length === 1) return parts[0][0].toUpperCase();
     return user.email.charAt(0).toUpperCase();
   });
 
   readonly displayName = computed(() => {
     const user = this.authService.currentUser();
     if (!user) return '';
-    if (user.name && user.apellidos) return `${user.name} ${user.apellidos}`;
-    return user.name || user.email;
+    return user.nombre_corto || user.email;
   });
 
   readonly email = computed(() => this.authService.currentUser()?.email ?? '');
