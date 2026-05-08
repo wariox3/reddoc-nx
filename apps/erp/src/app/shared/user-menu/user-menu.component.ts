@@ -1,4 +1,5 @@
 import { Component, ViewChild, computed, effect, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { AvatarModule } from 'primeng/avatar';
 import { Menu, MenuModule } from 'primeng/menu';
 import { MenuItem } from 'primeng/api';
@@ -18,6 +19,7 @@ export class UserMenuComponent {
   private readonly authService = inject(AuthService);
   private readonly env = inject(ENVIRONMENT);
   private readonly tenant = inject(TenantService);
+  private readonly router = inject(Router);
   private readonly i18n = inject<I18nService<AppDict>>(I18nService);
 
   protected readonly t = this.i18n.t;
@@ -47,6 +49,11 @@ export class UserMenuComponent {
     effect(() => {
       const labels = this.t().layout.userMenu;
       this.items = [
+        {
+          label: labels.myContainers,
+          icon: 'pi pi-th-large',
+          command: () => this.router.navigate(['/contenedores']),
+        },
         {
           label: labels.manageAccount,
           icon: 'pi pi-user',

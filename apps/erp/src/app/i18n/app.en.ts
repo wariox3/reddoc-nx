@@ -12,6 +12,7 @@ export const en: AppDict = {
     },
     userMenu: {
       label: 'User menu',
+      myContainers: 'My containers',
       manageAccount: 'Manage account',
       logout: 'Sign out',
     },

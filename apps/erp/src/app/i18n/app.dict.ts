@@ -10,6 +10,7 @@ export interface AppDict extends AuthTranslationsHost {
     };
     userMenu: {
       label: string;
+      myContainers: string;
       manageAccount: string;
       logout: string;
     };

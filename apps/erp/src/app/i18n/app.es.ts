@@ -12,6 +12,7 @@ export const es: AppDict = {
     },
     userMenu: {
       label: 'Menú de usuario',
+      myContainers: 'Mis contenedores',
       manageAccount: 'Gestionar cuenta',
       logout: 'Cerrar sesión',
     },
