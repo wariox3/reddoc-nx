@@ -5,7 +5,7 @@
 // ─── Page layout ──────────────────────────────────────────────────────────────
 
 .cl {
-  max-width: 1160px;
+  max-width: 1080px;
   margin: 0 auto;
   padding: 2rem 1.5rem 5rem;
 }
@@ -15,7 +15,7 @@
 .cl-panel {
   background: #fff;
   border: 1px solid rgba(20 48 73 / 0.08);
-  border-radius: 16px;
+  border-radius: 14px;
   overflow: hidden;
   animation: slideUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
 
@@ -23,13 +23,16 @@
     display: flex;
     align-items: center;
     gap: 0.875rem;
-    padding: 1.25rem 1.75rem;
+    padding: 1.1rem 1.5rem;
     border-bottom: 1px solid rgba(20 48 73 / 0.07);
-    flex-wrap: wrap;
+  }
 
-    @media (max-width: 640px) {
-      gap: 0.75rem;
-    }
+  &__controls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem 0.4rem;
+    flex-wrap: wrap;
   }
 
   &__header-text {
@@ -37,11 +40,11 @@
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 0.2rem;
+    gap: 0.18rem;
   }
 
   &__title {
-    font-size: 1.05rem;
+    font-size: 1.02rem;
     font-weight: 800;
     letter-spacing: -0.03em;
     color: var(--brand-navy);
@@ -50,14 +53,15 @@
   }
 
   &__sub {
-    font-size: 0.78rem;
+    font-size: 0.74rem;
     color: var(--brand-muted);
     margin: 0;
     letter-spacing: -0.005em;
+    font-variant-numeric: tabular-nums;
   }
 
   &__body {
-    padding: 1.25rem 1.75rem 1.75rem;
+    padding: 0.5rem 0.5rem 0.6rem;
   }
 }
 
@@ -67,13 +71,13 @@
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  width: 220px;
+  flex: 1 1 240px;
+  max-width: 360px;
   height: 32px;
   padding: 0 0.6rem;
   background: rgba(20 48 73 / 0.03);
   border: 1px solid rgba(20 48 73 / 0.14);
   border-radius: 8px;
-  flex-shrink: 0;
   transition:
     border-color 0.15s ease,
     box-shadow 0.15s ease;
@@ -84,9 +88,7 @@
   }
 
   @media (max-width: 640px) {
-    width: 100%;
-    order: 3;
-    flex-basis: 100%;
+    max-width: none;
   }
 }
 
@@ -138,19 +140,72 @@
   }
 }
 
+// ─── View toggle ──────────────────────────────────────────────────────────────
+
+.cl-view-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 32px;
+  padding: 2px;
+  background: rgba(20 48 73 / 0.04);
+  border: 1px solid rgba(20 48 73 / 0.12);
+  border-radius: 8px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.cl-view-toggle__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 26px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: var(--brand-muted);
+  cursor: pointer;
+  appearance: none;
+  padding: 0;
+  transition:
+    background 0.16s ease,
+    color 0.16s ease,
+    box-shadow 0.16s ease;
+
+  .pi {
+    font-size: 0.78rem;
+  }
+
+  &:hover:not(.cl-view-toggle__btn--active) {
+    color: var(--brand-navy);
+  }
+
+  &--active {
+    background: #fff;
+    color: var(--brand-navy);
+    box-shadow: 0 1px 2px rgba(20 48 73 / 0.08);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(20 48 73 / 0.12);
+  }
+}
+
 // ─── New button ───────────────────────────────────────────────────────────────
 
 .cl-btn-new {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  height: 34px;
-  padding: 0 0.9rem;
+  height: 32px;
+  padding: 0 0.85rem;
   background: var(--brand-navy);
   color: #fff;
   border: 1px solid var(--brand-navy);
   border-radius: 8px;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   font-weight: 600;
   letter-spacing: -0.01em;
   cursor: pointer;
@@ -161,7 +216,7 @@
     box-shadow 0.15s ease;
 
   .pi {
-    font-size: 0.72em;
+    font-size: 0.7em;
   }
 
   &:hover {
@@ -178,12 +233,217 @@
   }
 }
 
-// ─── Grid ─────────────────────────────────────────────────────────────────────
+// ─── List ─────────────────────────────────────────────────────────────────────
+
+.cl-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+// ─── Row ──────────────────────────────────────────────────────────────────────
+
+.cl-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 0.85rem 1rem;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  appearance: none;
+  animation: rowIn 0.36s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--i, 0) * 30ms) both;
+  transition:
+    background 0.16s ease,
+    border-color 0.16s ease;
+
+  &:hover:not(.cl-row--skeleton) {
+    background: rgba(20 48 73 / 0.025);
+    border-color: rgba(20 48 73 / 0.08);
+
+    .cl-row__cta {
+      background: var(--brand-navy);
+      color: #fff;
+      border-color: var(--brand-navy);
+
+      .pi {
+        transform: translateX(2px);
+      }
+    }
+
+    .cl-row__monogram {
+      background: rgba(20 48 73 / 0.1);
+    }
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-color: rgba(20 48 73 / 0.35);
+    box-shadow: 0 0 0 3px rgba(20 48 73 / 0.08);
+  }
+
+  &:active:not(.cl-row--skeleton) {
+    background: rgba(20 48 73 / 0.05);
+  }
+
+  &--skeleton {
+    pointer-events: none;
+    cursor: default;
+  }
+
+  @media (max-width: 640px) {
+    grid-template-columns: auto 1fr auto;
+    gap: 0.75rem;
+
+    .cl-row__cta {
+      display: none;
+    }
+  }
+}
+
+// ─── Monogram ─────────────────────────────────────────────────────────────────
+
+.cl-row__monogram {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(20 48 73 / 0.06);
+  color: var(--brand-navy);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  flex-shrink: 0;
+  transition: background 0.16s ease;
+}
+
+// ─── Main column (nombre + meta) ──────────────────────────────────────────────
+
+.cl-row__main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+  min-width: 0;
+}
+
+.cl-row__nombre {
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--brand-navy);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: capitalize;
+}
+
+.cl-row__meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.74rem;
+  color: var(--brand-muted);
+  letter-spacing: -0.005em;
+  min-width: 0;
+}
+
+.cl-row__meta-icon {
+  font-size: 0.72rem;
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+
+.cl-row__domain {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+// ─── CTA (Ingresar) ───────────────────────────────────────────────────────────
+
+.cl-row__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: 30px;
+  padding: 0 0.8rem;
+  background: rgba(20 48 73 / 0.04);
+  color: var(--brand-navy);
+  border: 1px solid rgba(20 48 73 / 0.12);
+  border-radius: 7px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition:
+    background 0.16s ease,
+    color 0.16s ease,
+    border-color 0.16s ease;
+
+  .pi {
+    font-size: 0.7em;
+    transition: transform 0.18s ease;
+  }
+}
+
+// ─── Action button (ajustes) ──────────────────────────────────────────────────
+
+.cl-row__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  color: var(--brand-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+  appearance: none;
+  padding: 0;
+  transition:
+    background 0.16s ease,
+    color 0.16s ease,
+    border-color 0.16s ease;
+
+  .pi {
+    font-size: 0.85rem;
+  }
+
+  &:hover {
+    background: rgba(20 48 73 / 0.06);
+    color: var(--brand-navy);
+    border-color: rgba(20 48 73 / 0.1);
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-color: rgba(20 48 73 / 0.35);
+    box-shadow: 0 0 0 3px rgba(20 48 73 / 0.08);
+  }
+}
+
+// ─── Grid view ────────────────────────────────────────────────────────────────
 
 .cl-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 0.875rem;
+  padding: 0.5rem 0.75rem 0.25rem;
 }
 
 // ─── Card ─────────────────────────────────────────────────────────────────────
@@ -191,196 +451,188 @@
 .cl-card {
   display: flex;
   flex-direction: column;
+  gap: 0.95rem;
+  padding: 1.15rem 1.15rem 0;
   background: #fff;
   border: 1px solid rgba(20 48 73 / 0.08);
-  border-radius: 14px;
-  overflow: hidden;
-  animation: cardIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--i, 0) * 50ms) both;
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: left;
+  appearance: none;
+  font: inherit;
+  color: inherit;
+  animation: rowIn 0.36s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--i, 0) * 30ms) both;
   transition:
     border-color 0.18s ease,
+    background 0.16s ease,
     transform 0.18s ease,
     box-shadow 0.18s ease;
 
   &:hover:not(.cl-card--skeleton) {
     border-color: rgba(20 48 73 / 0.18);
     transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(20 48 73 / 0.08);
+    box-shadow: 0 4px 14px rgba(20 48 73 / 0.06);
+
+    .cl-card__monogram {
+      background: rgba(20 48 73 / 0.1);
+    }
+
+    .cl-card__cta {
+      background: var(--brand-navy);
+      color: #fff;
+      border-color: var(--brand-navy);
+
+      .pi {
+        transform: translateX(2px);
+      }
+    }
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-color: rgba(20 48 73 / 0.35);
+    box-shadow: 0 0 0 3px rgba(20 48 73 / 0.08);
   }
 
   &--skeleton {
     pointer-events: none;
-    animation: none;
+    cursor: default;
   }
 }
 
-// ─── Card body ────────────────────────────────────────────────────────────────
+.cl-card__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.cl-card__monogram {
+  width: 52px;
+  height: 52px;
+  border-radius: 11px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(20 48 73 / 0.06);
+  color: var(--brand-navy);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  flex-shrink: 0;
+  transition: background 0.16s ease;
+}
+
+.cl-card__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  color: var(--brand-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+  appearance: none;
+  padding: 0;
+  transition:
+    background 0.16s ease,
+    color 0.16s ease,
+    border-color 0.16s ease;
+
+  .pi {
+    font-size: 0.85rem;
+  }
+
+  &:hover {
+    background: rgba(20 48 73 / 0.06);
+    color: var(--brand-navy);
+    border-color: rgba(20 48 73 / 0.1);
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-color: rgba(20 48 73 / 0.35);
+    box-shadow: 0 0 0 3px rgba(20 48 73 / 0.08);
+  }
+}
 
 .cl-card__body {
   display: flex;
   flex-direction: column;
-  gap: 0.9rem;
-  padding: 1.25rem;
+  gap: 0.3rem;
+  min-width: 0;
   flex: 1;
 }
 
-// ─── Card identity ────────────────────────────────────────────────────────────
-
-.cl-card__identity {
-  display: flex;
-  align-items: center;
-  gap: 0.875rem;
-}
-
-.cl-card__identity-text {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-  min-width: 0;
-}
-
 .cl-card__nombre {
-  font-size: 0.93rem;
+  font-size: 0.98rem;
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--brand-navy);
   line-height: 1.25;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   text-transform: capitalize;
-}
-
-.cl-card__schema {
-  font-size: 0.7rem;
-  font-family: 'Courier New', 'Consolas', monospace;
-  color: var(--brand-muted);
-  letter-spacing: 0.02em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-// ─── Card contact ─────────────────────────────────────────────────────────────
-
-.cl-card__contact {
-  display: flex;
+.cl-card__meta {
+  display: inline-flex;
   align-items: center;
   gap: 0.4rem;
+  font-size: 0.74rem;
+  color: var(--brand-muted);
+  letter-spacing: -0.005em;
+  min-width: 0;
 }
 
-.cl-card__contact-icon {
+.cl-card__meta-icon {
   font-size: 0.72rem;
-  color: var(--brand-muted);
-  flex-shrink: 0;
   opacity: 0.7;
+  flex-shrink: 0;
 }
 
-.cl-card__contact-text {
-  font-size: 0.75rem;
-  color: var(--brand-muted);
+.cl-card__domain {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  letter-spacing: -0.01em;
+  min-width: 0;
 }
-
-// ─── Avatar ───────────────────────────────────────────────────────────────────
-
-.cl-avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-
-  &__initials {
-    font-size: 1rem;
-    font-weight: 800;
-    color: #fff;
-    letter-spacing: -0.03em;
-    line-height: 1;
-    text-shadow: 0 1px 3px rgba(0 0 0 / 0.2);
-  }
-}
-
-// ─── Card footer ──────────────────────────────────────────────────────────────
 
 .cl-card__footer {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0.75rem 1.25rem;
+  justify-content: flex-end;
+  margin: 0 -1.15rem;
+  padding: 0.85rem 1.15rem;
   border-top: 1px solid rgba(20 48 73 / 0.06);
 }
 
-// ─── Status ───────────────────────────────────────────────────────────────────
-
-.cl-status {
+.cl-card__cta {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  font-size: 0.72rem;
-  font-weight: 500;
-  color: var(--brand-muted);
-  letter-spacing: 0.01em;
-
-  &--active {
-    color: #166534;
-
-    .cl-status__dot {
-      background: #22c55e;
-      box-shadow: 0 0 0 2px rgba(34 197 94 / 0.2);
-    }
-  }
-}
-
-.cl-status__dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: rgba(20 48 73 / 0.2);
-  flex-shrink: 0;
-}
-
-// ─── Ingresar button ──────────────────────────────────────────────────────────
-
-.cl-btn-ingresar {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
+  gap: 0.4rem;
   height: 30px;
-  padding: 0 0.75rem;
-  background: var(--brand-navy);
-  color: #fff;
-  border: none;
+  padding: 0 0.85rem;
+  background: rgba(20 48 73 / 0.04);
+  color: var(--brand-navy);
+  border: 1px solid rgba(20 48 73 / 0.12);
   border-radius: 7px;
-  font-size: 0.75rem;
+  font-size: 0.74rem;
   font-weight: 600;
   letter-spacing: -0.01em;
-  cursor: pointer;
   white-space: nowrap;
   transition:
-    background 0.15s ease,
-    box-shadow 0.15s ease;
+    background 0.16s ease,
+    color 0.16s ease,
+    border-color 0.16s ease;
 
   .pi {
     font-size: 0.7em;
-    transition: transform 0.2s ease;
-  }
-
-  &:hover {
-    background: #0d2035;
-    box-shadow: 0 3px 10px rgba(20 48 73 / 0.28);
-
-    .pi {
-      transform: translateX(2px);
-    }
-  }
-
-  &:active {
-    transform: scale(0.97);
+    transition: transform 0.18s ease;
   }
 }
 
@@ -390,7 +642,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 6rem 2rem;
+  padding: 5rem 2rem;
   text-align: center;
 
   &__icon-wrap {
@@ -451,41 +703,45 @@
   border-radius: 6px;
 }
 
-.sk-avatar {
+.sk-monogram {
   @extend %sk;
   width: 48px;
   height: 48px;
-  border-radius: 12px;
+  border-radius: 10px;
   flex-shrink: 0;
+
+  &--lg {
+    width: 52px;
+    height: 52px;
+    border-radius: 11px;
+  }
 }
 
 .sk-line {
   @extend %sk;
-  height: 12px;
 
-  &--lg {
-    width: 130px;
-  }
-  &--md {
-    width: 80px;
-  }
-  &--contact {
+  &--name {
     width: 160px;
-    height: 11px;
+    height: 13px;
+  }
+
+  &--meta {
+    width: 200px;
+    height: 10px;
   }
 }
 
-.sk-dot {
+.sk-cta {
   @extend %sk;
-  width: 52px;
-  height: 16px;
-  border-radius: 999px;
+  width: 78px;
+  height: 30px;
+  border-radius: 7px;
 }
 
-.sk-btn {
+.sk-action {
   @extend %sk;
+  width: 30px;
   height: 30px;
-  width: 76px;
   border-radius: 7px;
 }
 
@@ -502,10 +758,10 @@
   }
 }
 
-@keyframes cardIn {
+@keyframes rowIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;

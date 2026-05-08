@@ -23,6 +23,19 @@ export interface AppDict extends AuthTranslationsHost {
       searchPlaceholder: string;
       enter: string;
       status: { active: string; inactive: string };
+      summary: {
+        containers: { one: string; other: string };
+        active: { one: string; other: string };
+      };
+      actions: {
+        menuLabel: string;
+        invite: string;
+        delete: string;
+      };
+      view: {
+        list: string;
+        grid: string;
+      };
       empty: {
         noResults: { title: string; sub: string };
         noContenedores: { title: string; sub: string; cta: string };

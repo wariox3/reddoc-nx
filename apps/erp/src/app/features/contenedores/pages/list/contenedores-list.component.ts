@@ -1,7 +1,9 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, ViewChild, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Subject, startWith, switchMap } from 'rxjs';
+import { Menu, MenuModule } from 'primeng/menu';
+import { MenuItem } from 'primeng/api';
 import { I18nService, TenantService } from '@reddoc/core';
 import { AuthService } from '../../../auth/services/auth.service';
 import { Contenedor } from '../../models/contenedor.model';
@@ -13,7 +15,7 @@ import type { AppDict } from '../../../../i18n';
 @Component({
   selector: 'app-contenedores-list',
   standalone: true,
-  imports: [ContenedoresCreateDialogComponent],
+  imports: [ContenedoresCreateDialogComponent, MenuModule],
   templateUrl: './contenedores-list.component.html',
   styleUrl: './contenedores-list.component.scss',
 })
@@ -28,18 +30,9 @@ export class ContenedoresListComponent {
 
   readonly showCreate = signal(false);
 
-  private readonly reload$ = new Subject<void>();
+  readonly viewMode = signal<'list' | 'grid'>('list');
 
-  private readonly gradients = [
-    ['#0f4c75', '#1b6ca8'],
-    ['#2d6a4f', '#52b788'],
-    ['#6d28d9', '#a78bfa'],
-    ['#9d174d', '#f472b6'],
-    ['#92400e', '#fbbf24'],
-    ['#1e3a5f', '#0ea5e9'],
-    ['#065f46', '#34d399'],
-    ['#7f1d1d', '#f87171'],
-  ];
+  private readonly reload$ = new Subject<void>();
 
   readonly currentUser = this.authService.currentUser;
 
@@ -67,7 +60,23 @@ export class ContenedoresListComponent {
     );
   });
 
-  readonly skeletonItems = Array.from({ length: 6 });
+  readonly counts = computed(() => {
+    const all = this.contenedores();
+    return { total: all.length, active: all.filter((c) => c.activo).length };
+  });
+
+  readonly summaryText = computed(() => {
+    const { total, active } = this.counts();
+    const labels = this.t().contenedores.list.summary;
+    const cWord = total === 1 ? labels.containers.one : labels.containers.other;
+    const aWord = active === 1 ? labels.active.one : labels.active.other;
+    return `${total} ${cWord} · ${active} ${aWord}`;
+  });
+
+  readonly skeletonItems = Array.from({ length: 5 });
+
+  @ViewChild('rowMenu') private rowMenu!: Menu;
+  protected rowMenuItems: MenuItem[] = [];
 
   getAvatarLabel(nombre: string): string {
     return nombre
@@ -76,12 +85,6 @@ export class ContenedoresListComponent {
       .map((w) => w[0])
       .join('')
       .toUpperCase();
-  }
-
-  getAvatarGradient(nombre: string): string {
-    const hash = nombre.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
-    const [from, to] = this.gradients[hash % this.gradients.length];
-    return `linear-gradient(135deg, ${from} 0%, ${to} 100%)`;
   }
 
   onContenedorCreated(): void {
@@ -93,5 +96,35 @@ export class ContenedoresListComponent {
     this.tenant.setAccesos(this.contenedores());
     this.tenant.setCurrent(item);
     this.router.navigateByUrl(ROUTE_PATHS.tenant.dashboard(item.schema_name));
+  }
+
+  openRowMenu(event: Event, item: Contenedor): void {
+    event.stopPropagation();
+    const labels = this.t().contenedores.list.actions;
+    this.rowMenuItems = [
+      {
+        label: labels.invite,
+        icon: 'pi pi-user-plus',
+        command: () => this.inviteContenedor(item),
+      },
+      { separator: true },
+      {
+        label: labels.delete,
+        icon: 'pi pi-trash',
+        styleClass: 'cl-row-menu__danger',
+        command: () => this.deleteContenedor(item),
+      },
+    ];
+    this.rowMenu.toggle(event);
+  }
+
+  inviteContenedor(item: Contenedor): void {
+    // TODO: implement invite flow
+    console.log('[contenedores] invite', item);
+  }
+
+  deleteContenedor(item: Contenedor): void {
+    // TODO: implement delete flow
+    console.log('[contenedores] delete', item);
   }
 }

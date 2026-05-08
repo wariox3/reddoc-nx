@@ -25,6 +25,19 @@ export const es: AppDict = {
       searchPlaceholder: 'Buscar...',
       enter: 'Ingresar',
       status: { active: 'Activo', inactive: 'Inactivo' },
+      summary: {
+        containers: { one: 'contenedor', other: 'contenedores' },
+        active: { one: 'activo', other: 'activos' },
+      },
+      actions: {
+        menuLabel: 'Opciones del contenedor',
+        invite: 'Invitar usuario',
+        delete: 'Eliminar contenedor',
+      },
+      view: {
+        list: 'Vista de lista',
+        grid: 'Vista de cuadrícula',
+      },
       empty: {
         noResults: {
           title: 'Sin resultados',

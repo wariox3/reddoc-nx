@@ -25,6 +25,19 @@ export const en: AppDict = {
       searchPlaceholder: 'Search...',
       enter: 'Enter',
       status: { active: 'Active', inactive: 'Inactive' },
+      summary: {
+        containers: { one: 'container', other: 'containers' },
+        active: { one: 'active', other: 'active' },
+      },
+      actions: {
+        menuLabel: 'Container options',
+        invite: 'Invite user',
+        delete: 'Delete container',
+      },
+      view: {
+        list: 'List view',
+        grid: 'Grid view',
+      },
       empty: {
         noResults: {
           title: 'No results',
