@@ -1,12 +1,12 @@
 <div class="cp">
   <!-- Hero -->
-  <!-- <section class="cp-hero">
+  <section class="cp-hero">
     <p class="cp-hero__eyebrow">Bienvenido, {{ getUserName() }}</p>
-    <h1 class="cp-hero__title">¿A qué empresa<br>vas a ingresar hoy?</h1>
-  </section> -->
+    <h1 class="cp-hero__title">¿A qué empresa<br />vas a ingresar hoy?</h1>
+  </section>
 
   <!-- Table -->
-  <!-- <main class="cp-main">
+  <main class="cp-main">
     <div class="cp-table-wrapper">
       <table class="cp-table">
         <thead class="cp-table__head">
@@ -21,7 +21,6 @@
         </thead>
 
         <tbody>
-
           @if (isLoading()) {
             @for (item of skeletonItems; track $index) {
               <tr class="cp-table__row cp-table__row--skeleton">
@@ -49,14 +48,15 @@
           @if (!isLoading()) {
             @for (item of contenedores(); track item.id; let i = $index) {
               <tr class="cp-table__row" [style.--i]="i">
-
                 <td class="cp-table__td cp-table__td--empresa">
                   <div class="cp-row-empresa">
                     <div
                       class="cp-avatar"
                       [style.background]="getAvatarGradient(item.contenedor__nombre)"
                     >
-                      <span class="cp-avatar__initials">{{ getAvatarLabel(item.contenedor__nombre) }}</span>
+                      <span class="cp-avatar__initials">{{
+                        getAvatarLabel(item.contenedor__nombre)
+                      }}</span>
                     </div>
                     <div class="cp-row-empresa__info">
                       <span class="cp-row-empresa__name">{{ item.contenedor__nombre }}</span>
@@ -76,7 +76,9 @@
                 </td>
 
                 <td class="cp-table__td">
-                  <span class="cp-chip cp-chip--rol cp-chip--rol-{{ item.rol }}">{{ item.rol }}</span>
+                  <span class="cp-chip cp-chip--rol cp-chip--rol-{{ item.rol }}">{{
+                    item.rol
+                  }}</span>
                 </td>
 
                 <td class="cp-table__td cp-table__td--usuarios">
@@ -92,7 +94,6 @@
                     <i class="pi pi-arrow-right"></i>
                   </button>
                 </td>
-
               </tr>
             } @empty {
               <tr>
@@ -100,15 +101,16 @@
                   <div class="cp-empty">
                     <i class="pi pi-building cp-empty__icon"></i>
                     <p class="cp-empty__title">Sin empresas asignadas</p>
-                    <p class="cp-empty__sub">Contacta al administrador para que te agregue a una empresa.</p>
+                    <p class="cp-empty__sub">
+                      Contacta al administrador para que te agregue a una empresa.
+                    </p>
                   </div>
                 </td>
               </tr>
             }
           }
-
         </tbody>
       </table>
     </div>
-  </main> -->
+  </main>
 </div>

@@ -15,6 +15,7 @@ import { appRoutes } from './app.routes';
 import { environment } from '../environments/environment';
 import {
   APP_BRANDING,
+  AUTH_API_ENDPOINTS,
   ENVIRONMENT,
   ROUTE_PATHS_TOKEN,
   AUTH_SERVICE,
@@ -24,7 +25,6 @@ import {
   errorInterceptor,
 } from '@reddoc/core';
 import { AuthService } from './features/auth/services/auth.service';
-import { API_ENDPOINTS } from './core/constants/api-endpoints.constants';
 import { ROUTE_PATHS } from './core/constants/route-paths.constants';
 
 export const appConfig: ApplicationConfig = {
@@ -66,17 +66,7 @@ export const appConfig: ApplicationConfig = {
     { provide: AUTH_SERVICE, useExisting: AuthService },
     {
       provide: AUTH_SKIP_URLS,
-      useValue: [
-        API_ENDPOINTS.auth.login,
-        API_ENDPOINTS.auth.refresh,
-        API_ENDPOINTS.auth.logout,
-        API_ENDPOINTS.auth.me,
-        API_ENDPOINTS.auth.forgotPassword,
-        API_ENDPOINTS.auth.resetPassword,
-        API_ENDPOINTS.auth.register,
-        API_ENDPOINTS.auth.resendVerification,
-        API_ENDPOINTS.auth.verifyEmail,
-      ],
+      useValue: Object.values(AUTH_API_ENDPOINTS),
     },
     provideAppInitializer(() => {
       const auth = inject(AuthService);

@@ -1,4 +1,4 @@
-export { BaseAuthService } from './lib/auth/base-auth.service';
+export { BaseAuthService, AUTH_API_ENDPOINTS } from './lib/auth/base-auth.service';
 export type { AuthApiEndpoints } from './lib/auth/base-auth.service';
 export { authGuard } from './lib/guards/auth.guard';
 export { publicGuard } from './lib/guards/public.guard';

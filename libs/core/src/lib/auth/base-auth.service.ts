@@ -24,13 +24,25 @@ export interface AuthApiEndpoints {
   verifyEmail: string;
 }
 
+export const AUTH_API_ENDPOINTS: AuthApiEndpoints = {
+  login: '/seguridad/login/',
+  register: '/seguridad/usuario/',
+  logout: '/seguridad/logout/',
+  refresh: '/seguridad/refresh/',
+  me: '/seguridad/me/',
+  forgotPassword: '/seguridad/usuario/recuperar-clave/',
+  resetPassword: '/seguridad/usuario/restablecer-clave/',
+  resendVerification: '/seguridad/usuario/reenviar-verificacion/',
+  verifyEmail: '/seguridad/usuario/verificar-email/',
+};
+
 export abstract class BaseAuthService<TUser extends BaseUsuario> {
   protected readonly http = inject(HttpClient);
   protected readonly router = inject(Router);
   protected readonly tokenRefresh = inject(TokenRefreshService);
   protected readonly environment = inject(ENVIRONMENT);
 
-  protected abstract readonly apiEndpoints: AuthApiEndpoints;
+  protected readonly apiEndpoints: AuthApiEndpoints = AUTH_API_ENDPOINTS;
   protected abstract readonly loginRoute: string;
 
   private readonly _currentUser = signal<TUser | null>(null);
