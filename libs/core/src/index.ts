@@ -19,6 +19,7 @@ export { BaseHttpService, buildHttpParams } from './lib/services/base-http.servi
 export type { ParamValue } from './lib/services/base-http.service';
 export { TokenRefreshService } from './lib/services/token-refresh.service';
 export { ToastService } from './lib/services/toast.service';
+export { UserAvatarService } from './lib/services/user-avatar.service';
 export { ReddocPreset } from './lib/theme/reddoc-preset';
 export {
   ENVIRONMENT,

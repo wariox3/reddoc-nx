@@ -1,9 +1,10 @@
 import { Component, inject, signal, computed } from '@angular/core';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
-import { AvatarModule } from 'primeng/avatar';
 import { TooltipModule } from 'primeng/tooltip';
 import { MessageService } from 'primeng/api';
+import { UserAvatarService } from '@reddoc/core';
+import { UserAvatarComponent } from '@reddoc/ui';
 import { AuthService } from '../auth/services/auth.service';
 import { PerfilService } from './services/perfil.service';
 import { PerfilFormComponent } from './components/perfil-form/perfil-form.component';
@@ -15,8 +16,8 @@ import { ImageCropperComponent } from './components/image-cropper/image-cropper.
   imports: [
     DialogModule,
     ButtonModule,
-    AvatarModule,
     TooltipModule,
+    UserAvatarComponent,
     PerfilFormComponent,
     ImageCropperComponent,
   ],
@@ -25,19 +26,12 @@ import { ImageCropperComponent } from './components/image-cropper/image-cropper.
 export class PerfilComponent {
   private readonly authService = inject(AuthService);
   private readonly perfilService = inject(PerfilService);
+  private readonly userAvatar = inject(UserAvatarService);
   private readonly messageService = inject(MessageService);
 
   readonly user = this.authService.currentUser;
-  readonly fullImage = this.perfilService.fullProfileImage;
   readonly imageDialogVisible = signal(false);
   readonly uploading = signal(false);
-
-  readonly initials = computed(() => {
-    const u = this.user();
-    if (!u) return '?';
-    const name = u.nombre_corto?.trim();
-    return name ? name[0].toUpperCase() : u.email[0].toUpperCase();
-  });
 
   readonly displayName = computed(() => {
     const u = this.user();
@@ -50,7 +44,7 @@ export class PerfilComponent {
   }
 
   deleteImage(): void {
-    this.perfilService.setLocalPreview(null);
+    this.userAvatar.setLocalPreview(null);
     this.messageService.add({ severity: 'success', summary: 'Foto eliminada', life: 3000 });
   }
 
@@ -61,7 +55,7 @@ export class PerfilComponent {
   onImageSaved(blob: Blob): void {
     this.imageDialogVisible.set(false);
     const previewUrl = URL.createObjectURL(blob);
-    this.perfilService.setLocalPreview(previewUrl);
+    this.userAvatar.setLocalPreview(previewUrl);
     this.uploading.set(true);
     this.perfilService.uploadFoto(blob).subscribe({
       next: () => {
@@ -71,7 +65,7 @@ export class PerfilComponent {
       },
       error: () => {
         URL.revokeObjectURL(previewUrl);
-        this.perfilService.setLocalPreview(null);
+        this.userAvatar.setLocalPreview(null);
         this.uploading.set(false);
         this.messageService.add({
           severity: 'error',

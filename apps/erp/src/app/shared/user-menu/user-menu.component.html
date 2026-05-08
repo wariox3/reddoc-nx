@@ -4,7 +4,7 @@
   (click)="toggle($event)"
   [attr.aria-label]="t().layout.userMenu.label + ', ' + displayName()"
 >
-  <p-avatar [label]="initials()" shape="circle" styleClass="user-menu__avatar" />
+  <lib-user-avatar styleClass="user-menu__avatar" />
 </button>
 
 <p-menu #menu [popup]="true" [model]="items" appendTo="body">

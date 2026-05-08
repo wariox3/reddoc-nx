@@ -1,6 +1,7 @@
-import { InjectionToken } from '@angular/core';
+import { InjectionToken, Signal } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
+  BaseUsuario,
   LoginRequest,
   RegisterRequest,
   RegisterResponse,
@@ -26,6 +27,7 @@ export interface RoutePaths {
 }
 
 export interface AuthServiceContract {
+  readonly currentUser: Signal<BaseUsuario | null>;
   isAuthenticated: () => boolean;
   refresh: () => Observable<unknown>;
   clearSession: () => void;

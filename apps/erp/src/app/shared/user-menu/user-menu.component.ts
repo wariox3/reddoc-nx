@@ -1,17 +1,16 @@
 import { Component, ViewChild, computed, effect, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { AvatarModule } from 'primeng/avatar';
 import { Menu, MenuModule } from 'primeng/menu';
 import { MenuItem } from 'primeng/api';
 import { ENVIRONMENT, I18nService, TenantService } from '@reddoc/core';
-import { LanguageToggleComponent } from '@reddoc/ui';
+import { LanguageToggleComponent, UserAvatarComponent } from '@reddoc/ui';
 import { AuthService } from '../../features/auth/services/auth.service';
 import type { AppDict } from '../../i18n';
 
 @Component({
   selector: 'app-user-menu',
   standalone: true,
-  imports: [AvatarModule, MenuModule, LanguageToggleComponent],
+  imports: [MenuModule, LanguageToggleComponent, UserAvatarComponent],
   templateUrl: './user-menu.component.html',
   styleUrl: './user-menu.component.scss',
 })
@@ -25,15 +24,6 @@ export class UserMenuComponent {
   protected readonly t = this.i18n.t;
 
   @ViewChild('menu') menu!: Menu;
-
-  readonly initials = computed(() => {
-    const user = this.authService.currentUser();
-    if (!user) return '?';
-    const parts = user.nombre_corto?.trim().split(/\s+/) ?? [];
-    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
-    if (parts.length === 1) return parts[0][0].toUpperCase();
-    return user.email.charAt(0).toUpperCase();
-  });
 
   readonly displayName = computed(() => {
     const user = this.authService.currentUser();

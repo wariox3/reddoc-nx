@@ -2,6 +2,9 @@ export interface BaseUsuario {
   id: number;
   email: string;
   role?: string;
+  nombre_corto?: string | null;
+  imagen?: string | null;
+  imagen_thumbnail?: string | null;
 }
 
 export interface Usuario extends BaseUsuario {

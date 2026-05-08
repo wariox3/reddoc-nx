@@ -46,14 +46,8 @@
               >
                 <i class="pi pi-spin pi-spinner"></i>
               </div>
-            } @else if (fullImage()) {
-              <img
-                [src]="fullImage()!"
-                alt="Foto de perfil"
-                class="avatar-ring__img w-full h-full object-cover block"
-              />
             } @else {
-              <p-avatar [label]="initials()" shape="circle" styleClass="avatar-ring__placeholder" />
+              <lib-user-avatar [size]="72" variant="full" styleClass="avatar-ring__inner" />
             }
           </div>
 

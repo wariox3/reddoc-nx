@@ -1,31 +1,20 @@
 import { Component, ViewChild, computed, inject } from '@angular/core';
-import { AvatarModule } from 'primeng/avatar';
 import { Menu, MenuModule } from 'primeng/menu';
 import { MenuItem } from 'primeng/api';
+import { UserAvatarComponent } from '@reddoc/ui';
 import { AuthService } from '../../features/auth/services/auth.service';
-import { PerfilService } from '../../features/perfil/services/perfil.service';
 
 @Component({
   selector: 'app-user-menu',
   standalone: true,
-  imports: [AvatarModule, MenuModule],
+  imports: [MenuModule, UserAvatarComponent],
   templateUrl: './user-menu.component.html',
   styleUrl: './user-menu.component.scss',
 })
 export class UserMenuComponent {
   private readonly authService = inject(AuthService);
-  private readonly perfilService = inject(PerfilService);
 
   @ViewChild('menu') menu!: Menu;
-
-  readonly initials = computed(() => {
-    const user = this.authService.currentUser();
-    if (!user) return '?';
-    const name = user.nombre_corto?.trim();
-    return name ? name[0].toUpperCase() : user.email.charAt(0).toUpperCase();
-  });
-
-  readonly avatarImage = this.perfilService.profileImage;
 
   readonly displayName = computed(() => {
     const user = this.authService.currentUser();

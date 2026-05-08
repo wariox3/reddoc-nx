@@ -2,20 +2,3 @@
   display: inline-flex;
   align-items: center;
 }
-
-:host ::ng-deep .user-menu__avatar {
-  width: 36px;
-  height: 36px;
-  background: linear-gradient(135deg, #143049 0%, #1f4d70 100%);
-  color: #fff;
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-
-  img {
-    width: 36px;
-    height: 36px;
-    object-fit: cover;
-    border-radius: 50%;
-  }
-}

@@ -6,5 +6,6 @@ export { ResetPasswordComponent } from './lib/auth/reset-password/reset-password
 export { ResendVerificationComponent } from './lib/auth/resend-verification/resend-verification.component';
 export { VerifyEmailComponent } from './lib/auth/verify-email/verify-email.component';
 export { LanguageToggleComponent } from './lib/components/language-toggle/language-toggle.component';
+export { UserAvatarComponent } from './lib/components/user-avatar/user-avatar.component';
 export type { AuthDict, AuthTranslationsHost } from './lib/auth/i18n';
 export { authEs, authEn } from './lib/auth/i18n';
