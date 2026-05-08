@@ -116,3 +116,4 @@ BaseAuthService<TUser extends BaseUsuario>   (libs/core)
 ## Tener en cuenta
 
 - Para los textos no crees por ejemplo "Nueva Empresa" esta mal para nosotros, debe ser "Nueva empresa" no uses mayusculas al inicio de las palabras despues de la primera palabra
+- siempre procura usar clases de tailwind

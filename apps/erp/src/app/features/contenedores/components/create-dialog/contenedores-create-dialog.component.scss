@@ -1,4 +1,5 @@
-// ─── Dialog override ──────────────────────────────────────────────────────────
+// Tailwind no puede llegar a los nodos internos del p-dialog ni al p-button
+// (Shadow PrimeNG). Mantenemos solo esos overrides aquí.
 
 :host ::ng-deep .cp-create-dialog {
   border-radius: 16px !important;
@@ -22,8 +23,6 @@
   }
 }
 
-// ─── Submit button color ──────────────────────────────────────────────────────
-
 :host ::ng-deep .cd-btn-submit.p-button:not(:disabled) {
   background: var(--brand-navy);
   border-color: var(--brand-navy);
@@ -34,162 +33,11 @@
   }
 }
 
-// ─── Header ───────────────────────────────────────────────────────────────────
+// PrimeNG aplica su propio borde al input — necesitamos !important para ganarle.
+.cd-input-error {
+  border-color: #dc2626 !important;
 
-.cd-header {
-  display: flex;
-  align-items: center;
-  gap: 0.875rem;
-  animation: slideUp 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
-
-  &__icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    background: rgba(119 170 215 / 0.15);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-
-    .pi {
-      font-size: 1.1rem;
-      color: var(--brand-blue);
-    }
-  }
-
-  &__text {
-    display: flex;
-    flex-direction: column;
-    gap: 0.1rem;
-  }
-
-  &__title {
-    font-size: 1.05rem;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    color: var(--brand-navy);
-    margin: 0;
-    line-height: 1.2;
-  }
-
-  &__sub {
-    font-size: 0.75rem;
-    color: var(--brand-muted);
-    margin: 0;
-    letter-spacing: 0.01em;
-  }
-}
-
-// ─── Form ─────────────────────────────────────────────────────────────────────
-
-.cd-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.1rem;
-  animation: slideUp 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.05s both;
-}
-
-// ─── Field ────────────────────────────────────────────────────────────────────
-
-.cd-field {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-
-  &__label {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: var(--brand-navy);
-    margin-bottom: 0.4rem;
-    letter-spacing: -0.01em;
-  }
-
-  &__input {
-    width: 100%;
-
-    &--mono {
-      font-family: 'Courier New', 'Consolas', monospace;
-      font-size: 0.88rem;
-      letter-spacing: 0.01em;
-    }
-
-    &--error {
-      border-color: #dc2626 !important;
-
-      &:focus {
-        box-shadow: 0 0 0 2px rgba(220 38 38 / 0.15) !important;
-      }
-    }
-  }
-
-  &__hint {
-    font-size: 0.7rem;
-    color: var(--brand-muted);
-    margin-top: 0.35rem;
-    line-height: 1.5;
-    letter-spacing: 0.01em;
-  }
-
-  &__error {
-    font-size: 0.7rem;
-    color: #dc2626;
-    margin-top: 0.3rem;
-    letter-spacing: 0.01em;
-  }
-}
-
-// ─── Chips ────────────────────────────────────────────────────────────────────
-
-.cd-chip {
-  display: inline-flex;
-  align-items: center;
-  height: 18px;
-  padding: 0 0.5rem;
-  background: rgba(20 48 73 / 0.07);
-  color: var(--brand-navy);
-  border-radius: 999px;
-  font-size: 0.65rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-
-  &--soon {
-    background: rgba(119 170 215 / 0.15);
-    color: var(--brand-blue);
-  }
-
-  &--suggested {
-    background: rgba(5 150 105 / 0.1);
-    color: #065f46;
-  }
-}
-
-// ─── Footer ───────────────────────────────────────────────────────────────────
-
-.cd-footer {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 0.75rem;
-  padding-top: 1.25rem;
-  border-top: 1px solid rgba(20 48 73 / 0.08);
-  animation: slideUp 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
-}
-
-// ─── Animation ────────────────────────────────────────────────────────────────
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  &:focus {
+    box-shadow: 0 0 0 2px rgba(220 38 38 / 0.15) !important;
   }
 }

@@ -10,35 +10,51 @@
 >
   <!-- Header -->
   <ng-template pTemplate="header">
-    <div class="cd-header">
-      <span class="cd-header__icon">
-        <i class="pi pi-building"></i>
+    <div class="flex items-center gap-3.5">
+      <span
+        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-brand-blue/15"
+      >
+        <i class="pi pi-building text-[1.1rem] text-brand-blue"></i>
       </span>
-      <div class="cd-header__text">
-        <h2 class="cd-header__title">{{ t().contenedores.create.title }}</h2>
-        <p class="cd-header__sub">{{ t().contenedores.create.subtitle }}</p>
+      <div class="flex flex-col gap-[0.1rem]">
+        <h2
+          class="m-0 text-[1.05rem] font-extrabold leading-tight tracking-[-0.03em] text-brand-navy"
+        >
+          {{ t().contenedores.create.title }}
+        </h2>
+        <p class="m-0 text-[0.75rem] tracking-[0.01em] text-brand-muted">
+          {{ t().contenedores.create.subtitle }}
+        </p>
       </div>
     </div>
   </ng-template>
 
   <!-- Body -->
-  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="cd-form" autocomplete="off">
+  <form
+    [formGroup]="form"
+    (ngSubmit)="onSubmit()"
+    class="flex flex-col gap-[1.1rem]"
+    autocomplete="off"
+  >
     <!-- Nombre -->
-    <div class="cd-field">
-      <label class="cd-field__label" for="nombre">{{ t().contenedores.create.fields.name }}</label>
+    <div class="flex flex-col">
+      <label
+        for="nombre"
+        class="mb-1.5 flex items-center gap-2 text-[0.78rem] font-semibold tracking-[-0.01em] text-brand-navy"
+      >
+        {{ t().contenedores.create.fields.name }}
+      </label>
       <input
         id="nombre"
         pInputText
         type="text"
         formControlName="nombre"
         [placeholder]="t().contenedores.create.fields.namePlaceholder"
-        class="cd-field__input"
-        [class.cd-field__input--error]="
-          form.controls.nombre.invalid && form.controls.nombre.touched
-        "
+        class="w-full"
+        [class.cd-input-error]="form.controls.nombre.invalid && form.controls.nombre.touched"
       />
       @if (form.controls.nombre.invalid && form.controls.nombre.touched) {
-        <span class="cd-field__error">
+        <span class="mt-1 text-[0.7rem] tracking-[0.01em] text-red-600">
           @if (form.controls.nombre.hasError('required')) {
             {{ t().contenedores.create.validation.nameRequired }}
           } @else if (form.controls.nombre.hasError('minlength')) {
@@ -49,8 +65,11 @@
     </div>
 
     <!-- Teléfono -->
-    <div class="cd-field">
-      <label class="cd-field__label" for="telefono">
+    <div class="flex flex-col">
+      <label
+        for="telefono"
+        class="mb-1.5 flex items-center gap-2 text-[0.78rem] font-semibold tracking-[-0.01em] text-brand-navy"
+      >
         {{ t().contenedores.create.fields.phone }}
       </label>
       <input
@@ -59,21 +78,22 @@
         type="tel"
         formControlName="telefono"
         [placeholder]="t().contenedores.create.fields.phonePlaceholder"
-        class="cd-field__input"
-        [class.cd-field__input--error]="
-          form.controls.telefono.invalid && form.controls.telefono.touched
-        "
+        class="w-full"
+        [class.cd-input-error]="form.controls.telefono.invalid && form.controls.telefono.touched"
       />
       @if (form.controls.telefono.invalid && form.controls.telefono.touched) {
-        <span class="cd-field__error">
+        <span class="mt-1 text-[0.7rem] tracking-[0.01em] text-red-600">
           {{ t().contenedores.create.validation.phoneRequired }}
         </span>
       }
     </div>
 
     <!-- Correo -->
-    <div class="cd-field">
-      <label class="cd-field__label" for="correo">
+    <div class="flex flex-col">
+      <label
+        for="correo"
+        class="mb-1.5 flex items-center gap-2 text-[0.78rem] font-semibold tracking-[-0.01em] text-brand-navy"
+      >
         {{ t().contenedores.create.fields.email }}
       </label>
       <input
@@ -82,13 +102,11 @@
         type="email"
         formControlName="correo"
         [placeholder]="t().contenedores.create.fields.emailPlaceholder"
-        class="cd-field__input"
-        [class.cd-field__input--error]="
-          form.controls.correo.invalid && form.controls.correo.touched
-        "
+        class="w-full"
+        [class.cd-input-error]="form.controls.correo.invalid && form.controls.correo.touched"
       />
       @if (form.controls.correo.invalid && form.controls.correo.touched) {
-        <span class="cd-field__error">
+        <span class="mt-1 text-[0.7rem] tracking-[0.01em] text-red-600">
           @if (form.controls.correo.hasError('required')) {
             {{ t().contenedores.create.validation.emailRequired }}
           } @else if (form.controls.correo.hasError('email')) {
@@ -101,7 +119,7 @@
 
   <!-- Footer -->
   <ng-template pTemplate="footer">
-    <div class="cd-footer">
+    <div class="flex items-center justify-end gap-3 border-t border-[rgba(20,48,73,0.08)] pt-5">
       <p-button
         [label]="t().contenedores.create.cancel"
         [outlined]="true"
