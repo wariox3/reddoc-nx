@@ -1,0 +1,109 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="visibleChange.emit($event)"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="true"
+  [style]="{ width: '520px' }"
+  styleClass="cp-create-dialog"
+>
+  <!-- Header -->
+  <ng-template pTemplate="header">
+    <div class="cd-header">
+      <span class="cd-header__icon">
+        <i class="pi pi-building"></i>
+      </span>
+      <div class="cd-header__text">
+        <h2 class="cd-header__title">Nueva empresa</h2>
+        <p class="cd-header__sub">Configurá el nuevo espacio de trabajo</p>
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- Body -->
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="cd-form" autocomplete="off">
+    <!-- Nombre -->
+    <div class="cd-field">
+      <label class="cd-field__label" for="nombre">Nombre de la empresa</label>
+      <input
+        id="nombre"
+        pInputText
+        type="text"
+        formControlName="nombre"
+        placeholder="Ej: Acme Corp"
+        class="cd-field__input"
+        [class.cd-field__input--error]="
+          form.controls.nombre.invalid && form.controls.nombre.touched
+        "
+      />
+      @if (form.controls.nombre.invalid && form.controls.nombre.touched) {
+        <span class="cd-field__error">
+          @if (form.controls.nombre.hasError('required')) {
+            El nombre es obligatorio.
+          } @else if (form.controls.nombre.hasError('minlength')) {
+            Mínimo 2 caracteres.
+          }
+        </span>
+      }
+    </div>
+
+    <!-- Teléfono -->
+    <div class="cd-field">
+      <label class="cd-field__label" for="telefono">Teléfono</label>
+      <input
+        id="telefono"
+        pInputText
+        type="tel"
+        formControlName="telefono"
+        placeholder="Ej: +54 9 11 1234-5678"
+        class="cd-field__input"
+        [class.cd-field__input--error]="
+          form.controls.telefono.invalid && form.controls.telefono.touched
+        "
+      />
+      @if (form.controls.telefono.invalid && form.controls.telefono.touched) {
+        <span class="cd-field__error">El teléfono es obligatorio.</span>
+      }
+    </div>
+
+    <!-- Correo -->
+    <div class="cd-field">
+      <label class="cd-field__label" for="correo">Correo electrónico</label>
+      <input
+        id="correo"
+        pInputText
+        type="email"
+        formControlName="correo"
+        placeholder="Ej: contacto@empresa.com"
+        class="cd-field__input"
+        [class.cd-field__input--error]="
+          form.controls.correo.invalid && form.controls.correo.touched
+        "
+      />
+      @if (form.controls.correo.invalid && form.controls.correo.touched) {
+        <span class="cd-field__error">
+          @if (form.controls.correo.hasError('required')) {
+            El correo es obligatorio.
+          } @else if (form.controls.correo.hasError('email')) {
+            Ingresá un correo válido.
+          }
+        </span>
+      }
+    </div>
+  </form>
+
+  <!-- Footer -->
+  <ng-template pTemplate="footer">
+    <div class="cd-footer">
+      <p-button label="Cancelar" [outlined]="true" severity="secondary" (onClick)="onCancel()" />
+      <p-button
+        label="Crear empresa"
+        [loading]="isSaving()"
+        [disabled]="form.invalid || isSaving()"
+        (onClick)="onSubmit()"
+        styleClass="cd-btn-submit"
+      />
+    </div>
+  </ng-template>
+</p-dialog>

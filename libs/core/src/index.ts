@@ -4,6 +4,7 @@ export { authGuard } from './lib/guards/auth.guard';
 export { publicGuard } from './lib/guards/public.guard';
 export { authInterceptor } from './lib/interceptors/auth.interceptor';
 export { errorInterceptor } from './lib/interceptors/error.interceptor';
+export type { PaginatedResponse } from './lib/models/pagination.model';
 export type {
   BaseUsuario,
   Usuario,

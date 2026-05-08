@@ -112,3 +112,7 @@ BaseAuthService<TUser extends BaseUsuario>   (libs/core)
 - **`provideAppInitializer`** in each SPA's `app.config.ts` calls `auth.me()` on startup to rehydrate session from cookie.
 - **Commits** follow Conventional Commits (`feat:`, `fix:`, `chore:`, etc.) — enforced by commitlint on PRs.
 - **SCSS** — component styles are scoped; global Tailwind brand tokens live in `libs/styles/src/tailwind/brand.css`. Avoid inline styles.
+
+## Tener en cuenta
+
+- Para los textos no crees por ejemplo "Nueva Empresa" esta mal para nosotros, debe ser "Nueva empresa" no uses mayusculas al inicio de las palabras despues de la primera palabra

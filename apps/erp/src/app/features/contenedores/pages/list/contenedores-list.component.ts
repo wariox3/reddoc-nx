@@ -1,15 +1,17 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { Subject, startWith, switchMap } from 'rxjs';
 import { AuthService } from '../../../auth/services/auth.service';
-import { ContenedorAcceso } from '../../models/contenedor.model';
+import { Contenedor } from '../../models/contenedor.model';
 import { ContenedorService } from '../../services/contenedor.service';
+import { ContenedoresCreateDialogComponent } from '../../components/create-dialog/contenedores-create-dialog.component';
 import { ROUTE_PATHS } from '../../../../core/constants/route-paths.constants';
 
 @Component({
   selector: 'app-contenedores-list',
   standalone: true,
-  imports: [],
+  imports: [ContenedoresCreateDialogComponent],
   templateUrl: './contenedores-list.component.html',
   styleUrl: './contenedores-list.component.scss',
 })
@@ -17,6 +19,10 @@ export class ContenedoresListComponent {
   private readonly contenedorService = inject(ContenedorService);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+
+  readonly showCreate = signal(false);
+
+  private readonly reload$ = new Subject<void>();
 
   private readonly gradients = [
     ['#0f4c75', '#1b6ca8'],
@@ -31,11 +37,29 @@ export class ContenedoresListComponent {
 
   readonly currentUser = this.authService.currentUser;
 
-  readonly response = toSignal(this.contenedorService.getAccesos());
+  readonly response = toSignal(
+    this.reload$.pipe(
+      startWith(undefined),
+      switchMap(() => this.contenedorService.getAccesos()),
+    ),
+  );
 
   readonly isLoading = computed(() => this.response() === undefined);
 
   readonly contenedores = computed(() => this.response()?.results ?? []);
+
+  readonly searchQuery = signal('');
+
+  readonly filteredContenedores = computed(() => {
+    const q = this.searchQuery().toLowerCase().trim();
+    if (!q) return this.contenedores();
+    return this.contenedores().filter(
+      (c) =>
+        c.nombre.toLowerCase().includes(q) ||
+        c.schema_name.toLowerCase().includes(q) ||
+        c.dominio.toLowerCase().includes(q),
+    );
+  });
 
   readonly skeletonItems = Array.from({ length: 6 });
 
@@ -54,12 +78,12 @@ export class ContenedoresListComponent {
     return `linear-gradient(135deg, ${from} 0%, ${to} 100%)`;
   }
 
-  getUserName(): string {
-    const email = this.currentUser()?.email ?? '';
-    return email.split('@')[0];
+  onContenedorCreated(): void {
+    this.showCreate.set(false);
+    this.reload$.next();
   }
 
-  enterContenedor(item: ContenedorAcceso): void {
+  enterContenedor(item: Contenedor): void {
     void item;
     this.router.navigateByUrl(ROUTE_PATHS.dashboard.root);
   }

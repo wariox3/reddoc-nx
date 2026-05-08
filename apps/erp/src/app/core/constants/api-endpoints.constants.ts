@@ -1,5 +1,6 @@
 export const API_ENDPOINTS = {
   contenedores: {
-    list: '/contenedores/accesos/',
+    list: '/contenedor/cliente/lista-usuario/',
+    create: '/contenedor/cliente/',
   },
 };

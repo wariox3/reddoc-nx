@@ -1,24 +1,18 @@
-export interface ContenedorAcceso {
+import type { PaginatedResponse } from '@reddoc/core';
+
+export interface Contenedor {
   id: number;
-  rol: string;
-  contenedor: number;
-  contenedor_id: number;
-  contenedor__nombre: string;
-  contenedor__usuarios: string;
-  contenedor__imagen: string;
-  contenedor__schema_name: string;
-  contenedor__reddoc: string;
-  contenedor__ruteo: string;
-  contenedor__cortesia: boolean;
-  contenedor__plan_id: string;
-  contenedor__plan__nombre: string;
-  contenedor__plan__usuarios_base: string;
-  usuario_id: number;
+  schema_name: string;
+  nombre: string;
+  activo: boolean;
+  dominio: string;
 }
 
-export interface ContenedoresResponse {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: ContenedorAcceso[];
+export type ContenedoresResponse = PaginatedResponse<Contenedor>;
+
+export interface CreateContenedorRequest {
+  nombre: string;
+  schema_name: string;
+  telefono: string;
+  correo: string;
 }

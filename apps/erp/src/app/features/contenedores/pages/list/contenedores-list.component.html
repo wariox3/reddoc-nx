@@ -1,116 +1,125 @@
-<div class="cp">
-  <!-- Hero -->
-  <section class="cp-hero">
-    <p class="cp-hero__eyebrow">Bienvenido, {{ getUserName() }}</p>
-    <h1 class="cp-hero__title">¿A qué empresa<br />vas a ingresar hoy?</h1>
-  </section>
+<div class="cl">
+  <div class="cl-panel">
+    <!-- Panel header -->
+    <div class="cl-panel__header">
+      <div class="cl-panel__header-text">
+        <h1 class="cl-panel__title">Tus empresas</h1>
+        <p class="cl-panel__sub">Seleccioná un espacio de trabajo para continuar</p>
+      </div>
+      <div class="cl-search-wrap">
+        <i class="pi pi-search cl-search-icon"></i>
+        <input
+          #searchInput
+          type="text"
+          class="cl-search"
+          placeholder="Buscar..."
+          [value]="searchQuery()"
+          (input)="searchQuery.set(searchInput.value)"
+        />
+        @if (searchQuery()) {
+          <button
+            class="cl-search-clear"
+            type="button"
+            (click)="searchQuery.set(''); searchInput.value = ''"
+          >
+            <i class="pi pi-times"></i>
+          </button>
+        }
+      </div>
+      <button class="cl-btn-new" type="button" (click)="showCreate.set(true)">
+        <i class="pi pi-plus"></i>
+        Nueva empresa
+      </button>
+    </div>
 
-  <!-- Table -->
-  <main class="cp-main">
-    <div class="cp-table-wrapper">
-      <table class="cp-table">
-        <thead class="cp-table__head">
-          <tr>
-            <th class="cp-table__th cp-table__th--empresa">Empresa</th>
-            <th class="cp-table__th cp-table__th--schema">Schema</th>
-            <th class="cp-table__th">Plan</th>
-            <th class="cp-table__th">Rol</th>
-            <th class="cp-table__th cp-table__th--usuarios">Usuarios</th>
-            <th class="cp-table__th cp-table__th--action"></th>
-          </tr>
-        </thead>
-
-        <tbody>
-          @if (isLoading()) {
-            @for (item of skeletonItems; track $index) {
-              <tr class="cp-table__row cp-table__row--skeleton">
-                <td class="cp-table__td cp-table__td--empresa">
-                  <div class="cp-row-empresa">
-                    <div class="sk-avatar"></div>
+    <!-- Grid -->
+    <div class="cl-panel__body">
+      @if (isLoading()) {
+        <div class="cl-grid">
+          @for (item of skeletonItems; track $index) {
+            <div class="cl-card cl-card--skeleton">
+              <div class="cl-card__body">
+                <div class="cl-card__identity">
+                  <div class="sk-avatar"></div>
+                  <div class="cl-card__identity-text">
                     <div class="sk-line sk-line--lg"></div>
+                    <div class="sk-line sk-line--md"></div>
                   </div>
-                </td>
-                <td class="cp-table__td cp-table__td--schema">
-                  <div class="sk-line sk-line--md"></div>
-                </td>
-                <td class="cp-table__td"><div class="sk-chip"></div></td>
-                <td class="cp-table__td"><div class="sk-chip"></div></td>
-                <td class="cp-table__td cp-table__td--usuarios">
-                  <div class="sk-line sk-line--sm"></div>
-                </td>
-                <td class="cp-table__td cp-table__td--action">
-                  <div class="sk-btn"></div>
-                </td>
-              </tr>
-            }
+                </div>
+                <div class="sk-line sk-line--contact"></div>
+              </div>
+              <div class="cl-card__footer">
+                <div class="sk-dot"></div>
+                <div class="sk-btn"></div>
+              </div>
+            </div>
           }
+        </div>
+      }
 
-          @if (!isLoading()) {
-            @for (item of contenedores(); track item.id; let i = $index) {
-              <tr class="cp-table__row" [style.--i]="i">
-                <td class="cp-table__td cp-table__td--empresa">
-                  <div class="cp-row-empresa">
-                    <div
-                      class="cp-avatar"
-                      [style.background]="getAvatarGradient(item.contenedor__nombre)"
-                    >
-                      <span class="cp-avatar__initials">{{
-                        getAvatarLabel(item.contenedor__nombre)
-                      }}</span>
+      @if (!isLoading()) {
+        @if (filteredContenedores().length > 0) {
+          <div class="cl-grid">
+            @for (item of filteredContenedores(); track item.id; let i = $index) {
+              <div class="cl-card" [style.--i]="i">
+                <div class="cl-card__body">
+                  <div class="cl-card__identity">
+                    <div class="cl-avatar" [style.background]="getAvatarGradient(item.nombre)">
+                      <span class="cl-avatar__initials">{{ getAvatarLabel(item.nombre) }}</span>
                     </div>
-                    <div class="cp-row-empresa__info">
-                      <span class="cp-row-empresa__name">{{ item.contenedor__nombre }}</span>
-                      @if (item.contenedor__cortesia) {
-                        <span class="cp-chip cp-chip--free">Cortesía</span>
-                      }
+                    <div class="cl-card__identity-text">
+                      <span class="cl-card__nombre">{{ item.nombre }}</span>
+                      <span class="cl-card__schema">{{ item.schema_name }}</span>
                     </div>
                   </div>
-                </td>
-
-                <td class="cp-table__td cp-table__td--schema">
-                  <span class="cp-schema">{{ item.contenedor__schema_name }}</span>
-                </td>
-
-                <td class="cp-table__td">
-                  <span class="cp-chip cp-chip--plan">{{ item.contenedor__plan__nombre }}</span>
-                </td>
-
-                <td class="cp-table__td">
-                  <span class="cp-chip cp-chip--rol cp-chip--rol-{{ item.rol }}">{{
-                    item.rol
-                  }}</span>
-                </td>
-
-                <td class="cp-table__td cp-table__td--usuarios">
-                  <span class="cp-usuarios">
-                    <i class="pi pi-users"></i>
-                    {{ item.contenedor__usuarios }}/{{ item.contenedor__plan__usuarios_base }}
+                  <div class="cl-card__contact">
+                    <i class="pi pi-globe cl-card__contact-icon"></i>
+                    <span class="cl-card__contact-text">{{ item.dominio }}</span>
+                  </div>
+                </div>
+                <div class="cl-card__footer">
+                  <span class="cl-status" [class.cl-status--active]="item.activo">
+                    <span class="cl-status__dot"></span>
+                    {{ item.activo ? 'Activo' : 'Inactivo' }}
                   </span>
-                </td>
-
-                <td class="cp-table__td cp-table__td--action">
-                  <button class="cp-btn-ingresar" (click)="enterContenedor(item)" type="button">
+                  <button class="cl-btn-ingresar" type="button" (click)="enterContenedor(item)">
                     Ingresar
                     <i class="pi pi-arrow-right"></i>
                   </button>
-                </td>
-              </tr>
-            } @empty {
-              <tr>
-                <td class="cp-table__td" colspan="6">
-                  <div class="cp-empty">
-                    <i class="pi pi-building cp-empty__icon"></i>
-                    <p class="cp-empty__title">Sin empresas asignadas</p>
-                    <p class="cp-empty__sub">
-                      Contacta al administrador para que te agregue a una empresa.
-                    </p>
-                  </div>
-                </td>
-              </tr>
+                </div>
+              </div>
             }
-          }
-        </tbody>
-      </table>
+          </div>
+        } @else if (searchQuery()) {
+          <div class="cl-empty">
+            <span class="cl-empty__icon-wrap">
+              <i class="pi pi-search"></i>
+            </span>
+            <p class="cl-empty__title">Sin resultados</p>
+            <p class="cl-empty__sub">
+              No encontramos empresas que coincidan con "{{ searchQuery() }}".
+            </p>
+          </div>
+        } @else {
+          <div class="cl-empty">
+            <span class="cl-empty__icon-wrap">
+              <i class="pi pi-building"></i>
+            </span>
+            <p class="cl-empty__title">Sin empresas</p>
+            <p class="cl-empty__sub">Aún no tenés ningún espacio de trabajo asignado.</p>
+            <button
+              class="cl-btn-new cl-btn-new--centered"
+              type="button"
+              (click)="showCreate.set(true)"
+            >
+              <i class="pi pi-plus"></i>
+              Crear primera empresa
+            </button>
+          </div>
+        }
+      }
     </div>
-  </main>
+  </div>
 </div>
+
+<app-contenedores-create-dialog [(visible)]="showCreate" (created)="onContenedorCreated()" />
