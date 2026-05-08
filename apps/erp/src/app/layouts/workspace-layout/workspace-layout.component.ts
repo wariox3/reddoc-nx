@@ -35,10 +35,7 @@ export class WorkspaceLayoutComponent {
 
   readonly navItems = computed<NavItem[]>(() => {
     const labels = this.t().layout.nav;
-    return [
-      { label: labels.dashboard, icon: 'pi pi-th-large', path: '/dashboard' },
-      { label: labels.account, icon: 'pi pi-user', externalUrl: this.env.cuentaUrl },
-    ];
+    return [{ label: labels.dashboard, icon: 'pi pi-th-large', path: '/dashboard' }];
   });
 
   readonly drawerVisible = signal(false);

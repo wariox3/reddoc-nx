@@ -18,9 +18,9 @@ export const es: AppDict = {
   },
   contenedores: {
     list: {
-      title: 'Tus empresas',
+      title: 'Tus contenedores',
       subtitle: 'Seleccioná un espacio de trabajo para continuar',
-      newButton: 'Nueva empresa',
+      newButton: 'Nuevo contenedor',
       searchPlaceholder: 'Buscar...',
       enter: 'Ingresar',
       status: { active: 'Activo', inactive: 'Inactivo' },
@@ -37,10 +37,10 @@ export const es: AppDict = {
       },
     },
     create: {
-      title: 'Nueva empresa',
+      title: 'Nuevo contenedor',
       subtitle: 'Configurá el nuevo espacio de trabajo',
       fields: {
-        name: 'Nombre de la empresa',
+        name: 'Nombre del contenedor',
         namePlaceholder: 'Ej: Acme Corp',
         phone: 'Teléfono',
         phonePlaceholder: 'Ej: +54 9 11 1234-5678',
@@ -54,10 +54,10 @@ export const es: AppDict = {
         emailRequired: 'El correo es obligatorio.',
         emailInvalid: 'Ingresá un correo válido.',
       },
-      submit: 'Crear empresa',
+      submit: 'Crear contenedor',
       cancel: 'Cancelar',
       toasts: {
-        success: { title: 'Empresa creada', desc: 'El contenedor fue creado correctamente.' },
+        success: { title: 'Contenedor creado', desc: 'El contenedor fue creado correctamente.' },
         error: {
           title: 'Error al crear',
           desc: 'No se pudo crear el contenedor. Intentá de nuevo.',
