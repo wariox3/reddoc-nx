@@ -53,7 +53,7 @@
       <img src="/logos/reddoc.svg" alt="RedDoc" class="form-panel__logo-img" />
       <a routerLink="/auth/login" class="form-panel__back">
         <i class="pi pi-arrow-left"></i>
-        Volver al login
+        {{ t().auth.backToLogin }}
       </a>
 
       @if (!submitted()) {
@@ -61,9 +61,9 @@
           <h2
             class="text-[1.75rem] font-extrabold tracking-tight text-brand-text m-0 mb-2 leading-[1.15]"
           >
-            Crear cuenta
+            {{ t().auth.register.title }}
           </h2>
-          <p class="text-sm text-brand-muted m-0">Completa tus datos para registrarte.</p>
+          <p class="text-sm text-brand-muted m-0">{{ t().auth.register.subtitle }}</p>
         </div>
 
         <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="flex flex-col gap-4">
@@ -76,7 +76,7 @@
               for="nombre_corto"
               class="text-[0.855rem] font-semibold text-brand-text tracking-tight"
             >
-              Nombre
+              {{ t().auth.fields.name }}
             </label>
             <input
               pInputText
@@ -84,15 +84,15 @@
               type="text"
               formControlName="nombre_corto"
               fluid
-              placeholder="Juan Pérez"
+              [placeholder]="t().auth.fields.namePlaceholder"
               [invalid]="nombreCortoControl.invalid && nombreCortoControl.touched"
             />
             @if (nombreCortoControl.invalid && nombreCortoControl.touched) {
               <small class="text-[0.78rem] text-red-500">
                 @if (nombreCortoControl.hasError('required')) {
-                  El nombre es requerido.
+                  {{ t().auth.validation.nameRequired }}
                 } @else if (nombreCortoControl.hasError('minlength')) {
-                  Mínimo 2 caracteres.
+                  {{ t().auth.validation.nameMin2 }}
                 }
               </small>
             }
@@ -100,7 +100,7 @@
 
           <div class="flex flex-col gap-1.5">
             <label for="email" class="text-[0.855rem] font-semibold text-brand-text tracking-tight">
-              Correo electrónico
+              {{ t().auth.fields.email }}
             </label>
             <input
               pInputText
@@ -108,15 +108,15 @@
               type="email"
               formControlName="email"
               fluid
-              placeholder="usuario@ejemplo.com"
+              [placeholder]="t().auth.fields.emailPlaceholder"
               [invalid]="emailControl.invalid && emailControl.touched"
             />
             @if (emailControl.invalid && emailControl.touched) {
               <small class="text-[0.78rem] text-red-500">
                 @if (emailControl.hasError('required')) {
-                  El correo es requerido.
+                  {{ t().auth.validation.emailRequired }}
                 } @else if (emailControl.hasError('email')) {
-                  Ingresa un correo válido.
+                  {{ t().auth.validation.emailInvalid }}
                 }
               </small>
             }
@@ -127,22 +127,22 @@
               for="password"
               class="text-[0.855rem] font-semibold text-brand-text tracking-tight"
             >
-              Contraseña
+              {{ t().auth.fields.password }}
             </label>
             <p-password
               inputId="password"
               formControlName="password"
               fluid
               [toggleMask]="true"
-              placeholder="••••••••"
+              [placeholder]="t().auth.fields.passwordPlaceholder"
               [invalid]="passwordControl.invalid && passwordControl.touched"
             />
             @if (passwordControl.invalid && passwordControl.touched) {
               <small class="text-[0.78rem] text-red-500">
                 @if (passwordControl.hasError('required')) {
-                  La contraseña es requerida.
+                  {{ t().auth.validation.passwordRequired }}
                 } @else if (passwordControl.hasError('minlength')) {
-                  Mínimo 8 caracteres.
+                  {{ t().auth.validation.passwordMin8 }}
                 }
               </small>
             }
@@ -153,7 +153,7 @@
               for="confirmPassword"
               class="text-[0.855rem] font-semibold text-brand-text tracking-tight"
             >
-              Confirmar contraseña
+              {{ t().auth.fields.confirmPassword }}
             </label>
             <p-password
               inputId="confirmPassword"
@@ -161,7 +161,7 @@
               fluid
               [toggleMask]="true"
               [feedback]="false"
-              placeholder="••••••••"
+              [placeholder]="t().auth.fields.passwordPlaceholder"
               [invalid]="
                 (confirmPasswordControl.invalid && confirmPasswordControl.touched) ||
                 (form.hasError('passwordMismatch') && confirmPasswordControl.touched)
@@ -173,9 +173,9 @@
             ) {
               <small class="text-[0.78rem] text-red-500">
                 @if (confirmPasswordControl.hasError('required')) {
-                  Debes confirmar la contraseña.
+                  {{ t().auth.validation.passwordConfirmRequired }}
                 } @else if (form.hasError('passwordMismatch')) {
-                  Las contraseñas no coinciden.
+                  {{ t().auth.validation.passwordMismatch }}
                 }
               </small>
             }
@@ -190,9 +190,9 @@
               inputId="terms"
             />
             <label for="terms" class="text-[0.82rem] text-brand-muted cursor-pointer">
-              Acepto los
+              {{ t().auth.register.terms.acceptPrefix }}
               <a (click)="termsDialogVisible.set(true); $event.preventDefault()" href="#">
-                términos y condiciones
+                {{ t().auth.register.terms.link }}
               </a>
             </label>
           </div>
@@ -205,35 +205,36 @@
 
           <p-button
             type="submit"
-            label="Crear cuenta"
+            [label]="t().auth.register.submit"
             fluid
             [loading]="isLoading()"
             [disabled]="isLoading() || !captchaToken() || !termsAccepted()"
           />
 
           <p class="text-center text-[0.8rem] text-brand-muted m-0">
-            ¿Ya tienes cuenta?
+            {{ t().auth.register.alreadyHaveAccount }}
             <a
               routerLink="/auth/login"
               class="font-semibold text-brand-blue no-underline transition-opacity hover:opacity-75"
             >
-              Inicia sesión
+              {{ t().auth.register.loginLink }}
             </a>
           </p>
         </form>
       } @else {
         <div class="flex flex-col items-center text-center gap-4 py-8">
           <i class="pi pi-check-circle text-5xl text-brand-blue"></i>
-          <h2 class="text-2xl font-extrabold text-brand-text m-0">¡Registro exitoso!</h2>
+          <h2 class="text-2xl font-extrabold text-brand-text m-0">
+            {{ t().auth.register.success.title }}
+          </h2>
           <p class="text-sm text-brand-muted m-0 max-w-[320px]">
-            Tu cuenta fue creada correctamente. Recibirás un correo de confirmación para verificar
-            tu cuenta.
+            {{ t().auth.register.success.desc }}
           </p>
           <a
             routerLink="/auth/login"
             class="text-sm font-semibold text-brand-blue no-underline hover:opacity-75"
           >
-            Ir al login ahora
+            {{ t().auth.register.success.goLogin }}
           </a>
         </div>
       }
@@ -242,7 +243,7 @@
 </div>
 
 <p-dialog
-  header="Términos y condiciones"
+  [header]="t().auth.register.terms.dialogTitle"
   [(visible)]="termsDialogVisible"
   [modal]="true"
   [dismissableMask]="true"

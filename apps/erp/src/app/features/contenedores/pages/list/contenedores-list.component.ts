@@ -2,11 +2,13 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Subject, startWith, switchMap } from 'rxjs';
+import { I18nService } from '@reddoc/core';
 import { AuthService } from '../../../auth/services/auth.service';
 import { Contenedor } from '../../models/contenedor.model';
 import { ContenedorService } from '../../services/contenedor.service';
 import { ContenedoresCreateDialogComponent } from '../../components/create-dialog/contenedores-create-dialog.component';
 import { ROUTE_PATHS } from '../../../../core/constants/route-paths.constants';
+import type { AppDict } from '../../../../i18n';
 
 @Component({
   selector: 'app-contenedores-list',
@@ -19,6 +21,9 @@ export class ContenedoresListComponent {
   private readonly contenedorService = inject(ContenedorService);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly i18n = inject<I18nService<AppDict>>(I18nService);
+
+  protected readonly t = this.i18n.t;
 
   readonly showCreate = signal(false);
 

@@ -1,9 +1,10 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { DrawerModule } from 'primeng/drawer';
-import { ENVIRONMENT } from '@reddoc/core';
+import { ENVIRONMENT, I18nService } from '@reddoc/core';
 import { UserMenuComponent } from '../../shared/user-menu/user-menu.component';
+import type { AppDict } from '../../i18n';
 
 interface NavItem {
   label: string;
@@ -28,11 +29,17 @@ interface NavItem {
 })
 export class WorkspaceLayoutComponent {
   private readonly env = inject(ENVIRONMENT);
+  private readonly i18n = inject<I18nService<AppDict>>(I18nService);
 
-  readonly navItems: NavItem[] = [
-    { label: 'Dashboard', icon: 'pi pi-th-large', path: '/dashboard' },
-    { label: 'Gestionar cuenta', icon: 'pi pi-user', externalUrl: this.env.cuentaUrl },
-  ];
+  protected readonly t = this.i18n.t;
+
+  readonly navItems = computed<NavItem[]>(() => {
+    const labels = this.t().layout.nav;
+    return [
+      { label: labels.dashboard, icon: 'pi pi-th-large', path: '/dashboard' },
+      { label: labels.account, icon: 'pi pi-user', externalUrl: this.env.cuentaUrl },
+    ];
+  });
 
   readonly drawerVisible = signal(false);
 

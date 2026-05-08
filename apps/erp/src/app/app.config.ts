@@ -23,9 +23,11 @@ import {
   ReddocPreset,
   authInterceptor,
   errorInterceptor,
+  provideI18n,
 } from '@reddoc/core';
 import { AuthService } from './features/auth/services/auth.service';
 import { ROUTE_PATHS } from './core/constants/route-paths.constants';
+import { dictionaries } from './i18n';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -44,6 +46,7 @@ export const appConfig: ApplicationConfig = {
       },
     }),
     MessageService,
+    provideI18n(dictionaries),
     { provide: ENVIRONMENT, useValue: environment },
     {
       provide: ROUTE_PATHS_TOKEN,

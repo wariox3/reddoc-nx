@@ -10,8 +10,15 @@ import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { PasswordModule } from 'primeng/password';
 import { MessageModule } from 'primeng/message';
-import { APP_BRANDING, AUTH_SERVICE, ROUTE_PATHS_TOKEN, extractErrorMessage } from '@reddoc/core';
+import {
+  APP_BRANDING,
+  AUTH_SERVICE,
+  I18nService,
+  ROUTE_PATHS_TOKEN,
+  extractErrorMessage,
+} from '@reddoc/core';
 import { TurnstileComponent } from '../../turnstile/turnstile.component';
+import type { AuthTranslationsHost } from '../i18n';
 
 function passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
   const password = control.get('password')?.value;
@@ -47,6 +54,7 @@ export class ResetPasswordComponent implements OnInit {
     appName: 'Plataforma',
     tagline: 'Gestiona tu empresa desde un solo lugar.',
   };
+  protected readonly t = inject<I18nService<AuthTranslationsHost>>(I18nService).t;
 
   readonly isLoading = signal(false);
   readonly errorMessage = signal<string | null>(null);
@@ -95,12 +103,7 @@ export class ResetPasswordComponent implements OnInit {
       error: (err) => {
         this.turnstile()?.reset();
         this.captchaToken.set(null);
-        this.errorMessage.set(
-          extractErrorMessage(
-            err,
-            'No se pudo restablecer la contraseña. El enlace puede haber expirado.',
-          ),
-        );
+        this.errorMessage.set(extractErrorMessage(err, this.t().auth.resetPassword.errors.generic));
         this.isLoading.set(false);
       },
     });

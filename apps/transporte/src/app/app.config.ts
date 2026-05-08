@@ -23,7 +23,9 @@ import {
   ReddocPreset,
   authInterceptor,
   errorInterceptor,
+  provideI18n,
 } from '@reddoc/core';
+import { authEs, authEn } from '@reddoc/ui';
 import { AuthService } from './features/auth/services/auth.service';
 import { ROUTE_PATHS } from './core/constants/route-paths.constants';
 
@@ -44,6 +46,7 @@ export const appConfig: ApplicationConfig = {
       },
     }),
     MessageService,
+    provideI18n({ es: { auth: authEs }, en: { auth: authEn } }),
     { provide: ENVIRONMENT, useValue: environment },
     {
       provide: ROUTE_PATHS_TOKEN,

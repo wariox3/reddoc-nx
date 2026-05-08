@@ -1,20 +1,25 @@
-import { Component, ViewChild, computed, inject } from '@angular/core';
+import { Component, ViewChild, computed, effect, inject } from '@angular/core';
 import { AvatarModule } from 'primeng/avatar';
 import { Menu, MenuModule } from 'primeng/menu';
 import { MenuItem } from 'primeng/api';
-import { ENVIRONMENT } from '@reddoc/core';
+import { ENVIRONMENT, I18nService } from '@reddoc/core';
+import { LanguageToggleComponent } from '@reddoc/ui';
 import { AuthService } from '../../features/auth/services/auth.service';
+import type { AppDict } from '../../i18n';
 
 @Component({
   selector: 'app-user-menu',
   standalone: true,
-  imports: [AvatarModule, MenuModule],
+  imports: [AvatarModule, MenuModule, LanguageToggleComponent],
   templateUrl: './user-menu.component.html',
   styleUrl: './user-menu.component.scss',
 })
 export class UserMenuComponent {
   private readonly authService = inject(AuthService);
   private readonly env = inject(ENVIRONMENT);
+  private readonly i18n = inject<I18nService<AppDict>>(I18nService);
+
+  protected readonly t = this.i18n.t;
 
   @ViewChild('menu') menu!: Menu;
 
@@ -35,19 +40,26 @@ export class UserMenuComponent {
 
   readonly email = computed(() => this.authService.currentUser()?.email ?? '');
 
-  readonly items: MenuItem[] = [
-    {
-      label: 'Gestionar cuenta',
-      icon: 'pi pi-user',
-      url: this.env.cuentaUrl,
-      target: '_blank',
-    },
-    {
-      label: 'Cerrar sesión',
-      icon: 'pi pi-sign-out',
-      command: () => this.authService.logout(),
-    },
-  ];
+  items: MenuItem[] = [];
+
+  constructor() {
+    effect(() => {
+      const labels = this.t().layout.userMenu;
+      this.items = [
+        {
+          label: labels.manageAccount,
+          icon: 'pi pi-user',
+          url: this.env.cuentaUrl,
+          target: '_blank',
+        },
+        {
+          label: labels.logout,
+          icon: 'pi pi-sign-out',
+          command: () => this.authService.logout(),
+        },
+      ];
+    });
+  }
 
   toggle(event: Event): void {
     this.menu.toggle(event);

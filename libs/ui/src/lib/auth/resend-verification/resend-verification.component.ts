@@ -4,8 +4,9 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
-import { APP_BRANDING, AUTH_SERVICE, extractErrorMessage } from '@reddoc/core';
+import { APP_BRANDING, AUTH_SERVICE, I18nService, extractErrorMessage } from '@reddoc/core';
 import { TurnstileComponent } from '../../turnstile/turnstile.component';
+import type { AuthTranslationsHost } from '../i18n';
 
 @Component({
   selector: 'lib-resend-verification',
@@ -31,6 +32,7 @@ export class ResendVerificationComponent implements OnInit, OnDestroy {
     appName: 'Plataforma',
     tagline: 'Gestiona tu empresa desde un solo lugar.',
   };
+  protected readonly t = inject<I18nService<AuthTranslationsHost>>(I18nService).t;
 
   readonly isLoading = signal(false);
   readonly errorMessage = signal<string | null>(null);
@@ -87,7 +89,7 @@ export class ResendVerificationComponent implements OnInit, OnDestroy {
           this.turnstile()?.reset();
           this.captchaToken.set(null);
           this.errorMessage.set(
-            extractErrorMessage(err, 'No se pudo reenviar el correo. Inténtalo de nuevo.'),
+            extractErrorMessage(err, this.t().auth.resendVerification.errors.generic),
           );
           this.isLoading.set(false);
         },

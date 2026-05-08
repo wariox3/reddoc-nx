@@ -23,21 +23,21 @@
       <img src="/logos/reddoc.svg" alt="RedDoc" class="form-panel__logo-img" />
       <a routerLink="/auth/login" class="form-panel__back">
         <i class="pi pi-arrow-left"></i>
-        Volver al login
+        {{ t().auth.backToLogin }}
       </a>
 
       @if (isUnverified()) {
         <p-message
           severity="warn"
-          text="Tu cuenta aún no ha sido verificada. Reenvía el correo de verificación."
+          [text]="t().auth.resendVerification.unverifiedAlert"
           styleClass="w-full"
         />
       }
 
       @if (!submitted()) {
         <div class="form-panel__header">
-          <h2 class="form-panel__title">Reenviar verificación</h2>
-          <p class="form-panel__subtitle">Te enviaremos un nuevo correo de verificación.</p>
+          <h2 class="form-panel__title">{{ t().auth.resendVerification.title }}</h2>
+          <p class="form-panel__subtitle">{{ t().auth.resendVerification.subtitle }}</p>
         </div>
 
         <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="auth-form">
@@ -46,22 +46,22 @@
           }
 
           <div class="field">
-            <label for="email" class="field__label">Correo electrónico</label>
+            <label for="email" class="field__label">{{ t().auth.fields.email }}</label>
             <input
               pInputText
               id="email"
               type="email"
               formControlName="email"
               fluid
-              placeholder="usuario@ejemplo.com"
+              [placeholder]="t().auth.fields.emailPlaceholder"
               [invalid]="emailControl.invalid && emailControl.touched"
             />
             @if (emailControl.invalid && emailControl.touched) {
               <small class="form-error">
                 @if (emailControl.hasError('required')) {
-                  El correo es requerido.
+                  {{ t().auth.validation.emailRequired }}
                 } @else if (emailControl.hasError('email')) {
-                  Ingresa un correo válido.
+                  {{ t().auth.validation.emailInvalid }}
                 }
               </small>
             }
@@ -75,7 +75,7 @@
 
           <p-button
             type="submit"
-            label="Reenviar correo"
+            [label]="t().auth.resendVerification.submit"
             fluid
             styleClass="auth-btn"
             [loading]="isLoading()"
@@ -85,14 +85,17 @@
       } @else {
         <div class="success-state">
           <div class="success-state__icon"><i class="pi pi-envelope"></i></div>
-          <h2 class="success-state__title">Correo enviado</h2>
-          <p class="success-state__desc">
-            Revisa tu bandeja de entrada y sigue las instrucciones del correo de verificación.
-          </p>
+          <h2 class="success-state__title">{{ t().auth.resendVerification.success.title }}</h2>
+          <p class="success-state__desc">{{ t().auth.resendVerification.success.desc }}</p>
           @if (cooldown() > 0) {
-            <p class="success-state__cooldown">Puedes reenviar en {{ cooldown() }}s</p>
+            <p class="success-state__cooldown">
+              {{ t().auth.resendVerification.success.cooldownPrefix }}{{ cooldown()
+              }}{{ t().auth.resendVerification.success.cooldownSuffix }}
+            </p>
           } @else {
-            <button class="success-state__back" (click)="resendAgain()">Reenviar de nuevo</button>
+            <button class="success-state__back" (click)="resendAgain()">
+              {{ t().auth.resendVerification.success.resend }}
+            </button>
           }
         </div>
       }

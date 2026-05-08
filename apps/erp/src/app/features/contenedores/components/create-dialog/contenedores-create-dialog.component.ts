@@ -4,9 +4,10 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
-import { ToastService } from '@reddoc/core';
+import { I18nService, ToastService } from '@reddoc/core';
 import { AuthService } from '../../../auth/services/auth.service';
 import { ContenedorService } from '../../services/contenedor.service';
+import type { AppDict } from '../../../../i18n';
 
 @Component({
   selector: 'app-contenedores-create-dialog',
@@ -21,6 +22,9 @@ export class ContenedoresCreateDialogComponent {
   private readonly toastService = inject(ToastService);
   private readonly authService = inject(AuthService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly i18n = inject<I18nService<AppDict>>(I18nService);
+
+  protected readonly t = this.i18n.t;
 
   readonly visible = input<boolean>(false);
   readonly visibleChange = output<boolean>();
@@ -62,17 +66,16 @@ export class ContenedoresCreateDialogComponent {
       .subscribe({
         next: () => {
           this.isSaving.set(false);
-          this.toastService.success('Empresa creada', 'El contenedor fue creado correctamente.');
+          const toasts = this.t().contenedores.create.toasts;
+          this.toastService.success(toasts.success.title, toasts.success.desc);
           this.created.emit();
           this.visibleChange.emit(false);
           this.form.reset();
         },
         error: () => {
           this.isSaving.set(false);
-          this.toastService.error(
-            'Error al crear',
-            'No se pudo crear el contenedor. Intentá de nuevo.',
-          );
+          const toasts = this.t().contenedores.create.toasts;
+          this.toastService.error(toasts.error.title, toasts.error.desc);
         },
       });
   }

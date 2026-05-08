@@ -1,0 +1,110 @@
+import type { AuthDict } from './auth.dict';
+
+export const authEn: AuthDict = {
+  brandPanel: {
+    feature1: 'Real-time reports',
+    feature2: 'Team management',
+    feature3: 'Secure access',
+  },
+  backToHome: 'Back to home',
+  backToLogin: 'Back to login',
+  fields: {
+    email: 'Email',
+    emailPlaceholder: 'user@example.com',
+    password: 'Password',
+    passwordPlaceholder: '••••••••',
+    name: 'Name',
+    namePlaceholder: 'John Doe',
+    newPassword: 'New password',
+    confirmPassword: 'Confirm password',
+  },
+  validation: {
+    emailRequired: 'Email is required.',
+    emailInvalid: 'Enter a valid email.',
+    passwordRequired: 'Password is required.',
+    passwordMin6: 'Minimum 6 characters.',
+    passwordMin8: 'Minimum 8 characters.',
+    passwordConfirmRequired: 'You must confirm the password.',
+    passwordMismatch: 'Passwords do not match.',
+    nameRequired: 'Name is required.',
+    nameMin2: 'Minimum 2 characters.',
+  },
+  login: {
+    title: 'Sign in',
+    subtitle: 'Enter your credentials to continue',
+    forgotLink: 'Forgot your password?',
+    submit: 'Sign in',
+    noAccount: "Don't have an account?",
+    registerLink: 'Sign up',
+    errors: { invalidCredentials: 'Invalid credentials.' },
+  },
+  register: {
+    title: 'Create account',
+    subtitle: 'Fill in your details to register.',
+    submit: 'Create account',
+    alreadyHaveAccount: 'Already have an account?',
+    loginLink: 'Sign in',
+    terms: {
+      acceptPrefix: 'I accept the',
+      link: 'terms and conditions',
+      dialogTitle: 'Terms and conditions',
+    },
+    success: {
+      title: 'Registration successful!',
+      desc: 'Your account was created. You will receive a confirmation email to verify it.',
+      goLogin: 'Go to sign in',
+    },
+    errors: { generic: 'Could not complete registration. Try again.' },
+  },
+  forgotPassword: {
+    title: 'Recover password',
+    subtitle: 'Enter your email and we will send you a link to reset your password.',
+    submit: 'Send link',
+    success: {
+      title: 'Check your email',
+      desc: 'If the email is registered, you will receive a link to reset your password within minutes.',
+    },
+    errors: { generic: 'Something went wrong. Try again.' },
+  },
+  resetPassword: {
+    title: 'New password',
+    subtitle: 'Set a new password for your account.',
+    submit: 'Reset password',
+    success: {
+      title: 'Password updated!',
+      desc: 'Your password has been reset. You will be redirected to sign in shortly.',
+      goLogin: 'Go to sign in',
+    },
+    errors: { generic: 'Could not reset the password. The link may have expired.' },
+  },
+  verifyEmail: {
+    loading: {
+      title: 'Verifying your account...',
+      desc: 'Please wait a moment.',
+    },
+    success: {
+      title: 'Account verified!',
+      desc: 'Your account was verified successfully. You can now sign in.',
+      action: 'Go to sign in',
+    },
+    error: {
+      title: 'Verification error',
+      action: 'Resend verification',
+    },
+    errors: { generic: 'Could not verify the account. The link may have expired or be invalid.' },
+  },
+  resendVerification: {
+    unverifiedAlert: 'Your account has not been verified yet. Resend the verification email.',
+    title: 'Resend verification',
+    subtitle: 'We will send you a new verification email.',
+    submit: 'Resend email',
+    success: {
+      title: 'Email sent',
+      desc: 'Check your inbox and follow the instructions in the verification email.',
+      cooldownPrefix: 'You can resend in ',
+      cooldownSuffix: 's',
+      resend: 'Resend again',
+    },
+    errors: { generic: 'Could not resend the email. Try again.' },
+  },
+};

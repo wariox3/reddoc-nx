@@ -14,8 +14,9 @@ import { PasswordModule } from 'primeng/password';
 import { MessageModule } from 'primeng/message';
 import { CheckboxModule } from 'primeng/checkbox';
 import { DialogModule } from 'primeng/dialog';
-import { APP_BRANDING, AUTH_SERVICE, extractErrorMessage } from '@reddoc/core';
+import { APP_BRANDING, AUTH_SERVICE, I18nService, extractErrorMessage } from '@reddoc/core';
 import { TurnstileComponent } from '../../turnstile/turnstile.component';
+import type { AuthTranslationsHost } from '../i18n';
 
 function passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
   const password = control.get('password')?.value;
@@ -51,6 +52,7 @@ export class RegisterComponent {
     appName: 'Plataforma',
     tagline: 'Gestiona tu empresa desde un solo lugar.',
   };
+  protected readonly t = inject<I18nService<AuthTranslationsHost>>(I18nService).t;
 
   readonly isLoading = signal(false);
   readonly errorMessage = signal<string | null>(null);
@@ -96,9 +98,7 @@ export class RegisterComponent {
         error: (err) => {
           this.turnstile()?.reset();
           this.captchaToken.set(null);
-          this.errorMessage.set(
-            extractErrorMessage(err, 'No se pudo completar el registro. Inténtalo de nuevo.'),
-          );
+          this.errorMessage.set(extractErrorMessage(err, this.t().auth.register.errors.generic));
           this.isLoading.set(false);
         },
       });

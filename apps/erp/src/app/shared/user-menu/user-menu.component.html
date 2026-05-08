@@ -2,7 +2,7 @@
   type="button"
   class="user-menu__trigger"
   (click)="toggle($event)"
-  [attr.aria-label]="'Menú de usuario, ' + displayName()"
+  [attr.aria-label]="t().layout.userMenu.label + ', ' + displayName()"
 >
   <p-avatar [label]="initials()" shape="circle" styleClass="user-menu__avatar" />
 </button>
@@ -12,6 +12,11 @@
     <div class="user-menu__header">
       <p class="user-menu__name">{{ displayName() }}</p>
       <p class="user-menu__email">{{ email() }}</p>
+    </div>
+  </ng-template>
+  <ng-template #end>
+    <div class="user-menu__lang">
+      <lib-language-toggle />
     </div>
   </ng-template>
 </p-menu>

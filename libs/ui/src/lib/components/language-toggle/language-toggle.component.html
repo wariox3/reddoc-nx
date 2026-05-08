@@ -1,0 +1,19 @@
+<div class="lt" role="group" aria-label="Language">
+  <button
+    type="button"
+    class="lt__btn"
+    [class.lt__btn--active]="lang() === 'es'"
+    (click)="setLang('es')"
+  >
+    ES
+  </button>
+  <span class="lt__sep" aria-hidden="true">/</span>
+  <button
+    type="button"
+    class="lt__btn"
+    [class.lt__btn--active]="lang() === 'en'"
+    (click)="setLang('en')"
+  >
+    EN
+  </button>
+</div>

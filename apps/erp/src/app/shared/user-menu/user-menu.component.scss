@@ -63,3 +63,11 @@
   color: var(--brand-muted);
   word-break: break-all;
 }
+
+.user-menu__lang {
+  padding: 0.5rem 1rem 0.85rem;
+  border-top: 1px solid rgba(20 48 73 / 0.08);
+  margin-top: 0.25rem;
+  display: flex;
+  justify-content: flex-start;
+}

@@ -3,8 +3,8 @@
     <!-- Panel header -->
     <div class="cl-panel__header">
       <div class="cl-panel__header-text">
-        <h1 class="cl-panel__title">Tus empresas</h1>
-        <p class="cl-panel__sub">Seleccioná un espacio de trabajo para continuar</p>
+        <h1 class="cl-panel__title">{{ t().contenedores.list.title }}</h1>
+        <p class="cl-panel__sub">{{ t().contenedores.list.subtitle }}</p>
       </div>
       <div class="cl-search-wrap">
         <i class="pi pi-search cl-search-icon"></i>
@@ -12,7 +12,7 @@
           #searchInput
           type="text"
           class="cl-search"
-          placeholder="Buscar..."
+          [placeholder]="t().contenedores.list.searchPlaceholder"
           [value]="searchQuery()"
           (input)="searchQuery.set(searchInput.value)"
         />
@@ -28,7 +28,7 @@
       </div>
       <button class="cl-btn-new" type="button" (click)="showCreate.set(true)">
         <i class="pi pi-plus"></i>
-        Nueva empresa
+        {{ t().contenedores.list.newButton }}
       </button>
     </div>
 
@@ -80,10 +80,14 @@
                 <div class="cl-card__footer">
                   <span class="cl-status" [class.cl-status--active]="item.activo">
                     <span class="cl-status__dot"></span>
-                    {{ item.activo ? 'Activo' : 'Inactivo' }}
+                    {{
+                      item.activo
+                        ? t().contenedores.list.status.active
+                        : t().contenedores.list.status.inactive
+                    }}
                   </span>
                   <button class="cl-btn-ingresar" type="button" (click)="enterContenedor(item)">
-                    Ingresar
+                    {{ t().contenedores.list.enter }}
                     <i class="pi pi-arrow-right"></i>
                   </button>
                 </div>
@@ -95,25 +99,23 @@
             <span class="cl-empty__icon-wrap">
               <i class="pi pi-search"></i>
             </span>
-            <p class="cl-empty__title">Sin resultados</p>
-            <p class="cl-empty__sub">
-              No encontramos empresas que coincidan con "{{ searchQuery() }}".
-            </p>
+            <p class="cl-empty__title">{{ t().contenedores.list.empty.noResults.title }}</p>
+            <p class="cl-empty__sub">{{ t().contenedores.list.empty.noResults.sub }}</p>
           </div>
         } @else {
           <div class="cl-empty">
             <span class="cl-empty__icon-wrap">
               <i class="pi pi-building"></i>
             </span>
-            <p class="cl-empty__title">Sin empresas</p>
-            <p class="cl-empty__sub">Aún no tenés ningún espacio de trabajo asignado.</p>
+            <p class="cl-empty__title">{{ t().contenedores.list.empty.noContenedores.title }}</p>
+            <p class="cl-empty__sub">{{ t().contenedores.list.empty.noContenedores.sub }}</p>
             <button
               class="cl-btn-new cl-btn-new--centered"
               type="button"
               (click)="showCreate.set(true)"
             >
               <i class="pi pi-plus"></i>
-              Crear primera empresa
+              {{ t().contenedores.list.empty.noContenedores.cta }}
             </button>
           </div>
         }
