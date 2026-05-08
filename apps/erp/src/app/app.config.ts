@@ -15,7 +15,7 @@ import { appRoutes } from './app.routes';
 import { environment } from '../environments/environment';
 import {
   APP_BRANDING,
-  AUTH_API_ENDPOINTS,
+  AUTH_DEFAULT_SKIP_URLS,
   CONTENEDOR_ACCESS_SERVICE,
   ENVIRONMENT,
   ROUTE_PATHS_TOKEN,
@@ -72,7 +72,7 @@ export const appConfig: ApplicationConfig = {
     { provide: CONTENEDOR_ACCESS_SERVICE, useExisting: ContenedorService },
     {
       provide: AUTH_SKIP_URLS,
-      useValue: Object.values(AUTH_API_ENDPOINTS),
+      useValue: AUTH_DEFAULT_SKIP_URLS,
     },
     provideAppInitializer(() => {
       const auth = inject(AuthService);

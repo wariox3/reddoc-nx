@@ -36,6 +36,18 @@ export const AUTH_API_ENDPOINTS: AuthApiEndpoints = {
   verifyEmail: '/seguridad/usuario/verificar-email/',
 };
 
+// /me queda fuera: un 401 en ese endpoint debe disparar el refresh automático.
+export const AUTH_DEFAULT_SKIP_URLS: string[] = [
+  AUTH_API_ENDPOINTS.login,
+  AUTH_API_ENDPOINTS.register,
+  AUTH_API_ENDPOINTS.logout,
+  AUTH_API_ENDPOINTS.refresh,
+  AUTH_API_ENDPOINTS.forgotPassword,
+  AUTH_API_ENDPOINTS.resetPassword,
+  AUTH_API_ENDPOINTS.resendVerification,
+  AUTH_API_ENDPOINTS.verifyEmail,
+];
+
 export abstract class BaseAuthService<TUser extends BaseUsuario> {
   protected readonly http = inject(HttpClient);
   protected readonly router = inject(Router);

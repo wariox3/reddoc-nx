@@ -15,7 +15,7 @@ import { appRoutes } from './app.routes';
 import { environment } from '../environments/environment';
 import {
   APP_BRANDING,
-  AUTH_API_ENDPOINTS,
+  AUTH_DEFAULT_SKIP_URLS,
   ENVIRONMENT,
   ROUTE_PATHS_TOKEN,
   AUTH_SERVICE,
@@ -69,7 +69,7 @@ export const appConfig: ApplicationConfig = {
     { provide: AUTH_SERVICE, useExisting: AuthService },
     {
       provide: AUTH_SKIP_URLS,
-      useValue: Object.values(AUTH_API_ENDPOINTS),
+      useValue: AUTH_DEFAULT_SKIP_URLS,
     },
     provideAppInitializer(() => {
       const auth = inject(AuthService);
