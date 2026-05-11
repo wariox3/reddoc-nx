@@ -3,8 +3,8 @@ import Aura from '@primeuix/themes/aura';
 
 export const ReddocPreset = definePreset(Aura, {
   primitive: {
-    navy: palette('#143049'),
-    sky: palette('#77aad7'),
+    navy: palette('#009ef7'),
+    sky: palette('#13263c'),
   },
   semantic: {
     primary: {
@@ -37,14 +37,14 @@ export const ReddocPreset = definePreset(Aura, {
       },
       dark: {
         primary: {
-          color: '{sky.400}',
-          inverseColor: '{navy.950}',
-          hoverColor: '{sky.300}',
-          activeColor: '{sky.200}',
+          color: '{navy.400}',
+          inverseColor: '{sky.950}',
+          hoverColor: '{navy.300}',
+          activeColor: '{navy.200}',
         },
         highlight: {
-          background: 'rgba(119, 170, 215, 0.16)',
-          focusBackground: 'rgba(119, 170, 215, 0.24)',
+          background: 'rgba(0, 158, 247, 0.16)',
+          focusBackground: 'rgba(0, 158, 247, 0.24)',
           color: 'rgba(255, 255, 255, 0.87)',
           focusColor: 'rgba(255, 255, 255, 0.87)',
         },

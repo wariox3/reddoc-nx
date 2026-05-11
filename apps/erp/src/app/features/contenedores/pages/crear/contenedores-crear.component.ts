@@ -80,6 +80,26 @@ const PLAN_INFO: Record<number, string[]> = {
   ],
 };
 
+type WizardStep = 0 | 1 | 2;
+
+const STEP_META: Record<WizardStep, { label: string; title: string; subtitle: string }> = {
+  0: {
+    label: 'Información',
+    title: 'Información de la empresa',
+    subtitle: 'Datos básicos para identificar tu contenedor en Reddoc.',
+  },
+  1: {
+    label: 'Plan',
+    title: 'Selecciona un plan',
+    subtitle: 'Elegí entre Facturación o ERP completo según tu operación.',
+  },
+  2: {
+    label: 'Confirmar',
+    title: 'Confirmá la configuración',
+    subtitle: 'Revisá los datos antes de crear el contenedor.',
+  },
+};
+
 @Component({
   selector: 'app-contenedores-crear',
   standalone: true,
@@ -98,6 +118,8 @@ export class ContenedoresCrearComponent implements OnInit, OnDestroy {
 
   protected readonly t = this.i18n.t;
   protected readonly planInfo = PLAN_INFO;
+  protected readonly stepMeta = STEP_META;
+  protected readonly wizardSteps: WizardStep[] = [0, 1, 2];
 
   protected readonly pasos = [
     { icon: 'pi-building', label: 'Registrando tu empresa' },
@@ -108,7 +130,8 @@ export class ContenedoresCrearComponent implements OnInit, OnDestroy {
   ];
 
   readonly isSaving = signal(false);
-  readonly currentStep = signal(0);
+  readonly savingStep = signal(0);
+  readonly wizardStep = signal<WizardStep>(0);
   readonly tiposSuscripcion = signal<TipoSuscripcion[]>([]);
   readonly claseActiva = signal<1 | 2>(1);
   readonly planSeleccionado = signal<number | null>(null);
@@ -121,13 +144,17 @@ export class ContenedoresCrearComponent implements OnInit, OnDestroy {
 
   readonly nombreEmpresa = computed(() => this.form.controls.nombre.value ?? '');
 
-  readonly ctaLabel = computed(() => {
+  readonly planSeleccionadoData = computed(() => {
     const id = this.planSeleccionado();
-    if (id === null) return 'Crear contenedor';
-    const plan = this.tiposSuscripcion().find((p) => p.id === id);
-    if (!plan) return 'Crear contenedor';
-    const precio = new Intl.NumberFormat('es-CO').format(+plan.precio);
-    return `Crear con ${plan.nombre} · $${precio}/mes`;
+    if (id === null) return null;
+    return this.tiposSuscripcion().find((p) => p.id === id) ?? null;
+  });
+
+  readonly stepHint = computed(() => {
+    const step = this.wizardStep();
+    if (step === 0) return 'Completá todos los campos';
+    if (step === 1) return 'Seleccioná un plan para continuar';
+    return '';
   });
 
   readonly form = this.fb.group({
@@ -176,12 +203,56 @@ export class ContenedoresCrearComponent implements OnInit, OnDestroy {
     this.form.controls.suscripcion_tipo_id.setValue(id);
   }
 
+  isStepValid(step: WizardStep): boolean {
+    if (step === 0) {
+      const { nombre, schema_name, telefono, correo } = this.form.controls;
+      return nombre.valid && schema_name.valid && telefono.valid && correo.valid;
+    }
+    if (step === 1) {
+      return this.form.controls.suscripcion_tipo_id.valid;
+    }
+    return true;
+  }
+
+  next(): void {
+    const step = this.wizardStep();
+    if (!this.isStepValid(step)) {
+      this._markStepTouched(step);
+      return;
+    }
+    if (step < 2) {
+      this.wizardStep.set((step + 1) as WizardStep);
+    }
+  }
+
+  back(): void {
+    const step = this.wizardStep();
+    if (step > 0) {
+      this.wizardStep.set((step - 1) as WizardStep);
+    }
+  }
+
+  goToStep(step: WizardStep): void {
+    this.wizardStep.set(step);
+  }
+
+  private _markStepTouched(step: WizardStep): void {
+    if (step === 0) {
+      this.form.controls.nombre.markAsTouched();
+      this.form.controls.schema_name.markAsTouched();
+      this.form.controls.telefono.markAsTouched();
+      this.form.controls.correo.markAsTouched();
+    } else if (step === 1) {
+      this.form.controls.suscripcion_tipo_id.markAsTouched();
+    }
+  }
+
   onSubmit(): void {
     if (this.form.invalid || this.isSaving()) return;
     this.isSaving.set(true);
-    this.currentStep.set(0);
+    this.savingStep.set(0);
     this.stepInterval = setInterval(() => {
-      this.currentStep.update((s) => Math.min(s + 1, this.pasos.length - 1));
+      this.savingStep.update((s) => Math.min(s + 1, this.pasos.length - 1));
     }, 6000);
 
     this.contenedorService

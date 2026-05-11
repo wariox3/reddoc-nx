@@ -1,13 +1,13 @@
 @theme {
-  --color-brand-navy: #143049;
-  --color-brand-navy-deep: #0d2035;
-  --color-brand-blue: #77aad7;
-  --color-brand-bg: #f4f7fb;
+  --color-brand-navy: #13263c;
+  --color-brand-navy-deep: #0c1d2e;
+  --color-brand-blue: #009ef7;
+  --color-brand-bg: #f0f9ff;
   --color-brand-surface: #ffffff;
-  --color-brand-surface-2: #eaf0f7;
-  --color-brand-text: #143049;
-  --color-brand-muted: #4a6a85;
-  --color-brand-muted-2: #8aafc9;
+  --color-brand-surface-2: #dbeeff;
+  --color-brand-text: #13263c;
+  --color-brand-muted: #2a6098;
+  --color-brand-muted-2: #68c0fb;
 
   --animate-fade-up: fadeUp 0.55s ease both;
   --animate-drift1: drift1 18s ease-in-out infinite alternate;
