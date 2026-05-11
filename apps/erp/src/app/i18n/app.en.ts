@@ -32,6 +32,7 @@ export const en: AppDict = {
       actions: {
         menuLabel: 'Container options',
         invite: 'Invite user',
+        edit: 'Edit company',
         delete: 'Delete container',
       },
       view: {
@@ -73,6 +74,16 @@ export const en: AppDict = {
       toasts: {
         success: { title: 'Company created', desc: 'The container was created successfully.' },
         error: { title: 'Creation error', desc: 'Could not create the container. Try again.' },
+      },
+    },
+    edit: {
+      title: 'Edit company',
+      subtitle: 'Update the container details',
+      submit: 'Save changes',
+      cancel: 'Cancel',
+      toasts: {
+        success: { title: 'Company updated', desc: 'Changes were saved successfully.' },
+        error: { title: 'Update error', desc: 'Could not update the company. Try again.' },
       },
     },
     delete: {

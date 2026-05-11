@@ -11,6 +11,8 @@ import { Contenedor } from '../../models/contenedor.model';
 import { ContenedorService } from '../../services/contenedor.service';
 import { ContenedoresCreateDialogComponent } from '../../components/create-dialog/contenedores-create-dialog.component';
 import { ContenedoresDeleteDialogComponent } from '../../components/delete-dialog/contenedores-delete-dialog.component';
+import { ContenedorRowItemComponent } from '../../components/contenedor-row-item/contenedor-row-item.component';
+import { ContenedorCardItemComponent } from '../../components/contenedor-card-item/contenedor-card-item.component';
 import { ROUTE_PATHS } from '../../../../core/constants/route-paths.constants';
 import type { AppDict } from '../../../../i18n';
 
@@ -20,6 +22,8 @@ import type { AppDict } from '../../../../i18n';
   imports: [
     ContenedoresCreateDialogComponent,
     ContenedoresDeleteDialogComponent,
+    ContenedorRowItemComponent,
+    ContenedorCardItemComponent,
     MenuModule,
     ButtonModule,
   ],
@@ -36,7 +40,9 @@ export class ContenedoresListComponent {
   protected readonly t = this.i18n.t;
 
   readonly showCreate = signal(false);
+  readonly showEdit = signal(false);
   readonly showDelete = signal(false);
+  readonly contenedorToEdit = signal<Contenedor | null>(null);
   readonly contenedorToDelete = signal<Contenedor | null>(null);
 
   readonly viewMode = signal<'list' | 'grid'>('list');
@@ -111,6 +117,11 @@ export class ContenedoresListComponent {
         icon: 'pi pi-user-plus',
         command: () => this.inviteContenedor(item),
       },
+      {
+        label: labels.edit,
+        icon: 'pi pi-pencil',
+        command: () => this.editContenedor(item),
+      },
       { separator: true },
       {
         label: labels.delete,
@@ -127,9 +138,20 @@ export class ContenedoresListComponent {
     console.log('[contenedores] invite', item);
   }
 
+  editContenedor(item: Contenedor): void {
+    this.contenedorToEdit.set(item);
+    this.showEdit.set(true);
+  }
+
   deleteContenedor(item: Contenedor): void {
     this.contenedorToDelete.set(item);
     this.showDelete.set(true);
+  }
+
+  onContenedorUpdated(): void {
+    this.showEdit.set(false);
+    this.contenedorToEdit.set(null);
+    this.reload$.next();
   }
 
   onContenedorDeleted(): void {

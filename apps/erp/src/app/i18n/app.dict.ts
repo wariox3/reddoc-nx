@@ -30,6 +30,7 @@ export interface AppDict extends AuthTranslationsHost {
       actions: {
         menuLabel: string;
         invite: string;
+        edit: string;
         delete: string;
       };
       view: {
@@ -59,6 +60,16 @@ export interface AppDict extends AuthTranslationsHost {
         emailRequired: string;
         emailInvalid: string;
       };
+      submit: string;
+      cancel: string;
+      toasts: {
+        success: { title: string; desc: string };
+        error: { title: string; desc: string };
+      };
+    };
+    edit: {
+      title: string;
+      subtitle: string;
       submit: string;
       cancel: string;
       toasts: {

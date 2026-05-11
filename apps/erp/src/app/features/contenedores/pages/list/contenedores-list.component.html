@@ -69,9 +69,9 @@
         @if (viewMode() === 'list') {
           <ul class="cl-list">
             @for (item of skeletonItems; track $index) {
-              <li class="cl-row cl-row--skeleton">
+              <li class="cl-row-skeleton">
                 <div class="sk-monogram"></div>
-                <div class="cl-row__main">
+                <div class="cl-row-skeleton__main">
                   <div class="sk-line sk-line--name"></div>
                   <div class="sk-line sk-line--meta"></div>
                 </div>
@@ -83,16 +83,16 @@
         } @else {
           <div class="cl-grid">
             @for (item of skeletonItems; track $index) {
-              <div class="cl-card cl-card--skeleton">
-                <div class="cl-card__top">
+              <div class="cl-card-skeleton">
+                <div class="cl-card-skeleton__top">
                   <div class="sk-monogram sk-monogram--lg"></div>
                   <div class="sk-action"></div>
                 </div>
-                <div class="cl-card__body">
+                <div class="cl-card-skeleton__body">
                   <div class="sk-line sk-line--name"></div>
                   <div class="sk-line sk-line--meta"></div>
                 </div>
-                <div class="cl-card__footer">
+                <div class="cl-card-skeleton__footer">
                   <div class="sk-cta"></div>
                 </div>
               </div>
@@ -107,84 +107,28 @@
             <ul class="cl-list">
               @for (item of filteredContenedores(); track item.id; let i = $index) {
                 <li>
-                  <div
-                    role="button"
-                    tabindex="0"
-                    class="cl-row"
-                    [style.--i]="i"
-                    (click)="enterContenedor(item)"
-                    (keydown.enter)="enterContenedor(item)"
-                    (keydown.space)="$event.preventDefault(); enterContenedor(item)"
-                  >
-                    <span class="cl-row__monogram" aria-hidden="true">
-                      {{ getAvatarLabel(item.nombre) }}
-                    </span>
-                    <span class="cl-row__main">
-                      <span class="cl-row__nombre">{{ item.nombre }}</span>
-                      <span class="cl-row__meta">
-                        <i class="pi pi-globe cl-row__meta-icon" aria-hidden="true"></i>
-                        <span class="cl-row__domain">{{ item.dominio }}</span>
-                      </span>
-                    </span>
-                    <span class="cl-row__cta">
-                      {{ t().contenedores.list.enter }}
-                      <i class="pi pi-arrow-right" aria-hidden="true"></i>
-                    </span>
-                    <button
-                      type="button"
-                      class="cl-row__action"
-                      [attr.aria-label]="t().contenedores.list.actions.menuLabel"
-                      (click)="openRowMenu($event, item)"
-                      (keydown.enter)="$event.stopPropagation()"
-                      (keydown.space)="$event.stopPropagation()"
-                    >
-                      <i class="pi pi-cog" aria-hidden="true"></i>
-                    </button>
-                  </div>
+                  <app-contenedor-row-item
+                    [contenedor]="item"
+                    [index]="i"
+                    [menuLabel]="t().contenedores.list.actions.menuLabel"
+                    [enterLabel]="t().contenedores.list.enter"
+                    (enter)="enterContenedor(item)"
+                    (menuOpen)="openRowMenu($event, item)"
+                  />
                 </li>
               }
             </ul>
           } @else {
             <div class="cl-grid">
               @for (item of filteredContenedores(); track item.id; let i = $index) {
-                <div
-                  role="button"
-                  tabindex="0"
-                  class="cl-card"
-                  [style.--i]="i"
-                  (click)="enterContenedor(item)"
-                  (keydown.enter)="enterContenedor(item)"
-                  (keydown.space)="$event.preventDefault(); enterContenedor(item)"
-                >
-                  <div class="cl-card__top">
-                    <span class="cl-card__monogram" aria-hidden="true">
-                      {{ getAvatarLabel(item.nombre) }}
-                    </span>
-                    <button
-                      type="button"
-                      class="cl-card__action"
-                      [attr.aria-label]="t().contenedores.list.actions.menuLabel"
-                      (click)="openRowMenu($event, item)"
-                      (keydown.enter)="$event.stopPropagation()"
-                      (keydown.space)="$event.stopPropagation()"
-                    >
-                      <i class="pi pi-cog" aria-hidden="true"></i>
-                    </button>
-                  </div>
-                  <div class="cl-card__body">
-                    <span class="cl-card__nombre">{{ item.nombre }}</span>
-                    <span class="cl-card__meta">
-                      <i class="pi pi-globe cl-card__meta-icon" aria-hidden="true"></i>
-                      <span class="cl-card__domain">{{ item.dominio }}</span>
-                    </span>
-                  </div>
-                  <div class="cl-card__footer">
-                    <span class="cl-card__cta">
-                      {{ t().contenedores.list.enter }}
-                      <i class="pi pi-arrow-right" aria-hidden="true"></i>
-                    </span>
-                  </div>
-                </div>
+                <app-contenedor-card-item
+                  [contenedor]="item"
+                  [index]="i"
+                  [menuLabel]="t().contenedores.list.actions.menuLabel"
+                  [enterLabel]="t().contenedores.list.enter"
+                  (enter)="enterContenedor(item)"
+                  (menuOpen)="openRowMenu($event, item)"
+                />
               }
             </div>
           }
@@ -224,6 +168,13 @@
   [visible]="showCreate()"
   (visibleChange)="showCreate.set($event)"
   (created)="onContenedorCreated()"
+/>
+
+<app-contenedores-create-dialog
+  [visible]="showEdit()"
+  [contenedor]="contenedorToEdit()"
+  (visibleChange)="showEdit.set($event)"
+  (updated)="onContenedorUpdated()"
 />
 
 <app-contenedores-delete-dialog

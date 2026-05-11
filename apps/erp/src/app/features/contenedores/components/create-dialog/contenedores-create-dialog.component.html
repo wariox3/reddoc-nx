@@ -20,10 +20,10 @@
         <h2
           class="m-0 text-[1.05rem] font-extrabold leading-tight tracking-[-0.03em] text-brand-navy"
         >
-          {{ t().contenedores.create.title }}
+          {{ isEditMode() ? t().contenedores.edit.title : t().contenedores.create.title }}
         </h2>
         <p class="m-0 text-[0.75rem] tracking-[0.01em] text-brand-muted">
-          {{ t().contenedores.create.subtitle }}
+          {{ isEditMode() ? t().contenedores.edit.subtitle : t().contenedores.create.subtitle }}
         </p>
       </div>
     </div>
@@ -121,13 +121,13 @@
   <ng-template pTemplate="footer">
     <div class="flex items-center justify-end gap-3 border-t border-[rgba(20,48,73,0.08)] pt-5">
       <p-button
-        [label]="t().contenedores.create.cancel"
+        [label]="isEditMode() ? t().contenedores.edit.cancel : t().contenedores.create.cancel"
         [outlined]="true"
         severity="secondary"
         (onClick)="onCancel()"
       />
       <p-button
-        [label]="t().contenedores.create.submit"
+        [label]="isEditMode() ? t().contenedores.edit.submit : t().contenedores.create.submit"
         [loading]="isSaving()"
         [disabled]="form.invalid || isSaving()"
         (onClick)="onSubmit()"
@@ -136,6 +136,6 @@
   </ng-template>
 </p-dialog>
 
-@if (isSaving()) {
+@if (isSaving() && !isEditMode()) {
   <app-contenedor-creation-overlay [nombreEmpresa]="form.controls.nombre.value ?? ''" />
 }

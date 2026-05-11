@@ -19,7 +19,7 @@ export const es: AppDict = {
   },
   contenedores: {
     list: {
-      title: 'Tus contenedores',
+      title: 'Tus contenedores de empresa',
       subtitle: 'Seleccioná un espacio de trabajo para continuar',
       newButton: 'Nuevo contenedor',
       searchPlaceholder: 'Buscar...',
@@ -32,6 +32,7 @@ export const es: AppDict = {
       actions: {
         menuLabel: 'Opciones del contenedor',
         invite: 'Invitar usuario',
+        edit: 'Editar empresa',
         delete: 'Eliminar contenedor',
       },
       view: {
@@ -75,6 +76,19 @@ export const es: AppDict = {
         error: {
           title: 'Error al crear',
           desc: 'No se pudo crear el contenedor. Intentá de nuevo.',
+        },
+      },
+    },
+    edit: {
+      title: 'Editar empresa',
+      subtitle: 'Actualizá los datos del contenedor',
+      submit: 'Guardar cambios',
+      cancel: 'Cancelar',
+      toasts: {
+        success: { title: 'Empresa actualizada', desc: 'Los cambios se guardaron correctamente.' },
+        error: {
+          title: 'Error al actualizar',
+          desc: 'No se pudo actualizar la empresa. Intentá de nuevo.',
         },
       },
     },
