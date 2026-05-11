@@ -5,6 +5,39 @@ export const es: AppDict = {
   auth: authEs,
   common: {
     comingSoon: 'Próximamente disponible.',
+    actions: {
+      new: 'Nuevo',
+      edit: 'Editar',
+      delete: 'Eliminar',
+      deleteSelected: 'Eliminar seleccionados',
+      cancel: 'Cancelar',
+      menuLabel: 'Opciones',
+    },
+    list: {
+      records: 'registros',
+      empty: {
+        title: 'Sin registros',
+        sub: 'No hay datos para mostrar todavía.',
+      },
+    },
+    confirms: {
+      deleteHeader: 'Confirmar eliminación',
+      deleteMessage: '¿Estás seguro de que querés eliminar los registros seleccionados?',
+    },
+    toasts: {
+      loadError: {
+        title: 'Error al cargar',
+        desc: 'No se pudieron obtener los registros. Intentá de nuevo.',
+      },
+      deleteSuccess: {
+        title: 'Registros eliminados',
+        desc: 'La eliminación se completó correctamente.',
+      },
+      deleteError: {
+        title: 'Error al eliminar',
+        desc: 'No se pudieron eliminar los registros. Intentá de nuevo.',
+      },
+    },
   },
   layout: {
     menuLabel: 'Abrir menú',
@@ -29,7 +62,16 @@ export const es: AppDict = {
     general: {
       name: 'General',
       entities: {
-        contacto: { name: 'Contactos' },
+        contacto: {
+          name: 'Contactos',
+          columns: {
+            id: 'ID',
+            nombre: 'Nombre',
+            identificacion: 'Identificación',
+            correo: 'Correo',
+            telefono: 'Teléfono',
+          },
+        },
       },
     },
   },

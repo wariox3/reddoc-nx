@@ -1,11 +1,40 @@
-import type { MasterEntityConfig, ModuleConfig } from '@reddoc/core';
+import type { ColumnDef, MasterEntityConfig, ModuleConfig } from '@reddoc/core';
+
+/** Columnas mostradas en la tabla de contactos. */
+const CONTACTO_COLUMNS: readonly ColumnDef[] = [
+  {
+    field: 'id',
+    headerKey: 'modules.general.entities.contacto.columns.id',
+    type: 'number',
+    width: '70px',
+    align: 'right',
+    sortable: true,
+  },
+  {
+    field: 'nombre_corto',
+    headerKey: 'modules.general.entities.contacto.columns.nombre',
+    type: 'text',
+    sortable: true,
+  },
+  {
+    field: 'numero_identificacion',
+    headerKey: 'modules.general.entities.contacto.columns.identificacion',
+    type: 'text',
+    sortable: true,
+  },
+  { field: 'correo', headerKey: 'modules.general.entities.contacto.columns.correo', type: 'text' },
+  {
+    field: 'telefono',
+    headerKey: 'modules.general.entities.contacto.columns.telefono',
+    type: 'text',
+  },
+];
 
 /**
  * Entidad maestra: Contacto.
  *
  * Cubre clientes, proveedores y empleados sobre el mismo endpoint.
- * Por ahora solo declara la capacidad de crear y editar; el resto se irá
- * activando a medida que el backend exponga las APIs correspondientes.
+ * El backend discrimina internamente por flags (`cliente`, `proveedor`, `empleado`).
  */
 const CONTACTO_ENTITY: MasterEntityConfig = {
   kind: 'master',
@@ -13,6 +42,7 @@ const CONTACTO_ENTITY: MasterEntityConfig = {
   displayNameKey: 'modules.general.entities.contacto.name',
   endpoint: '/api/general/contacto',
   schemaVersion: 1,
+  columns: CONTACTO_COLUMNS,
   filters: [],
   routes: {
     list: 'master/contacto/list',
@@ -24,6 +54,7 @@ const CONTACTO_ENTITY: MasterEntityConfig = {
     canCreate: true,
     canEdit: true,
     canDelete: true,
+    canSelectRows: true,
     canImport: false,
     canExportExcel: true,
   },

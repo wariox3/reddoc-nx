@@ -13,6 +13,7 @@ export type {
 } from './types/entity-config.types';
 export type { ModuleConfig } from './types/module-config.types';
 export type { FilterField, FilterFieldType } from './types/filter-field.types';
+export type { ColumnDef, ColumnValueType, ColumnAlignment } from './types/column-def.types';
 
 // Registry token
 export { MODULE_REGISTRY } from './module-registry.token';
@@ -21,6 +22,9 @@ export type { ModuleConfigLoader, ModuleRegistry } from './module-registry.token
 // Services
 export { ModuleRegistryService } from './services/module-registry.service';
 export { ModuleNavigationStore } from './services/module-navigation.store';
+
+// Storage
+export { EntityFilterStorageService } from './storage/entity-filter-storage.service';
 
 // Resolvers
 export { activeModuleResolver } from './resolvers/active-module.resolver';

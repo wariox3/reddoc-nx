@@ -3,6 +3,27 @@ import type { AuthTranslationsHost } from '@reddoc/ui';
 export interface AppDict extends AuthTranslationsHost {
   common: {
     comingSoon: string;
+    actions: {
+      new: string;
+      edit: string;
+      delete: string;
+      deleteSelected: string;
+      cancel: string;
+      menuLabel: string;
+    };
+    list: {
+      records: string;
+      empty: { title: string; sub: string };
+    };
+    confirms: {
+      deleteHeader: string;
+      deleteMessage: string;
+    };
+    toasts: {
+      loadError: { title: string; desc: string };
+      deleteSuccess: { title: string; desc: string };
+      deleteError: { title: string; desc: string };
+    };
   };
   layout: {
     menuLabel: string;
@@ -27,7 +48,16 @@ export interface AppDict extends AuthTranslationsHost {
     general: {
       name: string;
       entities: {
-        contacto: { name: string };
+        contacto: {
+          name: string;
+          columns: {
+            id: string;
+            nombre: string;
+            identificacion: string;
+            correo: string;
+            telefono: string;
+          };
+        };
       };
     };
   };

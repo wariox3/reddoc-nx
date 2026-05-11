@@ -9,9 +9,9 @@ import { activeEntityResolver, activeModuleResolver } from '@reddoc/core';
  *     └── /master/:entityKey                          → resuelve `entity` (kind master)
  *           └── /list, /new, /edit/:id, /detail/:id  → componentes base
  *
- * Por ahora solo cuelga el placeholder bajo `/list`. Cuando exista
- * `BaseListComponent`, esta misma estructura cargará el componente base con
- * `entity` inyectada vía `withComponentInputBinding()`.
+ * El componente `BaseListComponent` recibe la entidad resuelta vía
+ * `withComponentInputBinding()` y se auto-configura: columnas, capacidades,
+ * llamadas al gateway, etc.
  */
 export const GENERAL_ROUTES: Route[] = [
   {
@@ -24,10 +24,7 @@ export const GENERAL_ROUTES: Route[] = [
         children: [
           {
             path: 'list',
-            loadComponent: () =>
-              import('./pages/contacto-list-placeholder.component').then(
-                (m) => m.ContactoListPlaceholderComponent,
-              ),
+            loadComponent: () => import('@reddoc/feature-base').then((m) => m.BaseListComponent),
           },
         ],
       },

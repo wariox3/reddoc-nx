@@ -1,4 +1,5 @@
 import type { Type } from '@angular/core';
+import type { ColumnDef } from './column-def.types';
 import type { FilterField } from './filter-field.types';
 
 /**
@@ -46,6 +47,7 @@ export interface MasterCapabilities {
   readonly canCreate: boolean;
   readonly canEdit: boolean;
   readonly canDelete: boolean;
+  readonly canSelectRows: boolean;
   readonly canImport: boolean;
   readonly canExportExcel: boolean;
 }
@@ -90,6 +92,8 @@ interface BaseEntityConfig {
   readonly displayNameKey: string;
   /** Endpoint REST de la entidad. */
   readonly endpoint: string;
+  /** Columnas a renderizar en la tabla de listado. */
+  readonly columns: readonly ColumnDef[];
   /** Campos filtrables disponibles en la UI. */
   readonly filters: readonly FilterField[];
   /** Rutas del CRUD relativas al módulo. */

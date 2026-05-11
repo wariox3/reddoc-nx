@@ -5,6 +5,39 @@ export const en: AppDict = {
   auth: authEn,
   common: {
     comingSoon: 'Coming soon.',
+    actions: {
+      new: 'New',
+      edit: 'Edit',
+      delete: 'Delete',
+      deleteSelected: 'Delete selected',
+      cancel: 'Cancel',
+      menuLabel: 'Options',
+    },
+    list: {
+      records: 'records',
+      empty: {
+        title: 'No records',
+        sub: 'There is no data to show yet.',
+      },
+    },
+    confirms: {
+      deleteHeader: 'Confirm deletion',
+      deleteMessage: 'Are you sure you want to delete the selected records?',
+    },
+    toasts: {
+      loadError: {
+        title: 'Failed to load',
+        desc: 'Could not fetch the records. Please try again.',
+      },
+      deleteSuccess: {
+        title: 'Records deleted',
+        desc: 'Deletion completed successfully.',
+      },
+      deleteError: {
+        title: 'Failed to delete',
+        desc: 'Could not delete the records. Please try again.',
+      },
+    },
   },
   layout: {
     menuLabel: 'Open menu',
@@ -29,7 +62,16 @@ export const en: AppDict = {
     general: {
       name: 'General',
       entities: {
-        contacto: { name: 'Contacts' },
+        contacto: {
+          name: 'Contacts',
+          columns: {
+            id: 'ID',
+            nombre: 'Name',
+            identificacion: 'ID number',
+            correo: 'Email',
+            telefono: 'Phone',
+          },
+        },
       },
     },
   },

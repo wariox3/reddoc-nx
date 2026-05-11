@@ -19,6 +19,7 @@
     "noImplicitReturns": true,
     "paths": {
       "@reddoc/core": ["libs/core/src/index.ts"],
+      "@reddoc/feature-base": ["libs/feature-base/src/index.ts"],
       "@reddoc/styles": ["libs/styles/src/index.ts"],
       "@reddoc/ui": ["libs/ui/src/index.ts"]
     }
