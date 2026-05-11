@@ -5,7 +5,7 @@ import {
   provideAppInitializer,
   provideZoneChangeDetection,
 } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
@@ -17,7 +17,9 @@ import {
   APP_BRANDING,
   AUTH_DEFAULT_SKIP_URLS,
   CONTENEDOR_ACCESS_SERVICE,
+  ENTITY_DATA_GATEWAY,
   ENVIRONMENT,
+  HttpEntityDataGateway,
   MODULE_REGISTRY,
   ROUTE_PATHS_TOKEN,
   AUTH_SERVICE,
@@ -37,7 +39,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(appRoutes),
+    provideRouter(appRoutes, withComponentInputBinding()),
     provideHttpClient(withInterceptors([authInterceptor, errorInterceptor])),
     provideAnimationsAsync(),
     providePrimeNG({
@@ -73,6 +75,7 @@ export const appConfig: ApplicationConfig = {
     { provide: AUTH_SERVICE, useExisting: AuthService },
     { provide: CONTENEDOR_ACCESS_SERVICE, useExisting: ContenedorService },
     { provide: MODULE_REGISTRY, useValue: ERP_MODULE_REGISTRY },
+    { provide: ENTITY_DATA_GATEWAY, useExisting: HttpEntityDataGateway },
     {
       provide: AUTH_SKIP_URLS,
       useValue: AUTH_DEFAULT_SKIP_URLS,

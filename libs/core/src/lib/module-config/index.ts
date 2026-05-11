@@ -22,6 +22,23 @@ export type { ModuleConfigLoader, ModuleRegistry } from './module-registry.token
 export { ModuleRegistryService } from './services/module-registry.service';
 export { ModuleNavigationStore } from './services/module-navigation.store';
 
+// Resolvers
+export { activeModuleResolver } from './resolvers/active-module.resolver';
+export { activeEntityResolver, ENTITY_KEY_ROUTE_PARAM } from './resolvers/active-entity.resolver';
+
+// Data gateway
+export { ENTITY_DATA_GATEWAY } from './data/entity-data-gateway';
+export type { EntityDataGateway } from './data/entity-data-gateway';
+export { HttpEntityDataGateway } from './data/http-entity-data-gateway.service';
+export type {
+  FilterCondition,
+  FilterOperator,
+  ListQuery,
+  ListResponse,
+  SortDirection,
+  SortSpec,
+} from './data/list-query.types';
+
 // Errors
 export {
   UnknownModuleError,

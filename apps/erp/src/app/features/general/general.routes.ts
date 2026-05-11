@@ -1,19 +1,36 @@
 import type { Route } from '@angular/router';
+import { activeEntityResolver, activeModuleResolver } from '@reddoc/core';
 
 /**
  * Rutas del módulo General.
  *
- * Por ahora solo expone la lista placeholder de contactos para validar el flujo
- * sidebar → ruta → componente. Cuando exista `BaseListComponent` y los resolvers
- * de entidad, este archivo cargará el componente base con la entidad inyectada
- * vía resolver.
+ * Estructura:
+ *   /t/:slug/general                                  → resuelve `module`
+ *     └── /master/:entityKey                          → resuelve `entity` (kind master)
+ *           └── /list, /new, /edit/:id, /detail/:id  → componentes base
+ *
+ * Por ahora solo cuelga el placeholder bajo `/list`. Cuando exista
+ * `BaseListComponent`, esta misma estructura cargará el componente base con
+ * `entity` inyectada vía `withComponentInputBinding()`.
  */
 export const GENERAL_ROUTES: Route[] = [
   {
-    path: 'master/contacto/list',
-    loadComponent: () =>
-      import('./pages/contacto-list-placeholder.component').then(
-        (m) => m.ContactoListPlaceholderComponent,
-      ),
+    path: '',
+    resolve: { module: activeModuleResolver('general') },
+    children: [
+      {
+        path: 'master/:entityKey',
+        resolve: { entity: activeEntityResolver('master') },
+        children: [
+          {
+            path: 'list',
+            loadComponent: () =>
+              import('./pages/contacto-list-placeholder.component').then(
+                (m) => m.ContactoListPlaceholderComponent,
+              ),
+          },
+        ],
+      },
+    ],
   },
 ];
