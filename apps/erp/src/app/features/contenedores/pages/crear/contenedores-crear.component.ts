@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -87,7 +87,7 @@ const PLAN_INFO: Record<number, string[]> = {
   templateUrl: './contenedores-crear.component.html',
   styleUrl: './contenedores-crear.component.scss',
 })
-export class ContenedoresCrearComponent implements OnInit {
+export class ContenedoresCrearComponent implements OnInit, OnDestroy {
   private readonly fb = inject(FormBuilder);
   private readonly contenedorService = inject(ContenedorService);
   private readonly toastService = inject(ToastService);
@@ -99,14 +99,27 @@ export class ContenedoresCrearComponent implements OnInit {
   protected readonly t = this.i18n.t;
   protected readonly planInfo = PLAN_INFO;
 
+  protected readonly pasos = [
+    { icon: 'pi-building', label: 'Registrando tu empresa' },
+    { icon: 'pi-database', label: 'Configurando la base de datos' },
+    { icon: 'pi-credit-card', label: 'Activando tu plan de suscripción' },
+    { icon: 'pi-cog', label: 'Preparando tus módulos' },
+    { icon: 'pi-check-circle', label: 'Finalizando configuración' },
+  ];
+
   readonly isSaving = signal(false);
+  readonly currentStep = signal(0);
   readonly tiposSuscripcion = signal<TipoSuscripcion[]>([]);
   readonly claseActiva = signal<1 | 2>(1);
   readonly planSeleccionado = signal<number | null>(null);
 
+  private stepInterval: ReturnType<typeof setInterval> | null = null;
+
   readonly planesActivos = computed(() =>
     this.tiposSuscripcion().filter((p) => p.suscripcion_clase_id === this.claseActiva()),
   );
+
+  readonly nombreEmpresa = computed(() => this.form.controls.nombre.value ?? '');
 
   readonly ctaLabel = computed(() => {
     const id = this.planSeleccionado();
@@ -148,6 +161,10 @@ export class ContenedoresCrearComponent implements OnInit {
       .subscribe((res) => this.tiposSuscripcion.set(res.results));
   }
 
+  ngOnDestroy(): void {
+    this._clearStepInterval();
+  }
+
   cambiarClase(clase: 1 | 2): void {
     this.claseActiva.set(clase);
     this.planSeleccionado.set(null);
@@ -162,6 +179,11 @@ export class ContenedoresCrearComponent implements OnInit {
   onSubmit(): void {
     if (this.form.invalid || this.isSaving()) return;
     this.isSaving.set(true);
+    this.currentStep.set(0);
+    this.stepInterval = setInterval(() => {
+      this.currentStep.update((s) => Math.min(s + 1, this.pasos.length - 1));
+    }, 6000);
+
     this.contenedorService
       .createContenedor(
         this.form.getRawValue() as Parameters<ContenedorService['createContenedor']>[0],
@@ -169,12 +191,14 @@ export class ContenedoresCrearComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
+          this._clearStepInterval();
           this.isSaving.set(false);
           const toasts = this.t().contenedores.create.toasts;
           this.toastService.success(toasts.success.title, toasts.success.desc);
           this.router.navigate(['/contenedores']);
         },
         error: () => {
+          this._clearStepInterval();
           this.isSaving.set(false);
           const toasts = this.t().contenedores.create.toasts;
           this.toastService.error(toasts.error.title, toasts.error.desc);
@@ -184,5 +208,12 @@ export class ContenedoresCrearComponent implements OnInit {
 
   goBack(): void {
     this.router.navigate(['/contenedores']);
+  }
+
+  private _clearStepInterval(): void {
+    if (this.stepInterval) {
+      clearInterval(this.stepInterval);
+      this.stepInterval = null;
+    }
   }
 }

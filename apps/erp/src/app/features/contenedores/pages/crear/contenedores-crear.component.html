@@ -233,14 +233,52 @@
           [class.cc-btn-submit--loading]="isSaving()"
           [disabled]="isSaving()"
         >
-          @if (isSaving()) {
-            <i class="pi pi-spinner pi-spin text-[0.85rem]"></i>
-          } @else {
-            <i class="pi pi-check text-[0.85rem]"></i>
-          }
+          <i class="pi pi-check text-[0.85rem]"></i>
           {{ ctaLabel() }}
         </button>
       </div>
     </form>
   </div>
 </div>
+
+@if (isSaving()) {
+  <div class="cc-overlay">
+    <!-- Nombre de la empresa -->
+    <p class="cc-overlay__empresa">{{ nombreEmpresa() }}</p>
+
+    <!-- Icono central con anillos de pulso -->
+    <div class="cc-overlay__icon-wrap">
+      <span class="cc-pulse-ring cc-pulse-ring--1"></span>
+      <span class="cc-pulse-ring cc-pulse-ring--2"></span>
+      <div class="cc-overlay__icon-circle">
+        <i class="pi {{ pasos[currentStep()].icon }}"></i>
+      </div>
+    </div>
+
+    <!-- Paso actual + completados -->
+    <div class="cc-overlay__steps">
+      @for (paso of pasos; track paso.label; let i = $index) {
+        @if (i < currentStep()) {
+          <span class="cc-step cc-step--done">
+            <i class="pi pi-check"></i>
+            {{ paso.label }}
+          </span>
+        } @else if (i === currentStep()) {
+          <span class="cc-step cc-step--active">
+            <span class="cc-step-dot"></span>
+            {{ paso.label }}
+          </span>
+        }
+      }
+    </div>
+
+    <!-- Barra de progreso -->
+    <div class="cc-overlay__progress-track">
+      <div class="cc-overlay__progress-bar"></div>
+    </div>
+
+    <p class="cc-overlay__hint">
+      No cierres esta ventana — el proceso puede tardar hasta 30 segundos
+    </p>
+  </div>
+}
