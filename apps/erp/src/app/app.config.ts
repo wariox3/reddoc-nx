@@ -18,6 +18,7 @@ import {
   AUTH_DEFAULT_SKIP_URLS,
   CONTENEDOR_ACCESS_SERVICE,
   ENVIRONMENT,
+  MODULE_REGISTRY,
   ROUTE_PATHS_TOKEN,
   AUTH_SERVICE,
   AUTH_SKIP_URLS,
@@ -29,6 +30,7 @@ import {
 import { AuthService } from './features/auth/services/auth.service';
 import { ContenedorService } from './features/contenedores/services/contenedor.service';
 import { ROUTE_PATHS } from './core/constants/route-paths.constants';
+import { ERP_MODULE_REGISTRY } from './core/module-config/module-registry.constant';
 import { dictionaries } from './i18n';
 
 export const appConfig: ApplicationConfig = {
@@ -70,6 +72,7 @@ export const appConfig: ApplicationConfig = {
     },
     { provide: AUTH_SERVICE, useExisting: AuthService },
     { provide: CONTENEDOR_ACCESS_SERVICE, useExisting: ContenedorService },
+    { provide: MODULE_REGISTRY, useValue: ERP_MODULE_REGISTRY },
     {
       provide: AUTH_SKIP_URLS,
       useValue: AUTH_DEFAULT_SKIP_URLS,

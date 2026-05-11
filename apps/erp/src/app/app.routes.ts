@@ -42,6 +42,11 @@ export const appRoutes: Route[] = [
         loadComponent: () =>
           import('./features/dashboard/dashboard.component').then((m) => m.DashboardComponent),
       },
+      {
+        path: 'general',
+        loadChildren: () =>
+          import('./features/general/general.routes').then((m) => m.GENERAL_ROUTES),
+      },
     ],
   },
 

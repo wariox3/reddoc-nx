@@ -40,22 +40,58 @@
 
 <!-- Template de navegación compartido entre sidebar y drawer -->
 <ng-template #navTpl let-inDrawer>
-  @for (item of navItems(); track item.label) {
-    @if (item.externalUrl) {
-      <a class="workspace-nav__item" [href]="item.externalUrl" target="_blank" rel="noopener">
-        <i class="workspace-nav__icon {{ item.icon }}"></i>
-        <span class="workspace-nav__label">{{ item.label }}</span>
-      </a>
-    } @else {
-      <a
-        class="workspace-nav__item"
-        [routerLink]="item.path"
-        routerLinkActive="workspace-nav__item--active"
-        (click)="inDrawer && drawerVisible.set(false)"
+  <!-- Items fijos (Dashboard) -->
+  @for (item of pinnedItems(); track item.label) {
+    <a
+      class="workspace-nav__item"
+      [routerLink]="item.path"
+      routerLinkActive="workspace-nav__item--active"
+      (click)="inDrawer && drawerVisible.set(false)"
+    >
+      <i class="workspace-nav__icon {{ item.icon }}"></i>
+      <span class="workspace-nav__label">{{ item.label }}</span>
+    </a>
+  }
+
+  <!-- Módulos derivados del registry -->
+  @for (section of moduleSections(); track section.moduleId) {
+    <div class="workspace-nav__module">
+      <button
+        type="button"
+        class="workspace-nav__module-header"
+        [class.workspace-nav__module-header--expanded]="isExpanded(section.moduleId)"
+        [attr.aria-expanded]="isExpanded(section.moduleId)"
+        (click)="toggleModule(section.moduleId)"
       >
-        <i class="workspace-nav__icon {{ item.icon }}"></i>
-        <span class="workspace-nav__label">{{ item.label }}</span>
-      </a>
-    }
+        <i class="workspace-nav__icon {{ section.iconClass }}"></i>
+        <span class="workspace-nav__label">{{ translate(section.displayNameKey) }}</span>
+        <i
+          class="workspace-nav__chevron pi"
+          [class.pi-chevron-down]="isExpanded(section.moduleId)"
+          [class.pi-chevron-right]="!isExpanded(section.moduleId)"
+          aria-hidden="true"
+        ></i>
+      </button>
+
+      @if (isExpanded(section.moduleId)) {
+        <div class="workspace-nav__module-body">
+          @for (group of section.groups; track group.kind) {
+            <div class="workspace-nav__group">
+              <span class="workspace-nav__group-label">{{ groupLabel(group.kind) }}</span>
+              @for (item of group.items; track item.entityId) {
+                <a
+                  class="workspace-nav__leaf"
+                  [routerLink]="item.path"
+                  routerLinkActive="workspace-nav__leaf--active"
+                  (click)="inDrawer && drawerVisible.set(false)"
+                >
+                  {{ translate(item.displayNameKey) }}
+                </a>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
   }
 </ng-template>

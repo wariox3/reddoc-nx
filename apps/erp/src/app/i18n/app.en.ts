@@ -3,18 +3,34 @@ import type { AppDict } from './app.dict';
 
 export const en: AppDict = {
   auth: authEn,
+  common: {
+    comingSoon: 'Coming soon.',
+  },
   layout: {
     menuLabel: 'Open menu',
     drawerHeader: 'Menu',
     nav: {
       dashboard: 'Dashboard',
       account: 'Manage account',
+      sections: {
+        master: 'Administration',
+        document: 'Documents',
+        utility: 'Utilities',
+      },
     },
     userMenu: {
       label: 'User menu',
       myContainers: 'My containers',
       manageAccount: 'Manage account',
       logout: 'Sign out',
+    },
+  },
+  modules: {
+    general: {
+      name: 'General',
+      entities: {
+        contacto: { name: 'Contacts' },
+      },
     },
   },
   contenedores: {

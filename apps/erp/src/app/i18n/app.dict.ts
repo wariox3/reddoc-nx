@@ -1,18 +1,34 @@
 import type { AuthTranslationsHost } from '@reddoc/ui';
 
 export interface AppDict extends AuthTranslationsHost {
+  common: {
+    comingSoon: string;
+  };
   layout: {
     menuLabel: string;
     drawerHeader: string;
     nav: {
       dashboard: string;
       account: string;
+      sections: {
+        master: string;
+        document: string;
+        utility: string;
+      };
     };
     userMenu: {
       label: string;
       myContainers: string;
       manageAccount: string;
       logout: string;
+    };
+  };
+  modules: {
+    general: {
+      name: string;
+      entities: {
+        contacto: { name: string };
+      };
     };
   };
   contenedores: {
