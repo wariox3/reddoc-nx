@@ -201,9 +201,9 @@
   gap: 0.4rem;
   height: 32px;
   padding: 0 0.85rem;
-  background: var(--brand-navy);
+  background: var(--brand-blue);
   color: #fff;
-  border: 1px solid var(--brand-navy);
+  border: 1px solid var(--brand-blue);
   border-radius: 8px;
   font-size: 0.76rem;
   font-weight: 600;
@@ -220,8 +220,8 @@
   }
 
   &:hover {
-    background: #0c1d2e;
-    box-shadow: 0 3px 10px rgba(19 38 60 / 0.28);
+    background: #0077cc;
+    box-shadow: 0 3px 10px rgba(0 158 247 / 0.28);
   }
 
   &:active {
@@ -270,9 +270,9 @@
     border-color: rgba(19 38 60 / 0.08);
 
     .cl-row__cta {
-      background: var(--brand-navy);
+      background: var(--brand-blue);
       color: #fff;
-      border-color: var(--brand-navy);
+      border-color: var(--brand-blue);
 
       .pi {
         transform: translateX(2px);
@@ -478,9 +478,9 @@
     }
 
     .cl-card__cta {
-      background: var(--brand-navy);
+      background: var(--brand-blue);
       color: #fff;
-      border-color: var(--brand-navy);
+      border-color: var(--brand-blue);
 
       .pi {
         transform: translateX(2px);
