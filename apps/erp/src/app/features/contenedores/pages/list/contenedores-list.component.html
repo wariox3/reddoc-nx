@@ -10,7 +10,7 @@
           <p class="cl-panel__sub">{{ t().contenedores.list.subtitle }}</p>
         }
       </div>
-      <button class="cl-btn-new" type="button" (click)="showCreate.set(true)">
+      <button class="cl-btn-new" type="button" (click)="router.navigate(['/contenedores/crear'])">
         <i class="pi pi-plus"></i>
         {{ t().contenedores.list.newButton }}
       </button>
@@ -205,7 +205,7 @@
             <button
               class="cl-btn-new cl-btn-new--centered"
               type="button"
-              (click)="showCreate.set(true)"
+              (click)="router.navigate(['/contenedores/crear'])"
             >
               <i class="pi pi-plus"></i>
               {{ t().contenedores.list.empty.noContenedores.cta }}
@@ -218,8 +218,6 @@
 </div>
 
 <p-menu #rowMenu [model]="rowMenuItems" [popup]="true" appendTo="body" styleClass="cl-row-menu" />
-
-<app-contenedores-create-dialog [(visible)]="showCreate" (created)="onContenedorCreated()" />
 
 <app-contenedores-delete-dialog
   [visible]="showDelete()"

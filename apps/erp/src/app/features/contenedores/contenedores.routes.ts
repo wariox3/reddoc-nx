@@ -6,4 +6,11 @@ export const CONTENEDORES_ROUTES: Routes = [
     loadComponent: () =>
       import('./pages/list/contenedores-list.component').then((m) => m.ContenedoresListComponent),
   },
+  {
+    path: 'crear',
+    loadComponent: () =>
+      import('./pages/crear/contenedores-crear.component').then(
+        (m) => m.ContenedoresCrearComponent,
+      ),
+  },
 ];

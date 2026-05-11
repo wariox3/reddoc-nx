@@ -1,7 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { BaseHttpService } from '@reddoc/core';
-import { ContenedoresResponse, CreateContenedorRequest } from '../models/contenedor.model';
+import {
+  ContenedoresResponse,
+  CreateContenedorRequest,
+  TiposSuscripcionResponse,
+} from '../models/contenedor.model';
 
 @Injectable({ providedIn: 'root' })
 export class ContenedorService extends BaseHttpService {
@@ -15,5 +19,9 @@ export class ContenedorService extends BaseHttpService {
 
   deleteContenedor(id: number): Observable<unknown> {
     return this.delete(`/contenedor/cliente/${id}/`);
+  }
+
+  getTiposSuscripcion(): Observable<TiposSuscripcionResponse> {
+    return this.get<TiposSuscripcionResponse>('/contenedor/suscripcion-tipo/');
   }
 }
