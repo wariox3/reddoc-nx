@@ -10,10 +10,11 @@
           <p class="cl-panel__sub">{{ t().contenedores.list.subtitle }}</p>
         }
       </div>
-      <button class="cl-btn-new" type="button" (click)="router.navigate(['/contenedores/crear'])">
-        <i class="pi pi-plus"></i>
-        {{ t().contenedores.list.newButton }}
-      </button>
+      <p-button
+        icon="pi pi-plus"
+        [label]="t().contenedores.list.newButton"
+        (onClick)="showCreate.set(true)"
+      />
     </div>
 
     <!-- Controls (search + view toggle) -->
@@ -205,7 +206,7 @@
             <button
               class="cl-btn-new cl-btn-new--centered"
               type="button"
-              (click)="router.navigate(['/contenedores/crear'])"
+              (click)="showCreate.set(true)"
             >
               <i class="pi pi-plus"></i>
               {{ t().contenedores.list.empty.noContenedores.cta }}
@@ -218,6 +219,12 @@
 </div>
 
 <p-menu #rowMenu [model]="rowMenuItems" [popup]="true" appendTo="body" styleClass="cl-row-menu" />
+
+<app-contenedores-create-dialog
+  [visible]="showCreate()"
+  (visibleChange)="showCreate.set($event)"
+  (created)="onContenedorCreated()"
+/>
 
 <app-contenedores-delete-dialog
   [visible]="showDelete()"

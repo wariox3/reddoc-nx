@@ -2,12 +2,14 @@ import { Component, ViewChild, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Subject, startWith, switchMap } from 'rxjs';
+import { ButtonModule } from 'primeng/button';
 import { Menu, MenuModule } from 'primeng/menu';
 import { MenuItem } from 'primeng/api';
 import { I18nService, TenantService } from '@reddoc/core';
 import { AuthService } from '../../../auth/services/auth.service';
 import { Contenedor } from '../../models/contenedor.model';
 import { ContenedorService } from '../../services/contenedor.service';
+import { ContenedoresCreateDialogComponent } from '../../components/create-dialog/contenedores-create-dialog.component';
 import { ContenedoresDeleteDialogComponent } from '../../components/delete-dialog/contenedores-delete-dialog.component';
 import { ROUTE_PATHS } from '../../../../core/constants/route-paths.constants';
 import type { AppDict } from '../../../../i18n';
@@ -15,7 +17,12 @@ import type { AppDict } from '../../../../i18n';
 @Component({
   selector: 'app-contenedores-list',
   standalone: true,
-  imports: [ContenedoresDeleteDialogComponent, MenuModule],
+  imports: [
+    ContenedoresCreateDialogComponent,
+    ContenedoresDeleteDialogComponent,
+    MenuModule,
+    ButtonModule,
+  ],
   templateUrl: './contenedores-list.component.html',
   styleUrl: './contenedores-list.component.scss',
 })
@@ -28,6 +35,7 @@ export class ContenedoresListComponent {
 
   protected readonly t = this.i18n.t;
 
+  readonly showCreate = signal(false);
   readonly showDelete = signal(false);
   readonly contenedorToDelete = signal<Contenedor | null>(null);
 
@@ -127,6 +135,11 @@ export class ContenedoresListComponent {
   onContenedorDeleted(): void {
     this.showDelete.set(false);
     this.contenedorToDelete.set(null);
+    this.reload$.next();
+  }
+
+  onContenedorCreated(): void {
+    this.showCreate.set(false);
     this.reload$.next();
   }
 }
