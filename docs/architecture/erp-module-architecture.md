@@ -792,11 +792,17 @@ Cada paso queda en su commit, así puedes revisar el diff o revertir individualm
 
 ### 13.1 Ubicación de los componentes y building blocks
 
-**Decisión**: nueva librería Nx `libs/feature-base/` ya creada en v1.1.
+**Decisión revisada** (post-v2.0 reorg, 2026-05-12): el código se reparte por **alcance real**, no por convención Nx.
 
-- Building blocks tontos (`<lib-data-table>`, `<lib-filter-panel>`, `<lib-toolbar-actions>`).
-- Componentes base del framework de documentos (`BaseDocumentListComponent`, `BaseDocumentFormComponent`, `BaseDocumentDetailComponent`).
-- Storage de filtros y otros helpers transversales.
+- **`libs/feature-base/`** — building blocks tontos verdaderamente cross-app: hoy `DataTableComponent`. Cuando aparezcan `<lib-filter-panel>` y `<lib-toolbar-actions>` también vivirán aquí.
+- **`libs/core/src/lib/data-list/`** — tipos y helpers cross-app de listados: `ColumnDef`, `FilterField`, `ListQuery`, `serializeListQuery`, `FilterStorageService`.
+- **`apps/erp/src/app/core/module-config/`** — todo el framework configuracional ERP-específico: tipos `DocumentEntityConfig`/`ModuleConfig`, `MODULE_REGISTRY`, services, resolvers, errores, `EntityDataGateway` + `HttpEntityDataGateway`, `buildEntityStorageKey`, y `BaseDocumentListComponent` bajo `components/base-document-list/`.
+
+**Por qué la reorganización**: el dominio "módulos del ERP con documentos transaccionales sobre `/api/documento`" es exclusivo del ERP. POS, cuenta, transporte y demás apps no tienen este patrón. Forzarlo a vivir en `libs/core` mezclaba infra cross-app con dominio ERP, contaminando la lib y dejando puerta a importar piezas que esas apps nunca usarían. Las **piezas genuinamente cross-app** (tabla tonta, tipos de columna, query serialization, filter storage) sí se quedan en libs porque tienen reuso real.
+
+**Regla práctica**: lo que ES cross-app va en `libs/`. Lo que es ERP-específico vive en `apps/erp/src/app/core/`.
+
+**Nota técnica**: `BaseDocumentListComponent` se importa siempre vía `loadComponent` desde las rutas de documentos. **No** se exporta desde `apps/erp/src/app/core/module-config/index.ts` para evitar que PrimeNG (table, confirm dialog) entre al bundle inicial.
 
 ### 13.2 Granularidad de i18n
 

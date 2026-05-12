@@ -1,5 +1,4 @@
-import type { ColumnDef } from './column-def.types';
-import type { FilterField } from './filter-field.types';
+import type { ColumnDef, FilterField } from '@reddoc/core';
 
 /**
  * Tipo discriminador de entidades del framework.

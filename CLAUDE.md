@@ -47,13 +47,15 @@ apps/
   turnos/       SPA + PrimeNG, port 4206 — gestión de turnos
   cliente/      SPA + PrimeNG, port 4207 — portal de clientes
 libs/
-  core/         Auth infra, tokens, theme, i18n, tenant, module-config framework
+  core/         Auth, tokens, theme, i18n, tenant + data-list building blocks (cross-app)
   ui/           Shared standalone components: TurnstileComponent + auth pages
-  feature-base/ Building blocks compartidos (DataTableComponent) + base components del framework de documentos
+  feature-base/ DataTableComponent (tonto, cross-app)
   styles/       SCSS design tokens + Tailwind @theme (brand colors, animations)
 ```
 
 Path aliases: `@reddoc/core`, `@reddoc/ui`, `@reddoc/feature-base`, `@reddoc/styles`.
+
+**Lo que ES cross-app va en libs/. Lo que es ERP-específico vive en `apps/erp/src/app/core/`** — incluyendo el framework configuracional de documentos.
 
 ### landing
 
@@ -74,9 +76,9 @@ The 6 SPAs share the same skeleton:
 - **Tailwind brand tokens** — each app's `src/tailwind.css` imports `libs/styles/src/tailwind/brand.css`, which exposes `--color-brand-*` and the `fade-up` / `drift1` / `drift2` animations as Tailwind v4 `@theme` values.
 - **Logos** — `libs/ui/src/assets/logos/` is wired in each app's `project.json` so `<img src="/logos/reddoc.svg">` resolves.
 
-### libs/core — auth infrastructure
+### libs/core — auth infrastructure + data-list cross-app
 
-The pattern is an abstract generic service extended per-app:
+The auth pattern is an abstract generic service extended per-app:
 
 ```
 BaseAuthService<TUser extends BaseUsuario>   (libs/core)
@@ -99,29 +101,56 @@ BaseAuthService<TUser extends BaseUsuario>   (libs/core)
 
 **errorInterceptor** — on 401, attempts one token refresh via `AUTH_SERVICE.refresh()`. Uses `TokenRefreshService` (signal + Subject) to queue concurrent requests while refresh is in-flight. Skips refresh for URLs listed in `AUTH_SKIP_URLS`.
 
+**`data-list/` cross-app building blocks** (`libs/core/src/lib/data-list/`):
+
+- Tipos: `ColumnDef`, `FilterField`, `ListQuery`, `ListResponse`, `FilterCondition`, `SortSpec`.
+- `serializeListQuery(query)` — convención Django REST de query-params (filtros `field__operator=value`, ordering, paginación).
+- `FilterStorageService` — persistencia agnóstica de filtros en localStorage por `storageKey: string`.
+
+Cualquier app del monorepo puede usarlos para construir listas paginadas.
+
 ### libs/ui — shared standalone components
 
 - `TurnstileComponent` (`lib-turnstile`) — Cloudflare Turnstile widget. Reads `turnstileSiteKey` from `ENVIRONMENT`. Dev key `1x00000000000000000000AA` always passes.
 - Auth pages (`LoginComponent`, `RegisterComponent`, `ForgotPasswordComponent`, `ResetPasswordComponent`, `ResendVerificationComponent`, `VerifyEmailComponent`) — fully implemented; each app routes to them via eager `component:` (Nx prohibits mixing lazy + static imports of the same lib).
 - Assets: `src/assets/logos/reddoc.svg` and `reddoc-on-dark.svg` — copied into each app's build via `project.json` assets glob.
 
-### libs/feature-base — building blocks de listados + framework de documentos
+### libs/feature-base — building blocks de listados
 
-- `DataTableComponent` (`lib-data-table`) — tabla "tonta": recibe `columns`, `items`, `rowActions` por input y emite eventos. Sin HTTP, sin config. La usan ambos caminos del ERP (ver §ERP module architecture).
-- `BaseDocumentListComponent` (`lib-base-document-list`) — componente del framework configuracional para listar documentos transaccionales. Recibe `DocumentEntityConfig` por input (resuelto por `activeDocumentResolver`) y delega I/O al `EntityDataGateway`.
-- Tipos `RowAction`, `RowActionInvokedEvent`, `PageChangeEvent` para los eventos de la tabla.
+- `DataTableComponent` (`lib-data-table`) — tabla "tonta": recibe `columns`, `items`, `rowActions` por input y emite eventos. Sin HTTP, sin config. Reusable por cualquier app.
+- Tipos `RowAction`, `RowActionInvokedEvent`, `PageChangeEvent`.
 
 ### apps/erp — module architecture
 
 El ERP usa un **enfoque híbrido** (documentado en `docs/architecture/erp-module-architecture.md`):
 
-| Camino                                   | A quién aplica                                                                                                       | Cómo se implementa                                                                                                                                                                             |
-| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Framework configuracional (camino A)** | Documentos transaccionales (factura, nota crédito, etc.) sobre `/api/documento` discriminado por `documento_tipo_id` | `DocumentEntityConfig` declarativo + `MODULE_REGISTRY` lazy en `apps/erp/src/app/core/module-config/` + resolvers de `@reddoc/core` + `BaseDocumentListComponent` de `@reddoc/feature-base`    |
-| **Features directos (camino B)**         | Masters administrativos (contacto, ítem, sede, almacén, etc.) con endpoint propio                                    | Cada master: `services/*.service.ts` (extends `BaseHttpService`) + `pages/*-list/*-list.component.ts` que compone `<lib-data-table>` con inputs concretos                                      |
-| **Building blocks**                      | Ambos caminos                                                                                                        | `<lib-data-table>`, tipos `ColumnDef`/`FilterField`/`ListQuery`, `EntityDataGateway` (DIP), `EntityFilterStorageService` con clave versionada por `schemaVersion`, helper `serializeListQuery` |
+| Camino                                   | A quién aplica                                                                                                       | Cómo se implementa                                                                                                                                                                       |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Framework configuracional (camino A)** | Documentos transaccionales (factura, nota crédito, etc.) sobre `/api/documento` discriminado por `documento_tipo_id` | `DocumentEntityConfig` declarativo + `MODULE_REGISTRY` lazy + resolvers + `BaseDocumentListComponent`. Todo vive en **`apps/erp/src/app/core/module-config/`** porque es ERP-específico. |
+| **Features directos (camino B)**         | Masters administrativos (contacto, ítem, sede, almacén, etc.) con endpoint propio                                    | Cada master: `services/*.service.ts` (extends `BaseHttpService`) + `pages/*-list/*-list.component.ts` que compone `<lib-data-table>` con inputs concretos                                |
+| **Building blocks compartidos**          | Ambos caminos + otras apps potencialmente                                                                            | `<lib-data-table>` (`@reddoc/feature-base`), tipos `ColumnDef`/`FilterField`/`ListQuery`, `serializeListQuery`, `FilterStorageService` (todos en `@reddoc/core` data-list)               |
 
-**Sidebar híbrido**: declarado en `apps/erp/src/app/layouts/sidebar/sidebar-menu.ts`. Items simples + acordeones de módulo. Cuando un módulo del `MODULE_REGISTRY` tenga documentos, sus entradas se mezclarán dinámicamente con las declarativas.
+**Estructura del framework configuracional en el ERP**:
+
+```
+apps/erp/src/app/core/module-config/
+├── types/                       DocumentEntityConfig, ModuleConfig, capabilities
+├── module-registry.token.ts     InjectionToken + ModuleConfigLoader / ModuleRegistry
+├── module-registry.constant.ts  ERP_MODULE_REGISTRY (módulos transaccionales)
+├── module-registry.service.ts   Carga lazy + cache + validación
+├── module-navigation.store.ts   Signals del módulo/documento activos
+├── resolvers/                   activeModuleResolver, activeDocumentResolver
+├── data/                        EntityDataGateway (interface) + HttpEntityDataGateway
+├── storage/                     buildEntityStorageKey (usa EntityConfig)
+├── errors/                      Errores tipados del dominio
+├── components/
+│   └── base-document-list/      BaseDocumentListComponent (lazy load — NO exportar desde el barrel)
+└── index.ts                     Barrel sin BaseDocumentListComponent: evita jalar PrimeNG al initial bundle
+```
+
+El `BaseDocumentListComponent` se importa **siempre vía `loadComponent`** desde las rutas de documentos, no por barrel.
+
+**Sidebar híbrido**: declarado en `apps/erp/src/app/layouts/sidebar/sidebar-menu.ts`. Items simples + acordeones de módulo. Cuando un módulo del `ERP_MODULE_REGISTRY` tenga documentos, sus entradas se mezclarán dinámicamente con las declarativas.
 
 **Para agregar un master nuevo** (camino B):
 
@@ -130,7 +159,12 @@ El ERP usa un **enfoque híbrido** (documentado en `docs/architecture/erp-module
 3. Ruta en `<modulo>.routes.ts`.
 4. Entrada en `sidebar-menu.ts`.
 
-**Para agregar un documento nuevo** (camino A): agregar un `DocumentEntityConfig` al array `documents` del `ModuleConfig` correspondiente. Cuando se sume el primer módulo transaccional al `ERP_MODULE_REGISTRY`, ver el §6.A del doc de arquitectura.
+**Para agregar un documento nuevo** (camino A):
+
+1. Crear `<modulo>.config.ts` que exporte `ModuleConfig` con sus `documents`.
+2. Registrar en `ERP_MODULE_REGISTRY` (1 línea).
+3. Lazy route en `app.routes.ts` que cargue `BaseDocumentListComponent` vía `loadComponent`.
+4. El sidebar lo mostrará automáticamente.
 
 **No usar el framework para**: `contenedores`, `dashboard`, settings de usuario, wizards. Esas son features tradicionales sin tabla genérica.
 

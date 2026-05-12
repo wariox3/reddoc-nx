@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import type { ResolveFn } from '@angular/router';
-import { ModuleRegistryService } from '../services/module-registry.service';
-import { ModuleNavigationStore } from '../services/module-navigation.store';
+import { ModuleRegistryService } from '../module-registry.service';
+import { ModuleNavigationStore } from '../module-navigation.store';
 import type { ModuleConfig } from '../types/module-config.types';
 
 /**

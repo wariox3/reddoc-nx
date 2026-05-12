@@ -1,38 +1,25 @@
 import { Injectable } from '@angular/core';
 import type { FilterCondition } from '../data/list-query.types';
-import type { EntityConfig } from '../types/entity-config.types';
-
-/** Prefijo común de todas las claves de localStorage gestionadas por este servicio. */
-const STORAGE_KEY_PREFIX = 'entity-filters';
-
-/**
- * Construye la clave canónica de localStorage para una entidad del framework
- * de documentos. Centraliza la convención de naming para que distintos
- * llamadores generen siempre la misma clave.
- *
- * Formato: `entity-filters:<moduleId>:<entityId>:v<schemaVersion>`.
- */
-export function buildEntityStorageKey(moduleId: string, entity: EntityConfig): string {
-  return `${STORAGE_KEY_PREFIX}:${moduleId}:${entity.id}:v${entity.schemaVersion}`;
-}
 
 /**
  * Persistencia de filtros del usuario en `localStorage` indexada por una
  * clave libre.
  *
- * Es agnóstico del dominio: recibe un `storageKey` ya armado y opera sobre él.
- * Permite uso tanto desde el camino A (documentos vía `buildEntityStorageKey`)
- * como desde el camino B (masters con claves literales).
+ * El servicio es agnóstico del dominio: recibe un `storageKey` ya armado
+ * y opera sobre él. Cada consumidor define la convención de su clave
+ * (literal `'general:contactos:v1'` o derivada de un descriptor de entidad).
+ *
+ * Convención recomendada: `<scope>:<resource>:v<schemaVersion>`. Incrementar
+ * la versión cuando cambie el shape de filtros para invalidar storage obsoleto
+ * sin afectar al usuario.
  *
  * Manejo de errores:
  *  - Si `localStorage` no está disponible (SSR), las operaciones son no-op.
- *  - Si el JSON guardado está corrupto, se descarta silenciosamente.
- *
- * Convención recomendada: `<scope>:<resource>:v<schemaVersion>`. Incrementar
- * la versión cuando cambie el shape de filtros para invalidar storage obsoleto.
+ *  - Si el JSON guardado está corrupto, se descarta silenciosamente y se
+ *    devuelve lista vacía.
  */
 @Injectable({ providedIn: 'root' })
-export class EntityFilterStorageService {
+export class FilterStorageService {
   read(storageKey: string): readonly FilterCondition[] {
     if (!this.isStorageAvailable()) return [];
 

@@ -3,9 +3,9 @@ import {
   ConfigMismatchError,
   DuplicateDocumentIdError,
   UnknownModuleError,
-} from '../errors/config.errors';
-import { MODULE_REGISTRY } from '../module-registry.token';
-import type { ModuleConfig } from '../types/module-config.types';
+} from './errors/config.errors';
+import { MODULE_REGISTRY } from './module-registry.token';
+import type { ModuleConfig } from './types/module-config.types';
 
 /**
  * Carga `ModuleConfig` desde el `MODULE_REGISTRY` inyectado y cachea

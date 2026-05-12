@@ -1,7 +1,11 @@
-// Componente base del framework de documentos (camino A — ver docs/architecture)
-export { BaseDocumentListComponent } from './lib/base-document-list/base-document-list.component';
+/**
+ * Building blocks compartidos para listados/tablas del monorepo.
+ *
+ * Solo expone piezas **agnósticas del dominio**. El framework configuracional
+ * del ERP (`BaseDocumentListComponent`, registry, resolvers, etc.) vive en
+ * `apps/erp/src/app/core/module-config/`.
+ */
 
-// Building blocks compartidos (caminos A y B)
 export { DataTableComponent } from './lib/data-table/data-table.component';
 export type {
   RowAction,

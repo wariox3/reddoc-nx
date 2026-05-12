@@ -7,25 +7,21 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { finalize } from 'rxjs';
 import {
-  ENTITY_DATA_GATEWAY,
-  EntityFilterStorageService,
+  FilterStorageService,
   I18nService,
-  MissingModuleContextError,
-  ModuleNavigationStore,
   TenantService,
   ToastService,
-  buildEntityStorageKey,
-  type DocumentEntityConfig,
   type FilterCondition,
   type ListQuery,
   type SortSpec,
 } from '@reddoc/core';
-import { DataTableComponent } from '../data-table/data-table.component';
-import type {
-  PageChangeEvent,
-  RowAction,
-  RowActionInvokedEvent,
-} from '../data-table/data-table.types';
+import { DataTableComponent } from '@reddoc/feature-base';
+import type { PageChangeEvent, RowAction, RowActionInvokedEvent } from '@reddoc/feature-base';
+import { ENTITY_DATA_GATEWAY } from '../../data/entity-data-gateway';
+import { MissingModuleContextError } from '../../errors/config.errors';
+import { ModuleNavigationStore } from '../../module-navigation.store';
+import { buildEntityStorageKey } from '../../storage/build-entity-storage-key';
+import type { DocumentEntityConfig } from '../../types/entity-config.types';
 
 /** Tamaño de página default mientras `DocumentEntityConfig` no exponga `paginationDefaults`. */
 const DEFAULT_PAGE_SIZE = 25;
@@ -40,7 +36,7 @@ const DEFAULT_PAGE_SIZE = 25;
  *
  * Responsabilidades:
  *  - Cargar datos paginados desde `EntityDataGateway`.
- *  - Restaurar filtros del usuario desde `EntityFilterStorageService`
+ *  - Restaurar filtros del usuario desde `FilterStorageService`
  *    (clave versionada por `entity.schemaVersion`).
  *  - Mostrar acciones de toolbar y de fila según `capabilities`.
  *  - Navegar a las rutas `new` / `edit` / `detail` del documento.
@@ -51,7 +47,7 @@ const DEFAULT_PAGE_SIZE = 25;
  *  - Renderizar el form ni el detalle.
  */
 @Component({
-  selector: 'lib-base-document-list',
+  selector: 'app-base-document-list',
   standalone: true,
   imports: [CommonModule, ButtonModule, ConfirmDialogModule, DataTableComponent],
   providers: [ConfirmationService],
@@ -61,7 +57,7 @@ const DEFAULT_PAGE_SIZE = 25;
 export class BaseDocumentListComponent {
   // ── Colaboradores inyectados ──────────────────────────────────────────────
   private readonly gateway = inject(ENTITY_DATA_GATEWAY);
-  private readonly filterStorage = inject(EntityFilterStorageService);
+  private readonly filterStorage = inject(FilterStorageService);
   private readonly navigation = inject(ModuleNavigationStore);
   private readonly tenant = inject(TenantService);
   private readonly router = inject(Router);

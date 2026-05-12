@@ -1,7 +1,7 @@
 import { InjectionToken } from '@angular/core';
 import type { Observable } from 'rxjs';
+import type { ListQuery, ListResponse } from '@reddoc/core';
 import type { EntityConfig } from '../types/entity-config.types';
-import type { ListQuery, ListResponse } from './list-query.types';
 
 /**
  * Contrato para acceder a la API de una entidad.

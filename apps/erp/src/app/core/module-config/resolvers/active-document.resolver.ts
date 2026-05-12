@@ -5,7 +5,7 @@ import {
   MissingDocumentKeyError,
   MissingModuleContextError,
 } from '../errors/config.errors';
-import { ModuleNavigationStore } from '../services/module-navigation.store';
+import { ModuleNavigationStore } from '../module-navigation.store';
 import type { DocumentEntityConfig } from '../types/entity-config.types';
 
 /**

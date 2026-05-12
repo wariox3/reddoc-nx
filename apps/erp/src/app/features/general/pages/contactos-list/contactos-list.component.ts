@@ -6,7 +6,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { finalize } from 'rxjs';
 import {
-  EntityFilterStorageService,
+  FilterStorageService,
   I18nService,
   TenantService,
   ToastService,
@@ -52,7 +52,7 @@ const ROW_ACTIONS: readonly RowAction[] = [
 export class ContactosListComponent {
   // ── Colaboradores ─────────────────────────────────────────────────────────
   private readonly service = inject(ContactoService);
-  private readonly filterStorage = inject(EntityFilterStorageService);
+  private readonly filterStorage = inject(FilterStorageService);
   private readonly tenant = inject(TenantService);
   private readonly router = inject(Router);
   private readonly toast = inject(ToastService);

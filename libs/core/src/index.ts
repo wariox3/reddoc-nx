@@ -44,4 +44,4 @@ export {
   LAST_TENANT_KEY,
 } from './lib/tenant';
 export type { TenantSlug, ContenedorAccess, ContenedorAccessService } from './lib/tenant';
-export * from './lib/module-config';
+export * from './lib/data-list';

@@ -1,10 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
+import { serializeListQuery, type ListQuery, type ListResponse } from '@reddoc/core';
 import type { EntityConfig } from '../types/entity-config.types';
 import type { EntityDataGateway } from './entity-data-gateway';
-import type { ListQuery, ListResponse } from './list-query.types';
-import { serializeListQuery } from './serialize-list-query';
 
 /**
  * Forma de la respuesta paginada cruda del backend.

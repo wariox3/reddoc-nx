@@ -1,4 +1,4 @@
-import type { ModuleRegistry } from '@reddoc/core';
+import type { ModuleRegistry } from './module-registry.token';
 
 /**
  * Registro central de módulos con **documentos transaccionales** del framework

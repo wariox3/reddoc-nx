@@ -17,10 +17,7 @@ import {
   APP_BRANDING,
   AUTH_DEFAULT_SKIP_URLS,
   CONTENEDOR_ACCESS_SERVICE,
-  ENTITY_DATA_GATEWAY,
   ENVIRONMENT,
-  HttpEntityDataGateway,
-  MODULE_REGISTRY,
   ROUTE_PATHS_TOKEN,
   AUTH_SERVICE,
   AUTH_SKIP_URLS,
@@ -32,7 +29,12 @@ import {
 import { AuthService } from './features/auth/services/auth.service';
 import { ContenedorService } from './features/contenedores/services/contenedor.service';
 import { ROUTE_PATHS } from './core/constants/route-paths.constants';
-import { ERP_MODULE_REGISTRY } from './core/module-config/module-registry.constant';
+import {
+  ENTITY_DATA_GATEWAY,
+  ERP_MODULE_REGISTRY,
+  HttpEntityDataGateway,
+  MODULE_REGISTRY,
+} from './core/module-config';
 import { dictionaries } from './i18n';
 
 export const appConfig: ApplicationConfig = {
