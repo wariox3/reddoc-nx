@@ -37,6 +37,7 @@ export { activeEntityResolver, ENTITY_KEY_ROUTE_PARAM } from './resolvers/active
 export { ENTITY_DATA_GATEWAY } from './data/entity-data-gateway';
 export type { EntityDataGateway } from './data/entity-data-gateway';
 export { HttpEntityDataGateway } from './data/http-entity-data-gateway.service';
+export { serializeListQuery } from './data/serialize-list-query';
 export type {
   FilterCondition,
   FilterOperator,

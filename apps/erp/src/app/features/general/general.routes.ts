@@ -4,16 +4,24 @@ import { activeEntityResolver, activeModuleResolver } from '@reddoc/core';
 /**
  * Rutas del módulo General.
  *
- * Estructura:
- *   /t/:slug/general                                  → resuelve `module`
- *     └── /master/:entityKey                          → resuelve `entity` (kind master)
- *           └── /list, /new, /edit/:id, /detail/:id  → componentes base
+ * - **Camino B (masters directos)**: `general/contactos`, `general/items`, etc.
+ *   Cada uno apunta a su propia página componiendo building blocks.
  *
- * El componente `BaseListComponent` recibe la entidad resuelta vía
- * `withComponentInputBinding()` y se auto-configura: columnas, capacidades,
- * llamadas al gateway, etc.
+ * - **Camino A (legacy, en migración)**: `general/master/:entityKey/list`
+ *   apunta al `BaseListComponent` del framework. Se elimina en pasos posteriores
+ *   cuando todos los masters tengan su feature directo.
  */
 export const GENERAL_ROUTES: Route[] = [
+  // ── Camino B: feature directo ──────────────────────────────────────────────
+  {
+    path: 'contactos',
+    loadComponent: () =>
+      import('./pages/contactos-list/contactos-list.component').then(
+        (m) => m.ContactosListComponent,
+      ),
+  },
+
+  // ── Camino A: registry/resolver legacy (a remover en pasos 6-8) ────────────
   {
     path: '',
     resolve: { module: activeModuleResolver('general') },

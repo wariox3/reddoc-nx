@@ -1,0 +1,38 @@
+<div class="contactos-list">
+  <header class="contactos-list__header">
+    <div class="contactos-list__title-block">
+      <h1 class="contactos-list__title">{{ t().modules.general.entities.contacto.name }}</h1>
+      <p class="contactos-list__summary">{{ totalCount() }} {{ t().common.list.records }}</p>
+    </div>
+
+    <div class="contactos-list__actions">
+      @if (hasSelection()) {
+        <p-button
+          icon="pi pi-trash"
+          severity="danger"
+          [outlined]="true"
+          [label]="t().common.actions.deleteSelected"
+          (onClick)="removeSelected()"
+        />
+      }
+      <p-button icon="pi pi-plus" [label]="t().common.actions.new" (onClick)="navigateToNew()" />
+    </div>
+  </header>
+
+  <lib-data-table
+    [columns]="columns"
+    [items]="items()"
+    [totalCount]="totalCount()"
+    [loading]="isLoading()"
+    [pageSize]="pageSize()"
+    [currentPage]="currentPage()"
+    selectionMode="multiple"
+    [selectedRows]="selectedRows()"
+    [rowActions]="rowActions"
+    (pageChange)="onPageChange($event)"
+    (selectionChange)="onSelectionChange($event)"
+    (rowActionInvoked)="onRowAction($event)"
+  />
+</div>
+
+<p-confirmDialog />

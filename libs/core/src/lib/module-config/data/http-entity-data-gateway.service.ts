@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, forkJoin, map } from 'rxjs';
 import type {
@@ -7,7 +7,8 @@ import type {
   MasterEntityConfig,
 } from '../types/entity-config.types';
 import type { EntityDataGateway } from './entity-data-gateway';
-import type { FilterCondition, ListQuery, ListResponse, SortSpec } from './list-query.types';
+import type { ListQuery, ListResponse } from './list-query.types';
+import { serializeListQuery } from './serialize-list-query';
 
 /**
  * Forma de la respuesta paginada cruda del backend.
@@ -36,7 +37,7 @@ export class HttpEntityDataGateway implements EntityDataGateway {
 
   list(entity: EntityConfig, query: ListQuery): Observable<ListResponse> {
     this.assertOperatesOnData(entity, 'list');
-    const params = this.buildListParams(query);
+    const params = serializeListQuery(query);
     return this.http.get<PaginatedApiResponse>(entity.endpoint, { params }).pipe(
       map((response) => ({
         results: response.results,
@@ -73,39 +74,6 @@ export class HttpEntityDataGateway implements EntityDataGateway {
     // Masters: DELETE individual por id en paralelo.
     const deletions = ids.map((id) => this.http.delete<void>(`${entity.endpoint}/${id}/`));
     return forkJoin(deletions).pipe(map(() => undefined));
-  }
-
-  /**
-   * Construye los `HttpParams` para una consulta de listado.
-   * Convención: `field__operator=value` para filtros, `ordering=field` o
-   * `ordering=-field` para sort (Django REST style, alineado con el backend).
-   */
-  private buildListParams(query: ListQuery): HttpParams {
-    let params = new HttpParams()
-      .set('page', String(query.page + 1)) // backend es 1-based, el framework 0-based
-      .set('page_size', String(query.pageSize));
-
-    for (const filter of query.filters) {
-      params = this.appendFilter(params, filter);
-    }
-
-    if (query.sort.length > 0) {
-      params = params.set('ordering', this.encodeSort(query.sort));
-    }
-
-    return params;
-  }
-
-  private appendFilter(params: HttpParams, filter: FilterCondition): HttpParams {
-    const key = filter.operator === 'eq' ? filter.field : `${filter.field}__${filter.operator}`;
-    const serialized = Array.isArray(filter.value) ? filter.value.join(',') : String(filter.value);
-    return params.set(key, serialized);
-  }
-
-  private encodeSort(sort: readonly SortSpec[]): string {
-    return sort
-      .map((spec) => (spec.direction === 'desc' ? `-${spec.field}` : spec.field))
-      .join(',');
   }
 
   /**
