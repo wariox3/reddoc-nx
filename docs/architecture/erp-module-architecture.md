@@ -1,10 +1,10 @@
 # Arquitectura modular del ERP
 
-> **Estado**: Decisión aprobada · pendiente de implementación
-> **Fecha**: 2026-05-11
+> **Estado**: Decisión aprobada · migración en curso
+> **Fecha**: 2026-05-12
 > **Autores**: Sebastian
 > **Aplica a**: `apps/erp` del monorepo `reddoc-monorepo`
-> **Versión del documento**: 1.1 (revisión SOLID + buenas prácticas)
+> **Versión del documento**: 2.0 (enfoque híbrido tras reflexión post-implementación)
 
 ---
 
@@ -13,37 +13,36 @@
 1. [Resumen ejecutivo](#1-resumen-ejecutivo)
 2. [Contexto](#2-contexto)
 3. [Análisis del sistema legacy](#3-análisis-del-sistema-legacy)
-4. [Principios rectores](#4-principios-rectores)
-5. [Arquitectura propuesta](#5-arquitectura-propuesta)
-6. [Convenciones de naming](#6-convenciones-de-naming)
-7. [Estructura por módulo](#7-estructura-por-módulo)
-8. [Manejo de errores y casos límite](#8-manejo-de-errores-y-casos-límite)
-9. [Estrategia de testing](#9-estrategia-de-testing)
-10. [Trade-offs aceptados](#10-trade-offs-aceptados)
-11. [Plan de implementación](#11-plan-de-implementación)
-12. [Decisiones tomadas](#12-decisiones-tomadas)
-13. [Referencias](#13-referencias)
+4. [Reflexión post-implementación (v1.1 → v2.0)](#4-reflexión-post-implementación-v11--v20)
+5. [Principios rectores](#5-principios-rectores)
+6. [Arquitectura propuesta](#6-arquitectura-propuesta)
+7. [Convenciones de naming](#7-convenciones-de-naming)
+8. [Estructura por módulo](#8-estructura-por-módulo)
+9. [Manejo de errores y casos límite](#9-manejo-de-errores-y-casos-límite)
+10. [Estrategia de testing](#10-estrategia-de-testing)
+11. [Trade-offs aceptados](#11-trade-offs-aceptados)
+12. [Plan de migración](#12-plan-de-migración)
+13. [Decisiones tomadas](#13-decisiones-tomadas)
+14. [Referencias](#14-referencias)
 
 ---
 
 ## 1. Resumen ejecutivo
 
-El ERP albergará **8+ módulos de negocio** (compra, venta, inventario, cartera, tesorería, etc.) sobre un **backend genérico** (`/api/documento` que discrimina por `documento_tipo_id`). A esa escala, componentes específicos por entidad son insostenibles. Adoptamos un patrón **configuration-driven** inspirado en el sistema legacy `app.reddoc`, **modernizado para Angular 20** y reescrito siguiendo **SOLID**, **inmutabilidad** y **type-safety estricto**.
+El ERP albergará **8+ módulos de negocio** con dos clases de entidades cuyo nivel de reuso real es muy distinto:
 
-Cambios clave frente al legacy:
+- **Documentos transaccionales** (factura, nota crédito, nota débito, factura POS, factura recurrente, etc.): comparten el endpoint genérico `/api/documento` discriminado por `documento_tipo_id`. El reuso es **estructural** — mismo schema, mismo flujo, misma forma de filtros.
+- **Masters administrativos** (contacto, ítem, sede, almacén, cuenta banco, asesor, resolución, etc.): cada uno tiene su **propio endpoint REST**, su propio shape de datos y, frecuentemente, su propio UX. El reuso es solo de **building blocks de UI** (tabla, filtros, toolbar).
 
-| Aspecto                       | Legacy (`app.reddoc`)                                                           | Nuevo (`reddoc-monorepo`)                                   |
-| ----------------------------- | ------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| Carga de configuración        | `switch(modulo)` hardcodeado                                                    | Registry con lazy imports (OCP)                             |
-| Estado del módulo             | `BehaviorSubject`                                                               | `signal` + `computed` (lectura síncrona)                    |
-| Tipado                        | `Record<string, any>`                                                           | Discriminated unions, `readonly` por defecto                |
-| Componentes base              | `ViewContainerRef.createComponent()`                                            | Standalone components + `input()` tipado                    |
-| Resolución de config          | Listener global de `NavigationEnd`                                              | Resolver por ruta + `withComponentInputBinding()`           |
-| Duplicación                   | `base-documento` (491 LoC) + `base-administracion` (266 LoC) — **70% repetido** | Una implementación que ramifica por `kind`                  |
-| Acceso a datos                | HTTP directo desde componente                                                   | Abstracción `EntityDataGateway` (DIP)                       |
-| Acciones custom               | `ViewContainerRef` + lookup por `key`                                           | Strategy pattern vía `EntityActionStrategy`                 |
-| Persistencia de filtros       | `localStorage` sin versión                                                      | `localStorage` con clave versionada por config              |
-| Responsabilidades del service | Una clase hace todo                                                             | Separadas: `ModuleRegistryService`, `ModuleNavigationStore` |
+Adoptamos un **enfoque híbrido**:
+
+| Camino                          | A quién aplica             | Cómo se implementa                                                                                                               |
+| ------------------------------- | -------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| **Framework configuracional**   | Documentos transaccionales | `EntityConfig` declarativo + `MODULE_REGISTRY` lazy + resolvers + `BaseDocumentList` que orquesta. Aprovecha el endpoint único.  |
+| **Features directos**           | Masters administrativos    | Cada master tiene su `*-list.component.ts`, su `*Service` y su propio routing. Compone building blocks compartidos por inputs.   |
+| **Building blocks compartidos** | Ambos caminos              | `<lib-data-table>`, `<lib-filter-panel>`, `<lib-toolbar-actions>`, tipos `ColumnDef`/`FilterField`, gateway HTTP, filter storage |
+
+Este enfoque emerge de la **reflexión post-implementación** documentada en la sección 4: aplicar un framework configuracional uniforme a entidades cuyo backend es heterogéneo introduce indirección sin beneficio. El framework sigue valiendo donde el reuso es genuino (documentos) y desaparece donde no lo era (masters).
 
 ---
 
@@ -51,15 +50,16 @@ Cambios clave frente al legacy:
 
 ### 2.1 Estado actual del nuevo ERP
 
-`apps/erp` corre sobre **Angular 20 standalone + PrimeNG 20 + Tailwind v4** dentro de un monorepo Nx. La única feature implementada es `contenedores` (selección de tenant pre-workspace), que es una **feature no-CRUD** y queda fuera del framework.
+`apps/erp` corre sobre **Angular 20 standalone + PrimeNG 20 + Tailwind v4** dentro de un monorepo Nx. Features no-CRUD ya existentes (`contenedores`, `dashboard`) quedan fuera del framework.
 
 ```
 apps/erp/src/app/
-├── core/                  · constants, guards
+├── core/                  · constants, guards, module-config registry concreto
 ├── features/
 │   ├── auth/              · login, register, etc. (vive en libs/ui)
 │   ├── contenedores/      · selección de tenant
-│   └── dashboard/         · placeholder
+│   ├── dashboard/         · placeholder
+│   └── general/           · (en migración a feature directo, ver §12)
 ├── layouts/               · ShellLayout + WorkspaceLayout
 └── shared/                · user-menu, etc.
 ```
@@ -68,7 +68,7 @@ Rutas: `/` redirige según auth, `/contenedores` selecciona tenant, `/t/:tenantS
 
 ### 2.2 El legacy: `app.reddoc`
 
-Sistema Angular 17 en `/home/tamerlan/Desktop/semantica/app.reddoc/` con 8 módulos de negocio y ~3,120 líneas de configuración declarativa. Resolvió el problema de "muchas entidades sobre el mismo backend" con un patrón configuration-driven que tiene aciertos arquitectónicos genuinos y deuda técnica importante.
+Sistema Angular 17 en `/home/tamerlan/Desktop/semantica/app.reddoc/` con 8 módulos de negocio y ~3,120 líneas de configuración declarativa. Resolvió el problema "muchas entidades sobre el mismo backend" con un patrón configuration-driven que aplicaba **tanto a documentos como a masters** (vía `base-documento/base-lista` y `base-administracion/base-lista`, que en la práctica compartían 70% del código).
 
 ---
 
@@ -96,73 +96,123 @@ Emite vía currentModelConfig$ (BehaviorSubject<ModeloConfig | null>)
    │
    ▼
 BaseListaComponent (suscrito vía takeUntil) extrae:
-   · endpoint        = 'general/documento'
-   · queryParams     = { documento_tipo_id: 5, ordering: '...' }
-   · ui flags        = { verBotonNuevo: true, ... }
-   · rutas           = { nuevo, editar, detalle }
-   · filters.ui      = DOCUMENTO_FILTERS
+   · endpoint, queryParams, ui flags, rutas, filters
    │
    ▼
-HTTP GET /general/documento?documento_tipo_id=5&...
-   │
-   ▼
-Render con tabla genérica + botones condicionados por ui flags
+HTTP GET + render
 ```
 
-### 3.2 Aciertos que preservamos
+### 3.2 Aciertos que preservamos (siguen vigentes en v2.0)
 
-| Acierto                                | Por qué importa                                                   |
-| -------------------------------------- | ----------------------------------------------------------------- |
-| Una constante por módulo describe todo | Onboarding rápido: agregar `FACTURA_VENTA` = 1 objeto             |
-| Componentes base reutilizables         | 14+ tipos de documento usan el mismo `BaseListaComponent`         |
-| Endpoint genérico aprovechado          | `documento_tipo_id` discrimina; el front no necesita 14 servicios |
-| Sidebar derivado de la config          | El menú se construye desde el registro de módulos (DRY)           |
-| UI flags por entidad                   | Activan/desactivan capacidades sin código nuevo                   |
-| Filtros declarativos compartidos       | `DOCUMENTO_FILTERS`, `CONTACTO_FILTERS` se importan entre módulos |
+| Acierto                                | Por qué importa                                                    |
+| -------------------------------------- | ------------------------------------------------------------------ |
+| Una constante por módulo describe todo | Aplica a **documentos**: endpoint genérico justifica un descriptor |
+| Componentes base reutilizables         | Aplica a **documentos**: 14+ tipos sobre el mismo endpoint         |
+| UI flags por entidad                   | Aplica a **documentos**: activar "Generar", "Importar ZIP", etc.   |
+| Filtros declarativos compartidos       | Building block común: `FilterField[]` se reusa entre features      |
 
-### 3.3 Antipatrones que corregimos (no repetiremos)
+### 3.3 Antipatrones corregidos (no repetiremos)
 
-| Antipatrón legacy                                                                                       | Costo                                            | Cómo lo corregimos                                                              |
-| ------------------------------------------------------------------------------------------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------- |
-| `switch(modulo)` en `ConfigModuleService`                                                               | Violar OCP: agregar módulo modifica el core      | **Registry** `Record<ModuleId, ModuleLoader>` con lazy imports                  |
-| `queryParams: { [key: string]: any }`                                                                   | Cero type-safety, refactors a ciegas             | Discriminated unions + tipos estrictos por `kind`                               |
-| `if (this._modelo === 'GenDocumento')` hardcoded en componente base                                     | Fuga del backend al UI                           | `kind: 'document' \| 'master' \| 'utility'` con narrowing nativo de TS          |
-| `ViewContainerRef.createComponent()` para acciones extras                                               | Pierde inputs/outputs, cero type-checking        | Standalone components + Strategy pattern (`EntityActionStrategy`)               |
-| `base-documento/base-lista` (491 LoC) vs `base-administracion/base-lista` (266 LoC) — **70% duplicado** | Dos sitios para mantener una sola lógica         | Una sola implementación que ramifica por `kind`                                 |
-| `BehaviorSubject<ModeloConfig \| null>`                                                                 | Race conditions; requiere `takeUntil` manual     | `signal<EntityConfig \| null>` con lectura síncrona                             |
-| Listener global de `NavigationEnd`                                                                      | Parse del URL con regex; orden de eventos frágil | Resolvers por ruta + `withComponentInputBinding()`                              |
-| Imports estáticos de las 8 configs                                                                      | Bundle carga todo aunque solo se use 1 módulo    | Lazy `import()` dentro del registry                                             |
-| `localStorage.setItem('filtros_compra_300', ...)` sin versión                                           | Cambios de schema rompen storage del usuario     | Clave con `schemaVersion` derivado del config                                   |
-| HTTP directo desde el componente base                                                                   | Violar DIP: componente acoplado a `HttpClient`   | `EntityDataGateway` abstracto inyectado                                         |
-| `ConfigModuleService` mezcla carga + estado + navegación                                                | Violar SRP: una clase hace todo                  | 2 servicios: `ModuleRegistryService` (carga) + `ModuleNavigationStore` (estado) |
+| Antipatrón legacy                                                                  | Cómo lo corregimos                                                                |
+| ---------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `switch(modulo)` en el service global                                              | Registry con lazy imports (`Record<ModuleId, ModuleLoader>`)                      |
+| `queryParams: { [key: string]: any }`                                              | Tipos estrictos por entidad                                                       |
+| `if (this._modelo === 'GenDocumento')` hardcoded en componente base                | Gateway absorbe la lógica; el componente no conoce backend                        |
+| `ViewContainerRef.createComponent()` para acciones extras                          | Strategy pattern con `multi: true` providers                                      |
+| **`base-documento/base-lista` + `base-administracion/base-lista` — 70% duplicado** | **Diagnóstico real: no eran la misma cosa**. Resolvemos separando, no unificando. |
+| `BehaviorSubject`                                                                  | `signal` + `computed` con lectura síncrona                                        |
+| Listener global de `NavigationEnd`                                                 | Resolvers por ruta + `withComponentInputBinding()`                                |
+| Imports estáticos de las 8 configs                                                 | Lazy `import()` dentro del registry                                               |
+| `localStorage` sin versión                                                         | Clave con `schemaVersion`                                                         |
+| HTTP directo desde el componente base                                              | `EntityDataGateway` abstracto inyectado (DIP)                                     |
+| Service que mezcla carga + estado + navegación                                     | Dos servicios separados: registry vs navigation store                             |
 
 ---
 
-## 4. Principios rectores
+## 4. Reflexión post-implementación (v1.1 → v2.0)
 
-El framework se diseña aplicando estos principios. No son aspiracionales — cada decisión técnica los referencia explícitamente.
+Esta sección documenta **por qué** el documento cambió. Sirve como registro histórico para que un dev futuro entienda las razones de la simplificación.
 
-### 4.1 SOLID
+### 4.1 Lo que se construyó en v1.1
 
-- **SRP — Single Responsibility**: cada clase tiene una razón para cambiar. `ModuleRegistryService` solo carga configs. `ModuleNavigationStore` solo mantiene el estado de la navegación actual. `EntityDataGateway` solo habla con HTTP.
-- **OCP — Open/Closed**: agregar un módulo nuevo **no requiere modificar ningún archivo del core**. Solo agregar una entrada en el registry y crear el config del módulo.
-- **LSP — Liskov Substitution**: cualquier `EntityConfig` (sea `kind: 'document'`, `'master'` o `'utility'`) es consumible por `BaseListComponent` sin condicionales fuera de los necesarios para el dominio.
-- **ISP — Interface Segregation**: `DocumentEntityConfig` y `MasterEntityConfig` no comparten flags irrelevantes. Un master no tiene `documentTypeId` porque no aplica.
-- **DIP — Dependency Inversion**: los componentes base dependen de abstracciones (`EntityDataGateway`, `EntityActionStrategy`), no de implementaciones concretas.
+Tras aprobar el documento v1.1 se implementó la foundation completa en tres commits:
 
-### 4.2 Otros principios
+- **Fase 1**: tipos discriminados (`document | master | utility`), `MODULE_REGISTRY` con `InjectionToken`, `ModuleRegistryService`, `ModuleNavigationStore`, 7 errores tipados, sidebar dinámico (acordeón derivado del registry).
+- **Fase 2**: `activeModuleResolver`, `activeEntityResolver`, `EntityDataGateway` (interface + impl HTTP default), `withComponentInputBinding()` en `provideRouter`.
+- **Fase 4**: nueva lib `libs/feature-base/`, `BaseListComponent` con tabla PrimeNG, paginación, confirmaciones, restauración de filtros desde storage versionado.
+
+Total: ~2,000 LoC de scaffolding antes del primer CRUD funcional. El módulo `general` con la entidad `contacto` (`kind: 'master'`) servía como smoke test.
+
+### 4.2 Lo que se observó al usarlo
+
+Durante la implementación emergieron tres síntomas claros:
+
+1. **Indirección desproporcionada para masters**: para ver dónde se renderiza la lista de contactos hay que leer **5 archivos** (`general.config.ts` → `MODULE_REGISTRY` → `activeModuleResolver` → `activeEntityResolver` → `BaseListComponent`) cuando una lista directa son **2 archivos** (`contactos-list.component.ts` + `contactos-list.component.html`).
+
+2. **El backend no estaba unificado**: cada master tiene su propio endpoint (`/api/general/contacto`, `/api/general/item`, `/api/inventario/almacen`, etc.). La abstracción del framework asume un patrón de acceso uniforme que solo se cumple para documentos.
+
+3. **Las "diferencias entre kinds" eran datos, pero las diferencias UX no**: un contacto tiene flags cliente/proveedor/empleado; un ítem tiene precio + impuestos + categoría; un almacén tiene direcciones + bodegas. Cada uno termina necesitando un componente extra (`<entity-extra-fields>`) o un `kind: 'utility'` que es básicamente un escape hatch. El framework sirve mejor cuando las entidades son **realmente similares**, y los masters no lo son.
+
+### 4.3 Lo que validó la sospecha del legacy
+
+El legacy ya tenía **dos componentes** distintos para documentos y administración (`base-documento/base-lista` 491 LoC vs `base-administracion/base-lista` 266 LoC) con 70% de duplicación. En v1.1 lo "corregimos" unificando los dos en un solo componente que ramifica por `kind`. La reflexión es que **el legacy tenía razón en separarlos** — la duplicación señalaba que eran cosas distintas, no que necesitaban una abstracción común. El error del legacy fue duplicar código, no haber separado los componentes.
+
+### 4.4 Pivote: enfoque híbrido
+
+Conservamos el framework configuracional donde el reuso es **estructural y real** (documentos sobre endpoint genérico) y lo retiramos donde solo era **superficial** (masters con endpoints heterogéneos). Los building blocks de UI (tabla, filtros, toolbar) son reusables por inputs concretos, sin necesidad de configuración global.
+
+### 4.5 Qué se conserva del trabajo de v1.1
+
+| Pieza                                                                                  | Estado en v2.0                                                                                                 |
+| -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `ColumnDef`, `FilterField`, `ListQuery`, `ListResponse`, `FilterCondition`, `SortSpec` | **Se queda** como building blocks de tipos                                                                     |
+| `EntityDataGateway` / `HttpEntityDataGateway`                                          | **Se queda** (renombre a evaluar): el DIP sigue valiendo                                                       |
+| `EntityFilterStorageService`                                                           | **Se refactoriza** para aceptar `storageKey: string` directo (no acoplado a `EntityConfig`)                    |
+| `MODULE_REGISTRY` + `ModuleRegistryService` + `ModuleNavigationStore` + resolvers      | **Se queda** pero **aplica solo a documentos**                                                                 |
+| `BaseListComponent` (v1.1)                                                             | **Renombra** a `BaseDocumentListComponent` y elimina las ramas de masters/utility                              |
+| `MasterEntityConfig`, `MasterCapabilities`, `UtilityEntityConfig`                      | **Se elimina** del framework                                                                                   |
+| Sidebar dinámico (v1.1)                                                                | **Se refactoriza** a sidebar **híbrido**: items declarativos + acordeones derivados del registry de documentos |
+| Módulo `general` registrado (v1.1)                                                     | **Se elimina** del registry; pasa a ser feature directo con sus propias rutas                                  |
+
+---
+
+## 5. Principios rectores
+
+Las decisiones técnicas se justifican contra estos principios. Cualquier abstracción que no esté motivada por al menos uno de ellos es deuda potencial.
+
+### 5.1 SOLID
+
+- **SRP — Single Responsibility**: cada clase tiene una razón para cambiar. `ModuleRegistryService` solo carga configs. `ModuleNavigationStore` solo mantiene el estado de la navegación de documentos. Cada master tiene su servicio HTTP propio.
+- **OCP — Open/Closed**: agregar un documento nuevo a un módulo existente no requiere modificar el core. Agregar un master nuevo requiere crear su archivo y registrar su ruta — cero modificaciones a otros features.
+- **LSP — Liskov Substitution**: cualquier `DocumentEntityConfig` es consumible por `BaseDocumentListComponent` sin ramificación adicional. Cualquier `Resource` que cumpla el contrato de `<lib-data-table>` se renderiza igual.
+- **ISP — Interface Segregation**: `DocumentEntityConfig` declara únicamente lo que los documentos necesitan. Los masters no arrastran `documentTypeId` ni `inventoryEffect`.
+- **DIP — Dependency Inversion**: componentes y páginas dependen de abstracciones (`EntityDataGateway`, tokens de servicio), no de implementaciones concretas.
+
+### 5.2 YAGNI y proporcionalidad
+
+- **YAGNI ("you aren't gonna need it")**: no se abstrae lo que solo se usa una vez. Si una pieza de configuración solo aparece en una entidad, vive en esa entidad.
+- **Proporcionalidad**: la complejidad de la abstracción se mide contra el número real de casos que la justifican. Una abstracción válida para 14 entidades (documentos) no se traslada automáticamente a 6 entidades (masters) que no comparten estructura.
+- **Repetición preferida a abstracción prematura**: tres listas casi iguales son aceptables. La abstracción aparece cuando la repetición duele, no antes.
+
+### 5.3 Otros principios
 
 - **Inmutabilidad por defecto**: todo `readonly`. Las configs no se mutan en runtime.
-- **Type-safety estricto**: `any` está prohibido. Donde el tipo es genuinamente desconocido (respuestas HTTP de listado), usamos `unknown` + parseo explícito.
+- **Type-safety estricto**: `any` está prohibido. Usar `unknown` + parseo explícito donde el tipo es genuinamente desconocido.
 - **Lectura síncrona donde se pueda**: signals sobre observables para estado no derivado de I/O.
-- **Composición sobre herencia**: los componentes base reciben colaboradores vía DI, no extienden clases.
-- **Fail fast, fail loud**: errores de configuración explotan en tiempo de carga del módulo, no se silencian.
+- **Composición sobre herencia**: los componentes reciben colaboradores vía DI o inputs, no extienden clases.
+- **Fail fast, fail loud**: errores de configuración explotan en tiempo de carga; nunca se silencian.
 
 ---
 
-## 5. Arquitectura propuesta
+## 6. Arquitectura propuesta
 
-### 5.1 Tipos del dominio configuracional
+Dos caminos coexisten en el ERP, alimentados por un set de building blocks compartidos.
+
+### 6.A Camino "documentos": framework configuracional
+
+Aplica a entidades transaccionales sobre el endpoint genérico `/api/documento`. Una constante declarativa describe la entidad y el framework la renderiza.
+
+#### 6.A.1 Tipos
 
 Ubicación: `libs/core/src/lib/module-config/types/`
 
@@ -170,23 +220,16 @@ Ubicación: `libs/core/src/lib/module-config/types/`
 // entity-config.types.ts
 
 /**
- * Tipos de entidad soportados por el framework.
- * - 'document': entidades transaccionales sobre /api/documento (Factura, Nota, etc.)
- * - 'master':   entidades maestras con su propio endpoint (Item, Contacto, etc.)
- * - 'utility':  pantallas custom que no son CRUD pero forman parte del módulo
- */
-export type EntityKind = 'document' | 'master' | 'utility';
-
-/**
- * Operación del documento sobre el inventario.
- * 'inflow' aumenta el stock (compra, devolución de venta).
- * 'outflow' disminuye el stock (venta, devolución de compra).
+ * Efecto del documento sobre el inventario.
+ * `inflow`  aumenta stock (compra, devolución de venta).
+ * `outflow` disminuye stock (venta, devolución de compra).
  */
 export type InventoryEffect = 'inflow' | 'outflow';
 
 /**
- * Capacidades visibles en la UI de un documento.
- * Cada flag es independiente; no hay implicaciones cruzadas.
+ * Capacidades del documento visibles en la UI.
+ * Cada flag es independiente; declara lo que la entidad SOPORTA técnicamente.
+ * La visibilidad final también depende de los permisos del usuario.
  */
 export interface DocumentCapabilities {
   readonly canCreate: boolean;
@@ -199,18 +242,7 @@ export interface DocumentCapabilities {
   readonly canGenerate: boolean;
 }
 
-export interface MasterCapabilities {
-  readonly canCreate: boolean;
-  readonly canEdit: boolean;
-  readonly canDelete: boolean;
-  readonly canImport: boolean;
-  readonly canExportExcel: boolean;
-}
-
-/**
- * Rutas relativas al módulo. Se prefijan con el path del módulo en runtime.
- * Ej: 'list' en módulo 'compra' resuelve a '/compra/documento/factura/list'.
- */
+/** Rutas relativas al módulo. */
 export interface EntityRoutes {
   readonly list: string;
   readonly new: string;
@@ -219,265 +251,66 @@ export interface EntityRoutes {
 }
 
 /**
- * Configuración base compartida por toda entidad.
- * Las propiedades aquí son las únicas que `BaseListComponent` puede asumir sin narrowing.
+ * Configuración de un documento transaccional.
+ *
+ * En v2.0, `EntityConfig` es exclusivamente `DocumentEntityConfig`.
+ * Los masters NO viven en este tipo — son features directos (ver §6.B).
  */
-interface BaseEntityConfig {
-  readonly id: string; // Identificador estable en URLs: 'factura-compra'
-  readonly displayNameKey: string; // Clave i18n: 'modules.compra.entities.factura.name'
-  readonly endpoint: string;
+export interface DocumentEntityConfig {
+  readonly kind: 'document';
+  readonly id: string; // 'factura-compra'
+  readonly displayNameKey: string; // 'modules.compra.entities.factura.name'
+  readonly endpoint: string; // '/api/documento'
+  readonly documentTypeId: number; // 5 — único across todo el ERP
+  readonly inventoryEffect: InventoryEffect;
+  readonly schemaVersion: number; // Para invalidar localStorage
+  readonly columns: readonly ColumnDef[];
   readonly filters: readonly FilterField[];
   readonly routes: EntityRoutes;
-  readonly schemaVersion: number; // Para invalidar localStorage cuando cambia el shape
-}
-
-export interface DocumentEntityConfig extends BaseEntityConfig {
-  readonly kind: 'document';
-  readonly documentTypeId: number; // Discriminador para el backend genérico
-  readonly inventoryEffect: InventoryEffect;
   readonly capabilities: DocumentCapabilities;
-  readonly extraActionIds?: readonly string[]; // Strategy keys, ver §5.7
+  readonly extraActionIds?: readonly string[];
   readonly importDescriptor?: ImportDescriptor;
 }
 
-export interface MasterEntityConfig extends BaseEntityConfig {
-  readonly kind: 'master';
-  readonly capabilities: MasterCapabilities;
-  readonly importDescriptor?: ImportDescriptor;
-}
-
-export interface UtilityEntityConfig {
-  readonly kind: 'utility';
-  readonly id: string;
-  readonly displayNameKey: string;
-  readonly loadComponent: () => Promise<Type<unknown>>;
-}
-
-/**
- * Union discriminada por `kind`. TypeScript hace narrowing automático
- * cuando se hace switch sobre `entity.kind`.
- */
-export type EntityConfig = DocumentEntityConfig | MasterEntityConfig | UtilityEntityConfig;
+export type EntityConfig = DocumentEntityConfig;
 ```
 
 ```ts
 // module-config.types.ts
 
+/** Módulo de negocio que contiene documentos transaccionales. */
 export interface ModuleConfig {
   readonly id: string; // 'compra'
-  readonly displayNameKey: string; // 'modules.compra.name'
-  readonly iconClass: string; // Clase PrimeIcon: 'pi pi-shopping-cart'
-  readonly entities: readonly EntityConfig[];
+  readonly displayNameKey: string;
+  readonly iconClass: string; // 'pi pi-shopping-cart'
+  readonly documents: readonly DocumentEntityConfig[];
 }
 ```
 
-**Por qué cada decisión**:
+> Nota v2.0: el campo se renombra de `entities` a `documents` para reflejar que solo aloja documentos. Los masters viven en sus features.
 
-- `readonly` recursivo: las configs son **constantes**, no estado. Mutarlas es un bug, no una feature. TypeScript las protege.
-- `id: string` en lugar de `key: number | string`: identificador uniforme, legible en URLs. El `documentTypeId` se separa porque es **detalle del backend**, no la identidad de la entidad en el front.
-- `displayNameKey` (clave i18n) en lugar de string literal: nunca acoplamos UI a idioma.
-- `schemaVersion`: cuando cambien los filtros guardados o el shape de la entidad, incrementamos esta versión y el `localStorage` antiguo se descarta automáticamente.
-- `inventoryEffect: 'inflow' | 'outflow'` en lugar de `operation: 1 | -1`: cero magic numbers, intención clara.
-- `extraActionIds: readonly string[]`: la entidad solo declara **qué** strategies usa, no las implementa inline. Ver §5.7.
-
-### 5.2 Registry de módulos (OCP)
-
-Ubicación: `libs/core/src/lib/module-config/module-registry.ts`
+#### 6.A.2 Registry (OCP)
 
 ```ts
-/**
- * Función que carga la configuración completa de un módulo.
- * Debe ser una promesa para permitir lazy loading vía dynamic import.
- */
-export type ModuleConfigLoader = () => Promise<ModuleConfig>;
+// apps/erp/src/app/core/module-config/module-registry.constant.ts
 
-/**
- * Registro central de módulos del ERP.
- *
- * Agregar un módulo nuevo:
- *   1. Crear `apps/erp/src/app/features/<id>/<id>.config.ts` que exporte `<ID>_CONFIG: ModuleConfig`.
- *   2. Agregar una entrada en este record. Cero modificaciones a otros archivos.
- *
- * Quitar un módulo:
- *   1. Eliminar la entrada de este record.
- *   2. Borrar la carpeta del feature.
- *   Las rutas obsoletas devolverán 404 en runtime (manejado por wildcard route).
- */
-export const MODULE_REGISTRY = {
-  compra: () => import('@erp/features/compra/compra.config').then((m) => m.COMPRA_CONFIG),
-  venta: () => import('@erp/features/venta/venta.config').then((m) => m.VENTA_CONFIG),
+export const ERP_MODULE_REGISTRY = {
+  compra: () => import('../../features/compra/compra.config').then((m) => m.COMPRA_CONFIG),
+  venta: () => import('../../features/venta/venta.config').then((m) => m.VENTA_CONFIG),
   inventario: () =>
-    import('@erp/features/inventario/inventario.config').then((m) => m.INVENTARIO_CONFIG),
-  cartera: () => import('@erp/features/cartera/cartera.config').then((m) => m.CARTERA_CONFIG),
-  tesoreria: () =>
-    import('@erp/features/tesoreria/tesoreria.config').then((m) => m.TESORERIA_CONFIG),
-  contabilidad: () =>
-    import('@erp/features/contabilidad/contabilidad.config').then((m) => m.CONTABILIDAD_CONFIG),
-  general: () => import('@erp/features/general/general.config').then((m) => m.GENERAL_CONFIG),
-  humano: () => import('@erp/features/humano/humano.config').then((m) => m.HUMANO_CONFIG),
-} as const satisfies Record<string, ModuleConfigLoader>;
-
-/**
- * Tipo derivado del registry. Garantiza que ningún string huérfano
- * pueda referenciar un módulo inexistente.
- */
-export type ModuleId = keyof typeof MODULE_REGISTRY;
+    import('../../features/inventario/inventario.config').then((m) => m.INVENTARIO_CONFIG),
+  // ... otros módulos con documentos
+} as const satisfies ModuleRegistry;
 ```
 
-**Por qué `as const satisfies`**:
+Inyectado vía `MODULE_REGISTRY` token de `@reddoc/core`. El framework define el contrato; la app provee la instancia (DIP).
 
-- `as const` congela los keys del objeto para derivar `ModuleId` con precisión.
-- `satisfies` valida que cada loader cumple el contrato sin perder la inferencia literal de keys.
+#### 6.A.3 Servicios
 
-### 5.3 Servicios (SRP)
+- **`ModuleRegistryService`** (`@reddoc/core`): carga `ModuleConfig` lazy desde el registry, cachea, valida.
+- **`ModuleNavigationStore`** (`@reddoc/core`): signals `activeModule` y `activeDocument` escritos por los resolvers.
 
-Una clase, una razón para cambiar. El legacy mezclaba carga + estado + navegación en un solo `ConfigModuleService`. Lo separamos en dos.
-
-#### 5.3.1 `ModuleRegistryService` — solo carga
-
-Ubicación: `libs/core/src/lib/module-config/services/module-registry.service.ts`
-
-```ts
-/**
- * Carga ModuleConfig desde el registry y cachea los resultados.
- * No mantiene estado de navegación.
- */
-@Injectable({ providedIn: 'root' })
-export class ModuleRegistryService {
-  private readonly cache = new Map<ModuleId, ModuleConfig>();
-
-  /**
-   * Resuelve la configuración de un módulo. La primera llamada
-   * dispara el dynamic import; las siguientes leen del cache.
-   *
-   * @throws UnknownModuleError si el id no está registrado.
-   */
-  async load(id: ModuleId): Promise<ModuleConfig> {
-    const cached = this.cache.get(id);
-    if (cached) return cached;
-
-    const loader = MODULE_REGISTRY[id];
-    if (!loader) throw new UnknownModuleError(id);
-
-    const config = await loader();
-    this.assertValidConfig(config, id);
-    this.cache.set(id, config);
-    return config;
-  }
-
-  /**
-   * Devuelve todos los módulos registrados sin cargarlos.
-   * Útil para construir el sidebar antes de navegar a un módulo.
-   */
-  listRegisteredIds(): readonly ModuleId[] {
-    return Object.keys(MODULE_REGISTRY) as ModuleId[];
-  }
-
-  private assertValidConfig(config: ModuleConfig, expectedId: ModuleId): void {
-    if (config.id !== expectedId) {
-      throw new ConfigMismatchError(expectedId, config.id);
-    }
-    const duplicateEntityIds = findDuplicates(config.entities.map((e) => e.id));
-    if (duplicateEntityIds.length > 0) {
-      throw new DuplicateEntityIdError(expectedId, duplicateEntityIds);
-    }
-  }
-}
-```
-
-#### 5.3.2 `ModuleNavigationStore` — solo estado
-
-Ubicación: `libs/core/src/lib/module-config/stores/module-navigation.store.ts`
-
-```ts
-/**
- * Mantiene el módulo y la entidad activos según la ruta actual.
- * Los resolvers escriben aquí; los componentes leen via signals.
- */
-@Injectable({ providedIn: 'root' })
-export class ModuleNavigationStore {
-  private readonly _currentModule = signal<ModuleConfig | null>(null);
-  private readonly _currentEntity = signal<EntityConfig | null>(null);
-
-  readonly currentModule = this._currentModule.asReadonly();
-  readonly currentEntity = this._currentEntity.asReadonly();
-
-  readonly availableFilters = computed(() => this._currentEntity()?.filters ?? []);
-
-  readonly isDocument = computed(() => this._currentEntity()?.kind === 'document');
-
-  setActiveModule(config: ModuleConfig | null): void {
-    this._currentModule.set(config);
-  }
-
-  setActiveEntity(config: EntityConfig | null): void {
-    this._currentEntity.set(config);
-  }
-}
-```
-
-**Por qué dos servicios y no uno**:
-
-- El registry **solo cambia** si cambia la lógica de carga/caché de configs.
-- El store **solo cambia** si cambia la lógica de cómo se expone el estado actual.
-- Un componente del sidebar que solo necesita listar módulos no debería arrastrar la dependencia del estado de navegación.
-
-### 5.4 Routing con resolvers
-
-Ubicación de los resolvers: `libs/core/src/lib/module-config/resolvers/`
-
-```ts
-// active-module.resolver.ts
-
-/**
- * Resolver de nivel módulo. Carga el ModuleConfig completo
- * antes de que cualquier ruta hija se monte.
- *
- * Uso:
- *   { path: 'compra', resolve: { module: activeModuleResolver('compra') }, ... }
- */
-export const activeModuleResolver =
-  (moduleId: ModuleId): ResolveFn<ModuleConfig> =>
-  async (): Promise<ModuleConfig> => {
-    const registry = inject(ModuleRegistryService);
-    const store = inject(ModuleNavigationStore);
-    const config = await registry.load(moduleId);
-    store.setActiveModule(config);
-    return config;
-  };
-```
-
-```ts
-// active-entity.resolver.ts
-
-/**
- * Resolver de nivel entidad. Resuelve qué entidad del módulo activo
- * corresponde al parámetro `entityKey` de la ruta.
- *
- * @throws EntityNotFoundError si la entidad no existe o no es del kind esperado.
- */
-export const activeEntityResolver =
-  (expectedKind: EntityKind): ResolveFn<EntityConfig> =>
-  (route: ActivatedRouteSnapshot): EntityConfig => {
-    const store = inject(ModuleNavigationStore);
-    const entityId = route.paramMap.get('entityKey');
-    const module = store.currentModule();
-
-    if (!module) throw new MissingModuleContextError();
-    if (!entityId) throw new MissingEntityKeyError();
-
-    const entity = module.entities.find((e) => e.id === entityId);
-    if (!entity) throw new EntityNotFoundError(module.id, entityId);
-    if (entity.kind !== expectedKind) {
-      throw new EntityKindMismatchError(entityId, expectedKind, entity.kind);
-    }
-
-    store.setActiveEntity(entity);
-    return entity;
-  };
-```
-
-Configuración del router en cada feature:
+#### 6.A.4 Routing + resolvers
 
 ```ts
 // apps/erp/src/app/features/compra/compra.routes.ts
@@ -488,23 +321,29 @@ export const COMPRA_ROUTES: Routes = [
     resolve: { module: activeModuleResolver('compra') },
     children: [
       {
-        path: 'documento/:entityKey',
-        resolve: { entity: activeEntityResolver('document') },
+        path: 'documento/:documentKey',
+        resolve: { document: activeDocumentResolver() },
         children: [
-          { path: 'list', component: BaseListComponent },
-          { path: 'new', component: BaseFormComponent },
-          { path: 'edit/:id', component: BaseFormComponent },
-          { path: 'detail/:id', component: BaseDetailComponent },
-        ],
-      },
-      {
-        path: 'master/:entityKey',
-        resolve: { entity: activeEntityResolver('master') },
-        children: [
-          { path: 'list', component: BaseListComponent },
-          { path: 'new', component: BaseFormComponent },
-          { path: 'edit/:id', component: BaseFormComponent },
-          { path: 'detail/:id', component: BaseDetailComponent },
+          {
+            path: 'list',
+            loadComponent: () =>
+              import('@reddoc/feature-base').then((m) => m.BaseDocumentListComponent),
+          },
+          {
+            path: 'new',
+            loadComponent: () =>
+              import('@reddoc/feature-base').then((m) => m.BaseDocumentFormComponent),
+          },
+          {
+            path: 'edit/:id',
+            loadComponent: () =>
+              import('@reddoc/feature-base').then((m) => m.BaseDocumentFormComponent),
+          },
+          {
+            path: 'detail/:id',
+            loadComponent: () =>
+              import('@reddoc/feature-base').then((m) => m.BaseDocumentDetailComponent),
+          },
         ],
       },
     ],
@@ -512,616 +351,532 @@ export const COMPRA_ROUTES: Routes = [
 ];
 ```
 
-**Provider del router** (en `app.config.ts`):
+> Nota: `activeEntityResolver(kind)` se renombra a `activeDocumentResolver()` (sin parámetro) porque solo procesa documentos en v2.0.
+
+#### 6.A.5 `BaseDocumentListComponent`
+
+Reemplaza al `BaseListComponent` de v1.1. Recibe `DocumentEntityConfig` por input. Internamente compone `<lib-data-table>` y `<lib-filter-panel>`. Delega I/O al `EntityDataGateway`.
 
 ```ts
-provideRouter(routes, withComponentInputBinding());
-```
-
-`withComponentInputBinding()` hace que los `resolve` lleguen como `input()` a los componentes:
-
-```ts
-export class BaseListComponent {
-  readonly entity = input.required<EntityConfig>(); // viene del resolver
-  // ...
+@Component({ selector: 'lib-base-document-list' /* ... */ })
+export class BaseDocumentListComponent {
+  readonly document = input.required<DocumentEntityConfig>();
+  // toolbar, columnas, paginación, etc. derivadas del config
 }
 ```
 
-**Por qué resolvers en vez de listener global**:
+#### 6.A.6 Strategy pattern para acciones extras
 
-- El componente **nunca** se monta sin `entity`. No hay `null`-checks defensivos.
-- El router de Angular gestiona el ciclo de vida; no hay observable custom que mantener.
-- Los errores de configuración fallan **antes** de montar el componente (fail-fast).
+(Sin cambios respecto a v1.1.) Acciones como "Generar", "Recurrente" se registran como `EntityActionStrategy` con `multi: true` providers. El documento declara qué strategies usa por `id`.
 
-### 5.5 Acceso a datos abstracto (DIP)
+### 6.B Camino "masters": features directos
 
-Ubicación: `libs/core/src/lib/module-config/data/`
+Aplica a entidades administrativas con endpoint propio. Cada master vive como feature independiente.
 
-```ts
-// entity-data-gateway.ts
+#### 6.B.1 Anatomía de un master
 
-/**
- * Contrato para acceder a la API de una entidad.
- * El componente base depende de esta abstracción, no de HttpClient.
- *
- * Esto permite:
- *   - Testear componentes base con un gateway en memoria.
- *   - Cambiar el transporte (HTTP, WebSocket, GraphQL) sin tocar el componente.
- *   - Inyectar interceptores específicos por kind sin acoplarlos al HttpClient global.
- */
-export interface EntityDataGateway {
-  list(entity: EntityConfig, query: ListQuery): Observable<ListResponse>;
-  getById(entity: EntityConfig, id: string | number): Observable<unknown>;
-  create(entity: EntityConfig, payload: unknown): Observable<unknown>;
-  update(entity: EntityConfig, id: string | number, payload: unknown): Observable<unknown>;
-  remove(entity: EntityConfig, ids: readonly (string | number)[]): Observable<void>;
-}
-
-export const ENTITY_DATA_GATEWAY = new InjectionToken<EntityDataGateway>('EntityDataGateway');
+```
+apps/erp/src/app/features/general/
+├── general.routes.ts                      · solo rutas del feature
+├── menu.ts                                · entradas que aporta al sidebar (declarativo)
+├── services/
+│   └── contacto.service.ts                · extends BaseHttpService
+└── pages/
+    └── contactos-list/
+        ├── contactos-list.component.ts    · página dedicada — orquesta el listado
+        ├── contactos-list.component.html
+        └── contactos-list.component.scss
 ```
 
-```ts
-// http-entity-data-gateway.ts — implementación default
-
-@Injectable({ providedIn: 'root' })
-export class HttpEntityDataGateway implements EntityDataGateway {
-  private readonly http = inject(HttpClient);
-
-  list(entity: EntityConfig, query: ListQuery): Observable<ListResponse> {
-    if (entity.kind === 'utility') {
-      throw new UnsupportedOperationError('list', 'utility');
-    }
-    const params = this.buildListParams(entity, query);
-    return this.http.get<ListResponse>(entity.endpoint, { params });
-  }
-
-  remove(entity: EntityConfig, ids: readonly (string | number)[]): Observable<void> {
-    // Para documentos genéricos, el backend espera un POST a /eliminar/.
-    // Para masters, DELETE por id. La discriminación ocurre aquí, no en el componente.
-    if (entity.kind === 'document') {
-      return this.http.post<void>(`${entity.endpoint}/eliminar/`, { ids });
-    }
-    if (entity.kind === 'master') {
-      return forkJoin(ids.map((id) => this.http.delete<void>(`${entity.endpoint}/${id}/`))).pipe(
-        map(() => undefined),
-      );
-    }
-    throw new UnsupportedOperationError('remove', entity.kind);
-  }
-
-  // ... resto de métodos
-}
-```
-
-Registro como provider default en `app.config.ts`:
+#### 6.B.2 Cómo se ve una página de master
 
 ```ts
-{ provide: ENTITY_DATA_GATEWAY, useClass: HttpEntityDataGateway }
-```
-
-**Beneficio**: el componente base hace `inject(ENTITY_DATA_GATEWAY).list(entity, query)`, sin saber de HTTP, sin condicionales sobre `kind`. La lógica de "documentos van por POST a /eliminar/, masters por DELETE" vive en **un único lugar**.
-
-### 5.6 Componentes base unificados (LSP)
-
-Ubicación: nueva librería Nx `libs/feature-base/` — ver decisión en §12.
-
-```ts
-// libs/feature-base/src/lib/components/base-list.component.ts
-
 @Component({
-  selector: 'lib-base-list',
+  selector: 'app-contactos-list',
   standalone: true,
-  imports: [
-    /* PrimeNG Table, etc. */
-  ],
-  templateUrl: './base-list.component.html',
+  imports: [DataTableComponent, FilterPanelComponent, ToolbarActionsComponent],
+  templateUrl: './contactos-list.component.html',
 })
-export class BaseListComponent {
-  // ── Inputs ───────────────────────────────────────────────────────────────
-  readonly entity = input.required<EntityConfig>();
+export class ContactosListComponent {
+  private readonly service = inject(ContactoService);
 
-  // ── Colaboradores ────────────────────────────────────────────────────────
-  private readonly gateway = inject(ENTITY_DATA_GATEWAY);
-  private readonly filterStorage = inject(EntityFilterStorageService);
-  private readonly actionRegistry = inject(EntityActionRegistry);
-
-  // ── Estado ───────────────────────────────────────────────────────────────
-  readonly items = signal<readonly unknown[]>([]);
-  readonly totalCount = signal(0);
-  readonly isLoading = signal(false);
-
-  // ── Derivado ─────────────────────────────────────────────────────────────
-  readonly extraActions = computed(() =>
-    this.entity().kind === 'document'
-      ? this.actionRegistry.resolveActions(
-          (this.entity() as DocumentEntityConfig).extraActionIds ?? [],
-        )
-      : [],
-  );
-
-  // ── Ciclo de vida ────────────────────────────────────────────────────────
-  constructor() {
-    // Recargar cuando cambia la entidad (navegación entre entidades del mismo módulo)
-    effect(() => {
-      this.entity(); // suscripción
-      this.loadList();
-    });
-  }
-
-  // ── API pública ──────────────────────────────────────────────────────────
-  loadList(): void {
-    this.isLoading.set(true);
-    const filters = this.filterStorage.read(this.entity());
-    this.gateway
-      .list(this.entity(), { filters })
-      .pipe(finalize(() => this.isLoading.set(false)))
-      .subscribe((response) => {
-        this.items.set(response.results);
-        this.totalCount.set(response.count);
-      });
-  }
-}
-```
-
-**Por qué hay una sola implementación y no dos como en el legacy**:
-
-- Las diferencias entre `kind` son **datos**, no estructura: capacidades distintas, lógica de delete distinta. Todo eso vive en el `gateway` y las `capabilities`.
-- El componente solo orquesta. Si una operación no aplica para un kind, el gateway lo declara y la UI lee de `entity.capabilities.canX`.
-
-### 5.7 Strategy pattern para acciones extras (OCP)
-
-El legacy hardcodeaba acciones extras (Generar, Recurrente) en `configuracionExtraDocumento[key].botones`, y las cargaba con `ViewContainerRef.createComponent()`. Esto rompía type-checking y mezclaba presentación con configuración.
-
-**Nuestro enfoque**: cada acción extra es una **strategy** registrada con un id estable. La entidad declara qué strategies usa.
-
-```ts
-// libs/feature-base/src/lib/actions/entity-action.strategy.ts
-
-/**
- * Estrategia que implementa una acción extra disponible desde la lista.
- * Cada strategy se registra una vez con un id; las entidades la declaran por id.
- */
-export interface EntityActionStrategy {
-  readonly id: string;
-  readonly labelKey: string;
-  readonly iconClass: string;
-  readonly execute: (context: EntityActionContext) => Observable<EntityActionResult>;
-}
-
-export interface EntityActionContext {
-  readonly entity: EntityConfig;
-  readonly selectedIds: readonly (string | number)[];
-}
-
-export const ENTITY_ACTION_STRATEGY = new InjectionToken<EntityActionStrategy>(
-  'EntityActionStrategy',
-  {
-    providedIn: 'root',
-    factory: () => {
-      throw new Error('No strategies registered');
+  protected readonly columns: readonly ColumnDef[] = [
+    {
+      field: 'id',
+      headerKey: 'modules.general.contacto.columns.id',
+      type: 'number',
+      width: '70px',
+      align: 'right',
+      sortable: true,
     },
-  },
-);
-```
+    {
+      field: 'nombre_corto',
+      headerKey: 'modules.general.contacto.columns.nombre',
+      type: 'text',
+      sortable: true,
+    },
+    // ...
+  ];
 
-Registro de una strategy concreta:
+  protected readonly filters: readonly FilterField[] = [
+    {
+      name: 'cliente',
+      displayNameKey: 'modules.general.contacto.filters.cliente',
+      type: 'boolean',
+    },
+    {
+      name: 'proveedor',
+      displayNameKey: 'modules.general.contacto.filters.proveedor',
+      type: 'boolean',
+    },
+    // ...
+  ];
 
-```ts
-// apps/erp/src/app/features/compra/actions/generate-purchase-action.ts
+  protected readonly storageKey = 'general:contactos:v1';
 
-export const generatePurchaseAction: EntityActionStrategy = {
-  id: 'compra.generate-purchase',
-  labelKey: 'modules.compra.actions.generate',
-  iconClass: 'pi pi-cog',
-  execute: ({ entity, selectedIds }) => {
-    const service = inject(GeneratePurchaseService);
-    return service.run(selectedIds);
-  },
-};
-```
+  protected readonly items = signal<readonly Contacto[]>([]);
+  protected readonly totalCount = signal(0);
+  protected readonly isLoading = signal(false);
 
-Provider:
-
-```ts
-{ provide: ENTITY_ACTION_STRATEGY, useValue: generatePurchaseAction, multi: true }
-```
-
-Uso desde el config de la entidad:
-
-```ts
-{
-  kind: 'document',
-  id: 'factura-compra',
-  // ...
-  extraActionIds: ['compra.generate-purchase'],
+  // Lógica de paginación, filtros, carga, etc.
+  // Es código simple del feature, no del framework.
 }
 ```
 
-`EntityActionRegistry` colecta todas las strategies por su `id` y las resuelve cuando el componente las pide. Agregar una acción nueva = crear archivo + registrar provider. **Sin modificar el componente base**.
+**Características**:
 
-### 5.8 Persistencia de filtros versionada
+- Sin `EntityConfig`, sin registry, sin resolver. La página existe y se renderiza directamente.
+- Compone los building blocks compartidos por inputs explícitos.
+- Si necesita un campo extra o un comportamiento único, lo agrega en el mismo archivo sin tocar a otros features.
+
+### 6.C Building blocks compartidos
+
+Viven en `libs/feature-base/src/lib/` y los usan **ambos caminos**.
+
+#### 6.C.1 `<lib-data-table>` — componente "tonto"
 
 ```ts
-// libs/feature-base/src/lib/storage/entity-filter-storage.service.ts
+@Component({ selector: 'lib-data-table' /* ... */ })
+export class DataTableComponent {
+  readonly columns = input.required<readonly ColumnDef[]>();
+  readonly items = input.required<readonly unknown[]>();
+  readonly totalCount = input<number>(0);
+  readonly loading = input<boolean>(false);
+  readonly pageSize = input<number>(25);
+  readonly currentPage = input<number>(0);
+  readonly selectionMode = input<'none' | 'multiple'>('none');
+  readonly selectedRows = input<readonly unknown[]>([]);
+  readonly rowActions = input<readonly RowAction[]>([]);
 
-/**
- * Persiste filtros del usuario por entidad en localStorage.
- * La clave incluye schemaVersion para invalidar storage obsoleto automáticamente.
- */
+  readonly pageChange = output<{ page: number; pageSize: number }>();
+  readonly sortChange = output<readonly SortSpec[]>();
+  readonly selectionChange = output<readonly unknown[]>();
+  readonly rowActionInvoked = output<{ actionId: string; row: unknown }>();
+}
+```
+
+Sin lógica de negocio. Sin HTTP. Sin storage. Solo render + eventos. Es la pieza más reusada del sistema.
+
+#### 6.C.2 `<lib-filter-panel>` — UI de filtros
+
+Recibe `FilterField[]` + condiciones actuales, emite condiciones nuevas. Sin conocimiento de a qué entidad pertenece.
+
+#### 6.C.3 `<lib-toolbar-actions>` — botones del header
+
+Recibe un array declarativo de acciones (`{ id, labelKey, icon, severity, disabled? }`), emite el id al hacer click. El consumidor decide qué hacer con cada uno.
+
+#### 6.C.4 `EntityDataGateway` + `HttpEntityDataGateway`
+
+Sigue valiendo para documentos. Para masters, también es útil — pero un master simple puede saltarlo y usar su `*Service` directo si no necesita testabilidad de gateway. **No es obligatorio para masters**.
+
+#### 6.C.5 `EntityFilterStorageService` (refactor v2.0)
+
+Cambio de firma: en v1.1 recibía `EntityConfig`. En v2.0 recibe `storageKey: string` directo.
+
+```ts
 @Injectable({ providedIn: 'root' })
 export class EntityFilterStorageService {
-  private buildKey(entity: EntityConfig): string {
-    // 'compra:factura-compra:v3'
-    return `${this.moduleIdOf(entity)}:${entity.id}:v${entity.schemaVersion}`;
+  read(storageKey: string): readonly FilterCondition[] {
+    /* ... */
   }
-
-  read(entity: EntityConfig): readonly FilterCondition[] {
-    const raw = localStorage.getItem(this.buildKey(entity));
-    if (!raw) return [];
-    try {
-      const parsed: unknown = JSON.parse(raw);
-      return this.validate(parsed);
-    } catch {
-      // Storage corrupto. Borrarlo y devolver vacío.
-      localStorage.removeItem(this.buildKey(entity));
-      return [];
-    }
+  write(storageKey: string, filters: readonly FilterCondition[]): void {
+    /* ... */
   }
-
-  write(entity: EntityConfig, filters: readonly FilterCondition[]): void {
-    localStorage.setItem(this.buildKey(entity), JSON.stringify(filters));
+  clear(storageKey: string): void {
+    /* ... */
   }
 }
 ```
 
-**Por qué `schemaVersion` en la clave**: cuando una entidad cambia sus filtros disponibles, basta con incrementar `schemaVersion` en su config. El storage viejo queda huérfano (con su propia clave) y eventualmente se limpia. **Nunca se carga un filtro incompatible**.
+Cada llamador construye su clave: documentos vía helper `buildDocumentStorageKey(module, document)`, masters con un literal `'general:contactos:v1'`.
+
+#### 6.C.6 Tipos compartidos
+
+`ColumnDef`, `FilterField`, `ListQuery`, `ListResponse`, `FilterCondition`, `SortSpec`, `FilterOperator`, `ImportDescriptor`. Viven en `@reddoc/core` para que cualquier feature los importe.
+
+### 6.D Sidebar híbrido
+
+El sidebar se compone de **dos fuentes**:
+
+1. **Items declarativos** definidos en `apps/erp/src/app/layouts/sidebar-menu.ts`:
+   - Items directos (Dashboard, Reportes…).
+   - Grupos de masters por módulo (Administrador: Contactos, Ítems, Sedes…).
+2. **Acordeones derivados** del `MODULE_REGISTRY` con sus documentos:
+   - Compra → Documentos: Factura compra, Nota crédito…
+   - Venta → Documentos: Factura venta, Nota crédito venta…
+
+```ts
+// apps/erp/src/app/layouts/sidebar-menu.ts
+
+export const SIDEBAR_MENU: readonly SidebarSection[] = [
+  {
+    kind: 'item',
+    labelKey: 'layout.nav.dashboard',
+    iconClass: 'pi pi-th-large',
+    path: 'dashboard',
+  },
+  {
+    kind: 'module',
+    moduleId: 'general',
+    labelKey: 'modules.general.name',
+    iconClass: 'pi pi-cog',
+    groups: [
+      {
+        labelKey: 'layout.nav.sections.master',
+        items: [
+          { labelKey: 'modules.general.contacto.menuName', path: 'general/contactos' },
+          // ...
+        ],
+      },
+    ],
+  },
+  // Módulos con documentos aparecen automáticamente porque `WorkspaceLayout`
+  // los mezcla con `ModuleRegistryService.loadAll()` filtrando por
+  // los que tienen `documents.length > 0`.
+];
+```
+
+El `WorkspaceLayoutComponent` ensambla las dos fuentes en un único árbol.
 
 ---
 
-## 6. Convenciones de naming
+## 7. Convenciones de naming
 
-Reglas que aplican a todo el código del framework y de los features. Romperlas requiere justificación explícita en el PR.
+Reglas que aplican a todo el código. Romperlas requiere justificación explícita en el PR.
 
-### 6.1 General
+### 7.1 General
 
 | Categoría           | Convención                        | Ejemplo                                 |
 | ------------------- | --------------------------------- | --------------------------------------- |
 | Archivos            | `kebab-case`                      | `module-registry.service.ts`            |
 | Clases / interfaces | `PascalCase`                      | `ModuleRegistryService`, `EntityConfig` |
-| Constantes globales | `SCREAMING_SNAKE_CASE`            | `MODULE_REGISTRY`, `COMPRA_CONFIG`      |
-| Funciones / métodos | `camelCase`, verbo primero        | `loadModule`, `setActiveEntity`         |
+| Constantes globales | `SCREAMING_SNAKE_CASE`            | `ERP_MODULE_REGISTRY`, `COMPRA_CONFIG`  |
+| Funciones / métodos | `camelCase`, verbo primero        | `loadModule`, `setActiveDocument`       |
 | Booleanos           | Prefijo `is`/`can`/`has`/`should` | `isLoading`, `canEdit`, `hasFilters`    |
-| Signals             | Sin prefijo, snake o camel        | `currentEntity`, `items`                |
-| Eventos / outputs   | Verbo en pasado                   | `entitySelected`, `actionExecuted`      |
+| Signals             | Sin prefijo, snake o camel        | `activeDocument`, `items`               |
+| Eventos / outputs   | Verbo en pasado                   | `documentSelected`, `actionInvoked`     |
 | Inyección tokens    | `SCREAMING_SNAKE_CASE`            | `ENTITY_DATA_GATEWAY`                   |
 
-### 6.2 Identificadores en el dominio
+### 7.2 Identificadores en el dominio
 
 - Usa `id` (no `key`, `name`, `slug`) para identificadores estables que aparecen en URLs.
 - `displayNameKey` para claves i18n. Nunca strings de UI literales en configs.
-- Nombres en inglés en código y APIs. Strings de UI en español/inglés vía i18n.
+- Código y APIs en inglés; strings de UI en español/inglés vía i18n.
 
-### 6.3 Anti-naming (prohibido)
+### 7.3 Anti-naming (prohibido)
 
-- `data: any`, `params: any` → usa `unknown` + parseo, o tipa correctamente.
-- `obj.modeloCofig` (typo del legacy) → revisar antes de commitear, nunca normalizar errores.
-- `arrItems`, `objConfig` → notación húngara. Prohibido.
-- `_modelo`, `_tipo` (underscore prefix para "privado pero accesible") → privado real con `private`, o público con nombre limpio.
+- `data: any`, `params: any` → usar `unknown` + parseo, o tipar correctamente.
+- `obj.modeloCofig` (typo del legacy) → revisar antes de commitear.
+- `arrItems`, `objConfig` → notación húngara, prohibido.
+- `_modelo`, `_tipo` (underscore prefix) → privado real con `private`.
 - Funciones que devuelven `any` o `Promise<any>`.
 
 ---
 
-## 7. Estructura por módulo
+## 8. Estructura por módulo
+
+Dos patrones, según la naturaleza del módulo.
+
+### 8.1 Módulo con documentos (camino A)
 
 ```
 apps/erp/src/app/features/<id>/
-├── <id>.routes.ts              · rutas + resolvers
-├── <id>.config.ts              · ModuleConfig exportado (la única "constante de módulo")
-├── entities/                    · solo si una entidad tiene UI custom
-│   └── factura/
-│       ├── factura-extra-fields.component.ts
-│       └── factura-detail-overrides.component.ts
-├── actions/                     · strategies del módulo
-│   ├── generate-purchase.action.ts
-│   └── index.ts                 · provider() para registrar todas
-├── services/                    · servicios HTTP específicos del módulo
-└── i18n/                        · traducciones del módulo
-    ├── compra.es.ts
-    └── compra.en.ts
+├── <id>.routes.ts                    · rutas + resolvers
+├── <id>.config.ts                    · ModuleConfig exportado
+├── actions/                          · strategies del módulo
+│   ├── <action>.action.ts
+│   └── index.ts                      · provider() para registrar todas
+└── i18n/                             · traducciones del módulo (cuando aplique)
 ```
 
-### 7.1 Cómo agregar un módulo nuevo (ejemplo: `cartera`)
+Ejemplo: módulo `compra` con documentos Factura, Nota crédito, Nota débito, etc.
 
-1. **Crear el config**: `apps/erp/src/app/features/cartera/cartera.config.ts`
+### 8.2 Módulo con masters (camino B)
 
-   ```ts
-   export const CARTERA_CONFIG: ModuleConfig = {
-     id: 'cartera',
-     displayNameKey: 'modules.cartera.name',
-     iconClass: 'pi pi-wallet',
-     entities: [
-       {
-         kind: 'document',
-         id: 'recibo-caja',
-         displayNameKey: 'modules.cartera.entities.recibo.name',
-         endpoint: '/api/documento',
-         documentTypeId: 400,
-         inventoryEffect: 'inflow',
-         schemaVersion: 1,
-         filters: RECEIPT_FILTERS,
-         routes: {
-           list: 'documento/recibo-caja/list',
-           new: 'documento/recibo-caja/new',
-           edit: 'documento/recibo-caja/edit',
-           detail: 'documento/recibo-caja/detail',
-         },
-         capabilities: {
-           canCreate: true,
-           canEdit: true,
-           canDelete: true,
-           canSelectRows: true,
-           canImport: false,
-           canExportExcel: true,
-           canExportZip: false,
-           canGenerate: false,
-         },
-       },
-       // ...
-     ],
-   };
-   ```
+```
+apps/erp/src/app/features/<id>/
+├── <id>.routes.ts                    · rutas literales del feature
+├── menu.ts                           · entradas del sidebar para este módulo
+├── services/
+│   ├── contacto.service.ts
+│   └── item.service.ts
+└── pages/
+    ├── contactos-list/
+    │   ├── contactos-list.component.ts
+    │   ├── contactos-list.component.html
+    │   └── contactos-list.component.scss
+    ├── contactos-form/
+    │   └── ...
+    └── items-list/
+        └── ...
+```
 
-2. **Crear las rutas**: `apps/erp/src/app/features/cartera/cartera.routes.ts` (idéntico al ejemplo §5.4 con `'cartera'`).
+Ejemplo: módulo `general` con masters Contacto, Ítem, Sede, Almacén, Cuenta banco, Asesor, Resolución.
 
-3. **Registrar en `MODULE_REGISTRY`**: una línea en `libs/core/src/lib/module-config/module-registry.ts`.
+### 8.3 Módulo mixto
 
-4. **Cablear al router principal**:
+Si un módulo tiene **documentos y masters**, puede combinar las dos estructuras: un `<id>.config.ts` con `documents`, **y también** `pages/<master>-list/` para sus masters. Cada parte usa el camino correspondiente.
 
-   ```ts
-   { path: 'cartera', loadChildren: () => import('@erp/features/cartera/cartera.routes').then(m => m.CARTERA_ROUTES) }
-   ```
+### 8.4 Cómo agregar un master nuevo (ejemplo: ítems)
 
-5. **Si necesita acciones custom**: crear `actions/<action>.ts` y registrar el provider en `cartera.providers.ts` (cargado por el routing del módulo).
+1. Crear `apps/erp/src/app/features/general/services/item.service.ts` extendiendo `BaseHttpService`.
+2. Crear `apps/erp/src/app/features/general/pages/items-list/items-list.component.ts` con columnas, filtros y la página armada con `<lib-data-table>`.
+3. Agregar la ruta a `general.routes.ts`: `{ path: 'items', loadComponent: () => import('./pages/items-list/items-list.component').then(m => m.ItemsListComponent) }`.
+4. Agregar la entrada al menú en `apps/erp/src/app/features/general/menu.ts`.
 
-Sidebar, permisos, breadcrumbs, deep links: todo se deriva del config. No se toca nada más.
+Sin tocar el framework, sin tocar otros features.
+
+### 8.5 Cómo agregar un documento nuevo (ejemplo: nota débito de venta)
+
+1. Agregar el descriptor al array `documents` de `venta.config.ts`.
+2. Si necesita una acción custom, registrar la strategy.
+
+El framework hace el resto (sidebar, rutas, lista, form, detalle).
 
 ---
 
-## 8. Manejo de errores y casos límite
+## 9. Manejo de errores y casos límite
 
-### 8.1 Errores tipados
+### 9.1 Errores tipados
 
-Definir clases de error específicas, nunca lanzar `new Error('mensaje')` genérico:
+Clases de error específicas en lugar de `new Error('mensaje')` genérico. Permite que el `ErrorHandler` global reaccione apropiadamente (toast, redirect, etc.).
 
-```ts
-export class UnknownModuleError extends Error {
-  constructor(readonly moduleId: string) {
-    super(`Module '${moduleId}' is not registered in MODULE_REGISTRY.`);
-    this.name = 'UnknownModuleError';
-  }
-}
+Conservados de v1.1 y aplicables al camino de documentos:
 
-export class EntityNotFoundError extends Error {
-  constructor(
-    readonly moduleId: string,
-    readonly entityId: string,
-  ) {
-    super(`Entity '${entityId}' not found in module '${moduleId}'.`);
-    this.name = 'EntityNotFoundError';
-  }
-}
+- `UnknownModuleError`
+- `ConfigMismatchError`
+- `DuplicateEntityIdError`
+- `MissingModuleContextError`
+- `MissingDocumentKeyError` (renombrado desde `MissingEntityKeyError`)
+- `DocumentNotFoundError` (renombrado desde `EntityNotFoundError`)
 
-export class EntityKindMismatchError extends Error {
-  /* ... */
-}
-export class ConfigMismatchError extends Error {
-  /* ... */
-}
-export class DuplicateEntityIdError extends Error {
-  /* ... */
-}
-export class MissingModuleContextError extends Error {
-  /* ... */
-}
-```
+Para masters no se necesitan errores especiales — los servicios HTTP propagan errores estándar de `HttpClient`.
 
-### 8.2 Boundary de errores en el router
+### 9.2 Boundary de errores en el router
 
-Un guard catch-all que maneja errores de resolvers y redirige al fallback adecuado (404 del módulo, mensaje al usuario):
+`ConfigErrorHandler` captura errores de resolvers de documentos y redirige a `/not-found` o muestra un toast. Los masters usan el manejo de errores de su propio servicio HTTP.
 
-```ts
-// libs/core/src/lib/module-config/error-handling/config-error.handler.ts
+### 9.3 Validación de configs en build
 
-@Injectable({ providedIn: 'root' })
-export class ConfigErrorHandler implements ErrorHandler {
-  private readonly toast = inject(ToastService);
-  private readonly router = inject(Router);
+Script Nx `validate-configs` que:
 
-  handleError(error: unknown): void {
-    if (error instanceof UnknownModuleError || error instanceof EntityNotFoundError) {
-      this.toast.error('Recurso no encontrado', error.message);
-      this.router.navigate(['/not-found']);
-      return;
-    }
-    // Otros errores: delegar al ErrorHandler global
-    console.error(error);
-  }
-}
-```
-
-### 8.3 Validación de configs en build
-
-Implementar un script Nx target `validate-configs` que:
-
-- Importa todas las configs registradas.
+- Importa todas las configs de documentos registradas.
 - Verifica que `documentTypeId` sea único across módulos.
 - Verifica que cada `extraActionIds` referenciado exista en algún archivo de strategy.
 - Verifica que las claves i18n existan en los diccionarios.
 
-Corre en pre-commit y en CI.
+Corre en pre-commit y CI.
 
 ---
 
-## 9. Estrategia de testing
+## 10. Estrategia de testing
 
-### 9.1 Cobertura mínima por capa
+### 10.1 Cobertura mínima por capa
 
-| Capa                         | Tipo de test                     | Cobertura objetivo                 |
-| ---------------------------- | -------------------------------- | ---------------------------------- |
-| Tipos (compile-time)         | `tsc --strict`                   | 100% (forzado)                     |
-| `ModuleRegistryService`      | Unit                             | 100%                               |
-| `ModuleNavigationStore`      | Unit                             | 100%                               |
-| Resolvers                    | Unit + integration               | 100% paths felices + errores       |
-| `HttpEntityDataGateway`      | Unit con `HttpTestingController` | 100% de métodos                    |
-| `EntityFilterStorageService` | Unit                             | 100% (incluye corruption recovery) |
-| `BaseListComponent`          | Component test con gateway fake  | flujos principales                 |
-| Actions strategies           | Unit                             | 100% del `execute`                 |
-| Module configs               | Validation script                | 100% en CI                         |
+| Capa                                     | Tipo de test                     | Cobertura objetivo           |
+| ---------------------------------------- | -------------------------------- | ---------------------------- |
+| Tipos (compile-time)                     | `tsc --strict`                   | 100% (forzado)               |
+| `ModuleRegistryService`                  | Unit                             | 100%                         |
+| `ModuleNavigationStore`                  | Unit                             | 100%                         |
+| Resolvers de documentos                  | Unit + integration               | 100% paths felices + errores |
+| `HttpEntityDataGateway`                  | Unit con `HttpTestingController` | 100% de métodos              |
+| `EntityFilterStorageService`             | Unit                             | 100% (incluye corrupción)    |
+| `BaseDocumentListComponent`              | Component test con gateway fake  | flujos principales           |
+| `<lib-data-table>`, `<lib-filter-panel>` | Component test                   | inputs/outputs + edge cases  |
+| Servicios de masters (`*Service`)        | Unit con `HttpTestingController` | métodos públicos             |
+| Páginas de masters (`*-list.component`)  | Component test                   | flujo de página              |
+| Configs de documentos                    | Validation script                | 100% en CI                   |
 
-### 9.2 Fakes en lugar de mocks
+### 10.2 Fakes en lugar de mocks
 
-Para `EntityDataGateway` y similares, mantenemos una implementación **en memoria** real en `libs/feature-base/testing/`:
+Para `EntityDataGateway` mantenemos una implementación **en memoria** real en `libs/feature-base/testing/`:
 
 ```ts
 export class InMemoryEntityDataGateway implements EntityDataGateway {
   private store = new Map<string, unknown[]>();
-  // implementación real con datos en memoria
+  // implementación real
 }
 ```
 
-Usar fakes (no mocks `jest.fn()`) hace los tests más legibles y permite probar interacciones reales.
+Tests más legibles y verifican interacciones reales, no comportamientos espiados.
 
 ---
 
-## 10. Trade-offs aceptados
+## 11. Trade-offs aceptados
 
-### Ganamos
+### 11.1 Para documentos (camino A)
 
-- **Onboarding de módulo nuevo**: 1 archivo de config + 1 de rutas + 1 entrada en el registry.
-- **Type-safety end-to-end**: cero `any`. Refactors con confianza total.
-- **Lazy load real**: el bundle del módulo activo se descarga solo cuando se necesita.
-- **Una sola implementación** de filtros, paginación, exportación, importación, eliminación.
-- **Sidebar y breadcrumbs** derivados del registry — un solo origen de verdad.
-- **Strategies para acciones custom**: extensibilidad sin tocar el componente base.
-- **DIP**: tests sin red, sin levantar HttpClient mock global.
+**Ganamos**:
 
-### Pagamos
+- Onboarding de documento nuevo: 1 objeto en el array `documents` de su módulo.
+- Type-safety end-to-end sin `any`.
+- Lazy load real por módulo.
+- Una sola implementación de lista/form/detalle para los 14+ tipos de documento.
+- Strategies para acciones custom — extensibilidad sin tocar `BaseDocumentList`.
 
-- **Indirección**: para entender `/compra/documento/factura-compra/list` hay que leer el routing del módulo + el config de la entidad + el componente base. Costo cognitivo real.
-- **Curva de aprendizaje**: ~2-3 días para un dev nuevo internalizar el patrón.
-- **Foundation upfront**: tipos + registry + servicios + resolvers + gateway + componentes base = ~5-7 archivos antes del primer feature útil.
-- **Escape hatches necesarios**: cuando una entidad necesita UI única (un campo custom en el detalle), se inyecta vía slot `<ng-content select="[extra-fields]">` o se compone con un `entities/<id>/<id>-overrides.component.ts`. No es magia.
+**Pagamos**:
 
-### Cuándo **no** usar el framework
+- Indirección: para entender `/compra/documento/factura-compra/list` hay que leer routing + config + `BaseDocumentList`.
+- Curva de aprendizaje del framework — ~1-2 días para un dev nuevo.
+- Foundation upfront (~1,000 LoC de scaffolding) ya pagada en v1.1.
 
-Algunas features no son CRUD estándar y deben quedarse como features tradicionales:
+### 11.2 Para masters (camino B)
+
+**Ganamos**:
+
+- Cada master es completamente independiente — modificar uno no afecta a otros.
+- Lectura directa: ver lo que hace un master no requiere conocer el framework.
+- UX flexible — agregar campos custom, validaciones especiales, layouts distintos sin escape hatches.
+- Onboarding inmediato: un dev escribe un master nuevo en una sesión.
+
+**Pagamos**:
+
+- Cierto código repetido entre masters (la estructura "página con tabla + filtros + servicio HTTP" se replica).
+- La repetición es manejable porque los building blocks (`<lib-data-table>`, `<lib-filter-panel>`) absorben el 80%.
+
+### 11.3 Cuándo **no** usar ninguno de los dos caminos
+
+Algunas features no son CRUD y deben quedarse como features tradicionales sin building blocks de tabla:
 
 - **`contenedores`** — selección de tenant pre-workspace.
 - **`dashboard`** — KPIs, gráficos, vistas custom.
 - **Settings de usuario** — formularios únicos por sección.
 - **Wizards, builders, configuradores** — flujos no-CRUD.
 
-Esto no es un workaround: son casos legítimamente distintos. Forzarlos al framework introduciría complejidad sin beneficio.
+---
+
+## 12. Plan de migración
+
+Estado actual (commit `fcdb96f`): foundation v1.1 implementada con `BaseListComponent` unificado que ramifica por `kind` y módulo `general` registrado como `kind: 'master'`. Pasamos a v2.0 sin tirar lo aprovechable.
+
+| Paso | Alcance                                                                                                                                   | Riesgo |
+| ---- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 1    | Crear `<lib-data-table>` standalone tonto al lado del `BaseListComponent` actual. No toca nada existente.                                 | Bajo   |
+| 2    | Refactorizar `EntityFilterStorageService` para aceptar `storageKey: string` directo (cambio compatible: ambas firmas conviven).           | Bajo   |
+| 3    | Crear `ContactoService` (extends `BaseHttpService`) + `ContactosListComponent` que compone `<lib-data-table>` + servicio.                 | Bajo   |
+| 4    | Crear `sidebar-menu.ts` y modificar `WorkspaceLayoutComponent` para mezclar items declarativos + acordeones del registry de documentos.   | Medio  |
+| 5    | Mover la entrada "Contactos" del menú: del registry de v1.1 al menú declarativo. La ruta apunta a la página nueva.                        | Bajo   |
+| 6    | Quitar `general` del `ERP_MODULE_REGISTRY` y eliminar `general.config.ts` (la entidad `contacto` ya no es del framework).                 | Bajo   |
+| 7    | Limpiar el framework: eliminar `MasterEntityConfig`, `MasterCapabilities`, `UtilityEntityConfig`. `EntityConfig` queda solo documentos.   | Medio  |
+| 8    | Renombrar `BaseListComponent` → `BaseDocumentListComponent`. Quitar narrowing por `kind`. Simplificar resolvers y gateway.                | Medio  |
+| 9    | Renombrar `activeEntityResolver(kind)` → `activeDocumentResolver()` sin parámetro. Renombrar errores de "entity" a "document".            | Bajo   |
+| 10   | Validar end-to-end: contactos como feature directo; framework listo para el primer documento real cuando se sume un módulo transaccional. | Bajo   |
+
+Cada paso queda en su commit, así puedes revisar el diff o revertir individualmente.
+
+**No se migra**: `contenedores`, `dashboard`, `auth`. Siguen como features tradicionales.
 
 ---
 
-## 11. Plan de implementación
+## 13. Decisiones tomadas
 
-| Fase | Alcance                                                                    | Entregable                                     |
-| ---- | -------------------------------------------------------------------------- | ---------------------------------------------- |
-| 1    | **Foundation tipos + registry + servicios**                                | `libs/core/module-config/` listo y testeado    |
-| 2    | **Resolvers + gateway HTTP default**                                       | Resolución de rutas + acceso a datos abstracto |
-| 3    | **Smoke test**: módulo `general` con 1 master simple, sin componentes base | Validar el flujo end-to-end                    |
-| 4    | **`BaseListComponent`** con paginación, filtros, exportación               | Listado funcional para masters                 |
-| 5    | **`BaseFormComponent` + `BaseDetailComponent`**                            | CRUD completo                                  |
-| 6    | **Sistema de strategies** + primera acción extra                           | Extensibilidad validada                        |
-| 7    | **Sidebar dinámico** derivado del registry                                 | UX final                                       |
-| 8    | **Migración**: implementar módulos uno por uno                             | Producto en producción                         |
+### 13.1 Ubicación de los componentes y building blocks
 
-`contenedores` no migra — se queda como feature tradicional.
+**Decisión**: nueva librería Nx `libs/feature-base/` ya creada en v1.1.
 
----
+- Building blocks tontos (`<lib-data-table>`, `<lib-filter-panel>`, `<lib-toolbar-actions>`).
+- Componentes base del framework de documentos (`BaseDocumentListComponent`, `BaseDocumentFormComponent`, `BaseDocumentDetailComponent`).
+- Storage de filtros y otros helpers transversales.
 
-## 12. Decisiones tomadas
+### 13.2 Granularidad de i18n
 
-Resoluciones a los puntos que el documento v1.0 dejó pendientes.
+**Decisión**: por módulo, con namespace embebido por entidad / master.
 
-### 12.1 Ubicación de los componentes base
-
-**Decisión: nueva librería Nx `libs/feature-base/`**.
-
-Justificación: estos componentes tienen dependencias propias (router, http, config store, gateway, action registry) que no aplican al resto de `libs/ui`. Separarlos:
-
-- Permite testear el framework configuracional independientemente.
-- Hace explícito el límite entre "componentes de presentación" (`libs/ui`) y "componentes de feature genéricos" (`libs/feature-base`).
-- Acepta lazy-loading limpio por feature sin arrastrar UI no usada.
-
-### 12.2 Granularidad de i18n
-
-**Decisión: por módulo, con namespace embebido por entidad**.
-
-Estructura:
-
-```ts
-// modules.cartera.entities.recibo.name = 'Recibo de caja'
-// modules.cartera.entities.recibo.list.title = 'Recibos'
-// modules.cartera.actions.print = 'Imprimir'
+```
+modules.compra.entities.factura.name        → 'Factura de compra'
+modules.general.contacto.columns.nombre     → 'Nombre'
+modules.general.contacto.filters.cliente    → 'Cliente'
+common.actions.new                          → 'Nuevo'
+common.actions.delete                       → 'Eliminar'
 ```
 
-Justificación:
+Las claves comunes (botones "Guardar", "Cancelar", toasts genéricos) viven en `common.*`.
 
-- Cada módulo es un dominio léxico cohesivo; "Factura" en compra ≠ "Factura" en venta.
-- El reuso real entre entidades dentro de un módulo es alto; entre módulos es bajo.
-- Diccionarios por módulo permiten lazy load de traducciones junto con el código.
+### 13.3 Sistema de permisos
 
-Las claves comunes (botones "Guardar", "Cancelar") viven en `common.*`.
+**Decisión**: dos niveles — por ruta (acceso) y por capacidad (UI).
 
-### 12.3 Sistema de permisos
+- **Acceso al módulo / ruta**: guards de Angular leen el rol del usuario contra una matriz `module → role`. Bloquea la ruta entera.
+- **Capacidades dentro de la UI**: el componente consulta `PermissionsService.can('compra.factura.create')` antes de mostrar un botón. El config `capabilities.canCreate` declara qué es **técnicamente posible**; el service decide qué le es **permitido al usuario actual**.
 
-**Decisión: dos niveles — por ruta (acceso) y por capacidad (UI)**.
+Implementación inicial: `PermissionsService` con signal estático cargado en `provideAppInitializer`. Cuando el backend exponga API de permisos granulares, solo cambia la fuente — el contrato del servicio no.
 
-- **Acceso al módulo/entidad**: guards de Angular leen el rol del usuario contra una matriz `module → entity → role`. Bloquea la ruta entera.
-- **Capacidades dentro de la UI**: el componente base lee `entity.capabilities.canCreate` Y consulta `PermissionsService.can('compra.factura.create')`. Solo muestra el botón si **ambos** son true.
+### 13.4 Vistas alternativas (kanban, calendar, etc.)
 
-La capacidad de la entidad declara **qué es técnicamente posible**. El servicio de permisos declara **qué le es permitido al usuario actual**.
+**Decisión**: no soportar inicialmente. Cuando emerja la necesidad:
 
-Implementación inicial: `PermissionsService` con un signal estático cargado en el `provideAppInitializer`. Cuando el backend tenga API de permisos granulares, solo cambia la fuente — el contrato del servicio no.
+- En **documentos**: agregar `defaultView: 'list' | 'kanban' | 'calendar'` al `DocumentEntityConfig` y crear `BaseDocumentKanbanComponent` en `libs/feature-base/`.
+- En **masters**: cada feature ya es libre de renderizar lo que quiera; agrega su propia página `<master>-kanban/`.
 
-### 12.4 Vistas alternativas (kanban, calendar, etc.)
+### 13.5 Enfoque híbrido (nueva en v2.0)
 
-**Decisión: no soportar inicialmente, pero reservar el hook**.
+**Decisión**: framework configuracional solo para documentos transaccionales; masters como features directos.
 
-`EntityConfig` no incluye `viewType` ahora. Cuando emerja la necesidad real:
+**Razones**:
 
-1. Agregar `readonly defaultView: 'list' | 'kanban' | 'calendar'` con default `'list'`.
-2. Crear `BaseKanbanComponent`/`BaseCalendarComponent` en `libs/feature-base/`.
-3. El router cargará el componente correspondiente según `entity.defaultView`.
+- El backend ya está separado para masters (cada uno con su endpoint). El framework asume un patrón de acceso uniforme que solo se cumple en documentos.
+- Las diferencias entre masters son **estructurales** (cada uno con su shape, su UX), no solo de capacidades. Forzarlos a una abstracción común introduce indirección sin beneficio.
+- Conservar el framework donde el reuso es real (documentos) y retirarlo donde no lo era (masters) reduce ~600 LoC de scaffolding y elimina escape hatches.
 
-No agregamos complejidad upfront. La forma del config y los resolvers ya soportan la extensión sin breaking changes.
+**Implicaciones**:
+
+- `EntityConfig` se vuelve sinónimo de `DocumentEntityConfig`.
+- `BaseListComponent` se renombra a `BaseDocumentListComponent` y se simplifica.
+- Sidebar se vuelve híbrido (declarativo + derivado del registry).
+- Cada master implementa su listado componiendo building blocks.
 
 ---
 
-## 13. Referencias
+## 14. Referencias
 
 ### Legacy estudiado
 
 - `/home/tamerlan/Desktop/semantica/app.reddoc/` — Angular 17
-  - `src/app/modules/compra/domain/constantes/configuracion.constant.ts` — config del módulo compra
-  - `src/app/comun/services/application/config-modulo.service.ts` — service legacy
-  - `src/app/comun/componentes/base-documento/base-lista/base-lista.component.ts` — base list documentos
-  - `src/app/comun/componentes/base-administracion/base-lista/base-lista.component.ts` — base list masters
+  - `src/app/modules/compra/domain/constantes/configuracion.constant.ts`
+  - `src/app/comun/services/application/config-modulo.service.ts`
+  - `src/app/comun/componentes/base-documento/base-lista/base-lista.component.ts`
+  - `src/app/comun/componentes/base-administracion/base-lista/base-lista.component.ts`
 
 ### Nuevo
 
 - `/home/tamerlan/Desktop/reddoc-monorepo/`
   - `apps/erp/` — aplicación destino
-  - `libs/core/` — librería compartida donde vivirá `module-config/`
-  - `libs/ui/` — componentes de presentación
-  - `libs/feature-base/` — **nueva librería** que albergará los componentes base configuracionales
+  - `libs/core/` — tipos, registry, services, resolvers, gateway, errores
+  - `libs/feature-base/` — building blocks tontos + componentes base de documentos
+  - `libs/ui/` — componentes de presentación pura (auth, avatares, toggles)
 
 ### Conceptos
 
 - **SOLID**: Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion
+- **YAGNI**: "You aren't gonna need it"
 - **Strategy pattern**: Gamma et al., "Design Patterns"
-- **Configuration-driven architecture**: variante de "Data-Driven UI"
-- **Discriminated unions en TS**: handbook oficial — narrowing por propiedad común
+- **Configuration-driven architecture**: variante de "Data-Driven UI" (aplica solo a documentos en v2.0)
+- **Discriminated unions en TS**: handbook oficial — narrowing por propiedad común (aplica al campo `kind` de `DocumentEntityConfig`, que en v2.0 tiene una sola variante pero queda como hook para futuras extensiones)
+
+---
+
+## Historial de versiones
+
+- **v1.0** (2026-05-11): primera propuesta — framework configuracional uniforme para documentos y masters.
+- **v1.1** (2026-05-11): revisión SOLID — discriminated unions, registry, signals, resolvers, gateway, strategies.
+- **v2.0** (2026-05-12): enfoque híbrido tras implementación de v1.1 — documentos siguen configuracionales, masters pasan a features directos.
