@@ -24,7 +24,10 @@ export { ModuleRegistryService } from './services/module-registry.service';
 export { ModuleNavigationStore } from './services/module-navigation.store';
 
 // Storage
-export { EntityFilterStorageService } from './storage/entity-filter-storage.service';
+export {
+  EntityFilterStorageService,
+  buildEntityStorageKey,
+} from './storage/entity-filter-storage.service';
 
 // Resolvers
 export { activeModuleResolver } from './resolvers/active-module.resolver';

@@ -16,6 +16,7 @@ import {
   ModuleNavigationStore,
   TenantService,
   ToastService,
+  buildEntityStorageKey,
   type ColumnDef,
   type DocumentEntityConfig,
   type EntityConfig,
@@ -116,7 +117,8 @@ export class BaseListComponent {
     effect(() => {
       const currentEntity = this.entity();
       const moduleId = this.activeModuleId();
-      const storedFilters = this.filterStorage.read(moduleId, currentEntity);
+      const storageKey = buildEntityStorageKey(moduleId, currentEntity);
+      const storedFilters = storageKey ? this.filterStorage.read(storageKey) : [];
       this.activeFilters.set(storedFilters);
       this.selectedRows.set([]);
       this.currentPage.set(0);
