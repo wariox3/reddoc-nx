@@ -19,7 +19,10 @@ export class ContactoService extends BaseHttpService {
 
   list(query: ListQuery): Observable<ContactoListResponse> {
     const params = serializeListQuery(query);
-    return this.get<ContactoListResponse>(this.resourcePath, this.paramsToRecord(params));
+    return this.get<ContactoListResponse>(
+      this.resourcePath + 'lista/',
+      this.paramsToRecord(params),
+    );
   }
 
   getById(id: number): Observable<Contacto> {

@@ -1,7 +1,6 @@
 import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
-import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { finalize } from 'rxjs';
@@ -17,9 +16,11 @@ import {
 } from '@reddoc/core';
 import {
   DataTableComponent,
+  DataToolbarComponent,
   type PageChangeEvent,
   type RowAction,
   type RowActionInvokedEvent,
+  type ToolbarAction,
 } from '@reddoc/feature-base';
 import { ContactoService } from '../../services/contacto.service';
 import type { Contacto } from '../../models/contacto.model';
@@ -34,6 +35,19 @@ const ROW_ACTIONS: readonly RowAction[] = [
   { id: 'delete', labelKey: 'common.actions.delete', iconClass: 'pi pi-trash', severity: 'danger' },
 ];
 
+/** Acción primaria de la toolbar. */
+const PRIMARY_ACTION: ToolbarAction = {
+  id: 'new',
+  labelKey: 'common.actions.new',
+  iconClass: 'pi pi-plus',
+};
+
+/** Acciones secundarias (exportar, importar). */
+const TRAILING_ACTIONS: readonly ToolbarAction[] = [
+  { id: 'export', labelKey: 'common.actions.exportExcel', iconClass: 'pi pi-file-excel' },
+  { id: 'import', labelKey: 'common.actions.import', iconClass: 'pi pi-upload' },
+];
+
 /**
  * Listado de contactos.
  *
@@ -42,13 +56,14 @@ const ROW_ACTIONS: readonly RowAction[] = [
  * segmentación, historial transaccional, etc.
  *
  * Camino B del enfoque híbrido: feature directo que compone los building
- * blocks compartidos (`<lib-data-table>`) por inputs concretos. No usa
- * `EntityConfig`, registry, resolvers ni navigation store.
+ * blocks compartidos (`<lib-data-toolbar>` + `<lib-data-table>`) dentro de
+ * un wrapper `.card`. No usa `EntityConfig`, registry, resolvers ni
+ * navigation store.
  */
 @Component({
   selector: 'app-contactos-list',
   standalone: true,
-  imports: [DataTableComponent, ButtonModule, ConfirmDialogModule],
+  imports: [DataTableComponent, DataToolbarComponent, ConfirmDialogModule],
   providers: [ConfirmationService],
   templateUrl: './contactos-list.component.html',
   styleUrl: './contactos-list.component.scss',
@@ -74,6 +89,7 @@ export class ContactosListComponent {
   protected readonly pageSize = signal(25);
   protected readonly sort = signal<readonly SortSpec[]>([]);
   protected readonly selectedRows = signal<readonly Contacto[]>([]);
+  protected readonly searchValue = signal('');
   protected readonly activeFilters = signal<readonly FilterCondition[]>(
     this.filterStorage.read(CONTACTOS_FILTERS_STORAGE_KEY),
   );
@@ -81,8 +97,10 @@ export class ContactosListComponent {
   // ── Derivados ─────────────────────────────────────────────────────────────
   protected readonly hasSelection = computed(() => this.selectedRows().length > 0);
   protected readonly rowActions = ROW_ACTIONS;
+  protected readonly primaryAction = PRIMARY_ACTION;
+  protected readonly trailingActions = TRAILING_ACTIONS;
 
-  /** Columnas declaradas literalmente en el feature (no en config global). */
+  /** Columnas declaradas literalmente en el feature. */
   protected readonly columns: readonly ColumnDef[] = [
     {
       field: 'id',
@@ -144,8 +162,27 @@ export class ContactosListComponent {
     }
   }
 
-  protected navigateToNew(): void {
-    this.router.navigate(this.buildRouteCommands('new'));
+  protected onToolbarAction(actionId: string): void {
+    switch (actionId) {
+      case 'new':
+        this.router.navigate(this.buildRouteCommands('new'));
+        break;
+      case 'export':
+        // TODO: implementar exportación a Excel
+        break;
+      case 'import':
+        // TODO: implementar importación
+        break;
+    }
+  }
+
+  protected onSearchChange(value: string): void {
+    this.searchValue.set(value);
+    // TODO: aplicar búsqueda al query del backend cuando se conecte.
+  }
+
+  protected onRefresh(): void {
+    this.loadList();
   }
 
   protected removeSelected(): void {

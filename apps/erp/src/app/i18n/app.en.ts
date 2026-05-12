@@ -12,6 +12,15 @@ export const en: AppDict = {
       deleteSelected: 'Delete selected',
       cancel: 'Cancel',
       menuLabel: 'Options',
+      filters: 'Filters',
+      clearFilters: 'Clear filters',
+      clearSearch: 'Clear search',
+      refresh: 'Refresh',
+      exportExcel: 'Export Excel',
+      import: 'Import',
+    },
+    search: {
+      placeholder: 'Search...',
     },
     list: {
       records: 'records',

@@ -1,9 +1,9 @@
 /**
  * Building blocks compartidos para listados/tablas del monorepo.
  *
- * Solo expone piezas **agnósticas del dominio**. El framework configuracional
- * del ERP (`BaseDocumentListComponent`, registry, resolvers, etc.) vive en
- * `apps/erp/src/app/core/module-config/`.
+ * Componentes tontos: reciben inputs y emiten eventos. Sin HTTP, sin config,
+ * sin conocimiento de dominio. El feature page los compone dentro de un
+ * wrapper `.card` y los conecta entre sí.
  */
 
 export { DataTableComponent } from './lib/data-table/data-table.component';
@@ -12,3 +12,6 @@ export type {
   RowActionInvokedEvent,
   PageChangeEvent,
 } from './lib/data-table/data-table.types';
+
+export { DataToolbarComponent } from './lib/data-toolbar/data-toolbar.component';
+export type { ToolbarAction } from './lib/data-toolbar/data-toolbar.types';

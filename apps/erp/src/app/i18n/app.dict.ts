@@ -10,6 +10,15 @@ export interface AppDict extends AuthTranslationsHost {
       deleteSelected: string;
       cancel: string;
       menuLabel: string;
+      filters: string;
+      clearFilters: string;
+      clearSearch: string;
+      refresh: string;
+      exportExcel: string;
+      import: string;
+    };
+    search: {
+      placeholder: string;
     };
     list: {
       records: string;
