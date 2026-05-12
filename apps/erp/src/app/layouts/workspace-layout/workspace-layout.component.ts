@@ -6,8 +6,8 @@ import { I18nService, TenantService } from '@reddoc/core';
 import { UserMenuComponent } from '../../shared/user-menu/user-menu.component';
 import { SIDEBAR_MENU } from '../sidebar/sidebar-menu';
 import type {
+  SidebarAccordion,
   SidebarLeafItem,
-  SidebarModuleAccordion,
   SidebarSection,
   SidebarSimpleItem,
 } from '../sidebar/sidebar-menu.types';
@@ -16,13 +16,9 @@ import type { AppDict } from '../../i18n';
 /**
  * Layout principal del workspace de un tenant.
  *
- * Sidebar híbrido:
- *  - Items declarativos desde `SIDEBAR_MENU` (camino B — masters y enlaces fijos).
- *  - (Futuro) acordeones derivados del `MODULE_REGISTRY` para módulos con
- *    documentos del framework configuracional.
- *
- * Las dos fuentes se traducen al tipo `SidebarSection` antes de renderizar,
- * así el template no se preocupa por el origen.
+ * Sidebar declarativo desde `SIDEBAR_MENU`. Cuando lleguen módulos del
+ * `MODULE_REGISTRY` con documentos, se mezclarán acá traducidos a la misma
+ * forma `SidebarSection` para que el template no distinga el origen.
  */
 @Component({
   selector: 'app-workspace-layout',
@@ -44,18 +40,16 @@ export class WorkspaceLayoutComponent {
 
   protected readonly t = this.i18n.t;
 
-  /** Secciones del sidebar. Por ahora solo declarativas. */
+  /** Secciones del sidebar. */
   protected readonly sections = computed<readonly SidebarSection[]>(() => SIDEBAR_MENU);
 
   /** Slug del tenant activo; necesario para resolver paths absolutos. */
   protected readonly tenantSlug = this.tenant.currentSlug;
 
-  /** Ids de módulos cuyo acordeón está expandido. */
-  private readonly expandedModuleIds = signal<ReadonlySet<string>>(
+  /** Ids de acordeones expandidos. Inicialmente todos abiertos. */
+  private readonly expandedAccordionIds = signal<ReadonlySet<string>>(
     new Set(
-      SIDEBAR_MENU.filter((s): s is SidebarModuleAccordion => s.kind === 'module').map(
-        (s) => s.moduleId,
-      ),
+      SIDEBAR_MENU.filter((s): s is SidebarAccordion => s.kind === 'accordion').map((s) => s.id),
     ),
   );
 
@@ -67,19 +61,19 @@ export class WorkspaceLayoutComponent {
     return section.kind === 'item';
   }
 
-  protected asModule(section: SidebarSection): SidebarModuleAccordion {
-    return section as SidebarModuleAccordion;
+  protected asAccordion(section: SidebarSection): SidebarAccordion {
+    return section as SidebarAccordion;
   }
 
-  protected isExpanded(moduleId: string): boolean {
-    return this.expandedModuleIds().has(moduleId);
+  protected isExpanded(accordionId: string): boolean {
+    return this.expandedAccordionIds().has(accordionId);
   }
 
-  protected toggleModule(moduleId: string): void {
-    this.expandedModuleIds.update((current) => {
+  protected toggleAccordion(accordionId: string): void {
+    this.expandedAccordionIds.update((current) => {
       const next = new Set(current);
-      if (next.has(moduleId)) next.delete(moduleId);
-      else next.add(moduleId);
+      if (next.has(accordionId)) next.delete(accordionId);
+      else next.add(accordionId);
       return next;
     });
   }
@@ -94,10 +88,10 @@ export class WorkspaceLayoutComponent {
     return slug ? `/t/${slug}/${item.path}` : `/${item.path}`;
   }
 
-  /** Path absoluto para un item dentro de un acordeón de módulo. */
-  protected leafPath(moduleId: string, leaf: SidebarLeafItem): string {
+  /** Path absoluto para un item dentro de un acordeón. */
+  protected leafPath(leaf: SidebarLeafItem): string {
     const slug = this.tenantSlug();
-    return slug ? `/t/${slug}/${moduleId}/${leaf.path}` : `/${moduleId}/${leaf.path}`;
+    return slug ? `/t/${slug}/${leaf.path}` : `/${leaf.path}`;
   }
 
   /**

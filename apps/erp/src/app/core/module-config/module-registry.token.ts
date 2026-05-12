@@ -8,7 +8,7 @@ import type { ModuleConfig } from './types/module-config.types';
  * code-split el módulo y descargarlo solo cuando se necesite.
  *
  * @example
- * () => import('./features/general/general.config').then(m => m.GENERAL_CONFIG)
+ * () => import('./features/compra/compra.config').then(m => m.COMPRA_CONFIG)
  */
 export type ModuleConfigLoader = () => Promise<ModuleConfig>;
 

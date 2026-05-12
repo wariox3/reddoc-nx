@@ -44,20 +44,15 @@ export interface AppDict extends AuthTranslationsHost {
       logout: string;
     };
   };
-  modules: {
-    general: {
+  entities: {
+    contacto: {
       name: string;
-      entities: {
-        contacto: {
-          name: string;
-          columns: {
-            id: string;
-            nombre: string;
-            identificacion: string;
-            correo: string;
-            telefono: string;
-          };
-        };
+      columns: {
+        id: string;
+        nombre: string;
+        identificacion: string;
+        correo: string;
+        telefono: string;
       };
     };
   };

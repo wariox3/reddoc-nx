@@ -6,18 +6,16 @@ import type { SidebarSection } from './sidebar-menu.types';
  * **Cómo agregar un item de primer nivel** (Dashboard, Reportes, etc.):
  *   Agregar una entrada `{ kind: 'item', labelKey, iconClass, path }`.
  *
- * **Cómo agregar un master nuevo a un módulo existente** (camino B):
- *   Buscar el `SidebarModuleAccordion` correspondiente y agregar un item
- *   al grupo "Administrador" (o crear el grupo si no existe).
+ * **Cómo agregar un master nuevo a Administrador**:
+ *   Agregar un item al primer grupo del acordeón `administracion` con
+ *   `{ labelKey, path }`. El feature debe vivir en su propia carpeta
+ *   `apps/erp/src/app/features/<feature>/` y registrar su ruta en
+ *   `app.routes.ts`.
  *
- * **Cómo agregar un módulo nuevo**:
- *   Crear una entrada `{ kind: 'module', moduleId, labelKey, iconClass, groups }`.
- *
- * Los acordeones de **módulos con documentos** se generan dinámicamente
- * a partir del `MODULE_REGISTRY` cuando existan; no se declaran aquí.
- *
- * Las claves i18n viven en `app.es.ts` / `app.en.ts`. Si la clave no existe,
- * el sidebar mostrará la clave misma como fallback (útil en desarrollo).
+ * **Cómo agregar un módulo con documentos** (camino A):
+ *   Crear el `ModuleConfig`, registrarlo en `ERP_MODULE_REGISTRY` y agregar
+ *   acá un `SidebarAccordion` que liste sus documentos. (En el futuro
+ *   podemos derivar este acordeón automáticamente del registry).
  */
 export const SIDEBAR_MENU: readonly SidebarSection[] = [
   {
@@ -27,19 +25,14 @@ export const SIDEBAR_MENU: readonly SidebarSection[] = [
     path: 'dashboard',
   },
   {
-    kind: 'module',
-    moduleId: 'general',
-    labelKey: 'modules.general.name',
-    iconClass: 'pi pi-cog',
+    kind: 'accordion',
+    id: 'administracion',
+    labelKey: 'layout.nav.sections.master',
+    iconClass: 'pi pi-folder',
     groups: [
       {
-        labelKey: 'layout.nav.sections.master',
-        items: [
-          {
-            labelKey: 'modules.general.entities.contacto.name',
-            path: 'contactos',
-          },
-        ],
+        // Sin labelKey: los items van directos sin sub-header.
+        items: [{ labelKey: 'entities.contacto.name', path: 'contactos' }],
       },
     ],
   },

@@ -26,7 +26,7 @@ import type { Contacto } from '../../models/contacto.model';
 import type { AppDict } from '../../../../i18n';
 
 /** Clave de localStorage para los filtros de esta página. Incluye `v1`. */
-const CONTACTOS_FILTERS_STORAGE_KEY = 'entity-filters:general:contactos:v1';
+const CONTACTOS_FILTERS_STORAGE_KEY = 'contactos:filters:v1';
 
 /** Acciones disponibles desde el menú de cada fila. */
 const ROW_ACTIONS: readonly RowAction[] = [
@@ -35,7 +35,11 @@ const ROW_ACTIONS: readonly RowAction[] = [
 ];
 
 /**
- * Listado de contactos — master administrativo del módulo General.
+ * Listado de contactos.
+ *
+ * Master administrativo en su propio feature (`features/contactos/`):
+ * bounded context propio que albergará lógica de cliente/proveedor/empleado,
+ * segmentación, historial transaccional, etc.
  *
  * Camino B del enfoque híbrido: feature directo que compone los building
  * blocks compartidos (`<lib-data-table>`) por inputs concretos. No usa
@@ -82,7 +86,7 @@ export class ContactosListComponent {
   protected readonly columns: readonly ColumnDef[] = [
     {
       field: 'id',
-      headerKey: 'modules.general.entities.contacto.columns.id',
+      headerKey: 'entities.contacto.columns.id',
       type: 'number',
       width: '70px',
       align: 'right',
@@ -90,24 +94,24 @@ export class ContactosListComponent {
     },
     {
       field: 'nombre_corto',
-      headerKey: 'modules.general.entities.contacto.columns.nombre',
+      headerKey: 'entities.contacto.columns.nombre',
       type: 'text',
       sortable: true,
     },
     {
       field: 'numero_identificacion',
-      headerKey: 'modules.general.entities.contacto.columns.identificacion',
+      headerKey: 'entities.contacto.columns.identificacion',
       type: 'text',
       sortable: true,
     },
     {
       field: 'correo',
-      headerKey: 'modules.general.entities.contacto.columns.correo',
+      headerKey: 'entities.contacto.columns.correo',
       type: 'text',
     },
     {
       field: 'telefono',
-      headerKey: 'modules.general.entities.contacto.columns.telefono',
+      headerKey: 'entities.contacto.columns.telefono',
       type: 'text',
     },
   ];
@@ -222,12 +226,12 @@ export class ContactosListComponent {
   }
 
   /**
-   * Construye los segmentos absolutos para `router.navigate` dentro del módulo.
-   * Resulta en `/t/<slug>/general/contactos/<...path>`.
+   * Construye los segmentos absolutos para `router.navigate` dentro del feature.
+   * Resulta en `/t/<slug>/contactos/<...path>`.
    */
   private buildRouteCommands(...subPath: (string | number)[]): (string | number)[] {
     const slug = this.tenant.currentSlug();
     if (!slug) throw new Error('Cannot navigate without an active tenant slug.');
-    return ['/t', slug, 'general', 'contactos', ...subPath];
+    return ['/t', slug, 'contactos', ...subPath];
   }
 }

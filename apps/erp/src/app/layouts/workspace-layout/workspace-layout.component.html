@@ -42,7 +42,7 @@
 <ng-template #navTpl let-inDrawer>
   @for (
     section of sections();
-    track section.kind + '-' + (isItem(section) ? section.path : asModule(section).moduleId)
+    track section.kind + '-' + (isItem(section) ? section.path : asAccordion(section).id)
   ) {
     @if (isItem(section)) {
       <a
@@ -59,29 +59,31 @@
         <button
           type="button"
           class="workspace-nav__module-header"
-          [class.workspace-nav__module-header--expanded]="isExpanded(asModule(section).moduleId)"
-          [attr.aria-expanded]="isExpanded(asModule(section).moduleId)"
-          (click)="toggleModule(asModule(section).moduleId)"
+          [class.workspace-nav__module-header--expanded]="isExpanded(asAccordion(section).id)"
+          [attr.aria-expanded]="isExpanded(asAccordion(section).id)"
+          (click)="toggleAccordion(asAccordion(section).id)"
         >
-          <i class="workspace-nav__icon {{ asModule(section).iconClass }}"></i>
-          <span class="workspace-nav__label">{{ translate(asModule(section).labelKey) }}</span>
+          <i class="workspace-nav__icon {{ asAccordion(section).iconClass }}"></i>
+          <span class="workspace-nav__label">{{ translate(asAccordion(section).labelKey) }}</span>
           <i
             class="workspace-nav__chevron pi"
-            [class.pi-chevron-down]="isExpanded(asModule(section).moduleId)"
-            [class.pi-chevron-right]="!isExpanded(asModule(section).moduleId)"
+            [class.pi-chevron-down]="isExpanded(asAccordion(section).id)"
+            [class.pi-chevron-right]="!isExpanded(asAccordion(section).id)"
             aria-hidden="true"
           ></i>
         </button>
 
-        @if (isExpanded(asModule(section).moduleId)) {
+        @if (isExpanded(asAccordion(section).id)) {
           <div class="workspace-nav__module-body">
-            @for (group of asModule(section).groups; track group.labelKey) {
+            @for (group of asAccordion(section).groups; track $index) {
               <div class="workspace-nav__group">
-                <span class="workspace-nav__group-label">{{ translate(group.labelKey) }}</span>
+                @if (group.labelKey) {
+                  <span class="workspace-nav__group-label">{{ translate(group.labelKey) }}</span>
+                }
                 @for (leaf of group.items; track leaf.path) {
                   <a
                     class="workspace-nav__leaf"
-                    [routerLink]="leafPath(asModule(section).moduleId, leaf)"
+                    [routerLink]="leafPath(leaf)"
                     routerLinkActive="workspace-nav__leaf--active"
                     (click)="inDrawer && drawerVisible.set(false)"
                   >

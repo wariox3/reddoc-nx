@@ -1,13 +1,18 @@
 /**
- * Tipos del menú del sidebar declarativo (camino híbrido — ver docs/architecture).
+ * Tipos del menú del sidebar declarativo.
  *
- * El sidebar puede mezclar dos fuentes:
- *   1. Estas estructuras declarativas — controladas en `sidebar-menu.ts`.
- *   2. Acordeones derivados del `ModuleRegistryService` (cuando existan
- *      módulos con documentos en el framework configuracional).
+ * Dos clases de entradas de primer nivel:
+ *   1. `SidebarSimpleItem` — un enlace directo (Dashboard, Reportes, etc.).
+ *   2. `SidebarAccordion` — acordeón que agrupa varios items (Administrador,
+ *      Compra, Venta, etc.).
  *
- * Las dos fuentes se traducen a esta misma forma antes de renderizar,
- * así que el template solo conoce `SidebarSection`.
+ * El acordeón puede contener uno o varios **grupos**. Cada grupo opcionalmente
+ * declara un `labelKey` para mostrar un sub-header. Si no se declara, los
+ * items del grupo aparecen directamente bajo el acordeón sin sub-header.
+ *
+ * Cuando llegue un módulo del `MODULE_REGISTRY` con documentos, su acordeón
+ * derivado se traducirá a esta misma estructura — el template solo conoce
+ * `SidebarSection`.
  */
 
 /** Item simple del sidebar (Dashboard, Reportes, etc.). */
@@ -24,35 +29,37 @@ export interface SidebarSimpleItem {
   readonly path: string;
 }
 
-/** Item navegable dentro de un grupo de módulo (Contactos, Ítems, etc.). */
+/** Item navegable dentro de un grupo (Contactos, Ítems, etc.). */
 export interface SidebarLeafItem {
   readonly labelKey: string;
   /**
-   * Path relativo al módulo. Ej: `'contactos'` bajo módulo `'general'`
-   * resuelve a `'/t/acme/general/contactos'`.
+   * Path absoluto al item, sin el prefijo `/t/<slug>/`.
+   * Ej: `'contactos'` resuelve a `'/t/acme/contactos'`.
    */
   readonly path: string;
 }
 
-/** Sub-grupo dentro del acordeón de un módulo (Administrador, Documentos, etc.). */
+/** Sub-grupo opcional dentro de un acordeón (p. ej. "Documentos" o "Utilidades"). */
 export interface SidebarGroup {
-  readonly labelKey: string;
+  /** Si se declara, se renderiza como sub-header del grupo. Si no, los items van directos. */
+  readonly labelKey?: string;
   readonly items: readonly SidebarLeafItem[];
 }
 
 /**
- * Acordeón de un módulo en el sidebar. Contiene uno o varios grupos
- * (típicamente "Administrador" para masters y "Documentos" para
- * documentos del framework, cuando existan).
+ * Acordeón de primer nivel en el sidebar.
+ *
+ * Aloja todos los items relacionados de una sección (Administrador con sus
+ * masters, Compra con sus documentos, etc.). El `id` se usa solo para
+ * preservar el estado expand/collapse en memoria; no afecta a las URLs.
  */
-export interface SidebarModuleAccordion {
-  readonly kind: 'module';
-  /** Identificador del módulo. Prefija las rutas de los items. */
-  readonly moduleId: string;
+export interface SidebarAccordion {
+  readonly kind: 'accordion';
+  readonly id: string;
   readonly labelKey: string;
   readonly iconClass: string;
   readonly groups: readonly SidebarGroup[];
 }
 
 /** Cualquier entrada de primer nivel del sidebar. */
-export type SidebarSection = SidebarSimpleItem | SidebarModuleAccordion;
+export type SidebarSection = SidebarSimpleItem | SidebarAccordion;

@@ -58,20 +58,15 @@ export const en: AppDict = {
       logout: 'Sign out',
     },
   },
-  modules: {
-    general: {
-      name: 'General',
-      entities: {
-        contacto: {
-          name: 'Contacts',
-          columns: {
-            id: 'ID',
-            nombre: 'Name',
-            identificacion: 'ID number',
-            correo: 'Email',
-            telefono: 'Phone',
-          },
-        },
+  entities: {
+    contacto: {
+      name: 'Contacts',
+      columns: {
+        id: 'ID',
+        nombre: 'Name',
+        identificacion: 'ID number',
+        correo: 'Email',
+        telefono: 'Phone',
       },
     },
   },
