@@ -1,15 +1,15 @@
 import { Injectable, inject } from '@angular/core';
 import {
   ConfigMismatchError,
-  DuplicateEntityIdError,
+  DuplicateDocumentIdError,
   UnknownModuleError,
 } from '../errors/config.errors';
 import { MODULE_REGISTRY } from '../module-registry.token';
 import type { ModuleConfig } from '../types/module-config.types';
 
 /**
- * Servicio responsable únicamente de cargar y cachear `ModuleConfig`
- * a partir del `MODULE_REGISTRY` inyectado.
+ * Carga `ModuleConfig` desde el `MODULE_REGISTRY` inyectado y cachea
+ * los resultados.
  *
  * SRP: no mantiene estado de navegación ni decide qué módulo está activo.
  * Eso lo hace `ModuleNavigationStore`.
@@ -25,7 +25,7 @@ export class ModuleRegistryService {
    *
    * @throws {UnknownModuleError} si el id no está registrado.
    * @throws {ConfigMismatchError} si el config declara un id distinto al registry.
-   * @throws {DuplicateEntityIdError} si dos entidades comparten id.
+   * @throws {DuplicateDocumentIdError} si dos documentos comparten id.
    */
   async load(moduleId: string): Promise<ModuleConfig> {
     const cached = this.cache.get(moduleId);
@@ -50,10 +50,7 @@ export class ModuleRegistryService {
 
   /**
    * Carga todos los módulos registrados en paralelo.
-   * El sidebar lo usa al inicializar para tener los nombres y entidades visibles.
-   *
-   * Los errores individuales se omiten (no rompen el sidebar entero),
-   * pero se loggean para diagnóstico.
+   * Los errores individuales se loggean pero no rompen el resto.
    */
   async loadAll(): Promise<readonly ModuleConfig[]> {
     const ids = this.listRegisteredIds();
@@ -69,18 +66,14 @@ export class ModuleRegistryService {
       .map((r) => r.value);
   }
 
-  /**
-   * Valida que la config cargada cumpla los invariantes del framework.
-   * Falla rápido para que los errores aparezcan en desarrollo, no en producción.
-   */
   private assertValidConfig(config: ModuleConfig, expectedId: string): void {
     if (config.id !== expectedId) {
       throw new ConfigMismatchError(expectedId, config.id);
     }
-    const ids = config.entities.map((e) => e.id);
+    const ids = config.documents.map((d) => d.id);
     const duplicates = ids.filter((id, idx) => ids.indexOf(id) !== idx);
     if (duplicates.length > 0) {
-      throw new DuplicateEntityIdError(expectedId, Array.from(new Set(duplicates)));
+      throw new DuplicateDocumentIdError(expectedId, Array.from(new Set(duplicates)));
     }
   }
 }

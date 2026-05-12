@@ -1,18 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, forkJoin, map } from 'rxjs';
-import type {
-  DocumentEntityConfig,
-  EntityConfig,
-  MasterEntityConfig,
-} from '../types/entity-config.types';
+import { Observable, map } from 'rxjs';
+import type { EntityConfig } from '../types/entity-config.types';
 import type { EntityDataGateway } from './entity-data-gateway';
 import type { ListQuery, ListResponse } from './list-query.types';
 import { serializeListQuery } from './serialize-list-query';
 
 /**
  * Forma de la respuesta paginada cruda del backend.
- * El gateway la traduce a `ListResponse` (el contrato del framework).
+ * El gateway la traduce a `ListResponse` (contrato del framework).
  */
 interface PaginatedApiResponse {
   readonly count: number;
@@ -20,15 +16,16 @@ interface PaginatedApiResponse {
 }
 
 /**
- * Implementación HTTP default del `EntityDataGateway`.
+ * Implementación HTTP default del `EntityDataGateway` para documentos
+ * transaccionales del framework configuracional.
  *
- * Convenciones que asume:
- *  - El backend pagina con `count` (total) y `results` (página actual).
- *  - Documentos transaccionales soportan batch-delete vía POST a `<endpoint>/eliminar/`.
- *  - Masters usan DELETE individual por id (paralelizado con forkJoin).
- *  - Filtros se serializan como query params usando la convención `field__operator=value`.
+ * Convenciones del backend (alineadas con Django REST framework):
+ *  - Paginación: `count` (total) y `results` (página actual).
+ *  - Batch delete: POST `<endpoint>/eliminar/` con `{ ids: [...] }`.
+ *  - Filtros: query params `field__operator=value` (helper compartido).
+ *  - Ordering: `?ordering=field` o `?ordering=-field` para descendente.
  *
- * Si el backend cambia estas convenciones, basta proveer otra implementación de
+ * Si una convención cambia, basta proveer otra implementación de
  * `EntityDataGateway` — los componentes base no se enteran.
  */
 @Injectable({ providedIn: 'root' })
@@ -36,7 +33,6 @@ export class HttpEntityDataGateway implements EntityDataGateway {
   private readonly http = inject(HttpClient);
 
   list(entity: EntityConfig, query: ListQuery): Observable<ListResponse> {
-    this.assertOperatesOnData(entity, 'list');
     const params = serializeListQuery(query);
     return this.http.get<PaginatedApiResponse>(entity.endpoint, { params }).pipe(
       map((response) => ({
@@ -47,50 +43,23 @@ export class HttpEntityDataGateway implements EntityDataGateway {
   }
 
   getById(entity: EntityConfig, id: string | number): Observable<unknown> {
-    this.assertOperatesOnData(entity, 'getById');
     return this.http.get(`${entity.endpoint}/${id}/`);
   }
 
   create(entity: EntityConfig, payload: unknown): Observable<unknown> {
-    this.assertOperatesOnData(entity, 'create');
     return this.http.post(`${entity.endpoint}/`, payload);
   }
 
   update(entity: EntityConfig, id: string | number, payload: unknown): Observable<unknown> {
-    this.assertOperatesOnData(entity, 'update');
     return this.http.patch(`${entity.endpoint}/${id}/`, payload);
   }
 
-  remove(entity: EntityConfig, ids: readonly (string | number)[]): Observable<void> {
-    this.assertOperatesOnData(entity, 'remove');
-
-    // Documentos: el backend acepta un solo POST con la lista de ids.
-    if (entity.kind === 'document') {
-      return this.http
-        .post<void>(`${entity.endpoint}/eliminar/`, { ids })
-        .pipe(map(() => undefined));
-    }
-
-    // Masters: DELETE individual por id en paralelo.
-    const deletions = ids.map((id) => this.http.delete<void>(`${entity.endpoint}/${id}/`));
-    return forkJoin(deletions).pipe(map(() => undefined));
-  }
-
   /**
-   * Garantiza que la entidad soporte CRUD genérico. Las utilities son
-   * pantallas custom sin endpoint y no admiten estas operaciones.
-   *
-   * Declarada como `asserts` para que TypeScript propague el narrowing
-   * y los métodos públicos puedan acceder a `entity.endpoint` con seguridad.
+   * Elimina uno o varios documentos en batch.
+   * El backend acepta un solo POST con la lista de ids — más eficiente que
+   * paralelizar DELETEs y consistente con la convención de documentos.
    */
-  private assertOperatesOnData(
-    entity: EntityConfig,
-    operation: string,
-  ): asserts entity is DocumentEntityConfig | MasterEntityConfig {
-    if (entity.kind === 'utility') {
-      throw new Error(
-        `Operation '${operation}' is not supported on utility entity '${entity.id}'.`,
-      );
-    }
+  remove(entity: EntityConfig, ids: readonly (string | number)[]): Observable<void> {
+    return this.http.post<void>(`${entity.endpoint}/eliminar/`, { ids }).pipe(map(() => undefined));
   }
 }

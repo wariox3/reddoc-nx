@@ -4,9 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { MenuModule } from 'primeng/menu';
-import { TableModule } from 'primeng/table';
-import { ConfirmationService, type MenuItem } from 'primeng/api';
+import { ConfirmationService } from 'primeng/api';
 import { finalize } from 'rxjs';
 import {
   ENTITY_DATA_GATEWAY,
@@ -17,49 +15,50 @@ import {
   TenantService,
   ToastService,
   buildEntityStorageKey,
-  type ColumnDef,
   type DocumentEntityConfig,
-  type EntityConfig,
   type FilterCondition,
   type ListQuery,
-  type MasterEntityConfig,
   type SortSpec,
 } from '@reddoc/core';
+import { DataTableComponent } from '../data-table/data-table.component';
+import type {
+  PageChangeEvent,
+  RowAction,
+  RowActionInvokedEvent,
+} from '../data-table/data-table.types';
 
-/**
- * Tamaño de página default. Se reemplaza por un valor del `EntityConfig`
- * cuando agreguemos `paginationDefaults` en una fase posterior.
- */
+/** Tamaño de página default mientras `DocumentEntityConfig` no exponga `paginationDefaults`. */
 const DEFAULT_PAGE_SIZE = 25;
 
-/** Entidades sobre las que el `BaseListComponent` opera (excluye utilities). */
-type ListableEntityConfig = DocumentEntityConfig | MasterEntityConfig;
-
 /**
- * Componente base de listado para entidades documentales y maestras.
+ * Componente base de listado para **documentos transaccionales** del framework
+ * configuracional (camino A — ver docs/architecture).
+ *
+ * Recibe el `DocumentEntityConfig` por input (resuelto por `activeDocumentResolver`)
+ * y compone `<lib-data-table>` con columnas, filtros y capacidades derivadas
+ * del config.
  *
  * Responsabilidades:
- *  - Lee el `EntityConfig` activo vía `input.required` (resuelto por router).
- *  - Carga datos paginados desde `EntityDataGateway`.
- *  - Restaura filtros del usuario desde `EntityFilterStorageService`
+ *  - Cargar datos paginados desde `EntityDataGateway`.
+ *  - Restaurar filtros del usuario desde `EntityFilterStorageService`
  *    (clave versionada por `entity.schemaVersion`).
- *  - Renderiza la tabla con columnas declaradas en `entity.columns`.
- *  - Muestra acciones de toolbar y de fila según `entity.capabilities`.
+ *  - Mostrar acciones de toolbar y de fila según `capabilities`.
+ *  - Navegar a las rutas `new` / `edit` / `detail` del documento.
  *
  * Lo que NO hace:
  *  - HTTP directo (delega en `ENTITY_DATA_GATEWAY` — DIP).
- *  - Conocer el módulo activo via parseo de URL (lee el `ModuleNavigationStore`).
- *  - Renderizar formularios o detalles (eso es BaseForm/BaseDetail).
+ *  - Conocer el módulo activo desde el URL (lee el `ModuleNavigationStore`).
+ *  - Renderizar el form ni el detalle.
  */
 @Component({
-  selector: 'lib-base-list',
+  selector: 'lib-base-document-list',
   standalone: true,
-  imports: [CommonModule, ButtonModule, TableModule, MenuModule, ConfirmDialogModule],
+  imports: [CommonModule, ButtonModule, ConfirmDialogModule, DataTableComponent],
   providers: [ConfirmationService],
-  templateUrl: './base-list.component.html',
-  styleUrl: './base-list.component.scss',
+  templateUrl: './base-document-list.component.html',
+  styleUrl: './base-document-list.component.scss',
 })
-export class BaseListComponent {
+export class BaseDocumentListComponent {
   // ── Colaboradores inyectados ──────────────────────────────────────────────
   private readonly gateway = inject(ENTITY_DATA_GATEWAY);
   private readonly filterStorage = inject(EntityFilterStorageService);
@@ -72,37 +71,41 @@ export class BaseListComponent {
   private readonly i18n = inject<I18nService<unknown>>(I18nService);
 
   // ── Inputs ────────────────────────────────────────────────────────────────
-  /** Entidad activa inyectada por `activeEntityResolver` vía router binding. */
-  readonly entity = input.required<EntityConfig>();
+  /** Documento activo inyectado por `activeDocumentResolver` vía router binding. */
+  readonly document = input.required<DocumentEntityConfig>();
 
   // ── Estado interno ────────────────────────────────────────────────────────
-  protected readonly items = signal<unknown[]>([]);
+  protected readonly items = signal<readonly unknown[]>([]);
   protected readonly totalCount = signal(0);
   protected readonly isLoading = signal(false);
   protected readonly currentPage = signal(0);
   protected readonly pageSize = signal(DEFAULT_PAGE_SIZE);
   protected readonly sort = signal<readonly SortSpec[]>([]);
-  protected readonly selectedRows = signal<unknown[]>([]);
+  protected readonly selectedRows = signal<readonly unknown[]>([]);
   protected readonly activeFilters = signal<readonly FilterCondition[]>([]);
 
   // ── Derivados ─────────────────────────────────────────────────────────────
-  /**
-   * Estrecha la entidad activa a los kinds que soportan CRUD.
-   * Si por error de routing llega una utility, lanza — fail-fast.
-   */
-  protected readonly listableEntity = computed<ListableEntityConfig>(() => {
-    const current = this.entity();
-    if (current.kind === 'utility') {
-      throw new Error(
-        `BaseListComponent cannot render utility entity '${current.id}'. Check routing.`,
-      );
-    }
-    return current;
-  });
-
-  protected readonly columns = computed<readonly ColumnDef[]>(() => this.listableEntity().columns);
-  protected readonly capabilities = computed(() => this.listableEntity().capabilities);
+  protected readonly columns = computed(() => this.document().columns);
+  protected readonly capabilities = computed(() => this.document().capabilities);
   protected readonly hasSelection = computed(() => this.selectedRows().length > 0);
+
+  /** Acciones disponibles desde el menú de cada fila, derivadas de capabilities. */
+  protected readonly rowActions = computed<readonly RowAction[]>(() => {
+    const caps = this.capabilities();
+    const actions: RowAction[] = [];
+    if (caps.canEdit) {
+      actions.push({ id: 'edit', labelKey: 'common.actions.edit', iconClass: 'pi pi-pencil' });
+    }
+    if (caps.canDelete) {
+      actions.push({
+        id: 'delete',
+        labelKey: 'common.actions.delete',
+        iconClass: 'pi pi-trash',
+        severity: 'danger',
+      });
+    }
+    return actions;
+  });
 
   /** Id del módulo activo según el `ModuleNavigationStore`. */
   protected readonly activeModuleId = computed(() => {
@@ -112,13 +115,13 @@ export class BaseListComponent {
   });
 
   constructor() {
-    // Cuando cambia la entidad (navegación entre entidades del mismo módulo),
+    // Cuando cambia el documento (navegación entre documentos del mismo módulo),
     // restauramos los filtros guardados y recargamos la lista.
     effect(() => {
-      const currentEntity = this.entity();
+      const currentDocument = this.document();
       const moduleId = this.activeModuleId();
-      const storageKey = buildEntityStorageKey(moduleId, currentEntity);
-      const storedFilters = storageKey ? this.filterStorage.read(storageKey) : [];
+      const storageKey = buildEntityStorageKey(moduleId, currentDocument);
+      const storedFilters = this.filterStorage.read(storageKey);
       this.activeFilters.set(storedFilters);
       this.selectedRows.set([]);
       this.currentPage.set(0);
@@ -126,51 +129,33 @@ export class BaseListComponent {
     });
   }
 
-  // ── API protegida (consumida por el template) ─────────────────────────────
+  // ── Handlers del template ─────────────────────────────────────────────────
 
-  /** Acceso seguro a un campo arbitrario de la fila. */
-  protected readValue(row: unknown, field: string): unknown {
-    if (row === null || typeof row !== 'object') return null;
-    return (row as Record<string, unknown>)[field];
-  }
-
-  protected buildRowMenuItems(row: unknown): MenuItem[] {
-    const caps = this.capabilities();
-    const id = this.extractId(row);
-    const items: MenuItem[] = [];
-
-    if (caps.canEdit && id !== null) {
-      items.push({
-        label: this.translate('common.actions.edit'),
-        icon: 'pi pi-pencil',
-        command: () => this.navigateToEdit(id),
-      });
-    }
-    if (caps.canDelete && id !== null) {
-      if (items.length > 0) items.push({ separator: true });
-      items.push({
-        label: this.translate('common.actions.delete'),
-        icon: 'pi pi-trash',
-        command: () => this.confirmRemove([id]),
-      });
-    }
-    return items;
-  }
-
-  protected navigateToNew(): void {
-    this.router.navigate(this.buildRouteCommands(this.listableEntity().routes.new));
-  }
-
-  protected onPageChange(event: { first: number; rows: number }): void {
-    const nextPage = Math.floor(event.first / event.rows);
-    if (nextPage === this.currentPage() && event.rows === this.pageSize()) return;
-    this.currentPage.set(nextPage);
-    this.pageSize.set(event.rows);
+  protected onPageChange(event: PageChangeEvent): void {
+    this.currentPage.set(event.page);
+    this.pageSize.set(event.pageSize);
     this.loadList();
   }
 
   protected onSelectionChange(rows: unknown[]): void {
     this.selectedRows.set(rows);
+  }
+
+  protected onRowAction(event: RowActionInvokedEvent): void {
+    const id = this.extractId(event.row);
+    if (id === null) return;
+    switch (event.actionId) {
+      case 'edit':
+        this.navigateToEdit(id);
+        break;
+      case 'delete':
+        this.confirmRemove([id]);
+        break;
+    }
+  }
+
+  protected navigateToNew(): void {
+    this.router.navigate(this.buildRouteCommands(this.document().routes.new));
   }
 
   protected removeSelected(): void {
@@ -181,11 +166,7 @@ export class BaseListComponent {
     this.confirmRemove(ids);
   }
 
-  /**
-   * Resuelve una clave i18n con notación de punto.
-   * Si la clave no existe, devuelve la clave misma — facilita detectar
-   * faltantes de traducción en desarrollo.
-   */
+  /** Resuelve una clave i18n con notación de punto. */
   protected translate(key: string): string {
     const dict = this.i18n.t();
     const parts = key.split('.');
@@ -197,7 +178,7 @@ export class BaseListComponent {
     return typeof current === 'string' ? current : key;
   }
 
-  // ── Internos ─────────────────────────────────────────────────────────────
+  // ── Internos ──────────────────────────────────────────────────────────────
 
   private loadList(): void {
     const query: ListQuery = {
@@ -209,14 +190,14 @@ export class BaseListComponent {
 
     this.isLoading.set(true);
     this.gateway
-      .list(this.listableEntity(), query)
+      .list(this.document(), query)
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         finalize(() => this.isLoading.set(false)),
       )
       .subscribe({
         next: (response) => {
-          this.items.set([...response.results]);
+          this.items.set(response.results);
           this.totalCount.set(response.totalCount);
         },
         error: () => {
@@ -244,7 +225,7 @@ export class BaseListComponent {
 
   private executeRemove(ids: readonly (string | number)[]): void {
     this.gateway
-      .remove(this.listableEntity(), ids)
+      .remove(this.document(), ids)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
@@ -265,18 +246,15 @@ export class BaseListComponent {
   }
 
   private navigateToEdit(id: string | number): void {
-    this.router.navigate([...this.buildRouteCommands(this.listableEntity().routes.edit), id]);
+    this.router.navigate([...this.buildRouteCommands(this.document().routes.edit), id]);
   }
 
   /**
    * Construye los segmentos absolutos de ruta para navegación interna,
-   * a partir de un `routePath` declarado en `entity.routes`.
+   * a partir de un `routePath` declarado en `document.routes`.
    *
-   * `routePath = 'master/contacto/list'` →
-   *   ['/t', '<slug>', '<moduleId>', 'master', 'contacto', 'list']
-   *
-   * Centralizar esto evita duplicar la lógica de prefijo en cada llamada
-   * a `router.navigate` y mantiene una única convención de URL.
+   * `routePath = 'documento/factura-compra/list'` →
+   *   ['/t', '<slug>', '<moduleId>', 'documento', 'factura-compra', 'list']
    */
   private buildRouteCommands(routePath: string): (string | number)[] {
     const slug = this.tenant.currentSlug();

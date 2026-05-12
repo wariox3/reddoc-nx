@@ -5,9 +5,6 @@ export type {
   EntityRoutes,
   DocumentEntityConfig,
   DocumentCapabilities,
-  MasterEntityConfig,
-  MasterCapabilities,
-  UtilityEntityConfig,
   InventoryEffect,
   ImportDescriptor,
 } from './types/entity-config.types';
@@ -31,7 +28,10 @@ export {
 
 // Resolvers
 export { activeModuleResolver } from './resolvers/active-module.resolver';
-export { activeEntityResolver, ENTITY_KEY_ROUTE_PARAM } from './resolvers/active-entity.resolver';
+export {
+  activeDocumentResolver,
+  DOCUMENT_KEY_ROUTE_PARAM,
+} from './resolvers/active-document.resolver';
 
 // Data gateway
 export { ENTITY_DATA_GATEWAY } from './data/entity-data-gateway';
@@ -51,9 +51,8 @@ export type {
 export {
   UnknownModuleError,
   ConfigMismatchError,
-  DuplicateEntityIdError,
+  DuplicateDocumentIdError,
   MissingModuleContextError,
-  MissingEntityKeyError,
-  EntityNotFoundError,
-  EntityKindMismatchError,
+  MissingDocumentKeyError,
+  DocumentNotFoundError,
 } from './errors/config.errors';

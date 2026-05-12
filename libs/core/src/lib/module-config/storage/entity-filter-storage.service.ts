@@ -11,11 +11,8 @@ const STORAGE_KEY_PREFIX = 'entity-filters';
  * llamadores generen siempre la misma clave.
  *
  * Formato: `entity-filters:<moduleId>:<entityId>:v<schemaVersion>`.
- *
- * Devuelve `null` para entidades que no son filtrables (p. ej. `utility`).
  */
-export function buildEntityStorageKey(moduleId: string, entity: EntityConfig): string | null {
-  if (entity.kind === 'utility') return null;
+export function buildEntityStorageKey(moduleId: string, entity: EntityConfig): string {
   return `${STORAGE_KEY_PREFIX}:${moduleId}:${entity.id}:v${entity.schemaVersion}`;
 }
 
@@ -23,27 +20,19 @@ export function buildEntityStorageKey(moduleId: string, entity: EntityConfig): s
  * Persistencia de filtros del usuario en `localStorage` indexada por una
  * clave libre.
  *
- * El servicio es agnóstico del dominio: recibe un `storageKey` ya armado
- * y opera sobre él. Esto permite usarlo tanto desde el camino A (documentos
- * configuracionales, vía `buildEntityStorageKey`) como desde el camino B
- * (masters como features directos, con sus propias claves literales).
+ * Es agnóstico del dominio: recibe un `storageKey` ya armado y opera sobre él.
+ * Permite uso tanto desde el camino A (documentos vía `buildEntityStorageKey`)
+ * como desde el camino B (masters con claves literales).
  *
  * Manejo de errores:
  *  - Si `localStorage` no está disponible (SSR), las operaciones son no-op.
- *  - Si el JSON guardado está corrupto, se descarta silenciosamente y se
- *    devuelve lista vacía.
+ *  - Si el JSON guardado está corrupto, se descarta silenciosamente.
  *
- * Convención de claves recomendada: `<scope>:<resource>:v<schemaVersion>`.
- * Incrementar `schemaVersion` cuando cambie el shape de los filtros para
- * invalidar storage obsoleto sin afectar al usuario.
+ * Convención recomendada: `<scope>:<resource>:v<schemaVersion>`. Incrementar
+ * la versión cuando cambie el shape de filtros para invalidar storage obsoleto.
  */
 @Injectable({ providedIn: 'root' })
 export class EntityFilterStorageService {
-  /**
-   * Lee los filtros guardados bajo la clave indicada.
-   * Devuelve lista vacía si no hay nada guardado, si el storage no está
-   * disponible o si el JSON resulta corrupto.
-   */
   read(storageKey: string): readonly FilterCondition[] {
     if (!this.isStorageAvailable()) return [];
 
@@ -63,13 +52,11 @@ export class EntityFilterStorageService {
     }
   }
 
-  /** Persiste los filtros bajo la clave indicada. */
   write(storageKey: string, filters: readonly FilterCondition[]): void {
     if (!this.isStorageAvailable()) return;
     localStorage.setItem(storageKey, JSON.stringify(filters));
   }
 
-  /** Elimina los filtros bajo la clave indicada. */
   clear(storageKey: string): void {
     if (!this.isStorageAvailable()) return;
     localStorage.removeItem(storageKey);
