@@ -1,23 +1,26 @@
 import type { ModuleRegistry } from '@reddoc/core';
 
 /**
- * Registro central de módulos del ERP.
+ * Registro central de módulos con **documentos transaccionales** del framework
+ * configuracional (camino A del enfoque híbrido — ver docs/architecture).
  *
- * Para agregar un módulo nuevo:
+ * **Solo aplica a documentos** sobre el endpoint genérico `/api/documento`.
+ * Los masters administrativos (contactos, ítems, sedes, etc.) NO entran aquí:
+ * son features directos (camino B) que declaran su menú en
+ * `apps/erp/src/app/layouts/sidebar/sidebar-menu.ts`.
+ *
+ * Para agregar un módulo con documentos:
  *   1. Crear `apps/erp/src/app/features/<id>/<id>.config.ts` que exporte
- *      una constante `<ID>_CONFIG: ModuleConfig`.
- *   2. Agregar una entrada aquí. Cero modificaciones a otros archivos del framework.
+ *      una constante `<ID>_CONFIG: ModuleConfig` con sus documentos.
+ *   2. Agregar una entrada aquí — cero modificaciones a otros archivos.
  *   3. Registrar la ruta lazy en `app.routes.ts`.
+ *   4. El sidebar mostrará automáticamente el acordeón con los documentos.
  *
- * Para quitar un módulo:
- *   1. Eliminar la entrada de aquí.
- *   2. Borrar la carpeta del feature en `features/`.
- *   3. Quitar la ruta lazy de `app.routes.ts`.
- *
- * El sidebar se actualiza automáticamente porque deriva su contenido de este registro.
+ * Vacío hoy: ningún módulo transaccional implementado todavía.
  */
 export const ERP_MODULE_REGISTRY = {
-  general: () => import('../../features/general/general.config').then((m) => m.GENERAL_CONFIG),
+  // compra:     () => import('../../features/compra/compra.config').then((m) => m.COMPRA_CONFIG),
+  // venta:      () => import('../../features/venta/venta.config').then((m) => m.VENTA_CONFIG),
 } as const satisfies ModuleRegistry;
 
 /**
