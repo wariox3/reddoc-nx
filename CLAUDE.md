@@ -39,20 +39,21 @@ npm run release            # commit-and-tag-version bump + changelog
 
 ```
 apps/
-  landing/     Angular 20 SSR/SSG, Tailwind, port 4200 — public marketing site
-  erp/         Angular 20 SPA, PrimeNG 20, port 4201 — ERP application
-  cuenta/      SPA + PrimeNG, port 4203 — perfil y seguridad de la cuenta
-  transporte/  SPA + PrimeNG, port 4204 — gestión de transporte
-  pos/         SPA + PrimeNG, port 4205 — punto de venta
-  turnos/      SPA + PrimeNG, port 4206 — gestión de turnos
-  cliente/     SPA + PrimeNG, port 4207 — portal de clientes
+  landing/      Angular 20 SSR/SSG, Tailwind, port 4200 — public marketing site
+  erp/          Angular 20 SPA, PrimeNG 20, port 4201 — ERP application
+  cuenta/       SPA + PrimeNG, port 4203 — perfil y seguridad de la cuenta
+  transporte/   SPA + PrimeNG, port 4204 — gestión de transporte
+  pos/          SPA + PrimeNG, port 4205 — punto de venta
+  turnos/       SPA + PrimeNG, port 4206 — gestión de turnos
+  cliente/      SPA + PrimeNG, port 4207 — portal de clientes
 libs/
-  core/        Auth infrastructure, tokens, theme (ReddocPreset)
-  ui/          Shared standalone components: TurnstileComponent + auth pages
-  styles/      SCSS design tokens + Tailwind @theme (brand colors, animations)
+  core/         Auth infra, tokens, theme, i18n, tenant, module-config framework
+  ui/           Shared standalone components: TurnstileComponent + auth pages
+  feature-base/ Building blocks compartidos (DataTableComponent) + base components del framework de documentos
+  styles/       SCSS design tokens + Tailwind @theme (brand colors, animations)
 ```
 
-Path aliases: `@reddoc/core`, `@reddoc/ui`, `@reddoc/styles`.
+Path aliases: `@reddoc/core`, `@reddoc/ui`, `@reddoc/feature-base`, `@reddoc/styles`.
 
 ### landing
 
@@ -104,16 +105,52 @@ BaseAuthService<TUser extends BaseUsuario>   (libs/core)
 - Auth pages (`LoginComponent`, `RegisterComponent`, `ForgotPasswordComponent`, `ResetPasswordComponent`, `ResendVerificationComponent`, `VerifyEmailComponent`) — fully implemented; each app routes to them via eager `component:` (Nx prohibits mixing lazy + static imports of the same lib).
 - Assets: `src/assets/logos/reddoc.svg` and `reddoc-on-dark.svg` — copied into each app's build via `project.json` assets glob.
 
+### libs/feature-base — building blocks de listados + framework de documentos
+
+- `DataTableComponent` (`lib-data-table`) — tabla "tonta": recibe `columns`, `items`, `rowActions` por input y emite eventos. Sin HTTP, sin config. La usan ambos caminos del ERP (ver §ERP module architecture).
+- `BaseDocumentListComponent` (`lib-base-document-list`) — componente del framework configuracional para listar documentos transaccionales. Recibe `DocumentEntityConfig` por input (resuelto por `activeDocumentResolver`) y delega I/O al `EntityDataGateway`.
+- Tipos `RowAction`, `RowActionInvokedEvent`, `PageChangeEvent` para los eventos de la tabla.
+
+### apps/erp — module architecture
+
+El ERP usa un **enfoque híbrido** (documentado en `docs/architecture/erp-module-architecture.md`):
+
+| Camino                                   | A quién aplica                                                                                                       | Cómo se implementa                                                                                                                                                                             |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Framework configuracional (camino A)** | Documentos transaccionales (factura, nota crédito, etc.) sobre `/api/documento` discriminado por `documento_tipo_id` | `DocumentEntityConfig` declarativo + `MODULE_REGISTRY` lazy en `apps/erp/src/app/core/module-config/` + resolvers de `@reddoc/core` + `BaseDocumentListComponent` de `@reddoc/feature-base`    |
+| **Features directos (camino B)**         | Masters administrativos (contacto, ítem, sede, almacén, etc.) con endpoint propio                                    | Cada master: `services/*.service.ts` (extends `BaseHttpService`) + `pages/*-list/*-list.component.ts` que compone `<lib-data-table>` con inputs concretos                                      |
+| **Building blocks**                      | Ambos caminos                                                                                                        | `<lib-data-table>`, tipos `ColumnDef`/`FilterField`/`ListQuery`, `EntityDataGateway` (DIP), `EntityFilterStorageService` con clave versionada por `schemaVersion`, helper `serializeListQuery` |
+
+**Sidebar híbrido**: declarado en `apps/erp/src/app/layouts/sidebar/sidebar-menu.ts`. Items simples + acordeones de módulo. Cuando un módulo del `MODULE_REGISTRY` tenga documentos, sus entradas se mezclarán dinámicamente con las declarativas.
+
+**Para agregar un master nuevo** (camino B):
+
+1. `apps/erp/src/app/features/<modulo>/services/<x>.service.ts` extends `BaseHttpService`.
+2. `apps/erp/src/app/features/<modulo>/pages/<x>-list/<x>-list.component.ts` que componga `<lib-data-table>`.
+3. Ruta en `<modulo>.routes.ts`.
+4. Entrada en `sidebar-menu.ts`.
+
+**Para agregar un documento nuevo** (camino A): agregar un `DocumentEntityConfig` al array `documents` del `ModuleConfig` correspondiente. Cuando se sume el primer módulo transaccional al `ERP_MODULE_REGISTRY`, ver el §6.A del doc de arquitectura.
+
+**No usar el framework para**: `contenedores`, `dashboard`, settings de usuario, wizards. Esas son features tradicionales sin tabla genérica.
+
 ## Key conventions
 
 - **Standalone components** throughout — no NgModules.
 - **Signals** for local state (`signal()`, `computed()`); no `BehaviorSubject` in new code.
 - **Lazy loading** — feature routes use `loadComponent` / `loadChildren`. Exception: pages from `@reddoc/ui` are eager-loaded (Nx module-boundaries rule).
 - **`provideAppInitializer`** in each SPA's `app.config.ts` calls `auth.me()` on startup to rehydrate session from cookie.
-- **Commits** follow Conventional Commits (`feat:`, `fix:`, `chore:`, etc.) — enforced by commitlint on PRs.
+- **Commits** follow Conventional Commits (`feat:`, `fix:`, `chore:`, etc.) — enforced by commitlint on PRs. Body lines max 100 chars.
 - **SCSS** — component styles are scoped; global Tailwind brand tokens live in `libs/styles/src/tailwind/brand.css`. Avoid inline styles.
+- **Typed errors** — never `throw new Error('msg')` generic. Define a specific class extending `Error`.
+- **No `any`** — use `unknown` + narrowing where the type is genuinely unknown.
+- **Readonly by default** — prefer `readonly` properties and `readonly` arrays in configs and contracts.
 
 ## Tener en cuenta
 
 - Para los textos no crees por ejemplo "Nueva Empresa" esta mal para nosotros, debe ser "Nueva empresa" no uses mayusculas al inicio de las palabras despues de la primera palabra
 - siempre procura usar clases de tailwind
+
+## Documentación de arquitectura
+
+- `docs/architecture/erp-module-architecture.md` — decisión arquitectónica completa del framework de módulos del ERP (enfoque híbrido v2.0). Leerlo antes de agregar masters o documentos al ERP.

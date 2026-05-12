@@ -16,8 +16,10 @@ export type ColumnAlignment = 'left' | 'center' | 'right';
 /**
  * Descriptor de una columna de la tabla.
  *
- * La entidad declara qué columnas mostrar; el `BaseListComponent` itera sobre
- * ellas y renderiza el header + celda según el `type`.
+ * Cualquier consumidor (un documento del framework via `BaseDocumentListComponent`,
+ * o una página de master via `<lib-data-table>` directo) declara su lista de
+ * columnas y la tabla itera sobre ellas para renderizar header + celda según
+ * el `type`.
  */
 export interface ColumnDef {
   /** Nombre del campo en el row (acceso por `row[field]`). */
