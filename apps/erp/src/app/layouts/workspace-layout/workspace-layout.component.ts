@@ -2,24 +2,28 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { DrawerModule } from 'primeng/drawer';
-import { ENTITY_NAV_GROUP_ORDER, buildNavSections, type NavSection } from './nav-builder';
-import {
-  ENVIRONMENT,
-  I18nService,
-  ModuleRegistryService,
-  TenantService,
-  type EntityKind,
-} from '@reddoc/core';
+import { I18nService, TenantService } from '@reddoc/core';
 import { UserMenuComponent } from '../../shared/user-menu/user-menu.component';
+import { SIDEBAR_MENU } from '../sidebar/sidebar-menu';
+import type {
+  SidebarLeafItem,
+  SidebarModuleAccordion,
+  SidebarSection,
+  SidebarSimpleItem,
+} from '../sidebar/sidebar-menu.types';
 import type { AppDict } from '../../i18n';
 
-/** Item de navegación de primer nivel no derivado del registry (Dashboard, etc.). */
-interface PinnedNavItem {
-  readonly label: string;
-  readonly icon: string;
-  readonly path: string;
-}
-
+/**
+ * Layout principal del workspace de un tenant.
+ *
+ * Sidebar híbrido:
+ *  - Items declarativos desde `SIDEBAR_MENU` (camino B — masters y enlaces fijos).
+ *  - (Futuro) acordeones derivados del `MODULE_REGISTRY` para módulos con
+ *    documentos del framework configuracional.
+ *
+ * Las dos fuentes se traducen al tipo `SidebarSection` antes de renderizar,
+ * así el template no se preocupa por el origen.
+ */
 @Component({
   selector: 'app-workspace-layout',
   standalone: true,
@@ -35,43 +39,36 @@ interface PinnedNavItem {
   styleUrl: './workspace-layout.component.scss',
 })
 export class WorkspaceLayoutComponent {
-  private readonly env = inject(ENVIRONMENT);
   private readonly i18n = inject<I18nService<AppDict>>(I18nService);
   private readonly tenant = inject(TenantService);
-  private readonly moduleRegistry = inject(ModuleRegistryService);
 
   protected readonly t = this.i18n.t;
 
-  /** Items fijos del sidebar (independientes del registry de módulos). */
-  readonly pinnedItems = computed<readonly PinnedNavItem[]>(() => {
-    const labels = this.t().layout.nav;
-    const slug = this.tenant.currentSlug();
-    if (!slug) return [];
-    return [
-      {
-        label: labels.dashboard,
-        icon: 'pi pi-th-large',
-        path: `/t/${slug}/dashboard`,
-      },
-    ];
-  });
+  /** Secciones del sidebar. Por ahora solo declarativas. */
+  protected readonly sections = computed<readonly SidebarSection[]>(() => SIDEBAR_MENU);
 
-  /**
-   * Acordeones del sidebar derivados del registry de módulos.
-   * Se carga una sola vez al inicializar el layout; las configs son inmutables.
-   */
-  readonly moduleSections = signal<readonly NavSection[]>([]);
+  /** Slug del tenant activo; necesario para resolver paths absolutos. */
+  protected readonly tenantSlug = this.tenant.currentSlug;
 
-  /** Ids de módulos cuyo acordeón está expandido en la UI. */
-  private readonly expandedModuleIds = signal<ReadonlySet<string>>(new Set());
+  /** Ids de módulos cuyo acordeón está expandido. */
+  private readonly expandedModuleIds = signal<ReadonlySet<string>>(
+    new Set(
+      SIDEBAR_MENU.filter((s): s is SidebarModuleAccordion => s.kind === 'module').map(
+        (s) => s.moduleId,
+      ),
+    ),
+  );
 
-  readonly drawerVisible = signal(false);
+  protected readonly drawerVisible = signal(false);
 
-  /** Orden estable en que se renderizan los grupos de entidades dentro de un módulo. */
-  protected readonly groupOrder = ENTITY_NAV_GROUP_ORDER;
+  // ── API protegida (template) ──────────────────────────────────────────────
 
-  constructor() {
-    this.loadSidebarSections();
+  protected isItem(section: SidebarSection): section is SidebarSimpleItem {
+    return section.kind === 'item';
+  }
+
+  protected asModule(section: SidebarSection): SidebarModuleAccordion {
+    return section as SidebarModuleAccordion;
   }
 
   protected isExpanded(moduleId: string): boolean {
@@ -81,11 +78,8 @@ export class WorkspaceLayoutComponent {
   protected toggleModule(moduleId: string): void {
     this.expandedModuleIds.update((current) => {
       const next = new Set(current);
-      if (next.has(moduleId)) {
-        next.delete(moduleId);
-      } else {
-        next.add(moduleId);
-      }
+      if (next.has(moduleId)) next.delete(moduleId);
+      else next.add(moduleId);
       return next;
     });
   }
@@ -94,17 +88,21 @@ export class WorkspaceLayoutComponent {
     this.drawerVisible.update((v) => !v);
   }
 
-  protected groupLabel(kind: EntityKind): string {
-    return this.t().layout.nav.sections[kind];
+  /** Path absoluto para un item simple del sidebar. */
+  protected itemPath(item: SidebarSimpleItem): string {
+    const slug = this.tenantSlug();
+    return slug ? `/t/${slug}/${item.path}` : `/${item.path}`;
+  }
+
+  /** Path absoluto para un item dentro de un acordeón de módulo. */
+  protected leafPath(moduleId: string, leaf: SidebarLeafItem): string {
+    const slug = this.tenantSlug();
+    return slug ? `/t/${slug}/${moduleId}/${leaf.path}` : `/${moduleId}/${leaf.path}`;
   }
 
   /**
    * Resuelve una clave i18n con notación de punto contra el diccionario activo.
-   * Las configs almacenan claves como strings (ej. `'modules.general.name'`)
-   * porque el dict tiene shape dinámico por módulo.
-   *
-   * Si la clave no existe se devuelve la clave misma — facilita detectar
-   * traducciones faltantes en desarrollo.
+   * Devuelve la clave misma si no existe — útil para detectar faltantes en dev.
    */
   protected translate(key: string): string {
     const parts = key.split('.');
@@ -114,15 +112,5 @@ export class WorkspaceLayoutComponent {
       current = (current as Record<string, unknown>)[part];
     }
     return typeof current === 'string' ? current : key;
-  }
-
-  private async loadSidebarSections(): Promise<void> {
-    const slug = this.tenant.currentSlug();
-    if (!slug) return;
-    const modules = await this.moduleRegistry.loadAll();
-    const sections = buildNavSections(modules, slug);
-    this.moduleSections.set(sections);
-    // Por defecto: todos los acordeones expandidos al primer load.
-    this.expandedModuleIds.set(new Set(sections.map((s) => s.moduleId)));
   }
 }
