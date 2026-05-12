@@ -1,0 +1,84 @@
+:host {
+  display: block;
+}
+
+.lib-data-table {
+  &__select-col {
+    width: 38px;
+    text-align: center;
+  }
+
+  &__actions-col {
+    width: 44px;
+    text-align: center;
+  }
+
+  &__row-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    color: var(--brand-muted);
+    cursor: pointer;
+    appearance: none;
+    padding: 0;
+    transition:
+      background 0.16s ease,
+      color 0.16s ease,
+      border-color 0.16s ease;
+
+    .pi {
+      font-size: 0.85rem;
+    }
+
+    &:hover {
+      background: rgba(19 38 60 / 0.06);
+      color: var(--brand-navy);
+      border-color: rgba(19 38 60 / 0.1);
+    }
+
+    &:focus-visible {
+      outline: none;
+      border-color: rgba(19 38 60 / 0.35);
+      box-shadow: 0 0 0 3px rgba(19 38 60 / 0.08);
+    }
+  }
+
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 4rem 1rem;
+    text-align: center;
+  }
+
+  &__empty-icon {
+    font-size: 1.4rem;
+    color: var(--brand-muted);
+    opacity: 0.5;
+    margin-bottom: 0.85rem;
+  }
+
+  &__empty-title {
+    margin: 0 0 0.25rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--brand-navy);
+  }
+
+  &__empty-sub {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--brand-muted);
+    max-width: 280px;
+    line-height: 1.5;
+  }
+
+  &__menu-item--danger :where(.p-menuitem-link, .p-menuitem-text, .p-menuitem-icon) {
+    color: #b91c1c;
+  }
+}
