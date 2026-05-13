@@ -16,8 +16,9 @@ export const en: AppDict = {
       clearFilters: 'Clear filters',
       clearSearch: 'Clear search',
       refresh: 'Refresh',
-      exportExcel: 'Export Excel',
+      exportExcel: 'Excel',
       import: 'Import',
+      export: 'Export',
     },
     search: {
       placeholder: 'Search...',

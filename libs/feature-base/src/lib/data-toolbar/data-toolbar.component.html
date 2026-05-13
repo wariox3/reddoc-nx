@@ -68,14 +68,32 @@
   @if (trailingActions().length > 0) {
     <div class="lib-data-toolbar__group">
       @for (action of trailingActions(); track action.id) {
-        <button
-          type="button"
-          class="lib-data-toolbar__btn lib-data-toolbar__btn--ghost"
-          (click)="actionInvoked.emit(action.id)"
-        >
-          <i [class]="action.iconClass"></i>
-          <span>{{ translate(action.labelKey) }}</span>
-        </button>
+        @if (action.children?.length) {
+          <button
+            type="button"
+            class="lib-data-toolbar__btn lib-data-toolbar__btn--ghost"
+            (click)="menu.toggle($event)"
+          >
+            <i [class]="action.iconClass"></i>
+            <span>{{ translate(action.labelKey) }}</span>
+            <i class="pi pi-chevron-down lib-data-toolbar__dropdown-caret"></i>
+          </button>
+          <p-menu
+            #menu
+            [popup]="true"
+            [model]="toMenuItems(action.children ?? [])"
+            appendTo="body"
+          />
+        } @else {
+          <button
+            type="button"
+            class="lib-data-toolbar__btn lib-data-toolbar__btn--ghost"
+            (click)="actionInvoked.emit(action.id)"
+          >
+            <i [class]="action.iconClass"></i>
+            <span>{{ translate(action.labelKey) }}</span>
+          </button>
+        }
       }
     </div>
   }

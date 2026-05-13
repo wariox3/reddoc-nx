@@ -9,7 +9,6 @@ import {
   I18nService,
   TenantService,
   ToastService,
-  type ColumnDef,
   type FilterCondition,
   type ListQuery,
   type SortSpec,
@@ -18,35 +17,18 @@ import {
   DataTableComponent,
   DataToolbarComponent,
   type PageChangeEvent,
-  type RowAction,
   type RowActionInvokedEvent,
-  type ToolbarAction,
 } from '@reddoc/feature-base';
 import { ContactoService } from '../../services/contacto.service';
 import type { Contacto } from '../../models/contacto.model';
 import type { AppDict } from '../../../../i18n';
-
-/** Clave de localStorage para los filtros de esta página. Incluye `v1`. */
-const CONTACTOS_FILTERS_STORAGE_KEY = 'contactos:filters:v1';
-
-/** Acciones disponibles desde el menú de cada fila. */
-const ROW_ACTIONS: readonly RowAction[] = [
-  { id: 'edit', labelKey: 'common.actions.edit', iconClass: 'pi pi-pencil' },
-  { id: 'delete', labelKey: 'common.actions.delete', iconClass: 'pi pi-trash', severity: 'danger' },
-];
-
-/** Acción primaria de la toolbar. */
-const PRIMARY_ACTION: ToolbarAction = {
-  id: 'new',
-  labelKey: 'common.actions.new',
-  iconClass: 'pi pi-plus',
-};
-
-/** Acciones secundarias (exportar, importar). */
-const TRAILING_ACTIONS: readonly ToolbarAction[] = [
-  { id: 'export', labelKey: 'common.actions.exportExcel', iconClass: 'pi pi-file-excel' },
-  { id: 'import', labelKey: 'common.actions.import', iconClass: 'pi pi-upload' },
-];
+import {
+  CONTACTOS_COLUMNS,
+  CONTACTOS_FILTERS_STORAGE_KEY,
+  CONTACTOS_PRIMARY_ACTION,
+  CONTACTOS_ROW_ACTIONS,
+  CONTACTOS_TRAILING_ACTIONS,
+} from '../../contactos.constants';
 
 /**
  * Listado de contactos.
@@ -96,43 +78,10 @@ export class ContactosListComponent {
 
   // ── Derivados ─────────────────────────────────────────────────────────────
   protected readonly hasSelection = computed(() => this.selectedRows().length > 0);
-  protected readonly rowActions = ROW_ACTIONS;
-  protected readonly primaryAction = PRIMARY_ACTION;
-  protected readonly trailingActions = TRAILING_ACTIONS;
-
-  /** Columnas declaradas literalmente en el feature. */
-  protected readonly columns: readonly ColumnDef[] = [
-    {
-      field: 'id',
-      headerKey: 'entities.contacto.columns.id',
-      type: 'number',
-      width: '70px',
-      align: 'right',
-      sortable: true,
-    },
-    {
-      field: 'nombre_corto',
-      headerKey: 'entities.contacto.columns.nombre',
-      type: 'text',
-      sortable: true,
-    },
-    {
-      field: 'numero_identificacion',
-      headerKey: 'entities.contacto.columns.identificacion',
-      type: 'text',
-      sortable: true,
-    },
-    {
-      field: 'correo',
-      headerKey: 'entities.contacto.columns.correo',
-      type: 'text',
-    },
-    {
-      field: 'telefono',
-      headerKey: 'entities.contacto.columns.telefono',
-      type: 'text',
-    },
-  ];
+  protected readonly columns = CONTACTOS_COLUMNS;
+  protected readonly rowActions = CONTACTOS_ROW_ACTIONS;
+  protected readonly primaryAction = CONTACTOS_PRIMARY_ACTION;
+  protected readonly trailingActions = CONTACTOS_TRAILING_ACTIONS;
 
   constructor() {
     this.loadList();

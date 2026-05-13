@@ -16,4 +16,9 @@ export interface ToolbarAction {
   readonly labelKey: string;
   /** Clase PrimeIcon, p. ej. `'pi pi-plus'`. */
   readonly iconClass: string;
+  /**
+   * Sub-acciones. Cuando está presente el botón se convierte en un dropdown;
+   * `actionInvoked` emitirá el `id` del hijo seleccionado, no el del padre.
+   */
+  readonly children?: readonly ToolbarAction[];
 }

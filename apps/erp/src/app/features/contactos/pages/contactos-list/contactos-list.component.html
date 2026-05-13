@@ -1,23 +1,18 @@
 <header class="contactos-list__header">
   <div class="contactos-list__title-block">
     <h1 class="contactos-list__title">{{ t().entities.contacto.name }}</h1>
-    <p class="contactos-list__summary">{{ totalCount() }} {{ t().common.list.records }}</p>
   </div>
 </header>
 
 <div class="card">
   <lib-data-toolbar
-    [searchEnabled]="true"
-    [searchValue]="searchValue()"
+    [deleteSelectedEnabled]="true"
     [primaryAction]="primaryAction"
     [trailingActions]="trailingActions"
     [deleteSelectedEnabled]="hasSelection()"
     [deleteSelectedCount]="selectedRows().length"
-    [refreshEnabled]="true"
-    (search)="onSearchChange($event)"
     (actionInvoked)="onToolbarAction($event)"
     (deleteSelected)="removeSelected()"
-    (refresh)="onRefresh()"
   />
 
   <lib-data-table

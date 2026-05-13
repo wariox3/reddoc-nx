@@ -13,10 +13,11 @@ export const es: AppDict = {
       cancel: 'Cancelar',
       menuLabel: 'Opciones',
       filters: 'Filtros',
+      export: 'Exportar',
       clearFilters: 'Limpiar filtros',
       clearSearch: 'Limpiar búsqueda',
       refresh: 'Actualizar',
-      exportExcel: 'Exportar Excel',
+      exportExcel: 'Excel',
       import: 'Importar',
     },
     search: {

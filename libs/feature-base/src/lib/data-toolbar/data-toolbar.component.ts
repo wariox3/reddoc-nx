@@ -2,6 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, input, output } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
+import { MenuModule } from 'primeng/menu';
+import type { MenuItem } from 'primeng/api';
 import { I18nService } from '@reddoc/core';
 import type { ToolbarAction } from './data-toolbar.types';
 
@@ -34,7 +36,7 @@ import type { ToolbarAction } from './data-toolbar.types';
 @Component({
   selector: 'lib-data-toolbar',
   standalone: true,
-  imports: [CommonModule, ButtonModule, TooltipModule],
+  imports: [CommonModule, ButtonModule, TooltipModule, MenuModule],
   templateUrl: './data-toolbar.component.html',
   styleUrl: './data-toolbar.component.scss',
 })
@@ -69,6 +71,14 @@ export class DataToolbarComponent {
   private readonly i18n = inject<I18nService<unknown>>(I18nService);
 
   // ── API protegida (template) ──────────────────────────────────────────────
+
+  protected toMenuItems(children: readonly ToolbarAction[]): MenuItem[] {
+    return children.map((child) => ({
+      label: this.translate(child.labelKey),
+      icon: child.iconClass,
+      command: () => this.actionInvoked.emit(child.id),
+    }));
+  }
 
   protected onSearchInput(event: Event): void {
     const value = (event.target as HTMLInputElement).value;

@@ -16,6 +16,7 @@ export interface AppDict extends AuthTranslationsHost {
       refresh: string;
       exportExcel: string;
       import: string;
+      export: string;
     };
     search: {
       placeholder: string;
