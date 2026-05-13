@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, input, output } from '@angular/core';
-import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
 import { MenuModule } from 'primeng/menu';
 import type { MenuItem } from 'primeng/api';
@@ -36,7 +35,7 @@ import type { ToolbarAction } from './data-toolbar.types';
 @Component({
   selector: 'lib-data-toolbar',
   standalone: true,
-  imports: [CommonModule, ButtonModule, TooltipModule, MenuModule],
+  imports: [CommonModule, TooltipModule, MenuModule],
   templateUrl: './data-toolbar.component.html',
   styleUrl: './data-toolbar.component.scss',
 })

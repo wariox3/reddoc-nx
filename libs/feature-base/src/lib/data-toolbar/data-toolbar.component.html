@@ -113,11 +113,13 @@
 
   <!-- Primary action -->
   @if (primaryAction(); as primary) {
-    <p-button
-      size="small"
-      [label]="translate(primary.labelKey)"
-      [icon]="primary.iconClass"
-      (onClick)="actionInvoked.emit(primary.id)"
-    />
+    <button
+      type="button"
+      class="lib-data-toolbar__btn lib-data-toolbar__btn--primary"
+      (click)="actionInvoked.emit(primary.id)"
+    >
+      <i [class]="primary.iconClass"></i>
+      <span>{{ translate(primary.labelKey) }}</span>
+    </button>
   }
 </div>

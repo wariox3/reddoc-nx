@@ -154,6 +154,22 @@
       }
     }
 
+    &--primary {
+      background: var(--p-primary-color);
+      color: var(--p-primary-contrast-color);
+      border-color: var(--p-primary-color);
+
+      &:hover {
+        background: var(--p-primary-hover-color);
+        border-color: var(--p-primary-hover-color);
+        box-shadow: 0 3px 10px rgba(0 158 247 / 0.28);
+      }
+
+      &:active {
+        transform: scale(0.97);
+      }
+    }
+
     &--danger {
       background: #fee2e2;
       color: #b91c1c;
