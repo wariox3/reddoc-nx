@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, forkJoin, map } from 'rxjs';
 import { BaseHttpService, serializeListQuery, type ListQuery } from '@reddoc/core';
-import type { Contacto, ContactoListResponse, ContactoPayload } from '../models/contacto.model';
+import type { Contacto, ContactoListResponse, ContactoPayload } from './contacto.model';
 
 /**
  * Servicio HTTP de contactos.

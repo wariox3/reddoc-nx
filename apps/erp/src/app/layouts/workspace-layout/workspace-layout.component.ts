@@ -1,24 +1,26 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { DrawerModule } from 'primeng/drawer';
 import { I18nService, TenantService } from '@reddoc/core';
 import { UserMenuComponent } from '../../shared/user-menu/user-menu.component';
-import { SIDEBAR_MENU } from '../sidebar/sidebar-menu';
+import { ActiveModuleStore } from '@erp/core/erp-modules';
+import type { AppDict } from '@erp/i18n';
+import { ModuleBarComponent } from '../module-bar/module-bar.component';
 import type {
   SidebarAccordion,
   SidebarLeafItem,
   SidebarSection,
   SidebarSimpleItem,
 } from '../sidebar/sidebar-menu.types';
-import type { AppDict } from '../../i18n';
 
 /**
  * Layout principal del workspace de un tenant.
  *
- * Sidebar declarativo desde `SIDEBAR_MENU`. Cuando lleguen módulos del
- * `MODULE_REGISTRY` con documentos, se mezclarán acá traducidos a la misma
- * forma `SidebarSection` para que el template no distinga el origen.
+ * El header aloja un topbar de módulos (`<app-module-bar>`) que cambia el
+ * módulo activo vía URL. El sidebar se filtra al módulo activo leyendo
+ * `ActiveModuleStore.activeDescriptor()` — cada módulo aporta su propio
+ * menú vía su `ErpModuleDescriptor`.
  */
 @Component({
   selector: 'app-workspace-layout',
@@ -30,6 +32,7 @@ import type { AppDict } from '../../i18n';
     NgTemplateOutlet,
     DrawerModule,
     UserMenuComponent,
+    ModuleBarComponent,
   ],
   templateUrl: './workspace-layout.component.html',
   styleUrl: './workspace-layout.component.scss',
@@ -37,23 +40,36 @@ import type { AppDict } from '../../i18n';
 export class WorkspaceLayoutComponent {
   private readonly i18n = inject<I18nService<AppDict>>(I18nService);
   private readonly tenant = inject(TenantService);
+  private readonly activeModuleStore = inject(ActiveModuleStore);
 
   protected readonly t = this.i18n.t;
-
-  /** Secciones del sidebar. */
-  protected readonly sections = computed<readonly SidebarSection[]>(() => SIDEBAR_MENU);
 
   /** Slug del tenant activo; necesario para resolver paths absolutos. */
   protected readonly tenantSlug = this.tenant.currentSlug;
 
-  /** Ids de acordeones expandidos. Inicialmente todos abiertos. */
-  private readonly expandedAccordionIds = signal<ReadonlySet<string>>(
-    new Set(
-      SIDEBAR_MENU.filter((s): s is SidebarAccordion => s.kind === 'accordion').map((s) => s.id),
-    ),
+  /** Descriptor del módulo activo, o `null` si estamos en una ruta global. */
+  protected readonly activeDescriptor = this.activeModuleStore.activeDescriptor;
+
+  /** Secciones del sidebar: las del módulo activo, o vacío si no hay módulo. */
+  protected readonly sections = computed<readonly SidebarSection[]>(
+    () => this.activeDescriptor()?.menu ?? [],
   );
 
+  /** Ids de acordeones expandidos. Reinicia al cambiar de módulo. */
+  private readonly expandedAccordionIds = signal<ReadonlySet<string>>(new Set());
+
   protected readonly drawerVisible = signal(false);
+
+  constructor() {
+    // Cada vez que cambia el módulo activo, expandimos todos sus acordeones por defecto.
+    effect(() => {
+      const sections = this.sections();
+      const accordionIds = sections
+        .filter((s): s is SidebarAccordion => s.kind === 'accordion')
+        .map((s) => s.id);
+      this.expandedAccordionIds.set(new Set(accordionIds));
+    });
+  }
 
   // ── API protegida (template) ──────────────────────────────────────────────
 
@@ -82,16 +98,25 @@ export class WorkspaceLayoutComponent {
     this.drawerVisible.update((v) => !v);
   }
 
-  /** Path absoluto para un item simple del sidebar. */
+  /**
+   * Path absoluto para un item simple del menú del módulo activo.
+   * Los paths declarados en el descriptor son relativos al módulo —
+   * se les prepende `/t/<slug>/<moduleId>/`.
+   */
   protected itemPath(item: SidebarSimpleItem): string {
-    const slug = this.tenantSlug();
-    return slug ? `/t/${slug}/${item.path}` : `/${item.path}`;
+    return this.buildPath(item.path);
   }
 
   /** Path absoluto para un item dentro de un acordeón. */
   protected leafPath(leaf: SidebarLeafItem): string {
+    return this.buildPath(leaf.path);
+  }
+
+  private buildPath(relativePath: string): string {
     const slug = this.tenantSlug();
-    return slug ? `/t/${slug}/${leaf.path}` : `/${leaf.path}`;
+    const moduleId = this.activeDescriptor()?.id;
+    if (!slug) return `/${relativePath}`;
+    return moduleId ? `/t/${slug}/${moduleId}/${relativePath}` : `/t/${slug}/${relativePath}`;
   }
 
   /**

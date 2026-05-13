@@ -1,10 +1,10 @@
 # Arquitectura modular del ERP
 
 > **Estado**: Decisión aprobada · migración en curso
-> **Fecha**: 2026-05-12
+> **Fecha**: 2026-05-13
 > **Autores**: Sebastian
 > **Aplica a**: `apps/erp` del monorepo `reddoc-monorepo`
-> **Versión del documento**: 2.0 (enfoque híbrido tras reflexión post-implementación)
+> **Versión del documento**: 2.1 (módulos como contexto de navegación + topbar + sidebar filtrado)
 
 ---
 
@@ -206,7 +206,90 @@ Las decisiones técnicas se justifican contra estos principios. Cualquier abstra
 
 ## 6. Arquitectura propuesta
 
-Dos caminos coexisten en el ERP, alimentados por un set de building blocks compartidos.
+Dos caminos coexisten en el ERP, alimentados por un set de building blocks compartidos. Sobre ellos vive una **capa de navegación por módulos** que define la organización jerárquica de la UX (topbar + sidebar filtrado + URLs con prefijo de módulo).
+
+### 6.0 Módulos como contexto de navegación
+
+El ERP se organiza en **módulos de negocio** visibles en un topbar (General, Compra, Venta, Inventario…). El módulo activo deriva del primer segmento de la URL después del tenant: `/t/:slug/<modulo>/...`. El sidebar se filtra al módulo activo — solo muestra sus masters y documentos.
+
+Este concepto es ortogonal al enfoque híbrido (camino A / camino B): un módulo puede contener **solo masters** (General), **solo documentos** (Compra) o **ambos**. La capa de navegación los trata por igual.
+
+#### 6.0.1 URL pattern
+
+```
+/t/:tenantSlug                                  redirect al primer módulo accesible
+/t/:tenantSlug/<modulo>                         activa el módulo, redirige a su default child
+/t/:tenantSlug/<modulo>/<master>                master del módulo (camino B)
+/t/:tenantSlug/<modulo>/<documento>/list        listado de documento (camino A)
+/t/:tenantSlug/<modulo>/<documento>/new         alta del documento
+/t/:tenantSlug/<modulo>/<documento>/edit/:id    edición
+/t/:tenantSlug/<modulo>/<documento>/detail/:id  detalle
+```
+
+Ejemplos concretos:
+
+- `/t/ascendev/general/contactos` — master Contactos del módulo General.
+- `/t/ascendev/compra/factura-compra/list` — documentos del módulo Compra (cuando se sumen).
+
+#### 6.0.2 `ErpModuleDescriptor`
+
+Cada módulo aporta un descriptor (en `apps/erp/src/app/features/<id>/<id>.module-descriptor.ts`) que define su comportamiento en la capa de navegación:
+
+```ts
+// apps/erp/src/app/core/erp-modules/erp-module.types.ts
+export interface ErpModuleDescriptor {
+  readonly id: string; // 'general', 'compra', 'venta', 'inventario'
+  readonly displayNameKey: string; // 'modules.general.name'
+  readonly iconClass: string; // 'pi pi-cog'
+  readonly defaultChildPath: string | null; // 'contactos' — destino de /t/:slug/general
+  readonly requiredPlanFlag?: string; // futuro: 'plan_compra'
+  readonly menu: readonly SidebarSection[]; // entradas del sidebar cuando es el activo
+}
+```
+
+> **`ErpModuleDescriptor` vs `ModuleConfig`** — no confundirlos: `ModuleConfig` (en `core/module-config/`) describe los documentos transaccionales que alimentan al framework configuracional (camino A). `ErpModuleDescriptor` describe el módulo como contexto de navegación. Un módulo puede tener uno, el otro, o ambos. Coexisten sin solaparse.
+
+#### 6.0.3 Registry y store
+
+```ts
+// apps/erp/src/app/core/erp-modules/erp-modules.registry.ts
+export const ERP_MODULES: readonly ErpModuleDescriptor[] = [
+  GENERAL_MODULE,
+  COMPRA_MODULE,
+  VENTA_MODULE,
+  INVENTARIO_MODULE,
+] as const;
+```
+
+Import estático: 4 descriptores pequeños sin componentes. Las páginas siguen siendo lazy vía `loadComponent` desde sus `<modulo>.routes.ts`.
+
+`ActiveModuleStore` mantiene el id del módulo activo como signal. Lo escribe `erpModuleResolver(id)` puesto en la ruta raíz de cada módulo; lo leen el topbar (para highlight) y el sidebar (para filtrar).
+
+```ts
+// apps/erp/src/app/features/general/general.routes.ts
+export const GENERAL_ROUTES: Route[] = [
+  {
+    path: '',
+    resolve: { _module: erpModuleResolver('general') },
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'contactos' },
+      { path: 'contactos', loadComponent: () => ... },
+    ],
+  },
+];
+```
+
+#### 6.0.4 Topbar (`ModuleBarComponent`)
+
+Vive en `apps/erp/src/app/layouts/module-bar/`. Renderiza un link por cada módulo habilitado por `PermissionsService.canAccessModule(id)`. Cada link apunta a `/t/<slug>/<moduleId>`. Highlight al activo según `ActiveModuleStore.activeId()`.
+
+#### 6.0.5 Sidebar filtrado
+
+El sidebar lee `ActiveModuleStore.activeDescriptor().menu` y renderiza solo esa lista. Los paths declarados son **relativos al módulo** — el layout les prepende `/t/<slug>/<moduleId>/`. Empty state cuando no hay módulo activo (ej. `/t/:slug/dashboard`).
+
+#### 6.0.6 Permisos por módulo
+
+`PermissionsService` (en `apps/erp/src/app/core/permissions/`) decide qué módulos son accesibles. Implementación inicial: retorna todos los ids registrados — el backend aún no expone flags `plan_compra`, `plan_venta`, etc. en `Contenedor`. Cuando los exponga, solo cambia el `computed` interno; el contrato no.
 
 ### 6.A Camino "documentos": framework configuracional
 
@@ -318,32 +401,24 @@ Inyectado vía `MODULE_REGISTRY` token de `@reddoc/core`. El framework define el
 export const COMPRA_ROUTES: Routes = [
   {
     path: '',
-    resolve: { module: activeModuleResolver('compra') },
+    resolve: {
+      _navModule: erpModuleResolver('compra'),       // capa de navegación
+      _docModule: activeModuleResolver('compra'),    // framework configuracional
+    },
     children: [
       {
-        path: 'documento/:documentKey',
+        path: ':documentKey',
         resolve: { document: activeDocumentResolver() },
         children: [
           {
             path: 'list',
             loadComponent: () =>
-              import('@reddoc/feature-base').then((m) => m.BaseDocumentListComponent),
+              import('../../core/module-config/components/base-document-list/base-document-list.component')
+                .then((m) => m.BaseDocumentListComponent),
           },
-          {
-            path: 'new',
-            loadComponent: () =>
-              import('@reddoc/feature-base').then((m) => m.BaseDocumentFormComponent),
-          },
-          {
-            path: 'edit/:id',
-            loadComponent: () =>
-              import('@reddoc/feature-base').then((m) => m.BaseDocumentFormComponent),
-          },
-          {
-            path: 'detail/:id',
-            loadComponent: () =>
-              import('@reddoc/feature-base').then((m) => m.BaseDocumentDetailComponent),
-          },
+          { path: 'new',         loadComponent: () => /* form */ },
+          { path: 'edit/:id',    loadComponent: () => /* form */ },
+          { path: 'detail/:id',  loadComponent: () => /* detail */ },
         ],
       },
     ],
@@ -351,7 +426,20 @@ export const COMPRA_ROUTES: Routes = [
 ];
 ```
 
-> Nota: `activeEntityResolver(kind)` se renombra a `activeDocumentResolver()` (sin parámetro) porque solo procesa documentos en v2.0.
+URLs resultantes (con `documentKey = factura-compra`):
+
+```
+/t/:slug/compra/factura-compra/list
+/t/:slug/compra/factura-compra/new
+/t/:slug/compra/factura-compra/edit/:id
+/t/:slug/compra/factura-compra/detail/:id
+```
+
+> Notas v2.1:
+>
+> - El segmento intermedio `documento/` se eliminó. La URL pasa directo del módulo al `documentKey`.
+> - El módulo expone **dos** resolvers en su raíz: `erpModuleResolver` (capa de navegación) y `activeModuleResolver` (registry del framework configuracional). Son ortogonales y coexisten.
+> - `activeEntityResolver(kind)` se renombra a `activeDocumentResolver()` (sin parámetro) porque solo procesa documentos.
 
 #### 6.A.5 `BaseDocumentListComponent`
 
@@ -377,8 +465,12 @@ Aplica a entidades administrativas con endpoint propio. Cada master vive como fe
 
 ```
 apps/erp/src/app/features/general/
-├── general.routes.ts                      · solo rutas del feature
-├── menu.ts                                · entradas que aporta al sidebar (declarativo)
+├── general.routes.ts                      · rutas con erpModuleResolver('general')
+├── general.module-descriptor.ts           · ErpModuleDescriptor (id, displayName, menu del sidebar)
+├── constants/
+│   └── contactos.constants.ts             · columnas, row actions, toolbar actions
+├── models/
+│   └── contacto.model.ts                  · Contacto, ContactoPayload, ContactoListResponse
 ├── services/
 │   └── contacto.service.ts                · extends BaseHttpService
 └── pages/
@@ -387,6 +479,8 @@ apps/erp/src/app/features/general/
         ├── contactos-list.component.html
         └── contactos-list.component.scss
 ```
+
+URL del master: `/t/:slug/general/contactos`. Las rutas declaradas en `general.routes.ts` usan paths relativos (`'contactos'`) — el prefijo `/t/:slug/general/` lo aporta el routing padre. Igual en el descriptor: `menu` declara paths relativos al módulo (`path: 'contactos'`).
 
 #### 6.B.2 Cómo se ve una página de master
 
@@ -514,49 +608,42 @@ Cada llamador construye su clave: documentos vía helper `buildDocumentStorageKe
 
 `ColumnDef`, `FilterField`, `ListQuery`, `ListResponse`, `FilterCondition`, `SortSpec`, `FilterOperator`, `ImportDescriptor`. Viven en `@reddoc/core` para que cualquier feature los importe.
 
-### 6.D Sidebar híbrido
+### 6.D Sidebar filtrado al módulo activo
 
-El sidebar se compone de **dos fuentes**:
-
-1. **Items declarativos** definidos en `apps/erp/src/app/layouts/sidebar-menu.ts`:
-   - Items directos (Dashboard, Reportes…).
-   - Grupos de masters por módulo (Administrador: Contactos, Ítems, Sedes…).
-2. **Acordeones derivados** del `MODULE_REGISTRY` con sus documentos:
-   - Compra → Documentos: Factura compra, Nota crédito…
-   - Venta → Documentos: Factura venta, Nota crédito venta…
+El sidebar **no es global**: refleja exclusivamente el módulo activo según `ActiveModuleStore.activeDescriptor()`. Cuando cambias de módulo en el topbar, el sidebar reemplaza su contenido por el menú del módulo nuevo. Cuando no hay módulo activo (ej. `/t/:slug/dashboard`), muestra un empty state.
 
 ```ts
-// apps/erp/src/app/layouts/sidebar-menu.ts
+// apps/erp/src/app/features/general/general.module-descriptor.ts
 
-export const SIDEBAR_MENU: readonly SidebarSection[] = [
-  {
-    kind: 'item',
-    labelKey: 'layout.nav.dashboard',
-    iconClass: 'pi pi-th-large',
-    path: 'dashboard',
-  },
-  {
-    kind: 'module',
-    moduleId: 'general',
-    labelKey: 'modules.general.name',
-    iconClass: 'pi pi-cog',
-    groups: [
-      {
-        labelKey: 'layout.nav.sections.master',
-        items: [
-          { labelKey: 'modules.general.contacto.menuName', path: 'general/contactos' },
-          // ...
-        ],
-      },
-    ],
-  },
-  // Módulos con documentos aparecen automáticamente porque `WorkspaceLayout`
-  // los mezcla con `ModuleRegistryService.loadAll()` filtrando por
-  // los que tienen `documents.length > 0`.
-];
+export const GENERAL_MODULE: ErpModuleDescriptor = {
+  id: 'general',
+  displayNameKey: 'modules.general.name',
+  iconClass: 'pi pi-cog',
+  defaultChildPath: 'contactos',
+  menu: [
+    {
+      kind: 'accordion',
+      id: 'general-administracion',
+      labelKey: 'layout.nav.sections.master',
+      iconClass: 'pi pi-folder',
+      groups: [
+        {
+          items: [
+            { labelKey: 'entities.contacto.name', path: 'contactos' },
+            // futuras: ítems, sedes, almacenes...
+          ],
+        },
+      ],
+    },
+  ],
+};
 ```
 
-El `WorkspaceLayoutComponent` ensambla las dos fuentes en un único árbol.
+Los `path` de cada item son **relativos al módulo** — el `WorkspaceLayout` les prepende `/t/<slug>/<moduleId>/`.
+
+Para módulos con documentos (camino A), el menú puede mezclar masters y documentos en acordeones distintos. Si el menú se vuelve repetitivo entre documentos (ej. uno por cada `DocumentEntityConfig` registrado), el descriptor puede derivar parte de su `menu` del `ModuleConfig` correspondiente — pero ese helper es opcional, no parte del contrato base.
+
+Reemplaza al `SIDEBAR_MENU` global de v2.0, que se eliminó al cerrar la migración.
 
 ---
 
@@ -583,7 +670,23 @@ Reglas que aplican a todo el código. Romperlas requiere justificación explíci
 - `displayNameKey` para claves i18n. Nunca strings de UI literales en configs.
 - Código y APIs en inglés; strings de UI en español/inglés vía i18n.
 
-### 7.3 Anti-naming (prohibido)
+### 7.3 Path aliases
+
+Para evitar imports relativos profundos (`../../../../../i18n`) ahora que los masters viven en `features/<modulo>/masters/<entity>/pages/<page>/`, se expone un alias intra-app:
+
+```json
+"@erp/*": ["apps/erp/src/app/*"]
+```
+
+Reglas de uso:
+
+- **Cross-app (libs)**: `@reddoc/core`, `@reddoc/ui`, `@reddoc/feature-base` — como siempre.
+- **Dentro del erp pero cross-feature**: `@erp/core/...`, `@erp/i18n`, `@erp/layouts/...`. Aplica cuando el import sale del bounded context actual.
+- **Hermanos en el mismo bounded context (master / componente / feature)**: relativos cortos (`./contacto.service`, `../../contacto.model`). Refuerzan la idea de "esto vive cerca" y se mueven en bloque cuando se renombra la carpeta.
+
+El alias `@erp/*` está permitido por una excepción explícita en `eslint.config.mjs` (regla `@nx/enforce-module-boundaries`). El resto del monorepo no tiene un alias equivalente — cada app sigue la convención Nx estricta hasta que su tamaño justifique flexibilizarla.
+
+### 7.4 Anti-naming (prohibido)
 
 - `data: any`, `params: any` → usar `unknown` + parseo, o tipar correctamente.
 - `obj.modeloCofig` (typo del legacy) → revisar antes de commitear.
@@ -597,12 +700,15 @@ Reglas que aplican a todo el código. Romperlas requiere justificación explíci
 
 Dos patrones, según la naturaleza del módulo.
 
+Todos los módulos comparten un mismo esqueleto: `<id>.module-descriptor.ts` (capa de navegación) + `<id>.routes.ts` con `erpModuleResolver('<id>')`. Lo que cambia es el contenido.
+
 ### 8.1 Módulo con documentos (camino A)
 
 ```
 apps/erp/src/app/features/<id>/
-├── <id>.routes.ts                    · rutas + resolvers
-├── <id>.config.ts                    · ModuleConfig exportado
+├── <id>.routes.ts                    · rutas con erpModuleResolver + activeModuleResolver
+├── <id>.module-descriptor.ts         · ErpModuleDescriptor con menu de documentos
+├── <id>.config.ts                    · ModuleConfig exportado al framework configuracional
 ├── actions/                          · strategies del módulo
 │   ├── <action>.action.ts
 │   └── index.ts                      · provider() para registrar todas
@@ -613,45 +719,79 @@ Ejemplo: módulo `compra` con documentos Factura, Nota crédito, Nota débito, e
 
 ### 8.2 Módulo con masters (camino B)
 
+Cada master es un **bounded context auto-contenido**: vive en su propia subcarpeta bajo `masters/<entity>/` con su modelo, servicio, constantes, rutas, páginas y opcionalmente componentes y utilidades específicas. Esta organización escala linealmente: agregar un master nuevo es agregar una carpeta, no contaminar carpetas planas globales.
+
 ```
 apps/erp/src/app/features/<id>/
-├── <id>.routes.ts                    · rutas literales del feature
-├── menu.ts                           · entradas del sidebar para este módulo
-├── services/
-│   ├── contacto.service.ts
-│   └── item.service.ts
-└── pages/
-    ├── contactos-list/
-    │   ├── contactos-list.component.ts
-    │   ├── contactos-list.component.html
-    │   └── contactos-list.component.scss
-    ├── contactos-form/
-    │   └── ...
-    └── items-list/
-        └── ...
+├── <id>.routes.ts                    · dispatcher: delega cada master a su <entity>.routes.ts
+├── <id>.module-descriptor.ts         · ErpModuleDescriptor con menu de masters
+├── shared/                           · solo si surge algo compartido entre masters del módulo
+│   ├── types/
+│   └── pipes/
+└── masters/
+    ├── <entity>/
+    │   ├── <entity>.routes.ts        · rutas del master (list / new / edit / detail)
+    │   ├── <entity>.model.ts
+    │   ├── <entity>.service.ts       · extends BaseHttpService
+    │   ├── <entity>.constants.ts     · columns, row actions, toolbar actions
+    │   ├── pages/
+    │   │   ├── <plural>-list/        · plural para la lista
+    │   │   ├── <entity>-form/        · singular — compartido create+edit
+    │   │   └── <entity>-detail/
+    │   ├── components/               · solo si surgen (NO crear preventivo)
+    │   └── utils/                    · lógica de negocio específica del master
+    └── ...
 ```
+
+**Regla**: lo que solo importa a un master vive dentro del master. Lo que dos masters del mismo módulo comparten sube a `<id>/shared/`. Lo que cruza módulos del ERP sube a `apps/erp/src/app/core/` o a una lib.
+
+**Convenciones de naming**:
+
+- Plural en carpetas de lista (`contactos-list/`, `asesores-list/`) — son colecciones.
+- Singular en form/detail (`contacto-form/`, `asesor-detail/`) — son una entidad.
+- Singular en modelos, servicios, constantes (`contacto.model.ts`, `asesor.service.ts`).
+- Kebab-case siempre (`cuenta-banco/`, no `cuentaBanco/`).
 
 Ejemplo: módulo `general` con masters Contacto, Ítem, Sede, Almacén, Cuenta banco, Asesor, Resolución.
 
 ### 8.3 Módulo mixto
 
-Si un módulo tiene **documentos y masters**, puede combinar las dos estructuras: un `<id>.config.ts` con `documents`, **y también** `pages/<master>-list/` para sus masters. Cada parte usa el camino correspondiente.
+Si un módulo tiene **documentos y masters**, combina las dos estructuras: el mismo `<id>.module-descriptor.ts` declara ambos en su `menu` (en grupos separados o acordeones distintos), y `<id>.routes.ts` registra rutas para ambos.
 
-### 8.4 Cómo agregar un master nuevo (ejemplo: ítems)
+### 8.4 Cómo agregar un master nuevo (ejemplo: ítems en General)
 
-1. Crear `apps/erp/src/app/features/general/services/item.service.ts` extendiendo `BaseHttpService`.
-2. Crear `apps/erp/src/app/features/general/pages/items-list/items-list.component.ts` con columnas, filtros y la página armada con `<lib-data-table>`.
-3. Agregar la ruta a `general.routes.ts`: `{ path: 'items', loadComponent: () => import('./pages/items-list/items-list.component').then(m => m.ItemsListComponent) }`.
-4. Agregar la entrada al menú en `apps/erp/src/app/features/general/menu.ts`.
+1. Crear la carpeta `apps/erp/src/app/features/general/masters/item/` con:
+   - `item.model.ts` — types `Item`, `ItemPayload`, `ItemListResponse`.
+   - `item.service.ts` extendiendo `BaseHttpService` (endpoint propio).
+   - `item.constants.ts` — `ITEM_COLUMNS`, `ITEM_ROW_ACTIONS`, `ITEM_PRIMARY_ACTION`, etc.
+   - `item.routes.ts` — `ITEM_ROUTES` con lazy `loadComponent` por página.
+   - `pages/items-list/items-list.component.{ts,html,scss}`.
+2. En `general.routes.ts`, delegar la ruta:
+   ```ts
+   { path: 'items', loadChildren: () => import('./masters/item/item.routes').then(m => m.ITEM_ROUTES) }
+   ```
+   URL final: `/t/:slug/general/items`.
+3. Sumar la entrada al `menu` del `general.module-descriptor.ts`:
+   ```ts
+   { labelKey: 'entities.item.name', path: 'items' }
+   ```
+4. Sumar las claves i18n (`entities.item.name`, `entities.item.columns.*`, etc.) en `app.es.ts` y `app.en.ts`.
 
-Sin tocar el framework, sin tocar otros features.
+Sin tocar el framework, sin tocar otros features, sin tocar otros masters.
 
 ### 8.5 Cómo agregar un documento nuevo (ejemplo: nota débito de venta)
 
 1. Agregar el descriptor al array `documents` de `venta.config.ts`.
 2. Si necesita una acción custom, registrar la strategy.
+3. Sumar la entrada al `menu` del `venta.module-descriptor.ts`.
 
-El framework hace el resto (sidebar, rutas, lista, form, detalle).
+### 8.6 Cómo agregar un módulo nuevo
+
+1. Crear `features/<id>/<id>.module-descriptor.ts` con su `ErpModuleDescriptor`.
+2. Crear `features/<id>/<id>.routes.ts` con `erpModuleResolver('<id>')` y rutas hijas.
+3. Sumarlo a `apps/erp/src/app/core/erp-modules/erp-modules.registry.ts`.
+4. Sumar entrada `loadChildren` en `app.routes.ts` bajo `/t/:tenantSlug`.
+5. Sumar claves i18n `modules.<id>.name` en `app.es.ts` / `app.en.ts`.
 
 ---
 
@@ -848,8 +988,40 @@ Implementación inicial: `PermissionsService` con signal estático cargado en `p
 
 - `EntityConfig` se vuelve sinónimo de `DocumentEntityConfig`.
 - `BaseListComponent` se renombra a `BaseDocumentListComponent` y se simplifica.
-- Sidebar se vuelve híbrido (declarativo + derivado del registry).
 - Cada master implementa su listado componiendo building blocks.
+
+### 13.6 Módulos como contexto de navegación (nueva en v2.1)
+
+**Decisión**: el ERP organiza la navegación en módulos visibles en un topbar; el módulo activo deriva del primer segmento de la URL post-tenant; el sidebar se filtra al módulo activo.
+
+**Patrón de URL**:
+
+```
+/t/:tenant/<modulo>/<master>                  masters administrativos
+/t/:tenant/<modulo>/<documento>/list          documentos transaccionales
+```
+
+Se descarta el segmento intermedio `documento/` que proponía v2.0 — innecesario una vez que el módulo es contexto y no decoración.
+
+**Razones**:
+
+- Sin "módulo como contexto" no había forma de agrupar entidades de negocio. Tener `/t/:slug/contactos` al lado de `/t/:slug/factura-compra` rompía el mental model que el legacy había establecido.
+- El sidebar único proponía 6.D v2.0 escalaba mal: con 8+ módulos y 30+ entidades en total, era una lista insostenible. Filtrar al módulo activo (estilo legacy) reduce el ruido visual sin perder discoverability — el topbar siempre muestra los módulos disponibles.
+- Permisos por plan del tenant: el legacy filtraba módulos por plan (`plan_compra`, `plan_venta`, etc.). `PermissionsService` deja la puerta abierta sin acoplarse al backend hoy.
+
+**Implicaciones**:
+
+- Cada módulo aporta su `ErpModuleDescriptor` y su `<id>.routes.ts` con `erpModuleResolver('<id>')`.
+- `SIDEBAR_MENU` global se elimina. El sidebar lee `ActiveModuleStore.activeDescriptor().menu`.
+- Se introduce `ModuleBarComponent` en el header del `WorkspaceLayout`.
+- Se introduce `PermissionsService` (stub que retorna todos los módulos por ahora).
+- Las URLs viejas (ej. `/t/:slug/contactos`) se rompen — se rediseña la migración para que toda master quede bajo su módulo desde el primer momento.
+
+**Relación con el framework configuracional**:
+
+- `ErpModuleDescriptor` (capa de navegación) y `ModuleConfig` (capa de datos del framework configuracional) son **ortogonales**. Un módulo con documentos expone ambos: el descriptor define topbar/sidebar; el `ModuleConfig` describe el shape de cada documento.
+- Un módulo solo-masters (General) expone solo el descriptor.
+- Un módulo solo-documentos expone ambos pero el `menu` se puede generar desde el `ModuleConfig`.
 
 ---
 
@@ -886,3 +1058,4 @@ Implementación inicial: `PermissionsService` con signal estático cargado en `p
 - **v1.0** (2026-05-11): primera propuesta — framework configuracional uniforme para documentos y masters.
 - **v1.1** (2026-05-11): revisión SOLID — discriminated unions, registry, signals, resolvers, gateway, strategies.
 - **v2.0** (2026-05-12): enfoque híbrido tras implementación de v1.1 — documentos siguen configuracionales, masters pasan a features directos.
+- **v2.1** (2026-05-13): módulos como contexto de navegación — topbar de módulos en el header, sidebar filtrado al módulo activo, URL `/t/:slug/<modulo>/<entidad>`, `PermissionsService` para visibilidad por plan. Cierra una omisión de v2.0 que dejaba a los masters montados directos bajo el tenant sin contexto de módulo.

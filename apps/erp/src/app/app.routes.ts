@@ -43,9 +43,22 @@ export const appRoutes: Route[] = [
           import('./features/dashboard/dashboard.component').then((m) => m.DashboardComponent),
       },
       {
-        path: 'contactos',
+        path: 'general',
         loadChildren: () =>
-          import('./features/contactos/contactos.routes').then((m) => m.CONTACTOS_ROUTES),
+          import('./features/general/general.routes').then((m) => m.GENERAL_ROUTES),
+      },
+      {
+        path: 'compra',
+        loadChildren: () => import('./features/compra/compra.routes').then((m) => m.COMPRA_ROUTES),
+      },
+      {
+        path: 'venta',
+        loadChildren: () => import('./features/venta/venta.routes').then((m) => m.VENTA_ROUTES),
+      },
+      {
+        path: 'inventario',
+        loadChildren: () =>
+          import('./features/inventario/inventario.routes').then((m) => m.INVENTARIO_ROUTES),
       },
     ],
   },

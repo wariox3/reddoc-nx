@@ -9,6 +9,7 @@
     </button>
     <img src="/logos/reddoc.svg" alt="RedDoc" class="app-header__logo" />
   </div>
+  <app-module-bar />
   <div class="app-header__actions">
     <app-user-menu />
   </div>
@@ -40,6 +41,9 @@
 
 <!-- Template de navegación compartido entre sidebar y drawer -->
 <ng-template #navTpl let-inDrawer>
+  @if (sections().length === 0) {
+    <p class="workspace-nav__empty">{{ t().layout.nav.empty }}</p>
+  }
   @for (
     section of sections();
     track section.kind + '-' + (isItem(section) ? section.path : asAccordion(section).id)

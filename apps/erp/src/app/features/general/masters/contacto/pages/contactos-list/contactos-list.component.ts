@@ -19,28 +19,26 @@ import {
   type PageChangeEvent,
   type RowActionInvokedEvent,
 } from '@reddoc/feature-base';
-import { ContactoService } from '../../services/contacto.service';
-import type { Contacto } from '../../models/contacto.model';
-import type { AppDict } from '../../../../i18n';
+import type { AppDict } from '@erp/i18n';
+import { ContactoService } from '../../contacto.service';
+import type { Contacto } from '../../contacto.model';
 import {
   CONTACTOS_COLUMNS,
   CONTACTOS_FILTERS_STORAGE_KEY,
   CONTACTOS_PRIMARY_ACTION,
   CONTACTOS_ROW_ACTIONS,
   CONTACTOS_TRAILING_ACTIONS,
-} from '../../contactos.constants';
+} from '../../contacto.constants';
 
 /**
  * Listado de contactos.
  *
- * Master administrativo en su propio feature (`features/contactos/`):
- * bounded context propio que albergará lógica de cliente/proveedor/empleado,
- * segmentación, historial transaccional, etc.
+ * Master administrativo del módulo General (`features/general/`):
+ * cubre clientes, proveedores y empleados sobre el mismo recurso.
  *
  * Camino B del enfoque híbrido: feature directo que compone los building
  * blocks compartidos (`<lib-data-toolbar>` + `<lib-data-table>`) dentro de
- * un wrapper `.card`. No usa `EntityConfig`, registry, resolvers ni
- * navigation store.
+ * un wrapper `.card`. No usa `EntityConfig` del framework configuracional.
  */
 @Component({
   selector: 'app-contactos-list',
@@ -213,11 +211,11 @@ export class ContactosListComponent {
 
   /**
    * Construye los segmentos absolutos para `router.navigate` dentro del feature.
-   * Resulta en `/t/<slug>/contactos/<...path>`.
+   * Resulta en `/t/<slug>/general/contactos/<...path>`.
    */
   private buildRouteCommands(...subPath: (string | number)[]): (string | number)[] {
     const slug = this.tenant.currentSlug();
     if (!slug) throw new Error('Cannot navigate without an active tenant slug.');
-    return ['/t', slug, 'contactos', ...subPath];
+    return ['/t', slug, 'general', 'contactos', ...subPath];
   }
 }

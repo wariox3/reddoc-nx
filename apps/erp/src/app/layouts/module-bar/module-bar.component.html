@@ -1,0 +1,14 @@
+@if (modules().length) {
+  <nav class="module-bar" role="navigation">
+    @for (mod of modules(); track mod.id) {
+      <a
+        class="module-bar__item"
+        [class.module-bar__item--active]="mod.isActive"
+        [routerLink]="mod.targetPath"
+      >
+        <i class="module-bar__icon {{ mod.iconClass }}" aria-hidden="true"></i>
+        <span class="module-bar__label">{{ mod.label }}</span>
+      </a>
+    }
+  </nav>
+}

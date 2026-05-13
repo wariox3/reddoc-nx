@@ -41,6 +41,7 @@ export interface AppDict extends AuthTranslationsHost {
     nav: {
       dashboard: string;
       account: string;
+      empty: string;
       sections: {
         master: string;
         document: string;
@@ -53,6 +54,12 @@ export interface AppDict extends AuthTranslationsHost {
       manageAccount: string;
       logout: string;
     };
+  };
+  modules: {
+    general: { name: string };
+    compra: { name: string };
+    venta: { name: string };
+    inventario: { name: string };
   };
   entities: {
     contacto: {

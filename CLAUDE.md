@@ -53,7 +53,10 @@ libs/
   styles/       SCSS design tokens + Tailwind @theme (brand colors, animations)
 ```
 
-Path aliases: `@reddoc/core`, `@reddoc/ui`, `@reddoc/feature-base`, `@reddoc/styles`.
+Path aliases:
+
+- **Cross-app (libs)**: `@reddoc/core`, `@reddoc/ui`, `@reddoc/feature-base`, `@reddoc/styles`.
+- **Intra-app (solo erp)**: `@erp/*` → `apps/erp/src/app/*`. Permitido por excepción en `@nx/enforce-module-boundaries` para evitar paths relativos profundos (los masters viven anidados en `features/<modulo>/masters/<entity>/pages/<page>/`). Úsalo para imports cross-feature (`@erp/core/...`, `@erp/i18n`, `@erp/layouts/...`). Para hermanos del mismo bounded context, sigue con relativos cortos (`./contacto.service`).
 
 **Lo que ES cross-app va en libs/. Lo que es ERP-específico vive en `apps/erp/src/app/core/`** — incluyendo el framework configuracional de documentos.
 
@@ -150,21 +153,57 @@ apps/erp/src/app/core/module-config/
 
 El `BaseDocumentListComponent` se importa **siempre vía `loadComponent`** desde las rutas de documentos, no por barrel.
 
-**Sidebar híbrido**: declarado en `apps/erp/src/app/layouts/sidebar/sidebar-menu.ts`. Items simples + acordeones de módulo. Cuando un módulo del `ERP_MODULE_REGISTRY` tenga documentos, sus entradas se mezclarán dinámicamente con las declarativas.
+**Módulos como contexto de navegación**: el ERP se organiza en módulos (General, Compra, Venta, Inventario…). El módulo activo deriva del primer segmento de la URL tras el tenant: `/t/:slug/<modulo>/<entidad>`. Cada módulo aporta su `ErpModuleDescriptor` (en `apps/erp/src/app/features/<modulo>/<modulo>.module-descriptor.ts`) que declara su id, nombre, icono, ruta hija por defecto y las secciones del sidebar que muestra cuando está activo. La lista está en `apps/erp/src/app/core/erp-modules/erp-modules.registry.ts`.
+
+- **Topbar** (`apps/erp/src/app/layouts/module-bar/`): renderiza un link por cada módulo habilitado por `PermissionsService`. Highlight al activo.
+- **Sidebar** (`apps/erp/src/app/layouts/workspace-layout/`): se filtra al módulo activo leyendo `ActiveModuleStore.activeDescriptor().menu`. Empty state cuando no hay módulo activo (ej: `/t/:slug/dashboard`).
+- **Active module store** (`apps/erp/src/app/core/erp-modules/active-module.store.ts`): signal escrito por `erpModuleResolver(id)` puesto en la ruta raíz de cada `<modulo>.routes.ts`.
+- **Permisos** (`apps/erp/src/app/core/permissions/permissions.service.ts`): stub que retorna todos los ids. Cuando el backend exponga flags `plan_*` en `Contenedor`, solo cambia el `computed`.
+
+**Estructura de carpetas dentro de un módulo (camino B)**: cada master es un bounded context auto-contenido bajo `masters/<entity>/`:
+
+```
+apps/erp/src/app/features/<modulo>/
+├── <modulo>.routes.ts              · dispatcher: delega cada master vía loadChildren
+├── <modulo>.module-descriptor.ts   · ErpModuleDescriptor
+├── shared/                         · solo si surge algo compartido entre masters del módulo
+└── masters/
+    └── <entity>/                   · singular, kebab-case (contacto, cuenta-banco, forma-pago)
+        ├── <entity>.routes.ts      · list / new / edit / detail
+        ├── <entity>.model.ts
+        ├── <entity>.service.ts
+        ├── <entity>.constants.ts
+        ├── pages/
+        │   ├── <plural>-list/      · plural para la lista
+        │   ├── <entity>-form/      · singular — compartido create+edit
+        │   └── <entity>-detail/
+        ├── components/             · solo si surgen (NO crear preventivo)
+        └── utils/                  · lógica de negocio específica
+```
+
+Regla: lo que solo importa a un master vive dentro del master.
 
 **Para agregar un master nuevo** (camino B):
 
-1. `apps/erp/src/app/features/<modulo>/services/<x>.service.ts` extends `BaseHttpService`.
-2. `apps/erp/src/app/features/<modulo>/pages/<x>-list/<x>-list.component.ts` que componga `<lib-data-table>`.
-3. Ruta en `<modulo>.routes.ts`.
-4. Entrada en `sidebar-menu.ts`.
+1. Crear `apps/erp/src/app/features/<modulo>/masters/<entity>/` con `<entity>.model.ts`, `<entity>.service.ts` (extends `BaseHttpService`), `<entity>.constants.ts`, `<entity>.routes.ts` y `pages/<plural>-list/<plural>-list.component.ts` componiendo `<lib-data-table>`.
+2. En `<modulo>.routes.ts`, delegar: `{ path: '<plural>', loadChildren: () => import('./masters/<entity>/<entity>.routes').then(m => m.<ENTITY>_ROUTES) }`. URL: `/t/:slug/<modulo>/<plural>`.
+3. Entrada en el `menu` del `<modulo>.module-descriptor.ts` (path relativo: `<plural>`).
+4. Claves i18n `entities.<entity>.*` en `app.es.ts` / `app.en.ts`.
 
 **Para agregar un documento nuevo** (camino A):
 
 1. Crear `<modulo>.config.ts` que exporte `ModuleConfig` con sus `documents`.
 2. Registrar en `ERP_MODULE_REGISTRY` (1 línea).
-3. Lazy route en `app.routes.ts` que cargue `BaseDocumentListComponent` vía `loadComponent`.
-4. El sidebar lo mostrará automáticamente.
+3. Lazy route bajo `<modulo>.routes.ts` que cargue `BaseDocumentListComponent` vía `loadComponent`. URL final: `/t/:slug/<modulo>/<documento>/list`.
+4. Sumar la entrada al `menu` de `<modulo>.module-descriptor.ts`.
+
+**Para agregar un módulo nuevo**:
+
+1. Crear `features/<id>/<id>.module-descriptor.ts` con el `ErpModuleDescriptor`.
+2. Crear `features/<id>/<id>.routes.ts` con `erpModuleResolver('<id>')` y rutas hijas (o placeholder).
+3. Registrarlo en `apps/erp/src/app/core/erp-modules/erp-modules.registry.ts`.
+4. Agregar la entrada `loadChildren` en `app.routes.ts` bajo `/t/:tenantSlug`.
+5. Sumar las claves i18n `modules.<id>.name` en `app.es.ts` / `app.en.ts`.
 
 **No usar el framework para**: `contenedores`, `dashboard`, settings de usuario, wizards. Esas son features tradicionales sin tabla genérica.
 

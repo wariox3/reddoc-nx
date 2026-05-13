@@ -55,6 +55,7 @@ export const es: AppDict = {
     nav: {
       dashboard: 'Dashboard',
       account: 'Gestionar cuenta',
+      empty: 'Seleccioná un módulo desde la barra superior.',
       sections: {
         master: 'Administrador',
         document: 'Documentos',
@@ -67,6 +68,12 @@ export const es: AppDict = {
       manageAccount: 'Gestionar cuenta',
       logout: 'Cerrar sesión',
     },
+  },
+  modules: {
+    general: { name: 'General' },
+    compra: { name: 'Compra' },
+    venta: { name: 'Venta' },
+    inventario: { name: 'Inventario' },
   },
   entities: {
     contacto: {
