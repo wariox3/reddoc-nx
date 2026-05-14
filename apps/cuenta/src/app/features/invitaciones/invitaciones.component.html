@@ -98,16 +98,29 @@
               {{ inv.rol_nombre }}
             </span>
 
-            <!-- Action -->
-            <p-button
-              label="Aceptar"
-              icon="pi pi-check"
-              size="small"
-              [loading]="acceptingId() === inv.id"
-              [disabled]="acceptingId() !== null"
-              styleClass="max-[480px]:w-full"
-              (onClick)="accept(inv)"
-            />
+            <!-- Actions -->
+            <div class="flex shrink-0 items-center gap-2 max-[480px]:w-full">
+              <p-button
+                label="Rechazar"
+                icon="pi pi-times"
+                size="small"
+                severity="secondary"
+                [outlined]="true"
+                [loading]="rejectingId() === inv.id"
+                [disabled]="isBusy()"
+                styleClass="max-[480px]:flex-1"
+                (onClick)="reject(inv)"
+              />
+              <p-button
+                label="Aceptar"
+                icon="pi pi-check"
+                size="small"
+                [loading]="acceptingId() === inv.id"
+                [disabled]="isBusy()"
+                styleClass="max-[480px]:flex-1"
+                (onClick)="accept(inv)"
+              />
+            </div>
           </li>
         }
       </ul>

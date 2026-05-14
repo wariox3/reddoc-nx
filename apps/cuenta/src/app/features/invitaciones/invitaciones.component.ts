@@ -20,6 +20,7 @@ export class InvitacionesComponent implements OnInit {
   readonly isLoading = signal(true);
   readonly invitaciones = signal<InvitacionPendiente[]>([]);
   readonly acceptingId = signal<number | null>(null);
+  readonly rejectingId = signal<number | null>(null);
 
   ngOnInit(): void {
     this.load();
@@ -40,7 +41,7 @@ export class InvitacionesComponent implements OnInit {
   }
 
   accept(inv: InvitacionPendiente): void {
-    if (this.acceptingId() !== null) return;
+    if (this.isBusy()) return;
 
     this.acceptingId.set(inv.id);
     this.invitacionesService
@@ -57,6 +58,33 @@ export class InvitacionesComponent implements OnInit {
           this.toast.error('Error', extractErrorMessage(err, 'No se pudo aceptar la invitación.'));
         },
       });
+  }
+
+  reject(inv: InvitacionPendiente): void {
+    if (this.isBusy()) return;
+
+    this.rejectingId.set(inv.id);
+    this.invitacionesService
+      .rechazar(inv.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.rejectingId.set(null);
+          this.invitaciones.update((list) => list.filter((i) => i.id !== inv.id));
+          this.toast.success(
+            'Invitación rechazada',
+            `Rechazaste la invitación a ${inv.cliente_nombre}.`,
+          );
+        },
+        error: (err) => {
+          this.rejectingId.set(null);
+          this.toast.error('Error', extractErrorMessage(err, 'No se pudo rechazar la invitación.'));
+        },
+      });
+  }
+
+  isBusy(): boolean {
+    return this.acceptingId() !== null || this.rejectingId() !== null;
   }
 
   private load(): void {
