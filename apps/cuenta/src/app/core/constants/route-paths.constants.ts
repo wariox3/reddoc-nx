@@ -13,4 +13,7 @@ export const ROUTE_PATHS = {
   seguridad: {
     root: '/seguridad',
   },
+  invitaciones: {
+    root: '/invitaciones',
+  },
 };

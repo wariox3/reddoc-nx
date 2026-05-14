@@ -28,6 +28,7 @@ export class WorkspaceLayoutComponent {
   readonly navItems: NavItem[] = [
     { label: 'Perfil', icon: 'pi pi-user', path: '/perfil' },
     { label: 'Seguridad', icon: 'pi pi-shield', path: '/seguridad' },
+    { label: 'Invitaciones', icon: 'pi pi-envelope', path: '/invitaciones' },
   ];
 
   readonly drawerVisible = signal(false);

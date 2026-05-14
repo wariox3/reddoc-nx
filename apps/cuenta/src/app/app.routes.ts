@@ -28,6 +28,13 @@ export const appRoutes: Route[] = [
         loadComponent: () =>
           import('./features/seguridad/seguridad.component').then((m) => m.SeguridadComponent),
       },
+      {
+        path: 'invitaciones',
+        loadComponent: () =>
+          import('./features/invitaciones/invitaciones.component').then(
+            (m) => m.InvitacionesComponent,
+          ),
+      },
     ],
   },
 
