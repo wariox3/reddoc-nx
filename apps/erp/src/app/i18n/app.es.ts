@@ -185,12 +185,27 @@ export const es: AppDict = {
     invite: {
       title: 'Invitar al contenedor',
       subtitle: 'Compartí este espacio con tu equipo por correo electrónico.',
+      tabs: { members: 'Miembros', pending: 'Invitaciones' },
       form: {
         label: 'Correo del invitado',
         placeholder: 'nombre@empresa.com',
         invalid: 'Ingresá un correo válido.',
         submit: 'Enviar invitación',
         sending: 'Enviando…',
+      },
+      pending: {
+        estados: { P: 'Pendiente', A: 'Aceptada', R: 'Rechazada' },
+        count: { one: 'invitación', other: 'invitaciones' },
+        empty: {
+          title: 'Sin invitaciones',
+          sub: 'Las invitaciones que envíes aparecerán acá.',
+        },
+        toasts: {
+          loadError: {
+            title: 'Error al cargar invitaciones',
+            desc: 'No pudimos traer las invitaciones pendientes.',
+          },
+        },
       },
       members: {
         title: 'Miembros',

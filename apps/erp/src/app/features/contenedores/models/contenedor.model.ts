@@ -13,6 +13,22 @@ export interface ContenedorMember {
 
 export type ContenedorMembersResponse = PaginatedResponse<ContenedorMember>;
 
+export type ContenedorInvitacionEstado = 'P' | 'A' | 'R';
+
+export interface ContenedorInvitacionPendiente {
+  id: number;
+  usuario_invitado: number;
+  usuario_invitado_nombre_corto: string | null;
+  usuario_invitado_correo: string;
+  rol: number;
+  rol_nombre: string;
+  estado: ContenedorInvitacionEstado;
+  fecha: string;
+}
+
+export type ContenedorInvitacionesPendientesResponse =
+  PaginatedResponse<ContenedorInvitacionPendiente>;
+
 export interface SendInviteRequest {
   cliente_id: number;
   usuario_id: number;

@@ -152,12 +152,19 @@ export interface AppDict extends AuthTranslationsHost {
     invite: {
       title: string;
       subtitle: string;
+      tabs: { members: string; pending: string };
       form: {
         label: string;
         placeholder: string;
         invalid: string;
         submit: string;
         sending: string;
+      };
+      pending: {
+        estados: { P: string; A: string; R: string };
+        count: { one: string; other: string };
+        empty: { title: string; sub: string };
+        toasts: { loadError: { title: string; desc: string } };
       };
       members: {
         title: string;

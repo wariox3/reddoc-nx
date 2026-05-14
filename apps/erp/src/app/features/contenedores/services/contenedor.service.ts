@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 import { BaseHttpService } from '@reddoc/core';
 import {
   Contenedor,
+  ContenedorInvitacionesPendientesResponse,
   ContenedorMembersResponse,
   ContenedoresResponse,
   CreateContenedorRequest,
@@ -37,6 +38,14 @@ export class ContenedorService extends BaseHttpService {
   getMembers(contenedorId: number): Observable<ContenedorMembersResponse> {
     return this.get<ContenedorMembersResponse>(
       `/seguridad/usuario-cliente/lista-cliente/?cliente_id=${contenedorId}`,
+    );
+  }
+
+  getPendingInvitations(
+    contenedorId: number,
+  ): Observable<ContenedorInvitacionesPendientesResponse> {
+    return this.get<ContenedorInvitacionesPendientesResponse>(
+      `/contenedor/invitacion/pendiente-cliente/?cliente_id=${contenedorId}`,
     );
   }
 

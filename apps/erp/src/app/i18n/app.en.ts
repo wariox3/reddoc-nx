@@ -173,12 +173,27 @@ export const en: AppDict = {
     invite: {
       title: 'Invite to container',
       subtitle: 'Share this workspace with your team by email.',
+      tabs: { members: 'Members', pending: 'Invitations' },
       form: {
         label: 'Invitee email',
         placeholder: 'name@company.com',
         invalid: 'Enter a valid email.',
         submit: 'Send invitation',
         sending: 'Sending…',
+      },
+      pending: {
+        estados: { P: 'Pending', A: 'Accepted', R: 'Rejected' },
+        count: { one: 'invitation', other: 'invitations' },
+        empty: {
+          title: 'No invitations',
+          sub: 'Invitations you send will appear here.',
+        },
+        toasts: {
+          loadError: {
+            title: 'Failed to load invitations',
+            desc: 'We could not fetch the pending invitations.',
+          },
+        },
       },
       members: {
         title: 'Members',

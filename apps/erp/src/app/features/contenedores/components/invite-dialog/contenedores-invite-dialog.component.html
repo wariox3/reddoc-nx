@@ -33,7 +33,30 @@
 
   <!-- Body -->
   @if (visible()) {
-    <app-contenedor-invite-form [contenedor]="contenedor()" />
+    <div class="flex flex-col gap-4">
+      <app-contenedor-invite-form [contenedor]="contenedor()" (invited)="onInvited()" />
+
+      <p-tabs [value]="activeTab()" (valueChange)="activeTab.set($any($event))">
+        <p-tablist>
+          <p-tab value="members">{{ t().contenedores.invite.tabs.members }}</p-tab>
+          <p-tab value="pending">{{ t().contenedores.invite.tabs.pending }}</p-tab>
+        </p-tablist>
+        <p-tabpanels>
+          <p-tabpanel value="members">
+            <app-contenedor-members-list
+              [contenedor]="contenedor()"
+              [refreshToken]="refreshToken()"
+            />
+          </p-tabpanel>
+          <p-tabpanel value="pending">
+            <app-contenedor-pending-invites
+              [contenedor]="contenedor()"
+              [refreshToken]="refreshToken()"
+            />
+          </p-tabpanel>
+        </p-tabpanels>
+      </p-tabs>
+    </div>
   }
 
   <!-- Footer -->
