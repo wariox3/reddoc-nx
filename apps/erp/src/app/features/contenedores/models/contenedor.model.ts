@@ -36,7 +36,7 @@ export interface SendInviteRequest {
 }
 
 export interface Contenedor {
-  id: number;
+  cliente_id: number;
   schema_name: string;
   nombre: string;
   activo: boolean;
@@ -47,6 +47,8 @@ export interface Contenedor {
   suscripcion_fecha_fin?: string;
   suscripcion_frecuencia?: 'P' | 'M' | 'A';
   suscripcion_suscripcion_tipo_nombre?: string;
+  rol_id: number;
+  rol_nombre: string;
 }
 
 export type ContenedoresResponse = PaginatedResponse<Contenedor>;

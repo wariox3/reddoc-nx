@@ -1,5 +1,14 @@
 import { NgClass } from '@angular/common';
-import { Component, DestroyRef, computed, effect, inject, input, signal } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  computed,
+  effect,
+  inject,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { I18nService, ToastService } from '@reddoc/core';
 import { AuthService } from '../../../auth/services/auth.service';
@@ -30,6 +39,7 @@ export class ContenedorMembersListComponent {
 
   readonly contenedor = input<Contenedor | null>(null);
   readonly refreshToken = input<number>(0);
+  readonly countChange = output<number>();
 
   readonly isLoading = signal(false);
   readonly members = signal<ContenedorMember[]>([]);
@@ -48,17 +58,11 @@ export class ContenedorMembersListComponent {
     }),
   );
 
-  readonly countLabel = computed(() => {
-    const n = this.members().length;
-    const labels = this.t().contenedores.invite.members.count;
-    return `${n} ${n === 1 ? labels.one : labels.other}`;
-  });
-
   constructor() {
     effect(() => {
       this.refreshToken();
       const c = this.contenedor();
-      if (c) this.loadMembers(c.id);
+      if (c) this.loadMembers(c.cliente_id);
     });
   }
 
@@ -126,7 +130,7 @@ export class ContenedorMembersListComponent {
           this.pendingRemoveId.set(null);
           const toasts = this.t().contenedores.invite.toasts.removed;
           this.toastService.success(toasts.title, toasts.desc);
-          this.loadMembers(c.id);
+          this.loadMembers(c.cliente_id);
         },
         error: () => {
           this.removingId.set(null);
@@ -144,6 +148,7 @@ export class ContenedorMembersListComponent {
       .subscribe({
         next: (res) => {
           this.members.set(res.results ?? []);
+          this.countChange.emit(this.members().length);
           this.isLoading.set(false);
         },
         error: () => {

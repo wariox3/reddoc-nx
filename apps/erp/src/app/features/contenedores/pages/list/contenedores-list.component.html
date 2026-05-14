@@ -105,7 +105,7 @@
         @if (filteredContenedores().length > 0) {
           @if (viewMode() === 'list') {
             <ul class="cl-list">
-              @for (item of filteredContenedores(); track item.id; let i = $index) {
+              @for (item of filteredContenedores(); track item.cliente_id; let i = $index) {
                 <li>
                   <app-contenedor-row-item
                     [contenedor]="item"
@@ -120,7 +120,7 @@
             </ul>
           } @else {
             <div class="cl-grid">
-              @for (item of filteredContenedores(); track item.id; let i = $index) {
+              @for (item of filteredContenedores(); track item.cliente_id; let i = $index) {
                 <app-contenedor-card-item
                   [contenedor]="item"
                   [index]="i"
@@ -147,14 +147,6 @@
             </span>
             <p class="cl-empty__title">{{ t().contenedores.list.empty.noContenedores.title }}</p>
             <p class="cl-empty__sub">{{ t().contenedores.list.empty.noContenedores.sub }}</p>
-            <button
-              class="cl-btn-new cl-btn-new--centered"
-              type="button"
-              (click)="showCreate.set(true)"
-            >
-              <i class="pi pi-plus"></i>
-              {{ t().contenedores.list.empty.noContenedores.cta }}
-            </button>
           </div>
         }
       }

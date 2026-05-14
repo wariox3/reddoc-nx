@@ -1,4 +1,4 @@
-import { Component, inject, input, output, signal } from '@angular/core';
+import { Component, effect, inject, input, output, signal } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { TabsModule } from 'primeng/tabs';
@@ -34,6 +34,17 @@ export class ContenedoresInviteDialogComponent {
 
   protected readonly activeTab = signal('members');
   protected readonly refreshToken = signal(0);
+  protected readonly membersCount = signal<number | null>(null);
+  protected readonly pendingCount = signal<number | null>(null);
+
+  constructor() {
+    effect(() => {
+      if (!this.visible()) {
+        this.membersCount.set(null);
+        this.pendingCount.set(null);
+      }
+    });
+  }
 
   onInvited(): void {
     this.refreshToken.update((n) => n + 1);

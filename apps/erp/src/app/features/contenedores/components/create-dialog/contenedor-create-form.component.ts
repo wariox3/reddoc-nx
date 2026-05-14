@@ -16,13 +16,12 @@ import { I18nService, ToastService } from '@reddoc/core';
 import { AuthService } from '../../../auth/services/auth.service';
 import { Contenedor } from '../../models/contenedor.model';
 import { ContenedorService } from '../../services/contenedor.service';
-import { ContenedorCreationOverlayComponent } from '../creation-overlay/contenedor-creation-overlay.component';
 import type { AppDict } from '../../../../i18n';
 
 @Component({
   selector: 'app-contenedor-create-form',
   standalone: true,
-  imports: [ReactiveFormsModule, ButtonModule, InputTextModule, ContenedorCreationOverlayComponent],
+  imports: [ReactiveFormsModule, ButtonModule, InputTextModule],
   templateUrl: './contenedor-create-form.component.html',
   styleUrl: './contenedor-create-form.component.scss',
 })
@@ -40,6 +39,8 @@ export class ContenedorCreateFormComponent {
   readonly created = output<void>();
   readonly updated = output<void>();
   readonly cancelled = output<void>();
+  // Nombre de la empresa mientras se crea (overlay full-screen), o null al terminar.
+  readonly creationOverlay = output<string | null>();
 
   readonly isSaving = signal(false);
 
@@ -91,7 +92,7 @@ export class ContenedorCreateFormComponent {
     if (this.isEditMode() && c) {
       const { nombre, telefono, correo } = this.form.getRawValue();
       this.contenedorService
-        .updateContenedor(c.id, {
+        .updateContenedor(c.cliente_id, {
           nombre: nombre ?? '',
           telefono: telefono ?? undefined,
           correo: correo ?? undefined,
@@ -111,6 +112,7 @@ export class ContenedorCreateFormComponent {
           },
         });
     } else {
+      this.creationOverlay.emit(this.form.controls.nombre.value ?? '');
       this.contenedorService
         .createContenedor(
           this.form.getRawValue() as Parameters<ContenedorService['createContenedor']>[0],
@@ -119,12 +121,14 @@ export class ContenedorCreateFormComponent {
         .subscribe({
           next: () => {
             this.isSaving.set(false);
+            this.creationOverlay.emit(null);
             const toasts = this.t().contenedores.create.toasts;
             this.toastService.success(toasts.success.title, toasts.success.desc);
             this.created.emit();
           },
           error: () => {
             this.isSaving.set(false);
+            this.creationOverlay.emit(null);
             const toasts = this.t().contenedores.create.toasts;
             this.toastService.error(toasts.error.title, toasts.error.desc);
           },

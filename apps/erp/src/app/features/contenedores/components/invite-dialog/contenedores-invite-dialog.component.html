@@ -38,20 +38,32 @@
 
       <p-tabs [value]="activeTab()" (valueChange)="activeTab.set($any($event))">
         <p-tablist>
-          <p-tab value="members">{{ t().contenedores.invite.tabs.members }}</p-tab>
-          <p-tab value="pending">{{ t().contenedores.invite.tabs.pending }}</p-tab>
+          <p-tab value="members">
+            {{ t().contenedores.invite.tabs.members }}
+            @if (membersCount() !== null) {
+              <span class="ml-1 font-semibold text-brand-muted">({{ membersCount() }})</span>
+            }
+          </p-tab>
+          <p-tab value="pending">
+            {{ t().contenedores.invite.tabs.pending }}
+            @if (pendingCount() !== null) {
+              <span class="ml-1 font-semibold text-brand-muted">({{ pendingCount() }})</span>
+            }
+          </p-tab>
         </p-tablist>
         <p-tabpanels>
           <p-tabpanel value="members">
             <app-contenedor-members-list
               [contenedor]="contenedor()"
               [refreshToken]="refreshToken()"
+              (countChange)="membersCount.set($event)"
             />
           </p-tabpanel>
           <p-tabpanel value="pending">
             <app-contenedor-pending-invites
               [contenedor]="contenedor()"
               [refreshToken]="refreshToken()"
+              (countChange)="pendingCount.set($event)"
             />
           </p-tabpanel>
         </p-tabpanels>

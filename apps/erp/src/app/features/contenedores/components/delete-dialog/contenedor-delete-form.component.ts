@@ -41,7 +41,7 @@ export class ContenedorDeleteFormComponent {
     if (!c || !this.canDelete() || this.isDeleting()) return;
     this.isDeleting.set(true);
     this.contenedorService
-      .deleteContenedor(c.id)
+      .deleteContenedor(c.cliente_id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {

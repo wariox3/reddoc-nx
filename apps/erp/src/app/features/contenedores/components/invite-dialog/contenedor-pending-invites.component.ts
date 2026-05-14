@@ -1,5 +1,5 @@
 import { DatePipe, NgClass } from '@angular/common';
-import { Component, DestroyRef, computed, effect, inject, input, signal } from '@angular/core';
+import { Component, DestroyRef, effect, inject, input, output, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { I18nService, ToastService } from '@reddoc/core';
 import {
@@ -26,21 +26,16 @@ export class ContenedorPendingInvitesComponent {
 
   readonly contenedor = input<Contenedor | null>(null);
   readonly refreshToken = input<number>(0);
+  readonly countChange = output<number>();
 
   readonly isLoading = signal(false);
   readonly invitations = signal<ContenedorInvitacionPendiente[]>([]);
-
-  readonly countLabel = computed(() => {
-    const n = this.invitations().length;
-    const labels = this.t().contenedores.invite.pending.count;
-    return `${n} ${n === 1 ? labels.one : labels.other}`;
-  });
 
   constructor() {
     effect(() => {
       this.refreshToken();
       const c = this.contenedor();
-      if (c) this.loadInvitations(c.id);
+      if (c) this.loadInvitations(c.cliente_id);
     });
   }
 
@@ -73,6 +68,7 @@ export class ContenedorPendingInvitesComponent {
       .subscribe({
         next: (res) => {
           this.invitations.set(res.results ?? []);
+          this.countChange.emit(this.invitations().length);
           this.isLoading.set(false);
         },
         error: () => {

@@ -16,6 +16,19 @@
     <span class="cl-row__meta">
       <i class="pi pi-globe cl-row__meta-icon" aria-hidden="true"></i>
       <span class="cl-row__domain">{{ contenedor().dominio }}</span>
+      <span
+        class="inline-flex items-center gap-1 ml-1.5 px-1.5 py-0.5 rounded-md text-[0.65rem] font-semibold leading-none border"
+        [ngClass]="
+          isOwner()
+            ? 'bg-indigo-50 text-indigo-700 border-indigo-200'
+            : 'bg-slate-50 text-slate-600 border-slate-200'
+        "
+      >
+        @if (isOwner()) {
+          <i class="pi pi-crown text-[0.6rem]" aria-hidden="true"></i>
+        }
+        {{ contenedor().rol_nombre }}
+      </span>
       @if (!contenedor().activo) {
         <span
           class="inline-flex items-center gap-1 ml-1.5 px-1.5 py-0.5 rounded-md text-[0.65rem] font-semibold bg-red-50 text-red-600 border border-red-200 leading-none"
@@ -71,14 +84,16 @@
   </span>
 
   <!-- Acción -->
-  <button
-    type="button"
-    class="cl-row__action"
-    [attr.aria-label]="menuLabel()"
-    (click)="$event.stopPropagation(); menuOpen.emit($event)"
-    (keydown.enter)="$event.stopPropagation()"
-    (keydown.space)="$event.stopPropagation()"
-  >
-    <i class="pi pi-cog" aria-hidden="true"></i>
-  </button>
+  @if (isOwner()) {
+    <button
+      type="button"
+      class="cl-row__action"
+      [attr.aria-label]="menuLabel()"
+      (click)="$event.stopPropagation(); menuOpen.emit($event)"
+      (keydown.enter)="$event.stopPropagation()"
+      (keydown.space)="$event.stopPropagation()"
+    >
+      <i class="pi pi-cog" aria-hidden="true"></i>
+    </button>
+  }
 </div>

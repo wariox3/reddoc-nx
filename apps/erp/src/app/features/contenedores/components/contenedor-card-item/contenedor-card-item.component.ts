@@ -36,4 +36,6 @@ export class ContenedorCardItemComponent {
   readonly expiryLabel = computed(() =>
     getSuscripcionExpiryLabel(this.contenedor().suscripcion_fecha_fin),
   );
+
+  readonly isOwner = computed(() => this.contenedor().rol_id === 1);
 }

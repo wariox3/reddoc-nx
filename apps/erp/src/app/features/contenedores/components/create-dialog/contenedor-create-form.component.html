@@ -100,7 +100,3 @@
     />
   </div>
 </form>
-
-@if (isSaving() && !isEditMode()) {
-  <app-contenedor-creation-overlay [nombreEmpresa]="form.controls.nombre.value ?? ''" />
-}

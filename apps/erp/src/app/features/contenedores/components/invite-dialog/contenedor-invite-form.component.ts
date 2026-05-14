@@ -12,7 +12,7 @@ import { Contenedor, UserSearchResult } from '../../models/contenedor.model';
 import { ContenedorService } from '../../services/contenedor.service';
 import type { AppDict } from '../../../../i18n';
 
-const ROL_ID_DEFAULT = 3;
+const ROL_ID_DEFAULT = 9;
 
 @Component({
   selector: 'app-contenedor-invite-form',
@@ -83,7 +83,7 @@ export class ContenedorInviteFormComponent {
 
     this.isSending.set(true);
     this.contenedorService
-      .sendInvitation({ cliente_id: c.id, usuario_id: user.id, rol_id: ROL_ID_DEFAULT })
+      .sendInvitation({ cliente_id: c.cliente_id, usuario_id: user.id, rol_id: ROL_ID_DEFAULT })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
