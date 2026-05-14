@@ -149,5 +149,42 @@ export interface AppDict extends AuthTranslationsHost {
         error: { title: string; desc: string };
       };
     };
+    invite: {
+      title: string;
+      subtitle: string;
+      form: {
+        label: string;
+        placeholder: string;
+        invalid: string;
+        submit: string;
+        sending: string;
+      };
+      members: {
+        title: string;
+        count: { one: string; other: string };
+        empty: { title: string; sub: string };
+        you: string;
+        roles: {
+          propietario: string;
+          administrador: string;
+          usuario: string;
+        };
+        removeAria: string;
+      };
+      remove: {
+        title: string;
+        desc: string;
+        confirm: string;
+        cancel: string;
+      };
+      close: string;
+      toasts: {
+        sent: { title: string; desc: string };
+        sendError: { title: string; desc: string };
+        removed: { title: string; desc: string };
+        removeError: { title: string; desc: string };
+        loadError: { title: string; desc: string };
+      };
+    };
   };
 }

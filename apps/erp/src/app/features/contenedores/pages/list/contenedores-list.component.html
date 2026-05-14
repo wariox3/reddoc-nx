@@ -164,22 +164,36 @@
 
 <p-menu #rowMenu [model]="rowMenuItems" [popup]="true" appendTo="body" styleClass="cl-row-menu" />
 
-<app-contenedores-create-dialog
-  [visible]="showCreate()"
-  (visibleChange)="showCreate.set($event)"
-  (created)="onContenedorCreated()"
-/>
+@if (showCreate()) {
+  <app-contenedores-create-dialog
+    [visible]="showCreate()"
+    (visibleChange)="showCreate.set($event)"
+    (created)="onContenedorCreated()"
+  />
+}
 
-<app-contenedores-create-dialog
-  [visible]="showEdit()"
-  [contenedor]="contenedorToEdit()"
-  (visibleChange)="showEdit.set($event)"
-  (updated)="onContenedorUpdated()"
-/>
+@if (showEdit()) {
+  <app-contenedores-create-dialog
+    [visible]="showEdit()"
+    [contenedor]="contenedorToEdit()"
+    (visibleChange)="showEdit.set($event)"
+    (updated)="onContenedorUpdated()"
+  />
+}
 
-<app-contenedores-delete-dialog
-  [visible]="showDelete()"
-  (visibleChange)="showDelete.set($event)"
-  [contenedor]="contenedorToDelete()"
-  (deleted)="onContenedorDeleted()"
-/>
+@if (showDelete()) {
+  <app-contenedores-delete-dialog
+    [visible]="showDelete()"
+    (visibleChange)="showDelete.set($event)"
+    [contenedor]="contenedorToDelete()"
+    (deleted)="onContenedorDeleted()"
+  />
+}
+
+@if (showInvite()) {
+  <app-contenedores-invite-dialog
+    [visible]="showInvite()"
+    [contenedor]="contenedorToInvite()"
+    (visibleChange)="onInviteClose($event)"
+  />
+}

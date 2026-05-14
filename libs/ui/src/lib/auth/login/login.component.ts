@@ -11,6 +11,7 @@ import {
   I18nService,
   ROUTE_PATHS_TOKEN,
   extractErrorMessage,
+  isUnverifiedAccountError,
 } from '@reddoc/core';
 import { TurnstileComponent } from '../../turnstile/turnstile.component';
 import type { AuthTranslationsHost } from '../i18n';
@@ -83,7 +84,7 @@ export class LoginComponent {
           this.turnstile()?.reset();
           this.captchaToken.set(null);
 
-          if (err.error?.error?.is_verified === false) {
+          if (isUnverifiedAccountError(err)) {
             this.router.navigate([this.routes.auth.resendVerification], {
               queryParams: { email: this.form.getRawValue().email, unverified: true },
             });

@@ -11,6 +11,7 @@ import { Contenedor } from '../../models/contenedor.model';
 import { ContenedorService } from '../../services/contenedor.service';
 import { ContenedoresCreateDialogComponent } from '../../components/create-dialog/contenedores-create-dialog.component';
 import { ContenedoresDeleteDialogComponent } from '../../components/delete-dialog/contenedores-delete-dialog.component';
+import { ContenedoresInviteDialogComponent } from '../../components/invite-dialog/contenedores-invite-dialog.component';
 import { ContenedorRowItemComponent } from '../../components/contenedor-row-item/contenedor-row-item.component';
 import { ContenedorCardItemComponent } from '../../components/contenedor-card-item/contenedor-card-item.component';
 import { ROUTE_PATHS } from '../../../../core/constants/route-paths.constants';
@@ -22,6 +23,7 @@ import type { AppDict } from '../../../../i18n';
   imports: [
     ContenedoresCreateDialogComponent,
     ContenedoresDeleteDialogComponent,
+    ContenedoresInviteDialogComponent,
     ContenedorRowItemComponent,
     ContenedorCardItemComponent,
     MenuModule,
@@ -42,8 +44,10 @@ export class ContenedoresListComponent {
   readonly showCreate = signal(false);
   readonly showEdit = signal(false);
   readonly showDelete = signal(false);
+  readonly showInvite = signal(false);
   readonly contenedorToEdit = signal<Contenedor | null>(null);
   readonly contenedorToDelete = signal<Contenedor | null>(null);
+  readonly contenedorToInvite = signal<Contenedor | null>(null);
 
   readonly viewMode = signal<'list' | 'grid'>('list');
 
@@ -134,8 +138,13 @@ export class ContenedoresListComponent {
   }
 
   inviteContenedor(item: Contenedor): void {
-    // TODO: implement invite flow
-    console.log('[contenedores] invite', item);
+    this.contenedorToInvite.set(item);
+    this.showInvite.set(true);
+  }
+
+  onInviteClose(visible: boolean): void {
+    this.showInvite.set(visible);
+    if (!visible) this.contenedorToInvite.set(null);
   }
 
   editContenedor(item: Contenedor): void {

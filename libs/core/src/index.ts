@@ -33,7 +33,11 @@ export {
   APP_BRANDING,
 } from './lib/tokens';
 export type { ReddocEnvironment, RoutePaths, AuthServiceContract, AppBranding } from './lib/tokens';
-export { extractErrorMessage, parseApiError } from './lib/utils/error.utils';
+export {
+  extractErrorMessage,
+  isUnverifiedAccountError,
+  parseApiError,
+} from './lib/utils/error.utils';
 export type { ApiError, ApiErrorResponse } from './lib/utils/error.utils';
 export { I18nService, provideI18n, SUPPORTED_LANGS, DEFAULT_LANG } from './lib/i18n';
 export type { Lang } from './lib/i18n';

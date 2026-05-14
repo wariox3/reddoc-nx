@@ -170,5 +170,60 @@ export const en: AppDict = {
         error: { title: 'Deletion error', desc: 'Could not delete the container. Try again.' },
       },
     },
+    invite: {
+      title: 'Invite to container',
+      subtitle: 'Share this workspace with your team by email.',
+      form: {
+        label: 'Invitee email',
+        placeholder: 'name@company.com',
+        invalid: 'Enter a valid email.',
+        submit: 'Send invitation',
+        sending: 'Sending…',
+      },
+      members: {
+        title: 'Members',
+        count: { one: 'member', other: 'members' },
+        empty: {
+          title: 'No one else yet',
+          sub: 'Invite someone by email and they will appear here.',
+        },
+        you: 'you',
+        roles: {
+          propietario: 'Owner',
+          administrador: 'Admin',
+          usuario: 'Member',
+        },
+        removeAria: 'Remove member',
+      },
+      remove: {
+        title: 'Remove member',
+        desc: 'They will lose access to the container. This cannot be undone.',
+        confirm: 'Remove',
+        cancel: 'Cancel',
+      },
+      close: 'Close',
+      toasts: {
+        sent: {
+          title: 'Invitation sent',
+          desc: 'We emailed them to join the container.',
+        },
+        sendError: {
+          title: 'Could not invite',
+          desc: 'Try again in a moment.',
+        },
+        removed: {
+          title: 'Member removed',
+          desc: 'They no longer have access to the container.',
+        },
+        removeError: {
+          title: 'Could not remove',
+          desc: 'Try again in a moment.',
+        },
+        loadError: {
+          title: 'Failed to load members',
+          desc: 'We could not fetch the member list.',
+        },
+      },
+    },
   },
 };

@@ -1,0 +1,50 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="visibleChange.emit($event)"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="true"
+  [dismissableMask]="true"
+  [style]="{ width: '640px', maxWidth: '94vw' }"
+  styleClass="cp-invite-dialog"
+>
+  <!-- Header -->
+  <ng-template pTemplate="header">
+    <div class="flex items-center gap-3.5">
+      <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-sky-50">
+        <i class="pi pi-send text-[1.05rem] text-sky-700"></i>
+      </span>
+      <div class="flex flex-col gap-[0.1rem]">
+        <h2
+          class="m-0 text-[1.05rem] font-extrabold leading-tight tracking-[-0.03em] text-brand-navy"
+        >
+          {{ t().contenedores.invite.title }}
+          @if (contenedor()) {
+            <span class="ml-1 text-brand-muted font-semibold">· {{ contenedor()?.nombre }}</span>
+          }
+        </h2>
+        <p class="m-0 text-[0.75rem] tracking-[0.01em] text-brand-muted">
+          {{ t().contenedores.invite.subtitle }}
+        </p>
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- Body -->
+  @if (visible()) {
+    <app-contenedor-invite-form [contenedor]="contenedor()" />
+  }
+
+  <!-- Footer -->
+  <ng-template pTemplate="footer">
+    <div class="flex items-center justify-end border-t border-[rgba(20,48,73,0.08)] pt-5">
+      <p-button
+        [label]="t().contenedores.invite.close"
+        [outlined]="true"
+        severity="secondary"
+        (onClick)="onClose()"
+      />
+    </div>
+  </ng-template>
+</p-dialog>

@@ -132,8 +132,11 @@ export abstract class BaseAuthService<TUser extends BaseUsuario> {
   }
 
   clearSession(): void {
+    const hadSession = !!this._currentUser();
     this._currentUser.set(null);
     this.tokenRefresh.reset();
-    this.router.navigate([this.loginRoute]);
+    if (hadSession) {
+      this.router.navigate([this.loginRoute]);
+    }
   }
 }

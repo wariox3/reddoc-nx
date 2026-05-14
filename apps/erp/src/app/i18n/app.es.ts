@@ -182,5 +182,60 @@ export const es: AppDict = {
         },
       },
     },
+    invite: {
+      title: 'Invitar al contenedor',
+      subtitle: 'Compartí este espacio con tu equipo por correo electrónico.',
+      form: {
+        label: 'Correo del invitado',
+        placeholder: 'nombre@empresa.com',
+        invalid: 'Ingresá un correo válido.',
+        submit: 'Enviar invitación',
+        sending: 'Enviando…',
+      },
+      members: {
+        title: 'Miembros',
+        count: { one: 'miembro', other: 'miembros' },
+        empty: {
+          title: 'Aún nadie más',
+          sub: 'Invitá a alguien por correo y aparecerá acá.',
+        },
+        you: 'tú',
+        roles: {
+          propietario: 'Propietario',
+          administrador: 'Administrador',
+          usuario: 'Miembro',
+        },
+        removeAria: 'Quitar miembro',
+      },
+      remove: {
+        title: 'Quitar miembro',
+        desc: 'Perderá el acceso al contenedor. Esta acción no se puede deshacer.',
+        confirm: 'Quitar',
+        cancel: 'Cancelar',
+      },
+      close: 'Cerrar',
+      toasts: {
+        sent: {
+          title: 'Invitación enviada',
+          desc: 'Le enviamos un correo para sumarse al contenedor.',
+        },
+        sendError: {
+          title: 'No se pudo invitar',
+          desc: 'Intentá nuevamente en unos segundos.',
+        },
+        removed: {
+          title: 'Miembro quitado',
+          desc: 'Ya no tiene acceso al contenedor.',
+        },
+        removeError: {
+          title: 'No se pudo quitar',
+          desc: 'Intentá nuevamente en unos segundos.',
+        },
+        loadError: {
+          title: 'Error al cargar miembros',
+          desc: 'No pudimos traer la lista de miembros.',
+        },
+      },
+    },
   },
 };

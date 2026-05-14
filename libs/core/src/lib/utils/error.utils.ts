@@ -26,6 +26,14 @@ export function parseApiError(err: HttpErrorResponse): ApiError | null {
   return null;
 }
 
+export function isUnverifiedAccountError(err: unknown): boolean {
+  const httpErr = err as HttpErrorResponse | undefined;
+  if (!httpErr?.error) return false;
+  if (httpErr.error?.verificado === false) return true;
+  if (httpErr.error?.error?.is_verified === false) return true;
+  return false;
+}
+
 export function extractErrorMessage(err: unknown, fallback: string): string {
   const httpErr = err as HttpErrorResponse | undefined;
   if (httpErr?.error) {
