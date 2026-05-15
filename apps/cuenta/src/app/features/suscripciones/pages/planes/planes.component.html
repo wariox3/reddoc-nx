@@ -226,7 +226,7 @@
                   current
                     ? 'cursor-not-allowed opacity-55 border border-[rgba(20,48,73,0.18)] bg-brand-surface'
                     : selected
-                      ? 'cursor-pointer border-2 border-brand-blue bg-brand-blue/[0.06] shadow-[0_4px_16px_-8px_rgba(0,158,247,0.45)]'
+                      ? 'cursor-pointer border-2 border-brand-blue bg-brand-blue/6 shadow-[0_4px_16px_-8px_rgba(0,158,247,0.45)]'
                       : 'cursor-pointer border border-[rgba(20,48,73,0.18)] bg-brand-surface hover:border-brand-blue/40 hover:-translate-y-px shadow-[0_1px_3px_rgba(0,0,0,0.03)]'
                 "
               >
@@ -255,7 +255,7 @@
                   "
                 ></span>
 
-                <!-- Tier eyebrow + full name -->
+                <!-- Tier eyebrow + full name + description -->
                 <div class="pr-7">
                   <div
                     class="text-[0.68rem] font-semibold text-brand-muted tracking-[0.08em] uppercase mb-1"
@@ -267,6 +267,13 @@
                   >
                     {{ plan.nombre }}
                   </div>
+                  @if (planDescription(plan); as desc) {
+                    <p
+                      class="m-0 mt-1.5 text-[0.72rem] text-brand-muted leading-snug min-h-[2.2em]"
+                    >
+                      {{ desc }}
+                    </p>
+                  }
                 </div>
 
                 <!-- Price -->
@@ -287,6 +294,43 @@
                     <div class="text-[0.68rem] text-brand-muted/80 mt-1">Facturación mensual</div>
                   }
                 </div>
+
+                <!-- Features -->
+                @if (planFeatures(plan); as features) {
+                  @if (features.length > 0) {
+                    <ul
+                      class="list-none m-0 p-0 pt-3 border-t border-[rgba(20,48,73,0.07)] flex flex-col gap-1.5 mt-1"
+                    >
+                      @for (f of features; track f.label) {
+                        <li class="flex items-start gap-2 text-[0.76rem] leading-snug">
+                          <span
+                            class="inline-flex items-center justify-center h-[15px] w-[15px] shrink-0 rounded-full mt-px"
+                            [class]="
+                              f.included
+                                ? 'bg-emerald-50 text-emerald-600'
+                                : 'bg-[rgba(20,48,73,0.05)] text-brand-muted/70'
+                            "
+                          >
+                            @if (f.included) {
+                              <i class="pi pi-check text-[0.5rem]"></i>
+                            } @else {
+                              <i class="pi pi-times text-[0.5rem]"></i>
+                            }
+                          </span>
+                          <span
+                            [class]="
+                              f.included
+                                ? 'text-brand-text'
+                                : 'text-brand-muted/70 line-through decoration-[rgba(20,48,73,0.2)] decoration-1'
+                            "
+                          >
+                            {{ f.label }}
+                          </span>
+                        </li>
+                      }
+                    </ul>
+                  }
+                }
               </button>
             }
           </div>
@@ -317,7 +361,7 @@
       <div class="animate-fade-up flex flex-col gap-4">
         @if (selectedPlan(); as plan) {
           <div
-            class="p-4 rounded-xl border border-brand-blue bg-brand-blue/[0.06] flex items-start justify-between gap-3"
+            class="p-4 rounded-xl border border-brand-blue bg-brand-blue/6 flex items-start justify-between gap-3"
           >
             <div class="min-w-0 flex-1">
               <div

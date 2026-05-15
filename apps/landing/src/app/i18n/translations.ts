@@ -1,6 +1,9 @@
 // Reddoc landing — i18n dictionaries (es / en)
 // Operations Console voice: technical, precise, ERP-flavored.
 
+import { getPlanDescription, getPlanFeatures } from '@reddoc/core';
+import type { PlanFeature as CorePlanFeature } from '@reddoc/core';
+
 export type Lang = 'es' | 'en';
 
 export interface Module {
@@ -14,17 +17,14 @@ export interface Module {
   image: string;
 }
 
-export interface PlanFeature {
-  label: string;
-  included: boolean;
-}
+export type PlanFeature = CorePlanFeature;
 
 export interface Plan {
   id: string;
   name: string;
   price: string;
   description: string;
-  features: PlanFeature[];
+  features: readonly PlanFeature[];
   highlight?: boolean;
 }
 
@@ -369,50 +369,30 @@ const es: Dict = {
         id: 'impulso',
         name: 'Impulso',
         price: '$16.900',
-        description: 'Da el primer paso hacia tu éxito.',
-        features: [
-          { label: 'Documentos ilimitados', included: true },
-          { label: '1 Usuario con acceso', included: true },
-          { label: 'Ingresos hasta $10.000.000 COP / mes', included: true },
-          { label: 'Soporte técnico', included: true },
-        ],
+        description: getPlanDescription('es', 'impulso'),
+        features: getPlanFeatures('es', 'facturacion', 'impulso'),
       },
       {
         id: 'crecimiento',
         name: 'Crecimiento',
         price: '$49.900',
-        description: 'Tu negocio comienza a crecer.',
+        description: getPlanDescription('es', 'crecimiento'),
         highlight: true,
-        features: [
-          { label: 'Documentos ilimitados', included: true },
-          { label: '2 Usuarios con acceso', included: true },
-          { label: 'Ingresos hasta $50.000.000 COP / mes', included: true },
-          { label: 'Soporte técnico', included: true },
-        ],
+        features: getPlanFeatures('es', 'facturacion', 'crecimiento'),
       },
       {
         id: 'expansion',
         name: 'Expansión',
         price: '$95.900',
-        description: 'Desarrolla tu potencial al máximo.',
-        features: [
-          { label: 'Documentos ilimitados', included: true },
-          { label: '3 Usuarios con acceso', included: true },
-          { label: 'Ingresos hasta $200.000.000 COP / mes', included: true },
-          { label: 'Soporte técnico', included: true },
-        ],
+        description: getPlanDescription('es', 'expansion'),
+        features: getPlanFeatures('es', 'facturacion', 'expansion'),
       },
       {
         id: 'exito',
         name: 'Éxito',
         price: '$172.900',
-        description: 'Lleva tu empresa a nuevas alturas.',
-        features: [
-          { label: 'Documentos ilimitados', included: true },
-          { label: '8 Usuarios con acceso', included: true },
-          { label: 'Ingresos hasta $500.000.000 COP / mes', included: true },
-          { label: 'Soporte técnico', included: true },
-        ],
+        description: getPlanDescription('es', 'exito'),
+        features: getPlanFeatures('es', 'facturacion', 'exito'),
       },
     ],
     plans_erp: [
@@ -420,78 +400,30 @@ const es: Dict = {
         id: 'impulso-erp',
         name: 'Impulso ERP',
         price: '$22.900',
-        description: 'Da el primer paso hacia tu éxito.',
-        features: [
-          { label: 'Documentos ilimitados', included: true },
-          { label: '1 Usuario con acceso', included: true },
-          { label: 'Ingresos hasta $10.000.000 COP / mes', included: true },
-          { label: 'Soporte técnico', included: true },
-          { label: 'Facturación y compras', included: true },
-          { label: 'Tesorería y cartera', included: true },
-          { label: 'Inventario y POS+', included: false },
-          { label: 'Contabilidad', included: false },
-          { label: 'Nómina', included: false },
-          { label: 'API integración', included: false },
-          { label: 'Tablero analítica', included: false },
-        ],
+        description: getPlanDescription('es', 'impulso'),
+        features: getPlanFeatures('es', 'erp', 'impulso'),
       },
       {
         id: 'crecimiento-erp',
         name: 'Crecimiento ERP',
         price: '$74.900',
-        description: 'Tu negocio comienza a crecer.',
-        features: [
-          { label: 'Documentos ilimitados', included: true },
-          { label: '2 Usuarios con acceso', included: true },
-          { label: 'Ingresos hasta $50.000.000 COP / mes', included: true },
-          { label: 'Soporte técnico', included: true },
-          { label: 'Facturación y compras', included: true },
-          { label: 'Tesorería y cartera', included: true },
-          { label: 'Inventario y POS+', included: true },
-          { label: 'Contabilidad', included: true },
-          { label: 'Nómina', included: false },
-          { label: 'API integración', included: false },
-          { label: 'Tablero analítica', included: false },
-        ],
+        description: getPlanDescription('es', 'crecimiento'),
+        features: getPlanFeatures('es', 'erp', 'crecimiento'),
       },
       {
         id: 'expansion-erp',
         name: 'Expansión ERP',
         price: '$149.900',
-        description: 'Desarrolla tu potencial al máximo.',
+        description: getPlanDescription('es', 'expansion'),
         highlight: true,
-        features: [
-          { label: 'Documentos ilimitados', included: true },
-          { label: '3 Usuarios con acceso', included: true },
-          { label: 'Ingresos hasta $200.000.000 COP / mes', included: true },
-          { label: 'Soporte técnico', included: true },
-          { label: 'Facturación y compras', included: true },
-          { label: 'Tesorería y cartera', included: true },
-          { label: 'Inventario y POS+', included: true },
-          { label: 'Contabilidad', included: true },
-          { label: 'Nómina', included: true },
-          { label: 'API integración', included: false },
-          { label: 'Tablero analítica', included: false },
-        ],
+        features: getPlanFeatures('es', 'erp', 'expansion'),
       },
       {
         id: 'exito-erp',
         name: 'Éxito ERP',
         price: '$229.900',
-        description: 'Lleva tu empresa a nuevas alturas.',
-        features: [
-          { label: 'Documentos ilimitados', included: true },
-          { label: '8 Usuarios con acceso', included: true },
-          { label: 'Ingresos hasta $500.000.000 COP / mes', included: true },
-          { label: 'Soporte especializado', included: true },
-          { label: 'Facturación y compras', included: true },
-          { label: 'Tesorería y cartera', included: true },
-          { label: 'Inventario y POS+', included: true },
-          { label: 'Contabilidad', included: true },
-          { label: 'Nómina', included: true },
-          { label: 'API integración', included: true },
-          { label: 'Tablero analítica', included: true },
-        ],
+        description: getPlanDescription('es', 'exito'),
+        features: getPlanFeatures('es', 'erp', 'exito'),
       },
     ],
     footnote: 'Migración asistida sin cargo extra · cancela cuando quieras · datos siempre tuyos.',
@@ -762,50 +694,30 @@ const en: Dict = {
         id: 'impulso',
         name: 'Impulse',
         price: '$16,900',
-        description: 'Take your first step to success.',
-        features: [
-          { label: 'Unlimited documents', included: true },
-          { label: '1 User', included: true },
-          { label: 'Revenue up to $10,000,000 COP / mo', included: true },
-          { label: 'Standard support', included: true },
-        ],
+        description: getPlanDescription('en', 'impulso'),
+        features: getPlanFeatures('en', 'facturacion', 'impulso'),
       },
       {
         id: 'crecimiento',
         name: 'Growth',
         price: '$49,900',
-        description: 'Your business starts to grow.',
+        description: getPlanDescription('en', 'crecimiento'),
         highlight: true,
-        features: [
-          { label: 'Unlimited documents', included: true },
-          { label: '2 Users', included: true },
-          { label: 'Revenue up to $50,000,000 COP / mo', included: true },
-          { label: 'Standard support', included: true },
-        ],
+        features: getPlanFeatures('en', 'facturacion', 'crecimiento'),
       },
       {
         id: 'expansion',
         name: 'Expansion',
         price: '$95,900',
-        description: 'Develop your potential to the max.',
-        features: [
-          { label: 'Unlimited documents', included: true },
-          { label: '3 Users', included: true },
-          { label: 'Revenue up to $200,000,000 COP / mo', included: true },
-          { label: 'Standard support', included: true },
-        ],
+        description: getPlanDescription('en', 'expansion'),
+        features: getPlanFeatures('en', 'facturacion', 'expansion'),
       },
       {
         id: 'exito',
         name: 'Success',
         price: '$172,900',
-        description: 'Take your company to new heights.',
-        features: [
-          { label: 'Unlimited documents', included: true },
-          { label: '8 Users', included: true },
-          { label: 'Revenue up to $500,000,000 COP / mo', included: true },
-          { label: 'Standard support', included: true },
-        ],
+        description: getPlanDescription('en', 'exito'),
+        features: getPlanFeatures('en', 'facturacion', 'exito'),
       },
     ],
     plans_erp: [
@@ -813,78 +725,30 @@ const en: Dict = {
         id: 'impulso-erp',
         name: 'Impulse ERP',
         price: '$22,900',
-        description: 'Take your first step to success.',
-        features: [
-          { label: 'Unlimited documents', included: true },
-          { label: '1 User', included: true },
-          { label: 'Revenue up to $10,000,000 COP / mo', included: true },
-          { label: 'Standard support', included: true },
-          { label: 'Billing & purchases', included: true },
-          { label: 'Treasury & receivables', included: true },
-          { label: 'Inventory & POS+', included: false },
-          { label: 'Accounting', included: false },
-          { label: 'Payroll', included: false },
-          { label: 'API integration', included: false },
-          { label: 'Analytics dashboard', included: false },
-        ],
+        description: getPlanDescription('en', 'impulso'),
+        features: getPlanFeatures('en', 'erp', 'impulso'),
       },
       {
         id: 'crecimiento-erp',
         name: 'Growth ERP',
         price: '$74,900',
-        description: 'Your business starts to grow.',
-        features: [
-          { label: 'Unlimited documents', included: true },
-          { label: '2 Users', included: true },
-          { label: 'Revenue up to $50,000,000 COP / mo', included: true },
-          { label: 'Standard support', included: true },
-          { label: 'Billing & purchases', included: true },
-          { label: 'Treasury & receivables', included: true },
-          { label: 'Inventory & POS+', included: true },
-          { label: 'Accounting', included: true },
-          { label: 'Payroll', included: false },
-          { label: 'API integration', included: false },
-          { label: 'Analytics dashboard', included: false },
-        ],
+        description: getPlanDescription('en', 'crecimiento'),
+        features: getPlanFeatures('en', 'erp', 'crecimiento'),
       },
       {
         id: 'expansion-erp',
         name: 'Expansion ERP',
         price: '$149,900',
-        description: 'Develop your potential to the max.',
+        description: getPlanDescription('en', 'expansion'),
         highlight: true,
-        features: [
-          { label: 'Unlimited documents', included: true },
-          { label: '3 Users', included: true },
-          { label: 'Revenue up to $200,000,000 COP / mo', included: true },
-          { label: 'Standard support', included: true },
-          { label: 'Billing & purchases', included: true },
-          { label: 'Treasury & receivables', included: true },
-          { label: 'Inventory & POS+', included: true },
-          { label: 'Accounting', included: true },
-          { label: 'Payroll', included: true },
-          { label: 'API integration', included: false },
-          { label: 'Analytics dashboard', included: false },
-        ],
+        features: getPlanFeatures('en', 'erp', 'expansion'),
       },
       {
         id: 'exito-erp',
         name: 'Success ERP',
         price: '$229,900',
-        description: 'Take your company to new heights.',
-        features: [
-          { label: 'Unlimited documents', included: true },
-          { label: '8 Users', included: true },
-          { label: 'Revenue up to $500,000,000 COP / mo', included: true },
-          { label: 'Specialized support', included: true },
-          { label: 'Billing & purchases', included: true },
-          { label: 'Treasury & receivables', included: true },
-          { label: 'Inventory & POS+', included: true },
-          { label: 'Accounting', included: true },
-          { label: 'Payroll', included: true },
-          { label: 'API integration', included: true },
-          { label: 'Analytics dashboard', included: true },
-        ],
+        description: getPlanDescription('en', 'exito'),
+        features: getPlanFeatures('en', 'erp', 'exito'),
       },
     ],
     footnote: 'Assisted migration at no extra cost · cancel anytime · your data, always yours.',

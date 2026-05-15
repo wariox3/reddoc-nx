@@ -50,3 +50,4 @@ export {
 } from './lib/tenant';
 export type { TenantSlug, ContenedorAccess, ContenedorAccessService } from './lib/tenant';
 export * from './lib/data-list';
+export * from './lib/plans';

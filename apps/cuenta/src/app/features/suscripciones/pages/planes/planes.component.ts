@@ -1,7 +1,15 @@
 import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { getInitials, ToastService } from '@reddoc/core';
+import {
+  getInitials,
+  getPlanDescription,
+  getPlanFeatures,
+  resolvePlanCategory,
+  resolvePlanTier,
+  ToastService,
+} from '@reddoc/core';
+import type { PlanFeature } from '@reddoc/core';
 import { Suscripcion } from '../../models/suscripcion.model';
 import {
   SUSCRIPCION_CATEGORIA_ERP,
@@ -160,6 +168,18 @@ export class PlanesComponent implements OnInit {
   tierName(plan: SuscripcionTipo): string {
     const space = plan.nombre.indexOf(' ');
     return space === -1 ? plan.nombre : plan.nombre.slice(0, space);
+  }
+
+  planDescription(plan: SuscripcionTipo): string {
+    const tier = resolvePlanTier(plan.nombre);
+    return tier ? getPlanDescription('es', tier) : '';
+  }
+
+  planFeatures(plan: SuscripcionTipo): readonly PlanFeature[] {
+    const tier = resolvePlanTier(plan.nombre);
+    const category = resolvePlanCategory(plan.suscripcion_categoria_id);
+    if (!tier || !category) return [];
+    return getPlanFeatures('es', category, tier);
   }
 
   isPopular(plan: SuscripcionTipo): boolean {
