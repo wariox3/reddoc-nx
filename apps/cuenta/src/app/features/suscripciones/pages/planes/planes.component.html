@@ -51,38 +51,7 @@
   }
 
   <!-- Stepper -->
-  <div class="flex items-start mb-7" role="list" aria-label="Pasos">
-    @for (label of stepLabels; track $index; let i = $index, last = $last) {
-      <div class="flex flex-col items-center gap-1.5">
-        <div
-          class="h-[30px] w-[30px] rounded-full flex items-center justify-center text-[0.75rem] font-semibold transition-all duration-200"
-          [class]="
-            i <= step()
-              ? 'bg-brand-blue text-white'
-              : 'bg-transparent text-brand-muted border border-[rgba(20,48,73,0.18)]'
-          "
-        >
-          @if (i < step()) {
-            <i class="pi pi-check text-[0.65rem]"></i>
-          } @else {
-            <span class="tabular-nums">{{ i + 1 }}</span>
-          }
-        </div>
-        <span
-          class="text-[0.7rem] whitespace-nowrap"
-          [class]="i === step() ? 'font-semibold text-brand-text' : 'text-brand-muted'"
-        >
-          {{ label }}
-        </span>
-      </div>
-      @if (!last) {
-        <div
-          class="flex-1 h-px mt-[14px] mx-1.5 transition-colors duration-300"
-          [class]="i < step() ? 'bg-brand-blue' : 'bg-[rgba(20,48,73,0.18)]'"
-        ></div>
-      }
-    }
-  </div>
+  <app-plan-stepper class="block mb-7" [current]="step()" [labels]="stepLabels" />
 
   <!-- Step card -->
   <section
@@ -213,125 +182,14 @@
         @else {
           <div class="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-4 pt-2.5">
             @for (plan of visiblePlanes(); track plan.id) {
-              @let current = isCurrent(plan);
-              @let selected = isSelected(plan);
-              @let popular = isPopular(plan);
-
-              <button
-                type="button"
-                (click)="selectPlan(plan)"
-                [disabled]="current"
-                class="relative text-left rounded-xl flex flex-col gap-3 px-[18px] pt-5 pb-4 transition-all duration-150 font-sans"
-                [class]="
-                  current
-                    ? 'cursor-not-allowed opacity-55 border border-[rgba(20,48,73,0.18)] bg-brand-surface'
-                    : selected
-                      ? 'cursor-pointer border-2 border-brand-blue bg-brand-blue/6 shadow-[0_4px_16px_-8px_rgba(0,158,247,0.45)]'
-                      : 'cursor-pointer border border-[rgba(20,48,73,0.18)] bg-brand-surface hover:border-brand-blue/40 hover:-translate-y-px shadow-[0_1px_3px_rgba(0,0,0,0.03)]'
-                "
-              >
-                <!-- Top badges -->
-                @if (current) {
-                  <span
-                    class="absolute -top-2.5 left-[18px] bg-[rgba(20,48,73,0.18)] text-brand-muted text-[0.62rem] font-bold tracking-[0.06em] uppercase px-2 py-[3px] rounded-full whitespace-nowrap"
-                  >
-                    Plan actual
-                  </span>
-                } @else if (popular) {
-                  <span
-                    class="absolute -top-2.5 left-[18px] bg-brand-text text-white text-[0.62rem] font-bold tracking-[0.06em] uppercase px-2 py-[3px] rounded-full whitespace-nowrap"
-                  >
-                    Recomendado
-                  </span>
-                }
-
-                <!-- Radio indicator -->
-                <span
-                  class="absolute top-4 right-4 h-[17px] w-[17px] rounded-full bg-brand-surface transition-all duration-150"
-                  [class]="
-                    selected
-                      ? 'border-[5px] border-brand-blue'
-                      : 'border-[1.5px] border-brand-muted/50'
-                  "
-                ></span>
-
-                <!-- Tier eyebrow + full name + description -->
-                <div class="pr-7">
-                  <div
-                    class="text-[0.68rem] font-semibold text-brand-muted tracking-[0.08em] uppercase mb-1"
-                  >
-                    {{ tierName(plan) }}
-                  </div>
-                  <div
-                    class="text-[0.92rem] font-semibold text-brand-text tracking-[-0.01em] leading-tight"
-                  >
-                    {{ plan.nombre }}
-                  </div>
-                  @if (planDescription(plan); as desc) {
-                    <p
-                      class="m-0 mt-1.5 text-[0.72rem] text-brand-muted leading-snug min-h-[2.2em]"
-                    >
-                      {{ desc }}
-                    </p>
-                  }
-                </div>
-
-                <!-- Price -->
-                <div>
-                  <div class="flex items-baseline gap-1">
-                    <span
-                      class="text-[1.5rem] font-bold text-brand-text tracking-[-0.02em] leading-none tabular-nums"
-                    >
-                      {{ formatCop(displayedMonthly(plan)) }}
-                    </span>
-                    <span class="text-[0.78rem] text-brand-muted">/mes</span>
-                  </div>
-                  @if (annual()) {
-                    <div class="text-[0.68rem] text-brand-muted/80 mt-1 tabular-nums">
-                      {{ formatCop(annualTotal(plan)) }} facturados anualmente
-                    </div>
-                  } @else {
-                    <div class="text-[0.68rem] text-brand-muted/80 mt-1">Facturación mensual</div>
-                  }
-                </div>
-
-                <!-- Features -->
-                @if (planFeatures(plan); as features) {
-                  @if (features.length > 0) {
-                    <ul
-                      class="list-none m-0 p-0 pt-3 border-t border-[rgba(20,48,73,0.07)] flex flex-col gap-1.5 mt-1"
-                    >
-                      @for (f of features; track f.label) {
-                        <li class="flex items-start gap-2 text-[0.76rem] leading-snug">
-                          <span
-                            class="inline-flex items-center justify-center h-[15px] w-[15px] shrink-0 rounded-full mt-px"
-                            [class]="
-                              f.included
-                                ? 'bg-emerald-50 text-emerald-600'
-                                : 'bg-[rgba(20,48,73,0.05)] text-brand-muted/70'
-                            "
-                          >
-                            @if (f.included) {
-                              <i class="pi pi-check text-[0.5rem]"></i>
-                            } @else {
-                              <i class="pi pi-times text-[0.5rem]"></i>
-                            }
-                          </span>
-                          <span
-                            [class]="
-                              f.included
-                                ? 'text-brand-text'
-                                : 'text-brand-muted/70 line-through decoration-[rgba(20,48,73,0.2)] decoration-1'
-                            "
-                          >
-                            {{ f.label }}
-                          </span>
-                        </li>
-                      }
-                    </ul>
-                  }
-                }
-              </button>
+              <app-plan-card
+                [plan]="plan"
+                [annual]="annual()"
+                [selected]="isSelected(plan)"
+                [current]="isCurrent(plan)"
+                [popular]="isPopular(plan)"
+                (planSelected)="onPlanSelected($event)"
+              />
             }
           </div>
         }
@@ -360,33 +218,7 @@
     @else {
       <div class="animate-fade-up flex flex-col gap-4">
         @if (selectedPlan(); as plan) {
-          <div
-            class="p-4 rounded-xl border border-brand-blue bg-brand-blue/6 flex items-start justify-between gap-3"
-          >
-            <div class="min-w-0 flex-1">
-              <div
-                class="text-[0.62rem] font-bold text-brand-blue tracking-[0.08em] uppercase mb-1"
-              >
-                Plan seleccionado
-              </div>
-              <div class="text-[1.05rem] font-semibold text-brand-text tracking-[-0.01em]">
-                {{ plan.nombre }}
-              </div>
-              <div class="flex items-baseline gap-1 mt-2">
-                <span
-                  class="text-[1.5rem] font-bold text-brand-blue tracking-[-0.02em] tabular-nums leading-none"
-                >
-                  {{ formatCop(displayedMonthly(plan)) }}
-                </span>
-                <span class="text-[0.78rem] text-brand-muted">/mes</span>
-                @if (annual()) {
-                  <span class="text-[0.72rem] text-brand-muted/80 ml-2 tabular-nums">
-                    · {{ formatCop(annualTotal(plan)) }} facturados anualmente
-                  </span>
-                }
-              </div>
-            </div>
-          </div>
+          <app-plan-card [plan]="plan" [annual]="annual()" [selected]="true" />
         }
         <div
           class="py-8 flex flex-col items-center text-center gap-2 border border-dashed border-[rgba(20,48,73,0.18)] rounded-xl"
@@ -423,9 +255,7 @@
       } @else if (step() === 0 && selectedPlan(); as plan) {
         <span class="text-[0.78rem] text-brand-muted tabular-nums">
           {{ plan.nombre }} ·
-          <strong class="text-brand-text font-semibold">
-            {{ formatCop(displayedMonthly(plan)) }}/mes
-          </strong>
+          <strong class="text-brand-text font-semibold">{{ selectedMonthlyLabel() }}/mes</strong>
         </span>
       }
 

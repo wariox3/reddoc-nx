@@ -1,15 +1,7 @@
 import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import {
-  getInitials,
-  getPlanDescription,
-  getPlanFeatures,
-  resolvePlanCategory,
-  resolvePlanTier,
-  ToastService,
-} from '@reddoc/core';
-import type { PlanFeature } from '@reddoc/core';
+import { getInitials, ToastService } from '@reddoc/core';
 import { Suscripcion } from '../../models/suscripcion.model';
 import {
   SUSCRIPCION_CATEGORIA_ERP,
@@ -17,22 +9,18 @@ import {
   SuscripcionTipo,
 } from '../../models/suscripcion-tipo.model';
 import { SuscripcionTiposService } from '../../services/suscripcion-tipos.service';
+import { PlanCardComponent } from './components/plan-card/plan-card.component';
+import { PlanStepperComponent } from './components/plan-stepper/plan-stepper.component';
+import { displayedMonthly, formatCop } from './utils/plan-pricing';
 
 type Track = 'facturacion' | 'erp';
 
-const COP = new Intl.NumberFormat('es-CO', {
-  style: 'currency',
-  currency: 'COP',
-  maximumFractionDigits: 0,
-});
-
-const ANNUAL_DISCOUNT = 0.1;
 const STEP_LABELS = ['Plan', 'Pago', 'Confirmar'] as const;
 
 @Component({
   selector: 'app-planes',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, PlanCardComponent, PlanStepperComponent],
   templateUrl: './planes.component.html',
 })
 export class PlanesComponent implements OnInit {
@@ -137,16 +125,11 @@ export class PlanesComponent implements OnInit {
     this.track.set(t);
   }
 
-  setAnnual(value: boolean): void {
-    this.annual.set(value);
-  }
-
   toggleAnnual(): void {
     this.annual.update((v) => !v);
   }
 
-  selectPlan(plan: SuscripcionTipo): void {
-    if (this.isCurrent(plan)) return;
+  onPlanSelected(plan: SuscripcionTipo): void {
     this.selectedPlanId.set(plan.id);
   }
 
@@ -165,23 +148,6 @@ export class PlanesComponent implements OnInit {
     this.step.update((s) => (s - 1) as 0 | 1 | 2);
   }
 
-  tierName(plan: SuscripcionTipo): string {
-    const space = plan.nombre.indexOf(' ');
-    return space === -1 ? plan.nombre : plan.nombre.slice(0, space);
-  }
-
-  planDescription(plan: SuscripcionTipo): string {
-    const tier = resolvePlanTier(plan.nombre);
-    return tier ? getPlanDescription('es', tier) : '';
-  }
-
-  planFeatures(plan: SuscripcionTipo): readonly PlanFeature[] {
-    const tier = resolvePlanTier(plan.nombre);
-    const category = resolvePlanCategory(plan.suscripcion_categoria_id);
-    if (!tier || !category) return [];
-    return getPlanFeatures('es', category, tier);
-  }
-
   isPopular(plan: SuscripcionTipo): boolean {
     return plan.nombre.startsWith('Expansión');
   }
@@ -195,19 +161,9 @@ export class PlanesComponent implements OnInit {
     return this.selectedPlanId() === plan.id;
   }
 
-  displayedMonthly(plan: SuscripcionTipo): number {
-    const base = Number(plan.precio);
-    if (Number.isNaN(base)) return 0;
-    return this.annual() ? Math.round(base * (1 - ANNUAL_DISCOUNT)) : Math.round(base);
-  }
-
-  annualTotal(plan: SuscripcionTipo): number {
-    const base = Number(plan.precio);
-    if (Number.isNaN(base)) return 0;
-    return Math.round(base * (1 - ANNUAL_DISCOUNT) * 12);
-  }
-
-  formatCop(value: number): string {
-    return COP.format(value);
+  selectedMonthlyLabel(): string {
+    const plan = this.selectedPlan();
+    if (!plan) return '';
+    return formatCop(displayedMonthly(plan.precio, this.annual()));
   }
 }
