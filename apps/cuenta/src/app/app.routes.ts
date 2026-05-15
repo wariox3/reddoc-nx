@@ -37,9 +37,9 @@ export const appRoutes: Route[] = [
       },
       {
         path: 'suscripciones',
-        loadComponent: () =>
-          import('./features/suscripciones/suscripciones.component').then(
-            (m) => m.SuscripcionesComponent,
+        loadChildren: () =>
+          import('./features/suscripciones/suscripciones.routes').then(
+            (m) => m.SUSCRIPCIONES_ROUTES,
           ),
       },
     ],
