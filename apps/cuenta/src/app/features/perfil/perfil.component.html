@@ -8,72 +8,39 @@
   <div class="flex flex-col gap-5 animate-fade-up">
     <!-- Profile header card -->
     <div class="bg-brand-surface border border-[rgba(20,48,73,0.1)] rounded-xl overflow-hidden">
-      <!-- Banner -->
-      <div
-        class="h-24 max-[576px]:h-[72px] relative"
-        style="
-          background: linear-gradient(
-            135deg,
-            rgba(20, 48, 73, 0.15) 0%,
-            rgba(119, 170, 215, 0.12) 50%,
-            rgba(20, 48, 73, 0.08) 100%
-          );
-        "
-      >
-        <div
-          class="absolute inset-0"
-          style="
-            background-image:
-              linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-            background-size: 32px 32px;
-          "
-        ></div>
-      </div>
-
-      <!-- Info row: avatar + details -->
-      <div
-        class="flex items-end gap-5 px-6 pb-6 -mt-8 max-[576px]:flex-col max-[576px]:items-center max-[576px]:px-5 max-[576px]:pb-5 max-[576px]:text-center"
-      >
-        <!-- Avatar group -->
-        <div class="avatar-group relative shrink-0">
-          <div
-            class="avatar-ring w-[72px] h-[72px] rounded-full border-[3px] border-brand-surface shadow-[0_2px_10px_rgba(20,48,73,0.18)] overflow-hidden bg-brand-navy"
-          >
+      <div class="flex items-center gap-4 px-5 py-4">
+        <!-- Avatar with hover overlay to change photo -->
+        <button
+          class="relative shrink-0 group rounded-full disabled:cursor-not-allowed disabled:opacity-70"
+          pTooltip="Cambiar foto"
+          tooltipPosition="top"
+          [disabled]="uploading()"
+          (click)="openImageCropper()"
+        >
+          <div class="w-16 h-16 rounded-full overflow-hidden bg-brand-navy">
             @if (uploading()) {
-              <div
-                class="avatar-ring__uploading w-full h-full flex items-center justify-center text-white text-2xl opacity-80"
-              >
+              <div class="w-full h-full flex items-center justify-center text-white text-2xl">
                 <i class="pi pi-spin pi-spinner"></i>
               </div>
             } @else {
-              <lib-user-avatar [size]="72" variant="full" styleClass="avatar-ring__inner" />
+              <lib-user-avatar [size]="64" variant="full" />
             }
           </div>
-
-          <div class="avatar-controls absolute bottom-[-4px] right-[-4px] flex flex-col gap-[3px]">
-            <button
-              class="avatar-ctrl avatar-ctrl--edit w-6 h-6 rounded-full border-none bg-brand-navy text-white cursor-pointer flex items-center justify-center text-[0.65rem] shadow-[0_1px_4px_rgba(0,0,0,0.2)] transition-[opacity,transform] duration-150 hover:opacity-85 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
-              pTooltip="Cambiar foto"
-              tooltipPosition="top"
-              [disabled]="uploading()"
-              (click)="openImageCropper()"
-            >
-              <i class="pi pi-camera"></i>
-            </button>
+          <div
+            class="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-150 flex items-center justify-center pointer-events-none"
+          >
+            <i class="pi pi-camera text-white text-sm"></i>
           </div>
-        </div>
+        </button>
 
         <!-- User info -->
-        <div class="flex-1 min-w-0 pt-9 max-[576px]:pt-0">
-          <p class="text-xl font-bold text-brand-text tracking-tight m-0 mb-1 truncate">
+        <div class="flex min-w-0 flex-1 flex-col gap-[0.1rem]">
+          <p class="m-0 text-[0.95rem] font-bold text-brand-text tracking-tight truncate">
             {{ displayName() }}
           </p>
-          <p
-            class="inline-flex items-center gap-[0.4rem] text-[0.85rem] text-brand-muted m-0 truncate"
-          >
-            <i class="pi pi-envelope text-[0.8rem] text-brand-muted-2 shrink-0"></i>
-            {{ user()?.email }}
+          <p class="m-0 flex items-center gap-1.5 text-[0.75rem] text-brand-muted">
+            <i class="pi pi-envelope text-[0.65rem] shrink-0"></i>
+            <span class="truncate">{{ user()?.email }}</span>
           </p>
         </div>
       </div>
