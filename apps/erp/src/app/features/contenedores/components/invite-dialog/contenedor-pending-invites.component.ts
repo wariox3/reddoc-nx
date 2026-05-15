@@ -1,7 +1,7 @@
 import { DatePipe, NgClass } from '@angular/common';
 import { Component, DestroyRef, effect, inject, input, output, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { I18nService, ToastService } from '@reddoc/core';
+import { I18nService, ToastService, getInitials } from '@reddoc/core';
 import {
   Contenedor,
   ContenedorInvitacionEstado,
@@ -41,13 +41,8 @@ export class ContenedorPendingInvitesComponent {
 
   initials(invite: ContenedorInvitacionPendiente): string {
     const source =
-      invite.usuario_invitado_nombre_corto?.trim() || invite.usuario_invitado_correo || '?';
-    return source
-      .split(/\s+/)
-      .slice(0, 2)
-      .map((w) => w[0])
-      .join('')
-      .toUpperCase();
+      invite.usuario_invitado_nombre_corto?.trim() || invite.usuario_invitado_correo || '';
+    return getInitials(source);
   }
 
   estadoLabel(estado: ContenedorInvitacionEstado): string {

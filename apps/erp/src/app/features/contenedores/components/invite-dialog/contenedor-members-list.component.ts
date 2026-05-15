@@ -10,7 +10,7 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { I18nService, ToastService } from '@reddoc/core';
+import { I18nService, ToastService, getInitials } from '@reddoc/core';
 import { AuthService } from '../../../auth/services/auth.service';
 import { Contenedor, ContenedorMember } from '../../models/contenedor.model';
 import { ContenedorService } from '../../services/contenedor.service';
@@ -67,13 +67,8 @@ export class ContenedorMembersListComponent {
   }
 
   initials(member: ContenedorMember): string {
-    const source = member.usuario_nombre_corto?.trim() || member.usuario_email || '?';
-    return source
-      .split(/\s+/)
-      .slice(0, 2)
-      .map((w) => w[0])
-      .join('')
-      .toUpperCase();
+    const source = member.usuario_nombre_corto?.trim() || member.usuario_email || '';
+    return getInitials(source);
   }
 
   isYou(member: ContenedorMember): boolean {

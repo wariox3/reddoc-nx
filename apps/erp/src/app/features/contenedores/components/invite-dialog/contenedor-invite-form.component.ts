@@ -17,7 +17,7 @@ import {
   AutoCompleteModule,
 } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
-import { I18nService, ToastService, extractErrorMessage } from '@reddoc/core';
+import { I18nService, ToastService, extractErrorMessage, getInitials } from '@reddoc/core';
 import { Contenedor, UserSearchResult } from '../../models/contenedor.model';
 import { ContenedorService } from '../../services/contenedor.service';
 import type { AppDict } from '../../../../i18n';
@@ -54,13 +54,7 @@ export class ContenedorInviteFormComponent {
   readonly isSending = signal(false);
 
   userInitials(user: UserSearchResult): string {
-    return (user.nombre_corto || user.email)
-      .trim()
-      .split(/\s+/)
-      .slice(0, 2)
-      .map((w) => w[0])
-      .join('')
-      .toUpperCase();
+    return getInitials(user.nombre_corto || user.email);
   }
 
   searchUsers(event: AutoCompleteCompleteEvent): void {

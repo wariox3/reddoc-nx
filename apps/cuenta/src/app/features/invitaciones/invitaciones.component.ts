@@ -2,7 +2,7 @@ import { DatePipe } from '@angular/common';
 import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ButtonModule } from 'primeng/button';
-import { ToastService, extractErrorMessage } from '@reddoc/core';
+import { ToastService, extractErrorMessage, getInitials } from '@reddoc/core';
 import { InvitacionPendiente } from './models/invitacion.model';
 import { InvitacionesService } from './services/invitaciones.service';
 
@@ -27,13 +27,7 @@ export class InvitacionesComponent implements OnInit {
   }
 
   initials(inv: InvitacionPendiente): string {
-    const source = inv.cliente_nombre?.trim() || '?';
-    return source
-      .split(/\s+/)
-      .slice(0, 2)
-      .map((w) => w[0])
-      .join('')
-      .toUpperCase();
+    return getInitials(inv.cliente_nombre ?? '');
   }
 
   inviterLabel(inv: InvitacionPendiente): string {

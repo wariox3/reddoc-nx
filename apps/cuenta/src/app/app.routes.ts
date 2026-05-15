@@ -35,6 +35,13 @@ export const appRoutes: Route[] = [
             (m) => m.InvitacionesComponent,
           ),
       },
+      {
+        path: 'suscripciones',
+        loadComponent: () =>
+          import('./features/suscripciones/suscripciones.component').then(
+            (m) => m.SuscripcionesComponent,
+          ),
+      },
     ],
   },
 

@@ -16,4 +16,7 @@ export const ROUTE_PATHS = {
   invitaciones: {
     root: '/invitaciones',
   },
+  suscripciones: {
+    root: '/suscripciones',
+  },
 };

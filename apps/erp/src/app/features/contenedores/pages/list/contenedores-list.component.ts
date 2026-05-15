@@ -5,7 +5,7 @@ import { Subject, startWith, switchMap } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { Menu, MenuModule } from 'primeng/menu';
 import { MenuItem } from 'primeng/api';
-import { I18nService, TenantService } from '@reddoc/core';
+import { I18nService, TenantService, getInitials } from '@reddoc/core';
 import { AuthService } from '../../../auth/services/auth.service';
 import { Contenedor } from '../../models/contenedor.model';
 import { ContenedorService } from '../../services/contenedor.service';
@@ -98,12 +98,7 @@ export class ContenedoresListComponent {
   protected rowMenuItems: MenuItem[] = [];
 
   getAvatarLabel(nombre: string): string {
-    return nombre
-      .split(' ')
-      .slice(0, 2)
-      .map((w) => w[0])
-      .join('')
-      .toUpperCase();
+    return getInitials(nombre);
   }
 
   enterContenedor(item: Contenedor): void {

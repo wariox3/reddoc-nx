@@ -1,5 +1,6 @@
 import { Component, computed, input, output } from '@angular/core';
 import { NgClass } from '@angular/common';
+import { getInitials } from '@reddoc/core';
 import { Contenedor } from '../../models/contenedor.model';
 import { getSuscripcionExpiryLabel } from '../../utils/contenedor-suscripcion.utils';
 
@@ -19,14 +20,7 @@ export class ContenedorCardItemComponent {
   readonly enter = output<void>();
   readonly menuOpen = output<Event>();
 
-  readonly avatarLabel = computed(() =>
-    this.contenedor()
-      .nombre.split(' ')
-      .slice(0, 2)
-      .map((w) => w[0])
-      .join('')
-      .toUpperCase(),
-  );
+  readonly avatarLabel = computed(() => getInitials(this.contenedor().nombre));
 
   readonly frecuenciaLabel = computed(() => {
     const map: Record<string, string> = { P: 'Prueba', M: 'Mensual', A: 'Anual' };

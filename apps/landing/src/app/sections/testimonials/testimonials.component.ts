@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { getInitials } from '@reddoc/core';
 import { I18nService } from '../../i18n/i18n.service';
 
 @Component({
@@ -12,12 +13,6 @@ export class TestimonialsComponent {
   readonly t = inject(I18nService).t;
 
   initials(name: string): string {
-    return name
-      .split(' ')
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((s) => s[0])
-      .join('')
-      .toUpperCase();
+    return getInitials(name);
   }
 }
