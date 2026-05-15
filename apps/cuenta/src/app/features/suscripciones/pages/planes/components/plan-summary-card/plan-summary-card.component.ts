@@ -19,11 +19,19 @@ export class PlanSummaryCardComponent {
   readonly annual = input<boolean>(false);
   readonly billingProfile = input<BillingProfile | null>(null);
 
-  readonly monthlyLabel = computed(() =>
-    formatCop(displayedMonthly(this.plan().precio, this.annual())),
+  /** Monto del ciclo actual: año en modo anual, mes en mensual. Es el número grande. */
+  readonly chargeAmountLabel = computed(() =>
+    this.annual()
+      ? formatCop(computeAnnualTotal(this.plan().precio))
+      : formatCop(displayedMonthly(this.plan().precio, false)),
   );
 
-  readonly annualTotalLabel = computed(() => formatCop(computeAnnualTotal(this.plan().precio)));
+  readonly chargeSuffix = computed(() => (this.annual() ? '/año' : '/mes'));
+
+  /** Equivalente mensual; solo se muestra en modo anual como referencia secundaria. */
+  readonly monthlyEquivalentLabel = computed(() =>
+    formatCop(displayedMonthly(this.plan().precio, this.annual())),
+  );
 
   readonly frecuenciaLabel = computed(() => (this.annual() ? 'Anual · 10% off' : 'Mensual'));
 }
