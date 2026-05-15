@@ -21,6 +21,8 @@ export type {
 } from './lib/models/auth.model';
 export { BaseHttpService, buildHttpParams } from './lib/services/base-http.service';
 export type { ParamValue } from './lib/services/base-http.service';
+export { CiudadService } from './lib/services/ciudad.service';
+export type { Ciudad } from './lib/models/ciudad.model';
 export { TokenRefreshService } from './lib/services/token-refresh.service';
 export { ToastService } from './lib/services/toast.service';
 export { UserAvatarService } from './lib/services/user-avatar.service';

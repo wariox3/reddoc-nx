@@ -1,0 +1,51 @@
+<button
+  type="button"
+  (click)="onClick()"
+  class="relative text-left rounded-xl flex flex-col gap-3 px-[18px] pt-5 pb-4 transition-all duration-150 font-sans w-full h-full"
+  [class]="
+    selected()
+      ? 'cursor-pointer border-2 border-brand-blue bg-brand-blue/6 shadow-[0_4px_16px_-8px_rgba(0,158,247,0.45)]'
+      : 'cursor-pointer border border-[rgba(20,48,73,0.18)] bg-brand-surface hover:border-brand-blue/40 hover:-translate-y-px shadow-[0_1px_3px_rgba(0,0,0,0.03)]'
+  "
+>
+  <!-- Radio indicator -->
+  <span
+    class="absolute top-4 right-4 h-[17px] w-[17px] rounded-full bg-brand-surface transition-all duration-150"
+    [class]="selected() ? 'border-[5px] border-brand-blue' : 'border-[1.5px] border-brand-muted/50'"
+  ></span>
+
+  <!-- Tipo + hint -->
+  <div class="flex items-baseline gap-2 pr-7">
+    <span class="text-[0.7rem] font-bold tracking-[0.12em] uppercase text-brand-blue font-mono">
+      {{ profile().tipo }}
+    </span>
+    <span class="text-[0.65rem] text-brand-muted/80 tracking-tight"> · {{ tipoHint() }} </span>
+  </div>
+
+  <!-- Identificación: typographic anchor -->
+  <div
+    class="font-mono text-[1.1rem] font-semibold text-brand-text tracking-tight tabular-nums leading-none"
+  >
+    {{ profile().numero }}
+  </div>
+
+  <!-- Nombre -->
+  <div class="text-[0.92rem] font-semibold text-brand-text tracking-[-0.01em] leading-tight">
+    {{ profile().nombre }}
+  </div>
+
+  <!-- Meta info (email, address, city) -->
+  <div class="mt-1 pt-3 border-t border-[rgba(20,48,73,0.07)] flex flex-col gap-1.5">
+    <div class="flex items-start gap-2 text-[0.72rem] text-brand-muted leading-snug">
+      <i class="pi pi-envelope text-[0.62rem] text-brand-muted/70 mt-[3px] shrink-0"></i>
+      <span class="truncate">{{ profile().email }}</span>
+    </div>
+    <div class="flex items-start gap-2 text-[0.72rem] text-brand-muted leading-snug">
+      <i class="pi pi-map-marker text-[0.62rem] text-brand-muted/70 mt-[3px] shrink-0"></i>
+      <span class="leading-snug">
+        {{ profile().direccion }}<br />
+        <span class="text-brand-text/80">{{ profile().ciudad }}</span>
+      </span>
+    </div>
+  </div>
+</button>

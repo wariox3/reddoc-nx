@@ -2,13 +2,17 @@ import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angula
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { getInitials, ToastService } from '@reddoc/core';
+import { BillingProfile } from '../../models/billing-profile.model';
 import { Suscripcion } from '../../models/suscripcion.model';
 import {
   SUSCRIPCION_CATEGORIA_ERP,
   SUSCRIPCION_CATEGORIA_FACTURACION,
   SuscripcionTipo,
 } from '../../models/suscripcion-tipo.model';
+import { BillingProfilesService } from '../../services/billing-profiles.service';
 import { SuscripcionTiposService } from '../../services/suscripcion-tipos.service';
+import { BillingProfileCardComponent } from './components/billing-profile-card/billing-profile-card.component';
+import { BillingProfileCreateDialogComponent } from './components/billing-profile-create-dialog/billing-profile-create-dialog.component';
 import { PlanCardComponent } from './components/plan-card/plan-card.component';
 import { PlanStepperComponent } from './components/plan-stepper/plan-stepper.component';
 import { displayedMonthly, formatCop } from './utils/plan-pricing';
@@ -20,13 +24,20 @@ const STEP_LABELS = ['Plan', 'Pago', 'Confirmar'] as const;
 @Component({
   selector: 'app-planes',
   standalone: true,
-  imports: [RouterLink, PlanCardComponent, PlanStepperComponent],
+  imports: [
+    RouterLink,
+    PlanCardComponent,
+    PlanStepperComponent,
+    BillingProfileCardComponent,
+    BillingProfileCreateDialogComponent,
+  ],
   templateUrl: './planes.component.html',
 })
 export class PlanesComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly tiposService = inject(SuscripcionTiposService);
+  private readonly billingService = inject(BillingProfilesService);
   private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -39,6 +50,11 @@ export class PlanesComponent implements OnInit {
   readonly track = signal<Track>('facturacion');
   readonly annual = signal(false);
   readonly selectedPlanId = signal<number | null>(null);
+
+  // Step 2: billing profile state
+  readonly billingProfiles = signal<BillingProfile[]>([]);
+  readonly selectedBillingProfileId = signal<number | null>(null);
+  readonly showCreateBillingDialog = signal(false);
 
   readonly stepLabels = STEP_LABELS;
 
@@ -63,8 +79,15 @@ export class PlanesComponent implements OnInit {
 
   readonly currentSuscripcionTipoId = computed(() => this.suscripcion()?.suscripcion_tipo ?? null);
 
+  readonly selectedBillingProfile = computed<BillingProfile | null>(() => {
+    const id = this.selectedBillingProfileId();
+    if (id === null) return null;
+    return this.billingProfiles().find((p) => p.id === id) ?? null;
+  });
+
   readonly canGoNext = computed(() => {
     if (this.step() === 0) return this.selectedPlanId() !== null;
+    if (this.step() === 1) return this.selectedBillingProfileId() !== null;
     return true;
   });
 
@@ -77,8 +100,8 @@ export class PlanesComponent implements OnInit {
         };
       case 1:
         return {
-          title: 'Información de pago',
-          subtitle: 'Ingresa los datos de tu tarjeta para procesar el pago de la suscripción.',
+          title: 'Datos de facturación',
+          subtitle: 'Elige a quién emitir la factura electrónica o registra un nuevo destinatario.',
         };
       case 2:
       default:
@@ -119,6 +142,31 @@ export class PlanesComponent implements OnInit {
           this.toast.error('Error', 'No se pudieron cargar los planes.');
         },
       });
+
+    this.billingService
+      .list()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (profiles) => this.billingProfiles.set([...profiles]),
+        error: (err) => console.error('[planes] error billing profiles:', err),
+      });
+  }
+
+  selectBillingProfile(profile: BillingProfile): void {
+    this.selectedBillingProfileId.set(profile.id);
+  }
+
+  openCreateBillingDialog(): void {
+    this.showCreateBillingDialog.set(true);
+  }
+
+  onBillingProfileCreated(profile: BillingProfile): void {
+    this.billingProfiles.update((list) => [...list, profile]);
+    this.selectedBillingProfileId.set(profile.id);
+  }
+
+  isBillingProfileSelected(profile: BillingProfile): boolean {
+    return this.selectedBillingProfileId() === profile.id;
   }
 
   setTrack(t: Track): void {

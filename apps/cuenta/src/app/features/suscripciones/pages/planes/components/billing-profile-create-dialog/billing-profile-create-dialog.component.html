@@ -1,0 +1,232 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="visibleChange.emit($event)"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="!isSubmitting()"
+  [closeOnEscape]="!isSubmitting()"
+  [style]="{ width: '560px' }"
+  styleClass="billing-profile-dialog"
+>
+  <!-- Header -->
+  <ng-template pTemplate="header">
+    <div class="flex items-center gap-3.5">
+      <span
+        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-brand-blue/15"
+      >
+        <i class="pi pi-id-card text-[1.1rem] text-brand-blue"></i>
+      </span>
+      <div class="flex flex-col gap-[0.1rem]">
+        <h2
+          class="m-0 text-[1.05rem] font-extrabold leading-tight tracking-[-0.03em] text-brand-text"
+        >
+          Nuevo perfil de facturación
+        </h2>
+        <p class="m-0 text-[0.75rem] tracking-[0.01em] text-brand-muted">
+          Registra el destinatario de la factura electrónica.
+        </p>
+      </div>
+    </div>
+  </ng-template>
+
+  @if (visible()) {
+    <form
+      [formGroup]="form"
+      (ngSubmit)="submit()"
+      class="flex flex-col gap-[1.1rem]"
+      autocomplete="off"
+    >
+      <!-- Row 1: tipo + número -->
+      <div class="grid grid-cols-[200px_1fr] gap-3">
+        <!-- Tipo identificación: segmented control -->
+        <div class="flex flex-col">
+          <span class="mb-1.5 text-[0.78rem] font-semibold tracking-[-0.01em] text-brand-navy">
+            Tipo
+          </span>
+          <div
+            class="flex h-[42px] border border-[rgba(20,48,73,0.18)] rounded-md p-[3px] bg-brand-bg gap-[2px]"
+            role="radiogroup"
+            aria-label="Tipo de identificación"
+          >
+            @for (opt of tipoOptions; track opt.value) {
+              <button
+                type="button"
+                role="radio"
+                [attr.aria-checked]="tipoSelected() === opt.value"
+                (click)="setTipo(opt.value)"
+                [title]="opt.hint"
+                class="flex-1 flex items-center justify-center rounded text-[0.78rem] font-semibold transition-all duration-150 font-mono"
+                [class]="
+                  tipoSelected() === opt.value
+                    ? 'bg-brand-blue text-white'
+                    : 'text-brand-muted hover:text-brand-blue'
+                "
+              >
+                {{ opt.label }}
+              </button>
+            }
+          </div>
+          @if (form.controls.tipo.invalid && form.controls.tipo.touched) {
+            <span class="mt-1 text-[0.7rem] tracking-[0.01em] text-red-600">
+              Selecciona un tipo de identificación.
+            </span>
+          }
+        </div>
+
+        <!-- Número identificación -->
+        <div class="flex flex-col">
+          <label
+            for="dlg-billing-numero"
+            class="mb-1.5 text-[0.78rem] font-semibold tracking-[-0.01em] text-brand-navy"
+          >
+            Número de identificación
+          </label>
+          <input
+            id="dlg-billing-numero"
+            pInputText
+            type="text"
+            formControlName="numero"
+            (input)="onNumeroInput($any($event.target).value)"
+            placeholder="Auto formateamos"
+            class="w-full font-mono tabular-nums"
+            [class.cd-input-error]="form.controls.numero.invalid && form.controls.numero.touched"
+          />
+          @if (form.controls.numero.invalid && form.controls.numero.touched) {
+            <span class="mt-1 text-[0.7rem] tracking-[0.01em] text-red-600">
+              Ingresa al menos 5 dígitos.
+            </span>
+          }
+        </div>
+      </div>
+
+      <!-- Row 2: nombre -->
+      <div class="flex flex-col">
+        <label
+          for="dlg-billing-nombre"
+          class="mb-1.5 text-[0.78rem] font-semibold tracking-[-0.01em] text-brand-navy"
+        >
+          {{ nombreLabel() }}
+        </label>
+        <input
+          id="dlg-billing-nombre"
+          pInputText
+          type="text"
+          formControlName="nombre"
+          [placeholder]="nombrePlaceholder()"
+          class="w-full"
+          [class.cd-input-error]="form.controls.nombre.invalid && form.controls.nombre.touched"
+        />
+        @if (form.controls.nombre.invalid && form.controls.nombre.touched) {
+          <span class="mt-1 text-[0.7rem] tracking-[0.01em] text-red-600">
+            @if (form.controls.nombre.hasError('required')) {
+              El nombre es obligatorio.
+            } @else {
+              Mínimo 3 caracteres.
+            }
+          </span>
+        }
+      </div>
+
+      <!-- Row 3: email + ciudad -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div class="flex flex-col">
+          <label
+            for="dlg-billing-email"
+            class="mb-1.5 text-[0.78rem] font-semibold tracking-[-0.01em] text-brand-navy"
+          >
+            Email de facturación
+          </label>
+          <input
+            id="dlg-billing-email"
+            pInputText
+            type="email"
+            formControlName="email"
+            placeholder="facturacion@empresa.co"
+            class="w-full"
+            [class.cd-input-error]="form.controls.email.invalid && form.controls.email.touched"
+          />
+          @if (form.controls.email.invalid && form.controls.email.touched) {
+            <span class="mt-1 text-[0.7rem] tracking-[0.01em] text-red-600">
+              @if (form.controls.email.hasError('required')) {
+                El email es obligatorio.
+              } @else {
+                Ingresa un email válido.
+              }
+            </span>
+          }
+        </div>
+        <div class="flex flex-col">
+          <label
+            for="dlg-billing-ciudad"
+            class="mb-1.5 text-[0.78rem] font-semibold tracking-[-0.01em] text-brand-navy"
+          >
+            Ciudad
+          </label>
+          <lib-ciudad-autocomplete
+            inputId="dlg-billing-ciudad"
+            formControlName="ciudad"
+            placeholder="Bogotá, Medellín…"
+            [invalid]="form.controls.ciudad.invalid && form.controls.ciudad.touched"
+          />
+          @if (form.controls.ciudad.invalid && form.controls.ciudad.touched) {
+            <span class="mt-1 text-[0.7rem] tracking-[0.01em] text-red-600">
+              Selecciona una ciudad de la lista.
+            </span>
+          }
+        </div>
+      </div>
+
+      <!-- Row 4: dirección -->
+      <div class="flex flex-col">
+        <label
+          for="dlg-billing-direccion"
+          class="mb-1.5 text-[0.78rem] font-semibold tracking-[-0.01em] text-brand-navy"
+        >
+          Dirección fiscal
+        </label>
+        <input
+          id="dlg-billing-direccion"
+          pInputText
+          type="text"
+          formControlName="direccion"
+          placeholder="Calle 100 # 11-32, Oficina 502"
+          class="w-full"
+          [class.cd-input-error]="
+            form.controls.direccion.invalid && form.controls.direccion.touched
+          "
+        />
+        @if (form.controls.direccion.invalid && form.controls.direccion.touched) {
+          <span class="mt-1 text-[0.7rem] tracking-[0.01em] text-red-600">
+            @if (form.controls.direccion.hasError('required')) {
+              La dirección es obligatoria.
+            } @else {
+              Mínimo 5 caracteres.
+            }
+          </span>
+        }
+      </div>
+    </form>
+  }
+
+  <!-- Footer -->
+  <ng-template pTemplate="footer">
+    <div class="flex items-center justify-end gap-2 pt-2">
+      <p-button
+        label="Cancelar"
+        [outlined]="true"
+        severity="secondary"
+        (onClick)="onCancel()"
+        [disabled]="isSubmitting()"
+      />
+      <p-button
+        label="Guardar perfil"
+        icon="pi pi-arrow-right"
+        iconPos="right"
+        [loading]="isSubmitting()"
+        [disabled]="form.invalid || isSubmitting()"
+        (onClick)="submit()"
+      />
+    </div>
+  </ng-template>
+</p-dialog>
