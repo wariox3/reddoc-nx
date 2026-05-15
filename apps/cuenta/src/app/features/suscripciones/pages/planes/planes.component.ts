@@ -11,6 +11,7 @@ import {
 } from '../../models/suscripcion-tipo.model';
 import { BillingProfilesService } from '../../services/billing-profiles.service';
 import { SuscripcionTiposService } from '../../services/suscripcion-tipos.service';
+import { SuscripcionesService } from '../../services/suscripciones.service';
 import { BillingProfileCardComponent } from './components/billing-profile-card/billing-profile-card.component';
 import { BillingProfileCreateDialogComponent } from './components/billing-profile-create-dialog/billing-profile-create-dialog.component';
 import { PlanCardComponent } from './components/plan-card/plan-card.component';
@@ -21,6 +22,10 @@ import { displayedMonthly, formatCop } from './utils/plan-pricing';
 type Track = 'facturacion' | 'erp';
 
 const STEP_LABELS = ['Plan', 'Facturación', 'Confirmar'] as const;
+
+// Cuando la suscripción actual es una "Prueba" (no aparece en el listado de
+// planes comprables), preseleccionamos Expansión Facturación.
+const FALLBACK_PRESELECTED_PLAN_ID = 5;
 
 @Component({
   selector: 'app-planes',
@@ -39,6 +44,7 @@ export class PlanesComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly tiposService = inject(SuscripcionTiposService);
+  private readonly suscripcionesService = inject(SuscripcionesService);
   private readonly billingService = inject(BillingProfilesService);
   private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
@@ -121,12 +127,24 @@ export class PlanesComponent implements OnInit {
     const id = idParam ? Number(idParam) : null;
     this.suscripcionId.set(id);
 
+    // Si venimos por el botón "Mejorar" tenemos el detalle en router state:
+    // lo usamos para pintar el header sin esperar al API. Luego el GET lo refresca.
     const navState = (history.state ?? {}) as { suscripcion?: Suscripcion };
     if (navState.suscripcion && navState.suscripcion.id === id) {
       this.suscripcion.set(navState.suscripcion);
-      console.log('[planes] suscripción desde router state:', navState.suscripcion);
-    } else {
-      console.log('[planes] sin router state — context header oculto. id:', id);
+    }
+
+    if (id !== null) {
+      this.suscripcionesService
+        .getById(id)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (res) => {
+            this.suscripcion.set(res);
+            this.tryPreselectPlan();
+          },
+          error: (err) => console.error('[planes] error GET suscripcion detalle:', err),
+        });
     }
 
     this.tiposService
@@ -137,6 +155,7 @@ export class PlanesComponent implements OnInit {
           console.log('[planes] respuesta API:', res);
           this.allPlanes.set([...res.results]);
           this.isLoading.set(false);
+          this.tryPreselectPlan();
         },
         error: (err) => {
           console.error('[planes] error:', err);
@@ -152,6 +171,17 @@ export class PlanesComponent implements OnInit {
         next: (profiles) => this.billingProfiles.set([...profiles]),
         error: (err) => console.error('[planes] error billing profiles:', err),
       });
+  }
+
+  private tryPreselectPlan(): void {
+    const planes = this.allPlanes();
+    const sus = this.suscripcion();
+    if (planes.length === 0 || sus === null) return;
+    if (this.selectedPlanId() !== null) return;
+    const currentInList = planes.some((p) => p.id === sus.suscripcion_tipo);
+    if (!currentInList) {
+      this.selectedPlanId.set(FALLBACK_PRESELECTED_PLAN_ID);
+    }
   }
 
   selectBillingProfile(profile: BillingProfile): void {

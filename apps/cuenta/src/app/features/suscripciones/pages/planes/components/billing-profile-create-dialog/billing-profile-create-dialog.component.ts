@@ -17,24 +17,20 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { Ciudad, ToastService } from '@reddoc/core';
-import { CiudadAutocompleteComponent } from '@reddoc/ui';
+import { Ciudad, Identificacion, ToastService } from '@reddoc/core';
+import { CiudadAutocompleteComponent, IdentificacionSelectComponent } from '@reddoc/ui';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
-import {
-  BillingProfile,
-  TIPO_IDENTIFICACION_OPTIONS,
-  TipoIdentificacion,
-  formatIdentificacion,
-} from '../../../../models/billing-profile.model';
+import { BillingProfile } from '../../../../models/billing-profile.model';
 import { BillingProfilesService } from '../../../../services/billing-profiles.service';
 
 interface BillingProfileForm {
-  tipo: FormControl<TipoIdentificacion | null>;
+  identificacion: FormControl<Identificacion | null>;
   numero: FormControl<string>;
   nombre: FormControl<string>;
   email: FormControl<string>;
+  telefono: FormControl<string>;
   direccion: FormControl<string>;
   ciudad: FormControl<Ciudad | null>;
 }
@@ -48,6 +44,7 @@ interface BillingProfileForm {
     ButtonModule,
     ReactiveFormsModule,
     CiudadAutocompleteComponent,
+    IdentificacionSelectComponent,
   ],
   templateUrl: './billing-profile-create-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -62,11 +59,12 @@ export class BillingProfileCreateDialogComponent {
   readonly visibleChange = output<boolean>();
   readonly created = output<BillingProfile>();
 
-  readonly tipoOptions = TIPO_IDENTIFICACION_OPTIONS;
   readonly isSubmitting = signal(false);
 
   readonly form: FormGroup<BillingProfileForm> = this.fb.group({
-    tipo: this.fb.control<TipoIdentificacion | null>(null, { validators: [Validators.required] }),
+    identificacion: this.fb.control<Identificacion | null>(null, {
+      validators: [Validators.required],
+    }),
     numero: this.fb.nonNullable.control('', {
       validators: [Validators.required, Validators.minLength(5)],
     }),
@@ -76,28 +74,30 @@ export class BillingProfileCreateDialogComponent {
     email: this.fb.nonNullable.control('', {
       validators: [Validators.required, Validators.email],
     }),
+    telefono: this.fb.nonNullable.control('', {
+      validators: [Validators.required, Validators.pattern(/^[0-9]{7,15}$/)],
+    }),
     direccion: this.fb.nonNullable.control('', {
       validators: [Validators.required, Validators.minLength(5)],
     }),
     ciudad: this.fb.control<Ciudad | null>(null, { validators: [Validators.required] }),
   });
 
-  readonly tipoSelected = signal<TipoIdentificacion | null>(null);
+  readonly identificacionSelected = signal<Identificacion | null>(null);
 
   constructor() {
-    // Sync local signal for template reads of tipo (so `pInputText` can react)
-    this.form.controls.tipo.valueChanges
+    this.form.controls.identificacion.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((value) => this.tipoSelected.set(value));
+      .subscribe((value) => this.identificacionSelected.set(value));
 
-    // Reset form when dialog closes
     effect(() => {
       if (!this.visible()) {
         this.form.reset({
-          tipo: null,
+          identificacion: null,
           numero: '',
           nombre: '',
           email: '',
+          telefono: '',
           direccion: '',
           ciudad: null,
         });
@@ -105,29 +105,14 @@ export class BillingProfileCreateDialogComponent {
     });
   }
 
+  // El nombre del tipo (ej. "NIT", "Cédula de ciudadanía") determina la etiqueta.
   readonly nombreLabel = computed(() =>
-    this.tipoSelected() === 'NIT' ? 'Razón social' : 'Nombre completo',
+    this.isNit(this.identificacionSelected()) ? 'Razón social' : 'Nombre completo',
   );
 
   readonly nombrePlaceholder = computed(() =>
-    this.tipoSelected() === 'NIT' ? 'Empresa Ejemplo S.A.S.' : 'María Camila Restrepo',
+    this.isNit(this.identificacionSelected()) ? 'Empresa Ejemplo S.A.S.' : 'María Camila Restrepo',
   );
-
-  setTipo(tipo: TipoIdentificacion): void {
-    this.form.controls.tipo.setValue(tipo);
-    this.form.controls.tipo.markAsTouched();
-    // Re-format current numero against the new tipo
-    const current = this.form.controls.numero.value;
-    if (current) {
-      this.form.controls.numero.setValue(formatIdentificacion(tipo, current));
-    }
-  }
-
-  onNumeroInput(value: string): void {
-    const tipo = this.form.controls.tipo.value;
-    const formatted = tipo ? formatIdentificacion(tipo, value) : value;
-    this.form.controls.numero.setValue(formatted, { emitEvent: false });
-  }
 
   onCancel(): void {
     if (this.isSubmitting()) return;
@@ -144,10 +129,11 @@ export class BillingProfileCreateDialogComponent {
     const v = this.form.getRawValue();
     this.billingService
       .create({
-        tipo: v.tipo,
+        identificacion: v.identificacion,
         numero: v.numero,
         nombre: v.nombre,
         email: v.email,
+        telefono: v.telefono,
         direccion: v.direccion,
         ciudad: v.ciudad,
       })
@@ -165,5 +151,9 @@ export class BillingProfileCreateDialogComponent {
           this.toast.error('Error', 'No se pudo crear el perfil de facturación.');
         },
       });
+  }
+
+  private isNit(ident: Identificacion | null): boolean {
+    return !!ident && /nit/i.test(ident.nombre);
   }
 }

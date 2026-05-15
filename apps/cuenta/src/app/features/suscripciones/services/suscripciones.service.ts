@@ -8,4 +8,8 @@ export class SuscripcionesService extends BaseHttpService {
   getSuscripciones(): Observable<PaginatedResponse<Suscripcion>> {
     return this.get<PaginatedResponse<Suscripcion>>('/contenedor/suscripcion/lista-usuario/');
   }
+
+  getById(id: number): Observable<Suscripcion> {
+    return this.get<Suscripcion>(`/contenedor/suscripcion/${id}/`);
+  }
 }

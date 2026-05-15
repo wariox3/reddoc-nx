@@ -43,8 +43,11 @@
     <div class="flex items-start gap-2 text-[0.72rem] text-brand-muted leading-snug">
       <i class="pi pi-map-marker text-[0.62rem] text-brand-muted/70 mt-[3px] shrink-0"></i>
       <span class="leading-snug">
-        {{ profile().direccion }}<br />
-        <span class="text-brand-text/80">{{ profile().ciudad }}</span>
+        {{ profile().direccion }}
+        @if (profile().ciudad) {
+          <br />
+          <span class="text-brand-text/80">{{ profile().ciudad }}</span>
+        }
       </span>
     </div>
   </div>

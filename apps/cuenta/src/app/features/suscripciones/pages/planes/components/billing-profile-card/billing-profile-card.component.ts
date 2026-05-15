@@ -15,7 +15,7 @@ export class BillingProfileCardComponent {
   readonly profileSelected = output<BillingProfile>();
 
   readonly tipoHint = computed(() =>
-    this.profile().tipo === 'NIT' ? 'Persona jurídica' : 'Persona natural',
+    /nit/i.test(this.profile().tipo) ? 'Persona jurídica' : 'Persona natural',
   );
 
   onClick(): void {
