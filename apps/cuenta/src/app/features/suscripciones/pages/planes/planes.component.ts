@@ -15,11 +15,12 @@ import { BillingProfileCardComponent } from './components/billing-profile-card/b
 import { BillingProfileCreateDialogComponent } from './components/billing-profile-create-dialog/billing-profile-create-dialog.component';
 import { PlanCardComponent } from './components/plan-card/plan-card.component';
 import { PlanStepperComponent } from './components/plan-stepper/plan-stepper.component';
+import { PlanSummaryCardComponent } from './components/plan-summary-card/plan-summary-card.component';
 import { displayedMonthly, formatCop } from './utils/plan-pricing';
 
 type Track = 'facturacion' | 'erp';
 
-const STEP_LABELS = ['Plan', 'Pago', 'Confirmar'] as const;
+const STEP_LABELS = ['Plan', 'Facturación', 'Confirmar'] as const;
 
 @Component({
   selector: 'app-planes',
@@ -30,6 +31,7 @@ const STEP_LABELS = ['Plan', 'Pago', 'Confirmar'] as const;
     PlanStepperComponent,
     BillingProfileCardComponent,
     BillingProfileCreateDialogComponent,
+    PlanSummaryCardComponent,
   ],
   templateUrl: './planes.component.html',
 })
@@ -47,7 +49,7 @@ export class PlanesComponent implements OnInit {
   readonly suscripcion = signal<Suscripcion | null>(null);
 
   readonly step = signal<0 | 1 | 2>(0);
-  readonly track = signal<Track>('facturacion');
+  readonly track = signal<Track>('erp');
   readonly annual = signal(false);
   readonly selectedPlanId = signal<number | null>(null);
 
@@ -60,9 +62,7 @@ export class PlanesComponent implements OnInit {
 
   readonly visiblePlanes = computed(() => {
     const categoria =
-      this.track() === 'facturacion'
-        ? SUSCRIPCION_CATEGORIA_FACTURACION
-        : SUSCRIPCION_CATEGORIA_ERP;
+      this.track() === 'erp' ? SUSCRIPCION_CATEGORIA_FACTURACION : SUSCRIPCION_CATEGORIA_ERP;
     return this.allPlanes().filter((p) => p.suscripcion_categoria_id === categoria);
   });
 
@@ -90,6 +90,8 @@ export class PlanesComponent implements OnInit {
     if (this.step() === 1) return this.selectedBillingProfileId() !== null;
     return true;
   });
+
+  readonly showSummary = computed(() => this.step() === 1 && this.selectedPlan() !== null);
 
   readonly stepHeader = computed<{ title: string; subtitle: string }>(() => {
     switch (this.step()) {
