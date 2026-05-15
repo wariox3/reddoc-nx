@@ -17,8 +17,9 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { Ciudad, Identificacion, ToastService } from '@reddoc/core';
+import { Ciudad, Identificacion, IdentificacionService, ToastService } from '@reddoc/core';
 import { CiudadAutocompleteComponent, IdentificacionSelectComponent } from '@reddoc/ui';
+import { Observable } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
@@ -52,14 +53,29 @@ interface BillingProfileForm {
 export class BillingProfileCreateDialogComponent {
   private readonly fb = inject(FormBuilder);
   private readonly billingService = inject(BillingProfilesService);
+  private readonly identificacionService = inject(IdentificacionService);
   private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly visible = input<boolean>(false);
+  /** Cuando se pasa un perfil, el diálogo entra en modo edición. */
+  readonly profile = input<BillingProfile | null>(null);
   readonly visibleChange = output<boolean>();
   readonly created = output<BillingProfile>();
+  readonly updated = output<BillingProfile>();
 
   readonly isSubmitting = signal(false);
+  readonly isEditMode = computed(() => this.profile() !== null);
+
+  readonly dialogTitle = computed(() =>
+    this.isEditMode() ? 'Editar perfil de facturación' : 'Nuevo perfil de facturación',
+  );
+  readonly dialogSubtitle = computed(() =>
+    this.isEditMode()
+      ? 'Actualiza los datos del destinatario.'
+      : 'Registra el destinatario de la factura electrónica.',
+  );
+  readonly submitLabel = computed(() => (this.isEditMode() ? 'Guardar cambios' : 'Guardar perfil'));
 
   readonly form: FormGroup<BillingProfileForm> = this.fb.group({
     identificacion: this.fb.control<Identificacion | null>(null, {
@@ -90,17 +106,17 @@ export class BillingProfileCreateDialogComponent {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((value) => this.identificacionSelected.set(value));
 
+    // Al abrir: si hay profile → pre-rellena (edit); si no → resetea (create).
     effect(() => {
-      if (!this.visible()) {
-        this.form.reset({
-          identificacion: null,
-          numero: '',
-          nombre: '',
-          email: '',
-          telefono: '',
-          direccion: '',
-          ciudad: null,
-        });
+      if (this.visible()) {
+        const p = this.profile();
+        if (p) {
+          this.hydrateFromProfile(p);
+        } else {
+          this.resetForm();
+        }
+      } else {
+        this.resetForm();
       }
     });
   }
@@ -127,30 +143,86 @@ export class BillingProfileCreateDialogComponent {
     this.isSubmitting.set(true);
 
     const v = this.form.getRawValue();
-    this.billingService
-      .create({
-        identificacion: v.identificacion,
-        numero: v.numero,
-        nombre: v.nombre,
-        email: v.email,
-        telefono: v.telefono,
-        direccion: v.direccion,
-        ciudad: v.ciudad,
-      })
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (profile) => {
-          this.isSubmitting.set(false);
+    const draft = {
+      identificacion: v.identificacion,
+      numero: v.numero,
+      nombre: v.nombre,
+      email: v.email,
+      telefono: v.telefono,
+      direccion: v.direccion,
+      ciudad: v.ciudad,
+    };
+
+    const current = this.profile();
+    const request$: Observable<BillingProfile> = current
+      ? this.billingService.update(current.id, draft)
+      : this.billingService.create(draft);
+
+    request$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (profile) => {
+        this.isSubmitting.set(false);
+        if (current) {
+          this.toast.success('Perfil actualizado', `${profile.nombre} se guardó correctamente.`);
+          this.updated.emit(profile);
+        } else {
           this.toast.success('Perfil creado', `${profile.nombre} se guardó correctamente.`);
           this.created.emit(profile);
-          this.visibleChange.emit(false);
+        }
+        this.visibleChange.emit(false);
+      },
+      error: (err) => {
+        console.error('[billing] submit error:', err);
+        this.isSubmitting.set(false);
+        this.toast.error(
+          'Error',
+          current
+            ? 'No se pudo actualizar el perfil de facturación.'
+            : 'No se pudo crear el perfil de facturación.',
+        );
+      },
+    });
+  }
+
+  private hydrateFromProfile(p: BillingProfile): void {
+    // El backend devuelve ciudad_id + ciudad_nombre, así que podemos armar el
+    // Ciudad sin depender de las sugerencias actuales del autocomplete: PrimeNG
+    // muestra la etiqueta a partir del optionLabel del valor.
+    const ciudad =
+      p.ciudad_id !== undefined && p.ciudad ? { id: p.ciudad_id, nombre: p.ciudad } : null;
+
+    this.form.reset({
+      identificacion: null,
+      numero: p.numero,
+      nombre: p.nombre,
+      email: p.email,
+      telefono: p.telefono,
+      direccion: p.direccion,
+      ciudad,
+    });
+
+    // Resolver Identificacion por nombre desde el catálogo (ya cacheado).
+    this.identificacionService
+      .list()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (tipos) => {
+          const match = tipos.find((t) => t.nombre === p.tipo) ?? null;
+          this.form.controls.identificacion.setValue(match);
         },
-        error: (err) => {
-          console.error('[billing] create error:', err);
-          this.isSubmitting.set(false);
-          this.toast.error('Error', 'No se pudo crear el perfil de facturación.');
-        },
+        error: () => undefined,
       });
+  }
+
+  private resetForm(): void {
+    this.form.reset({
+      identificacion: null,
+      numero: '',
+      nombre: '',
+      email: '',
+      telefono: '',
+      direccion: '',
+      ciudad: null,
+    });
   }
 
   private isNit(ident: Identificacion | null): boolean {

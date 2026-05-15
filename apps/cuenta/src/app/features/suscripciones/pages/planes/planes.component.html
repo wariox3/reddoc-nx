@@ -211,6 +211,8 @@
                 [profile]="profile"
                 [selected]="isBillingProfileSelected(profile)"
                 (profileSelected)="selectBillingProfile($event)"
+                (edit)="onEditBillingProfile($event)"
+                (remove)="onRequestRemoveBillingProfile($event)"
               />
             }
             <button
@@ -331,7 +333,19 @@
 @if (showCreateBillingDialog()) {
   <app-billing-profile-create-dialog
     [visible]="showCreateBillingDialog()"
-    (visibleChange)="showCreateBillingDialog.set($event)"
+    [profile]="editingBillingProfile()"
+    (visibleChange)="onCreateDialogVisibleChange($event)"
     (created)="onBillingProfileCreated($event)"
+    (updated)="onBillingProfileUpdated($event)"
+  />
+}
+
+@if (deletingBillingProfile(); as p) {
+  <app-billing-profile-delete-dialog
+    [visible]="true"
+    [profile]="p"
+    [isSubmitting]="isDeletingBilling()"
+    (visibleChange)="onDeleteDialogVisibleChange($event)"
+    (confirm)="confirmRemoveBillingProfile($event)"
   />
 }

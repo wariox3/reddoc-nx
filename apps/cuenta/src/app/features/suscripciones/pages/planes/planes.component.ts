@@ -14,6 +14,7 @@ import { SuscripcionTiposService } from '../../services/suscripcion-tipos.servic
 import { SuscripcionesService } from '../../services/suscripciones.service';
 import { BillingProfileCardComponent } from './components/billing-profile-card/billing-profile-card.component';
 import { BillingProfileCreateDialogComponent } from './components/billing-profile-create-dialog/billing-profile-create-dialog.component';
+import { BillingProfileDeleteDialogComponent } from './components/billing-profile-delete-dialog/billing-profile-delete-dialog.component';
 import { PlanCardComponent } from './components/plan-card/plan-card.component';
 import { PlanStepperComponent } from './components/plan-stepper/plan-stepper.component';
 import { PlanSummaryCardComponent } from './components/plan-summary-card/plan-summary-card.component';
@@ -36,6 +37,7 @@ const FALLBACK_PRESELECTED_PLAN_ID = 5;
     PlanStepperComponent,
     BillingProfileCardComponent,
     BillingProfileCreateDialogComponent,
+    BillingProfileDeleteDialogComponent,
     PlanSummaryCardComponent,
   ],
   templateUrl: './planes.component.html',
@@ -63,6 +65,9 @@ export class PlanesComponent implements OnInit {
   readonly billingProfiles = signal<BillingProfile[]>([]);
   readonly selectedBillingProfileId = signal<number | null>(null);
   readonly showCreateBillingDialog = signal(false);
+  readonly editingBillingProfile = signal<BillingProfile | null>(null);
+  readonly deletingBillingProfile = signal<BillingProfile | null>(null);
+  readonly isDeletingBilling = signal(false);
 
   readonly stepLabels = STEP_LABELS;
 
@@ -189,12 +194,59 @@ export class PlanesComponent implements OnInit {
   }
 
   openCreateBillingDialog(): void {
+    this.editingBillingProfile.set(null);
     this.showCreateBillingDialog.set(true);
+  }
+
+  onEditBillingProfile(profile: BillingProfile): void {
+    this.editingBillingProfile.set(profile);
+    this.showCreateBillingDialog.set(true);
+  }
+
+  onCreateDialogVisibleChange(visible: boolean): void {
+    this.showCreateBillingDialog.set(visible);
+    if (!visible) this.editingBillingProfile.set(null);
   }
 
   onBillingProfileCreated(profile: BillingProfile): void {
     this.billingProfiles.update((list) => [...list, profile]);
     this.selectedBillingProfileId.set(profile.id);
+  }
+
+  onBillingProfileUpdated(profile: BillingProfile): void {
+    this.billingProfiles.update((list) => list.map((p) => (p.id === profile.id ? profile : p)));
+  }
+
+  onRequestRemoveBillingProfile(profile: BillingProfile): void {
+    this.deletingBillingProfile.set(profile);
+  }
+
+  onDeleteDialogVisibleChange(visible: boolean): void {
+    if (!visible) this.deletingBillingProfile.set(null);
+  }
+
+  confirmRemoveBillingProfile(profile: BillingProfile): void {
+    if (this.isDeletingBilling()) return;
+    this.isDeletingBilling.set(true);
+    this.billingService
+      .remove(profile.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.isDeletingBilling.set(false);
+          this.billingProfiles.update((list) => list.filter((p) => p.id !== profile.id));
+          if (this.selectedBillingProfileId() === profile.id) {
+            this.selectedBillingProfileId.set(null);
+          }
+          this.deletingBillingProfile.set(null);
+          this.toast.success('Perfil eliminado', `${profile.nombre} se eliminó.`);
+        },
+        error: (err) => {
+          console.error('[planes] error remove billing profile:', err);
+          this.isDeletingBilling.set(false);
+          this.toast.error('Error', 'No se pudo eliminar el perfil de facturación.');
+        },
+      });
   }
 
   isBillingProfileSelected(profile: BillingProfile): boolean {

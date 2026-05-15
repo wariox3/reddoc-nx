@@ -13,12 +13,31 @@ export class BillingProfileCardComponent {
   readonly selected = input<boolean>(false);
 
   readonly profileSelected = output<BillingProfile>();
+  readonly edit = output<BillingProfile>();
+  readonly remove = output<BillingProfile>();
 
   readonly tipoHint = computed(() =>
     /nit/i.test(this.profile().tipo) ? 'Persona jurídica' : 'Persona natural',
   );
 
-  onClick(): void {
+  onSelect(): void {
     this.profileSelected.emit(this.profile());
+  }
+
+  onSelectKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      this.onSelect();
+    }
+  }
+
+  onEdit(event: MouseEvent): void {
+    event.stopPropagation();
+    this.edit.emit(this.profile());
+  }
+
+  onRemove(event: MouseEvent): void {
+    event.stopPropagation();
+    this.remove.emit(this.profile());
   }
 }

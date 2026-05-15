@@ -18,6 +18,7 @@ interface ContactoApi {
   readonly correo: string;
   readonly identificacion: number;
   readonly ciudad: number;
+  readonly ciudad_nombre: string;
   readonly usuario: number;
 }
 
@@ -40,8 +41,7 @@ export class BillingProfilesService extends BaseHttpService {
           email: c.correo,
           telefono: c.telefono,
           direccion: c.direccion,
-          // TODO: resolver label de ciudad cuando exista el endpoint adecuado.
-          ciudad: '',
+          ciudad: c.ciudad_nombre,
           ciudad_id: c.ciudad,
         }));
       }),
@@ -49,32 +49,64 @@ export class BillingProfilesService extends BaseHttpService {
   }
 
   create(draft: BillingProfileDraft): Observable<BillingProfile> {
-    if (!draft.identificacion || !draft.ciudad) {
-      throw new Error('BillingProfileDraft inválido: identificacion y ciudad son obligatorias.');
-    }
+    const { tipo, ciudad, payload } = this.prepare(draft);
+    return this.post<{ id: number }>('/contenedor/contacto/', payload).pipe(
+      map((res) => this.toView(res.id, draft, tipo, ciudad)),
+    );
+  }
+
+  update(id: number, draft: BillingProfileDraft): Observable<BillingProfile> {
+    const { tipo, ciudad, payload } = this.prepare(draft);
+    return this.patch<{ id: number }>(`/contenedor/contacto/${id}/`, payload).pipe(
+      map(() => this.toView(id, draft, tipo, ciudad)),
+    );
+  }
+
+  remove(id: number): Observable<void> {
+    return this.delete<void>(`/contenedor/contacto/${id}/`);
+  }
+
+  private prepare(draft: BillingProfileDraft): {
+    tipo: { id: number; nombre: string };
+    ciudad: { id: number; nombre: string };
+    payload: BillingProfilePayload;
+  } {
     const tipo = draft.identificacion;
     const ciudad = draft.ciudad;
-    const payload: BillingProfilePayload = {
-      identificacion: tipo.id,
-      numero_identificacion: draft.numero,
-      nombre_corto: draft.nombre,
-      correo: draft.email,
-      telefono: draft.telefono,
-      direccion: draft.direccion,
-      ciudad: ciudad.id,
-    };
-    return this.post<{ id: number }>('/contenedor/contacto/', payload).pipe(
-      map((res) => ({
-        id: res.id,
-        tipo: tipo.nombre,
-        numero: draft.numero,
-        nombre: draft.nombre,
-        email: draft.email,
+    if (!tipo || !ciudad) {
+      throw new Error('BillingProfileDraft inválido: identificacion y ciudad son obligatorias.');
+    }
+    return {
+      tipo,
+      ciudad,
+      payload: {
+        identificacion: tipo.id,
+        numero_identificacion: draft.numero,
+        nombre_corto: draft.nombre,
+        correo: draft.email,
         telefono: draft.telefono,
         direccion: draft.direccion,
-        ciudad: ciudad.nombre,
-        ciudad_id: ciudad.id,
-      })),
-    );
+        ciudad: ciudad.id,
+      },
+    };
+  }
+
+  private toView(
+    id: number,
+    draft: BillingProfileDraft,
+    tipo: { id: number; nombre: string },
+    ciudad: { id: number; nombre: string },
+  ): BillingProfile {
+    return {
+      id,
+      tipo: tipo.nombre,
+      numero: draft.numero,
+      nombre: draft.nombre,
+      email: draft.email,
+      telefono: draft.telefono,
+      direccion: draft.direccion,
+      ciudad: ciudad.nombre,
+      ciudad_id: ciudad.id,
+    };
   }
 }

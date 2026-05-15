@@ -21,10 +21,10 @@
         <h2
           class="m-0 text-[1.05rem] font-extrabold leading-tight tracking-[-0.03em] text-brand-text"
         >
-          Nuevo perfil de facturación
+          {{ dialogTitle() }}
         </h2>
         <p class="m-0 text-[0.75rem] tracking-[0.01em] text-brand-muted">
-          Registra el destinatario de la factura electrónica.
+          {{ dialogSubtitle() }}
         </p>
       </div>
     </div>
@@ -235,7 +235,7 @@
         [disabled]="isSubmitting()"
       />
       <p-button
-        label="Guardar perfil"
+        [label]="submitLabel()"
         icon="pi pi-arrow-right"
         iconPos="right"
         [loading]="isSubmitting()"
