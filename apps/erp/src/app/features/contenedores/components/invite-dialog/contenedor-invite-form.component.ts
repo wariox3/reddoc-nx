@@ -1,7 +1,17 @@
-import { Component, DestroyRef, computed, inject, input, output, signal } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  computed,
+  inject,
+  input,
+  output,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
+  AutoComplete,
   AutoCompleteCompleteEvent,
   AutoCompleteSelectEvent,
   AutoCompleteModule,
@@ -30,6 +40,8 @@ export class ContenedorInviteFormComponent {
 
   readonly contenedor = input<Contenedor | null>(null);
   readonly invited = output<void>();
+
+  private readonly autocomplete = viewChild.required(AutoComplete);
 
   readonly autocompleteValue = signal<UserSearchResult | string>('');
   readonly selectedUser = computed(() => {
@@ -92,6 +104,7 @@ export class ContenedorInviteFormComponent {
           this.toastService.success(toasts.title, toasts.desc);
           this.autocompleteValue.set('');
           this.userSuggestions.set([]);
+          this.autocomplete().clear();
           this.invited.emit();
         },
         error: (err) => {

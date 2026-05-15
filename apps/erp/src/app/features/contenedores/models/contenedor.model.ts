@@ -9,6 +9,7 @@ export interface ContenedorMember {
   usuario_email: string;
   cliente_id: number;
   rol_id: number | null;
+  rol_nombre: string | null;
 }
 
 export type ContenedorMembersResponse = PaginatedResponse<ContenedorMember>;

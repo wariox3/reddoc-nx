@@ -93,7 +93,7 @@
                 class="shrink-0 rounded-full border px-2 py-[0.1rem] text-[0.65rem] font-semibold leading-none"
                 [ngClass]="pillClass(member.rol_id)"
               >
-                {{ roleLabel(member.rol_id) }}
+                {{ member.rol_nombre || roleLabel(member.rol_id) }}
               </span>
 
               @if (canRemove(member)) {

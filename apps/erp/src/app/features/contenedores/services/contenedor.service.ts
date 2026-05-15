@@ -54,7 +54,7 @@ export class ContenedorService extends BaseHttpService {
   }
 
   removeMember(membershipId: number): Observable<unknown> {
-    return this.delete(`/contenedor/usuariocontenedor/${membershipId}/`);
+    return this.delete(`/seguridad/usuario-cliente/${membershipId}/`);
   }
 
   searchUsers(query: string): Observable<UserSearchResult[]> {
