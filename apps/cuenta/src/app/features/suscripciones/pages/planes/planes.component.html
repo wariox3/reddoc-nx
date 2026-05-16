@@ -240,27 +240,19 @@
         </div>
       }
 
-      <!-- STEP 3: CONFIRM (placeholder, but shows the selected plan) -->
+      <!-- STEP 3: CONFIRM -->
       @else {
-        <div class="animate-fade-up flex flex-col gap-4">
-          @if (selectedPlan(); as plan) {
-            <app-plan-card [plan]="plan" [annual]="annual()" [selected]="true" />
-          }
-          <div
-            class="py-8 flex flex-col items-center text-center gap-2 border border-dashed border-[rgba(20,48,73,0.18)] rounded-xl"
-          >
-            <span
-              class="flex h-12 w-12 items-center justify-center rounded-full bg-[rgba(20,48,73,0.05)] text-brand-muted"
-            >
-              <i class="pi pi-shield text-[1.15rem]"></i>
-            </span>
-            <p class="m-0 mt-2 text-[0.92rem] font-semibold text-brand-text">Próximamente</p>
-            <p class="m-0 text-[0.78rem] text-brand-muted max-w-sm">
-              Aquí revisarás el resumen completo y procesarás el pago. Pendiente de integración con
-              el procesador de pagos.
-            </p>
-          </div>
-        </div>
+        @if (selectedPlan(); as plan) {
+          <app-plan-confirm-step
+            [plan]="plan"
+            [billingProfile]="selectedBillingProfile()"
+            [annual]="annual()"
+            [(metodoPago)]="metodoPago"
+            [(autoRenovacion)]="autoRenovacion"
+            (cambiarPlan)="goToStep(0)"
+            (cambiarFacturacion)="goToStep(1)"
+          />
+        }
       }
     </section>
 
@@ -299,6 +291,12 @@
           Facturar a
           <strong class="text-brand-text font-semibold">{{ bp.nombre }}</strong>
         </span>
+      } @else if (step() === 2 && selectedPlan(); as plan) {
+        <span class="text-[0.78rem] text-brand-muted tabular-nums">
+          Total
+          <strong class="text-brand-text font-semibold">{{ selectedMonthlyLabel() }}</strong>
+          {{ annual() ? '/mes (anual)' : '/mes' }}
+        </span>
       }
 
       @if (step() < 2) {
@@ -319,11 +317,23 @@
       } @else {
         <button
           type="button"
-          disabled
-          class="px-5 py-2.5 rounded-lg border-0 bg-[rgba(20,48,73,0.12)] text-brand-muted text-[0.85rem] font-semibold inline-flex items-center gap-1.5 cursor-not-allowed min-w-[180px] justify-center"
+          (click)="pagar()"
+          [disabled]="isStartingPayment()"
+          class="px-5 py-2.5 rounded-lg border-0 text-[0.85rem] font-semibold inline-flex items-center gap-2 transition-all duration-150 min-w-[200px] justify-center"
+          [class]="
+            isStartingPayment()
+              ? 'bg-[rgba(20,48,73,0.12)] text-brand-muted cursor-not-allowed'
+              : 'bg-brand-blue text-white cursor-pointer hover:bg-[#0086d4]'
+          "
         >
-          <i class="pi pi-lock text-[0.7rem]"></i>
-          Pagar y activar
+          @if (isStartingPayment()) {
+            <i class="pi pi-spin pi-spinner text-[0.78rem]"></i>
+            Redirigiendo a Wompi…
+          } @else {
+            <i class="pi pi-lock text-[0.7rem]"></i>
+            Pagar y activar
+            <i class="pi pi-arrow-right text-[0.7rem]"></i>
+          }
         </button>
       }
     </div>

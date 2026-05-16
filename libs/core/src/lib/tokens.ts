@@ -12,6 +12,7 @@ export interface ReddocEnvironment {
   apiUrl: string;
   turnstileSiteKey: string;
   cuentaUrl?: string;
+  wompiPublicKey?: string;
 }
 
 export interface RoutePaths {

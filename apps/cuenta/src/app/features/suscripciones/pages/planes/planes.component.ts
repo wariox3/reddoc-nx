@@ -3,6 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { getInitials, ToastService } from '@reddoc/core';
 import { BillingProfile } from '../../models/billing-profile.model';
+import { IniciarPagoRequest, MetodoPago, WompiCheckoutError } from '../../models/pago.model';
 import { Suscripcion } from '../../models/suscripcion.model';
 import {
   SUSCRIPCION_CATEGORIA_ERP,
@@ -10,15 +11,20 @@ import {
   SuscripcionTipo,
 } from '../../models/suscripcion-tipo.model';
 import { BillingProfilesService } from '../../services/billing-profiles.service';
+import { SuscripcionPagoService } from '../../services/suscripcion-pago.service';
 import { SuscripcionTiposService } from '../../services/suscripcion-tipos.service';
 import { SuscripcionesService } from '../../services/suscripciones.service';
+import { WompiCheckoutService } from '../../services/wompi-checkout.service';
 import { BillingProfileCardComponent } from './components/billing-profile-card/billing-profile-card.component';
 import { BillingProfileCreateDialogComponent } from './components/billing-profile-create-dialog/billing-profile-create-dialog.component';
 import { BillingProfileDeleteDialogComponent } from './components/billing-profile-delete-dialog/billing-profile-delete-dialog.component';
 import { PlanCardComponent } from './components/plan-card/plan-card.component';
+import { PlanConfirmStepComponent } from './components/plan-confirm-step/plan-confirm-step.component';
 import { PlanStepperComponent } from './components/plan-stepper/plan-stepper.component';
 import { PlanSummaryCardComponent } from './components/plan-summary-card/plan-summary-card.component';
 import { displayedMonthly, formatCop } from './utils/plan-pricing';
+
+const WOMPI_REF_STORAGE_KEY = 'reddoc:wompi:ref';
 
 type Track = 'facturacion' | 'erp';
 
@@ -39,6 +45,7 @@ const FALLBACK_PRESELECTED_PLAN_ID = 5;
     BillingProfileCreateDialogComponent,
     BillingProfileDeleteDialogComponent,
     PlanSummaryCardComponent,
+    PlanConfirmStepComponent,
   ],
   templateUrl: './planes.component.html',
 })
@@ -48,6 +55,8 @@ export class PlanesComponent implements OnInit {
   private readonly tiposService = inject(SuscripcionTiposService);
   private readonly suscripcionesService = inject(SuscripcionesService);
   private readonly billingService = inject(BillingProfilesService);
+  private readonly pagoService = inject(SuscripcionPagoService);
+  private readonly wompiCheckout = inject(WompiCheckoutService);
   private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -68,6 +77,11 @@ export class PlanesComponent implements OnInit {
   readonly editingBillingProfile = signal<BillingProfile | null>(null);
   readonly deletingBillingProfile = signal<BillingProfile | null>(null);
   readonly isDeletingBilling = signal(false);
+
+  // Step 3: payment
+  readonly metodoPago = signal<MetodoPago>('tarjeta');
+  readonly autoRenovacion = signal(true);
+  readonly isStartingPayment = signal(false);
 
   readonly stepLabels = STEP_LABELS;
 
@@ -297,5 +311,60 @@ export class PlanesComponent implements OnInit {
     const plan = this.selectedPlan();
     if (!plan) return '';
     return formatCop(displayedMonthly(plan.precio, this.annual()));
+  }
+
+  goToStep(step: 0 | 1 | 2): void {
+    this.step.set(step);
+  }
+
+  pagar(): void {
+    if (this.isStartingPayment()) return;
+
+    const plan = this.selectedPlan();
+    const bp = this.selectedBillingProfile();
+    const id = this.suscripcionId();
+    if (!plan || !bp || id === null) {
+      this.toast.error('Error', 'Faltan datos para procesar el pago.');
+      return;
+    }
+
+    const payload: IniciarPagoRequest = {
+      suscripcion_tipo_id: plan.id,
+      billing_profile_id: bp.id,
+      frecuencia: this.annual() ? 'anual' : 'mensual',
+      auto_renovacion: this.autoRenovacion(),
+      metodo_pago: this.metodoPago(),
+    };
+
+    this.isStartingPayment.set(true);
+    this.pagoService
+      .iniciarPago(id, payload)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (intencion) => {
+          try {
+            if (typeof sessionStorage !== 'undefined') {
+              sessionStorage.setItem(WOMPI_REF_STORAGE_KEY, intencion.referencia);
+            }
+            this.wompiCheckout.redirectToCheckout({
+              intencion,
+              metodoPago: this.metodoPago(),
+            });
+          } catch (err) {
+            this.isStartingPayment.set(false);
+            const message =
+              err instanceof WompiCheckoutError
+                ? err.message
+                : 'No se pudo abrir el checkout de Wompi.';
+            console.error('[planes] error redirect Wompi:', err);
+            this.toast.error('Error', message);
+          }
+        },
+        error: (err) => {
+          this.isStartingPayment.set(false);
+          console.error('[planes] error iniciar-pago:', err);
+          this.toast.error('Error', 'No se pudo iniciar el pago. Intentá de nuevo.');
+        },
+      });
   }
 }

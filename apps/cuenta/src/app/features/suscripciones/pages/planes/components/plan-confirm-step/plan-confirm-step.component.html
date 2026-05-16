@@ -1,0 +1,327 @@
+<div class="animate-fade-up flex flex-col gap-5">
+  <!-- ===== 1. Plan elegido ===== -->
+  <section
+    class="rounded-xl border border-[rgba(20,48,73,0.12)] bg-brand-bg/40 p-5 flex flex-col gap-3.5"
+  >
+    <header class="flex items-start justify-between gap-3 flex-wrap">
+      <div class="flex items-center gap-3 min-w-0">
+        <span
+          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-blue/10 text-brand-blue"
+        >
+          <i class="pi pi-bolt text-[1.1rem]"></i>
+        </span>
+        <div class="min-w-0">
+          <div
+            class="font-mono text-[0.62rem] tracking-[0.16em] uppercase text-brand-muted font-semibold"
+          >
+            Plan {{ categoriaLabel() }}
+          </div>
+          <div class="flex items-center gap-2 flex-wrap mt-0.5">
+            <span class="text-[1rem] font-semibold text-brand-text tracking-[-0.01em]">
+              {{ plan().nombre }}
+            </span>
+            @if (esRecomendado()) {
+              <span
+                class="bg-brand-text text-white text-[0.6rem] font-bold tracking-[0.06em] uppercase px-2 py-[3px] rounded-full whitespace-nowrap"
+              >
+                Recomendado
+              </span>
+            }
+          </div>
+          @if (description(); as desc) {
+            <p class="m-0 mt-1 text-[0.78rem] text-brand-muted leading-snug">{{ desc }}</p>
+          }
+        </div>
+      </div>
+      <button
+        type="button"
+        (click)="onCambiarPlan()"
+        class="text-[0.76rem] font-semibold text-brand-blue hover:underline cursor-pointer inline-flex items-center gap-1 shrink-0"
+      >
+        <i class="pi pi-pencil text-[0.62rem]"></i>
+        Cambiar plan
+      </button>
+    </header>
+
+    @if (includedFeatures().length > 0) {
+      <ul class="list-none m-0 p-0 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5">
+        @for (f of includedFeatures(); track f.label) {
+          <li class="flex items-start gap-2 text-[0.76rem] leading-snug">
+            <span
+              class="inline-flex items-center justify-center h-[15px] w-[15px] shrink-0 rounded-full mt-px bg-emerald-50 text-emerald-600"
+            >
+              <i class="pi pi-check text-[0.5rem]"></i>
+            </span>
+            <span class="text-brand-text">{{ f.label }}</span>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+
+  <!-- ===== 2. Facturar a ===== -->
+  @if (billingProfile(); as bp) {
+    <section
+      class="rounded-xl border border-[rgba(20,48,73,0.12)] bg-brand-bg/40 p-5 flex flex-col gap-3"
+    >
+      <header class="flex items-start justify-between gap-3 flex-wrap">
+        <div class="flex items-center gap-3 min-w-0">
+          <span
+            class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-blue/10 text-brand-blue"
+          >
+            <i class="pi pi-file text-[1.05rem]"></i>
+          </span>
+          <div class="min-w-0">
+            <div
+              class="font-mono text-[0.62rem] tracking-[0.16em] uppercase text-brand-muted font-semibold"
+            >
+              Facturar a
+            </div>
+            <div class="text-[0.95rem] font-semibold text-brand-text tracking-[-0.01em] mt-0.5">
+              {{ bp.nombre }}
+            </div>
+            <div class="text-[0.72rem] font-mono tabular-nums text-brand-muted mt-0.5">
+              {{ bp.tipo }} · {{ bp.numero }}
+            </div>
+          </div>
+        </div>
+        <button
+          type="button"
+          (click)="onCambiarFacturacion()"
+          class="text-[0.76rem] font-semibold text-brand-blue hover:underline cursor-pointer inline-flex items-center gap-1 shrink-0"
+        >
+          <i class="pi pi-pencil text-[0.62rem]"></i>
+          Cambiar
+        </button>
+      </header>
+
+      <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-2 text-[0.78rem] m-0">
+        <div class="flex flex-col gap-0.5">
+          <dt class="text-[0.62rem] font-semibold uppercase tracking-[0.1em] text-brand-muted">
+            Correo
+          </dt>
+          <dd class="m-0 text-brand-text break-all">{{ bp.email }}</dd>
+        </div>
+        <div class="flex flex-col gap-0.5">
+          <dt class="text-[0.62rem] font-semibold uppercase tracking-[0.1em] text-brand-muted">
+            Teléfono
+          </dt>
+          <dd class="m-0 text-brand-text tabular-nums">{{ bp.telefono }}</dd>
+        </div>
+        <div class="flex flex-col gap-0.5 sm:col-span-2">
+          <dt class="text-[0.62rem] font-semibold uppercase tracking-[0.1em] text-brand-muted">
+            Dirección
+          </dt>
+          <dd class="m-0 text-brand-text">{{ bp.direccion }} · {{ bp.ciudad }}</dd>
+        </div>
+      </dl>
+    </section>
+  }
+
+  <!-- ===== 3. Método de pago ===== -->
+  <section
+    class="rounded-xl border border-[rgba(20,48,73,0.12)] bg-brand-bg/40 p-5 flex flex-col gap-3"
+  >
+    <header>
+      <div
+        class="font-mono text-[0.62rem] tracking-[0.16em] uppercase text-brand-muted font-semibold"
+      >
+        Método de pago
+      </div>
+      <div class="text-[0.85rem] font-semibold text-brand-text tracking-[-0.01em] mt-0.5">
+        Elige cómo querés pagar
+      </div>
+    </header>
+
+    <div
+      class="grid grid-cols-1 sm:grid-cols-2 gap-3"
+      role="radiogroup"
+      aria-label="Método de pago"
+    >
+      <button
+        type="button"
+        role="radio"
+        [attr.aria-checked]="metodoPago() === 'tarjeta'"
+        (click)="seleccionarMetodo('tarjeta')"
+        class="relative text-left rounded-xl p-4 transition-all duration-150 cursor-pointer flex items-center gap-3"
+        [class]="
+          metodoPago() === 'tarjeta'
+            ? 'border-2 border-brand-blue bg-brand-blue/6 shadow-[0_4px_16px_-8px_rgba(0,158,247,0.45)]'
+            : 'border border-[rgba(20,48,73,0.18)] bg-brand-surface hover:border-brand-blue/40'
+        "
+      >
+        <span
+          class="h-[17px] w-[17px] shrink-0 rounded-full bg-brand-surface"
+          [class]="
+            metodoPago() === 'tarjeta'
+              ? 'border-[5px] border-brand-blue'
+              : 'border-[1.5px] border-brand-muted/50'
+          "
+        ></span>
+        <span
+          class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-blue/10 text-brand-blue"
+        >
+          <i class="pi pi-credit-card text-[1rem]"></i>
+        </span>
+        <div class="flex-1 min-w-0">
+          <div class="text-[0.86rem] font-semibold text-brand-text leading-tight">
+            Tarjeta de crédito o débito
+          </div>
+          <div class="text-[0.7rem] text-brand-muted mt-0.5">
+            Visa, Mastercard, AmEx · Soporta auto-renovación
+          </div>
+        </div>
+      </button>
+
+      <button
+        type="button"
+        role="radio"
+        [attr.aria-checked]="metodoPago() === 'pse'"
+        (click)="seleccionarMetodo('pse')"
+        class="relative text-left rounded-xl p-4 transition-all duration-150 cursor-pointer flex items-center gap-3"
+        [class]="
+          metodoPago() === 'pse'
+            ? 'border-2 border-brand-blue bg-brand-blue/6 shadow-[0_4px_16px_-8px_rgba(0,158,247,0.45)]'
+            : 'border border-[rgba(20,48,73,0.18)] bg-brand-surface hover:border-brand-blue/40'
+        "
+      >
+        <span
+          class="h-[17px] w-[17px] shrink-0 rounded-full bg-brand-surface"
+          [class]="
+            metodoPago() === 'pse'
+              ? 'border-[5px] border-brand-blue'
+              : 'border-[1.5px] border-brand-muted/50'
+          "
+        ></span>
+        <span
+          class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-blue/10 text-brand-blue"
+        >
+          <i class="pi pi-building-columns text-[1rem]"></i>
+        </span>
+        <div class="flex-1 min-w-0">
+          <div class="text-[0.86rem] font-semibold text-brand-text leading-tight">PSE</div>
+          <div class="text-[0.7rem] text-brand-muted mt-0.5">
+            Débito desde tu banco · Pago manual cada ciclo
+          </div>
+        </div>
+      </button>
+    </div>
+  </section>
+
+  <!-- ===== 4. Auto-renovación ===== -->
+  <section
+    class="rounded-xl border border-[rgba(20,48,73,0.12)] bg-brand-bg/40 p-5 flex items-start justify-between gap-4"
+  >
+    <div class="flex items-start gap-3 min-w-0">
+      <span
+        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-blue/10 text-brand-blue"
+      >
+        <i class="pi pi-sync text-[1rem]"></i>
+      </span>
+      <div class="min-w-0">
+        <div class="text-[0.88rem] font-semibold text-brand-text tracking-[-0.01em]">
+          Renovar automáticamente
+        </div>
+        <p class="m-0 text-[0.74rem] text-brand-muted leading-snug mt-1 max-w-prose">
+          @if (autoRenovacionDeshabilitada()) {
+            PSE requiere pago manual cada ciclo. Te enviaremos un recordatorio por correo antes de
+            la próxima renovación.
+          } @else {
+            Cobramos tu tarjeta al final de cada ciclo para mantener tu suscripción activa. Puedes
+            cancelar cuando quieras desde tu cuenta.
+          }
+        </p>
+      </div>
+    </div>
+
+    <button
+      type="button"
+      role="switch"
+      [attr.aria-checked]="autoRenovacion()"
+      [disabled]="autoRenovacionDeshabilitada()"
+      (click)="toggleAutoRenovacion()"
+      class="relative w-[42px] h-[24px] rounded-full border-0 transition-colors duration-200 shrink-0"
+      [class]="
+        autoRenovacionDeshabilitada()
+          ? 'bg-[rgba(20,48,73,0.12)] cursor-not-allowed'
+          : autoRenovacion()
+            ? 'bg-brand-blue cursor-pointer'
+            : 'bg-[rgba(20,48,73,0.18)] cursor-pointer'
+      "
+    >
+      <span
+        class="absolute top-[2px] w-[20px] h-[20px] rounded-full bg-white shadow-[0_1px_3px_rgba(0,0,0,0.18)] transition-[left] duration-200"
+        [style.left.px]="autoRenovacion() && !autoRenovacionDeshabilitada() ? 20 : 2"
+      ></span>
+    </button>
+  </section>
+
+  <!-- ===== 5. Resumen del cobro ===== -->
+  <section class="rounded-xl border border-brand-blue/30 bg-brand-blue/5 p-5 flex flex-col gap-3">
+    <header>
+      <div
+        class="font-mono text-[0.62rem] tracking-[0.16em] uppercase text-brand-blue font-semibold"
+      >
+        Resumen del cobro
+      </div>
+    </header>
+
+    <dl class="m-0 flex flex-col gap-2 text-[0.82rem]">
+      <div class="flex items-baseline justify-between gap-3">
+        <dt class="text-brand-muted">{{ plan().nombre }} · {{ frecuenciaLabel() }}</dt>
+        <dd class="m-0 text-brand-text tabular-nums">{{ subtotalLabel() }}</dd>
+      </div>
+      @if (descuentoAnualLabel(); as descLabel) {
+        <div class="flex items-baseline justify-between gap-3">
+          <dt class="text-brand-muted">Descuento anual (10%)</dt>
+          <dd class="m-0 text-emerald-600 font-semibold tabular-nums">−{{ descLabel }}</dd>
+        </div>
+      }
+    </dl>
+
+    <div class="pt-3 border-t border-brand-blue/20">
+      <div class="flex items-baseline justify-between gap-2">
+        <span class="text-[0.92rem] font-semibold text-brand-text">Total a pagar hoy</span>
+        <div class="flex items-baseline gap-1">
+          <span
+            class="text-[1.5rem] font-bold text-brand-blue tracking-[-0.02em] tabular-nums leading-none"
+          >
+            {{ chargeAmountLabel() }}
+          </span>
+          <span class="text-[0.7rem] text-brand-muted font-semibold">{{ chargeSuffix() }}</span>
+        </div>
+      </div>
+      @if (annual()) {
+        <div class="text-right text-[0.68rem] text-brand-muted tabular-nums mt-1">
+          ≈ {{ monthlyEquivalentLabel() }} / mes
+        </div>
+      }
+    </div>
+
+    <div class="flex items-center justify-between gap-3 pt-2 text-[0.72rem]">
+      <span class="text-brand-muted inline-flex items-center gap-1.5">
+        <i class="pi pi-calendar text-[0.7rem]"></i>
+        Próxima renovación:
+        <strong class="text-brand-text font-semibold">{{ proximaRenovacionLabel() }}</strong>
+        @if (!autoRenovacionDeshabilitada() && autoRenovacion()) {
+          <span class="text-brand-blue font-semibold">· auto</span>
+        }
+      </span>
+      <span class="text-brand-muted">IVA incluido</span>
+    </div>
+  </section>
+
+  <!-- ===== 6. Aviso legal ===== -->
+  <div class="flex items-center justify-between gap-3 flex-wrap text-[0.7rem] text-brand-muted">
+    <p class="m-0 leading-snug max-w-[420px]">
+      Al pagar aceptás los
+      <a href="#" class="text-brand-blue hover:underline font-medium">Términos</a>
+      y la
+      <a href="#" class="text-brand-blue hover:underline font-medium">Política de privacidad</a>.
+    </p>
+    <span class="inline-flex items-center gap-1.5 text-brand-text font-semibold">
+      <i class="pi pi-lock text-[0.78rem] text-emerald-600"></i>
+      Pago seguro por Wompi
+    </span>
+  </div>
+</div>
