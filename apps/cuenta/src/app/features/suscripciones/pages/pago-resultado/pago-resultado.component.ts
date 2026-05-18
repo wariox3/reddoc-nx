@@ -3,8 +3,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EstadoPago } from '../../models/pago.model';
 import { SuscripcionPagoService } from '../../services/suscripcion-pago.service';
+import { WOMPI_REF_STORAGE_KEY } from '../../utils/wompi-payload';
 
-const STORAGE_KEY = 'reddoc:wompi:ref';
 const POLL_INTERVAL_MS = 2000;
 const POLL_TIMEOUT_MS = 30000;
 
@@ -69,7 +69,7 @@ export class PagoResultadoComponent implements OnInit {
     const wompiId = qp.get('id');
     const refFromUrl = qp.get('ref');
     const refFromStorage =
-      typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(STORAGE_KEY) : null;
+      typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(WOMPI_REF_STORAGE_KEY) : null;
     const referencia = refFromUrl ?? refFromStorage;
 
     this.transactionId.set(wompiId);
@@ -141,7 +141,7 @@ export class PagoResultadoComponent implements OnInit {
 
   private limpiarStorage(): void {
     if (typeof sessionStorage !== 'undefined') {
-      sessionStorage.removeItem(STORAGE_KEY);
+      sessionStorage.removeItem(WOMPI_REF_STORAGE_KEY);
     }
   }
 }

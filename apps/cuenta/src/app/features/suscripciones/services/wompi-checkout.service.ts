@@ -1,11 +1,11 @@
 import { Injectable, inject } from '@angular/core';
 import { ENVIRONMENT } from '@reddoc/core';
-import { MetodoPago, IniciarPagoResponse, WompiCheckoutError } from '../models/pago.model';
+import { MetodoPago, WompiCheckoutError, WompiCheckoutPayload } from '../models/pago.model';
 
 const WOMPI_CHECKOUT_BASE = 'https://checkout.wompi.co/p/';
 
 interface OpenCheckoutInput {
-  readonly intencion: IniciarPagoResponse;
+  readonly intencion: WompiCheckoutPayload;
   readonly metodoPago: MetodoPago;
 }
 
@@ -28,10 +28,10 @@ export class WompiCheckoutService {
       throw new WompiCheckoutError('Wompi no está configurado: falta wompiPublicKey.');
     }
     if (!input.intencion.hash) {
-      throw new WompiCheckoutError('El backend no devolvió la firma de integridad.');
+      throw new WompiCheckoutError('Falta la firma de integridad del pago.');
     }
     if (!input.intencion.referencia) {
-      throw new WompiCheckoutError('El backend no devolvió la referencia del pago.');
+      throw new WompiCheckoutError('Falta la referencia del pago.');
     }
     if (!Number.isFinite(input.intencion.monto_cents) || input.intencion.monto_cents <= 0) {
       throw new WompiCheckoutError('Monto inválido para iniciar el pago.');

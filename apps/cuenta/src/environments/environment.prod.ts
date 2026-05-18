@@ -3,4 +3,5 @@ export const environment = {
   apiUrl: '/api',
   turnstileSiteKey: 'REEMPLAZAR_PRODUCCION',
   wompiPublicKey: '',
+  wompiRedirectOrigin: '',
 };

@@ -13,6 +13,13 @@ export interface ReddocEnvironment {
   turnstileSiteKey: string;
   cuentaUrl?: string;
   wompiPublicKey?: string;
+  /**
+   * Origen al que Wompi va a devolver al usuario tras el checkout (`redirect-url`).
+   * El WAF de Wompi rechaza `localhost`, entonces en dev hay que apuntar a un
+   * dominio público HTTPS aceptado por el comercio. Si no está seteado, cae a
+   * `window.location.origin`.
+   */
+  wompiRedirectOrigin?: string;
 }
 
 export interface RoutePaths {

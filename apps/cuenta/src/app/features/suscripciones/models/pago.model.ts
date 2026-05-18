@@ -2,12 +2,20 @@ export type MetodoPago = 'tarjeta' | 'pse';
 
 export type FrecuenciaPago = 'mensual' | 'anual';
 
-export interface IniciarPagoRequest {
+export type PeriodoPago = 'M' | 'A';
+
+export interface IntegridadRequest {
+  readonly suscripcion_id: number;
   readonly suscripcion_tipo_id: number;
-  readonly billing_profile_id: number;
-  readonly frecuencia: FrecuenciaPago;
-  readonly auto_renovacion: boolean;
-  readonly metodo_pago: MetodoPago;
+  readonly periodo: PeriodoPago;
+  readonly contacto_id: number;
+  readonly monto_cents: number;
+  readonly moneda: 'COP';
+}
+
+export interface IntegridadResponse {
+  readonly hash: string;
+  readonly referencia: string;
 }
 
 export interface WompiCustomerData {
@@ -18,7 +26,7 @@ export interface WompiCustomerData {
   readonly legal_id_type?: string;
 }
 
-export interface IniciarPagoResponse {
+export interface WompiCheckoutPayload {
   readonly referencia: string;
   readonly monto_cents: number;
   readonly moneda: 'COP';

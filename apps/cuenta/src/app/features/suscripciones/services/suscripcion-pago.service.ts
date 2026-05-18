@@ -1,15 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { BaseHttpService } from '@reddoc/core';
-import { EstadoPagoResponse, IniciarPagoRequest, IniciarPagoResponse } from '../models/pago.model';
+import { EstadoPagoResponse, IntegridadRequest, IntegridadResponse } from '../models/pago.model';
 
 @Injectable({ providedIn: 'root' })
 export class SuscripcionPagoService extends BaseHttpService {
-  iniciarPago(suscripcionId: number, payload: IniciarPagoRequest): Observable<IniciarPagoResponse> {
-    return this.post<IniciarPagoResponse>(
-      `/contenedor/suscripcion/${suscripcionId}/iniciar-pago/`,
-      payload,
-    );
+  firmarIntegridad(payload: IntegridadRequest): Observable<IntegridadResponse> {
+    return this.post<IntegridadResponse>('/contenedor/suscripcion/integridad/', payload);
   }
 
   consultarPago(referencia: string): Observable<EstadoPagoResponse> {
