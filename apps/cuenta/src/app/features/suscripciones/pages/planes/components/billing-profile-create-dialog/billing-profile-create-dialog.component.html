@@ -71,6 +71,7 @@
             pInputText
             type="text"
             inputmode="numeric"
+            maxlength="20"
             formControlName="numero"
             placeholder="Solo dígitos"
             class="w-full font-mono tabular-nums"
@@ -82,7 +83,7 @@
               @if (form.controls.numero.hasError('required')) {
                 Este campo es requerido.
               } @else {
-                Ingresa al menos 5 dígitos (solo 0-9).
+                Ingresa entre 5 y 20 dígitos (solo 0-9).
               }
             </span>
           }
