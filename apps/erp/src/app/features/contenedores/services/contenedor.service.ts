@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { BaseHttpService } from '@reddoc/core';
 import {
   Contenedor,
@@ -24,7 +25,9 @@ export class ContenedorService extends BaseHttpService {
   }
 
   getContenedor(id: number): Observable<Contenedor> {
-    return this.get<Contenedor>(`/contenedor/cliente/${id}/`);
+    return this.get<Contenedor & { id?: number }>(`/contenedor/cliente/${id}/`).pipe(
+      map((r) => ({ ...r, cliente_id: r.cliente_id ?? r.id ?? id })),
+    );
   }
 
   createContenedor(payload: CreateContenedorRequest): Observable<unknown> {
