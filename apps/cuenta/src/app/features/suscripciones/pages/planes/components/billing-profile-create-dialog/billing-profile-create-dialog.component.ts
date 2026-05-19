@@ -68,21 +68,26 @@ export class BillingProfileCreateDialogComponent {
   readonly isEditMode = computed(() => this.profile() !== null);
 
   readonly dialogTitle = computed(() =>
-    this.isEditMode() ? 'Editar perfil de facturación' : 'Nuevo perfil de facturación',
+    this.isEditMode() ? 'Editar datos de facturación' : 'Nuevos datos de facturación',
   );
   readonly dialogSubtitle = computed(() =>
     this.isEditMode()
       ? 'Actualiza los datos del destinatario.'
       : 'Registra el destinatario de la factura electrónica.',
   );
-  readonly submitLabel = computed(() => (this.isEditMode() ? 'Guardar cambios' : 'Guardar perfil'));
+  readonly submitLabel = computed(() => (this.isEditMode() ? 'Guardar cambios' : 'Guardar datos'));
 
   readonly form: FormGroup<BillingProfileForm> = this.fb.group({
     identificacion: this.fb.control<Identificacion | null>(null, {
       validators: [Validators.required],
     }),
     numero: this.fb.nonNullable.control('', {
-      validators: [Validators.required, Validators.minLength(5)],
+      validators: [
+        Validators.required,
+        Validators.minLength(5),
+        Validators.maxLength(20),
+        Validators.pattern(/^[0-9]+$/),
+      ],
     }),
     nombre: this.fb.nonNullable.control('', {
       validators: [Validators.required, Validators.minLength(3)],
@@ -223,6 +228,15 @@ export class BillingProfileCreateDialogComponent {
       direccion: '',
       ciudad: null,
     });
+  }
+
+  onNumeroInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const cleaned = input.value.replace(/\D/g, '').slice(0, 20);
+    if (cleaned !== input.value) {
+      input.value = cleaned;
+      this.form.controls.numero.setValue(cleaned, { emitEvent: false });
+    }
   }
 
   private isNit(ident: Identificacion | null): boolean {
