@@ -1,12 +1,13 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { AUTH_SERVICE, I18nService, ROUTE_PATHS_TOKEN, extractErrorMessage } from '@reddoc/core';
+import { AuthSuccessStateComponent } from '../auth-success-state/auth-success-state.component';
 import type { AuthTranslationsHost } from '../i18n';
 
 @Component({
   selector: 'lib-verify-email',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, AuthSuccessStateComponent],
   templateUrl: './verify-email.component.html',
   styleUrl: './verify-email.component.scss',
 })

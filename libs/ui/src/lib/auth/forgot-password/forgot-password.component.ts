@@ -12,6 +12,7 @@ import {
   extractErrorMessage,
 } from '@reddoc/core';
 import { TurnstileComponent } from '../../turnstile/turnstile.component';
+import { AuthSuccessStateComponent } from '../auth-success-state/auth-success-state.component';
 import type { AuthTranslationsHost } from '../i18n';
 
 @Component({
@@ -24,6 +25,7 @@ import type { AuthTranslationsHost } from '../i18n';
     InputTextModule,
     MessageModule,
     TurnstileComponent,
+    AuthSuccessStateComponent,
   ],
   templateUrl: './forgot-password.component.html',
   styleUrl: './forgot-password.component.scss',

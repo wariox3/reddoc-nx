@@ -1,0 +1,32 @@
+<div class="flex flex-col items-center text-center gap-6 py-8 animate-fade-up">
+  <div class="relative flex items-center justify-center">
+    <div
+      class="absolute w-28 h-28 rounded-full blur-xl"
+      [class]="variant() === 'error' ? 'bg-red-500/10' : 'bg-brand-blue/10'"
+    ></div>
+    <div
+      class="relative w-20 h-20 rounded-full ring-4 flex items-center justify-center"
+      [class]="
+        variant() === 'error'
+          ? 'bg-red-500/10 ring-red-500/20'
+          : 'bg-brand-blue/10 ring-brand-blue/20'
+      "
+    >
+      <i
+        class="text-3xl pi"
+        [class]="icon() + (variant() === 'error' ? ' text-red-500' : ' text-brand-blue')"
+      ></i>
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <h2 class="text-2xl font-extrabold text-brand-text m-0 tracking-tight leading-tight">
+      {{ title() }}
+    </h2>
+    <p class="text-sm text-brand-muted m-0 max-w-[300px] leading-relaxed">
+      {{ description() }}
+    </p>
+  </div>
+
+  <ng-content />
+</div>

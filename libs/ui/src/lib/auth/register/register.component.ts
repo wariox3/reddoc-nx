@@ -16,6 +16,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { DialogModule } from 'primeng/dialog';
 import { APP_BRANDING, AUTH_SERVICE, I18nService, extractErrorMessage } from '@reddoc/core';
 import { TurnstileComponent } from '../../turnstile/turnstile.component';
+import { AuthSuccessStateComponent } from '../auth-success-state/auth-success-state.component';
 import type { AuthTranslationsHost } from '../i18n';
 
 function passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
@@ -40,6 +41,7 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
     CheckboxModule,
     DialogModule,
     TurnstileComponent,
+    AuthSuccessStateComponent,
   ],
   templateUrl: './register.component.html',
 })

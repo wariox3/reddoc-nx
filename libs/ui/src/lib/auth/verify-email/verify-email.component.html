@@ -9,27 +9,34 @@
         <p class="verify-state__desc">{{ t().auth.verifyEmail.loading.desc }}</p>
       </div>
     } @else if (verified()) {
-      <div class="verify-state">
-        <div class="verify-state__icon verify-state__icon--success">
-          <i class="pi pi-check-circle"></i>
-        </div>
-        <h2 class="verify-state__title">{{ t().auth.verifyEmail.success.title }}</h2>
-        <p class="verify-state__desc">{{ t().auth.verifyEmail.success.desc }}</p>
-        <a routerLink="/auth/login" class="verify-state__action">
+      <lib-auth-success-state
+        icon="pi-check"
+        [title]="t().auth.verifyEmail.success.title"
+        [description]="t().auth.verifyEmail.success.desc"
+      >
+        <a
+          routerLink="/auth/login"
+          class="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-blue no-underline transition-opacity hover:opacity-75"
+        >
+          <i class="pi pi-arrow-left text-xs"></i>
           {{ t().auth.verifyEmail.success.action }}
         </a>
-      </div>
+      </lib-auth-success-state>
     } @else {
-      <div class="verify-state">
-        <div class="verify-state__icon verify-state__icon--error">
-          <i class="pi pi-times-circle"></i>
-        </div>
-        <h2 class="verify-state__title">{{ t().auth.verifyEmail.error.title }}</h2>
-        <p class="verify-state__desc">{{ errorMessage() }}</p>
-        <a routerLink="/auth/resend-verification" class="verify-state__action">
+      <lib-auth-success-state
+        variant="error"
+        icon="pi-times"
+        [title]="t().auth.verifyEmail.error.title"
+        [description]="errorMessage()!"
+      >
+        <a
+          routerLink="/auth/resend-verification"
+          class="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-blue no-underline transition-opacity hover:opacity-75"
+        >
+          <i class="pi pi-arrow-left text-xs"></i>
           {{ t().auth.verifyEmail.error.action }}
         </a>
-      </div>
+      </lib-auth-success-state>
     }
   </div>
 </div>

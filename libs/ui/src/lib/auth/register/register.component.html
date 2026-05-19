@@ -222,21 +222,19 @@
           </p>
         </form>
       } @else {
-        <div class="flex flex-col items-center text-center gap-4 py-8">
-          <i class="pi pi-check-circle text-5xl text-brand-blue"></i>
-          <h2 class="text-2xl font-extrabold text-brand-text m-0">
-            {{ t().auth.register.success.title }}
-          </h2>
-          <p class="text-sm text-brand-muted m-0 max-w-[320px]">
-            {{ t().auth.register.success.desc }}
-          </p>
+        <lib-auth-success-state
+          icon="pi-check"
+          [title]="t().auth.register.success.title"
+          [description]="t().auth.register.success.desc"
+        >
           <a
             routerLink="/auth/login"
-            class="text-sm font-semibold text-brand-blue no-underline hover:opacity-75"
+            class="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-blue no-underline transition-opacity hover:opacity-75"
           >
+            <i class="pi pi-arrow-left text-xs"></i>
             {{ t().auth.register.success.goLogin }}
           </a>
-        </div>
+        </lib-auth-success-state>
       }
     </div>
   </div>
