@@ -182,7 +182,12 @@ export class PlanesComponent implements OnInit {
       .list()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (profiles) => this.billingProfiles.set([...profiles]),
+        next: (profiles) => {
+          this.billingProfiles.set([...profiles]);
+          if (profiles.length > 0 && this.selectedBillingProfileId() === null) {
+            this.selectedBillingProfileId.set(profiles[0].id);
+          }
+        },
         error: (err) => console.error('[planes] error billing profiles:', err),
       });
   }
@@ -245,7 +250,8 @@ export class PlanesComponent implements OnInit {
           this.isDeletingBilling.set(false);
           this.billingProfiles.update((list) => list.filter((p) => p.id !== profile.id));
           if (this.selectedBillingProfileId() === profile.id) {
-            this.selectedBillingProfileId.set(null);
+            const restantes = this.billingProfiles();
+            this.selectedBillingProfileId.set(restantes[0]?.id ?? null);
           }
           this.deletingBillingProfile.set(null);
           this.toast.success('Perfil eliminado', `${profile.nombre} se eliminó.`);
