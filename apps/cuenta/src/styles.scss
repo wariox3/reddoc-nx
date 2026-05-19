@@ -1,0 +1,88 @@
+@import 'primeicons/primeicons.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  background: var(--p-surface-ground);
+  color: var(--p-text-color);
+  overflow-x: hidden;
+}
+
+:root {
+  // Brand palette
+  --brand-navy: #13263c;
+  --brand-navy-deep: #0c1d2e;
+  --brand-blue: #009ef7;
+  --brand-white: #ffffff;
+
+  // Semantic
+  --brand-bg: #f8f9fa;
+  --brand-surface: #ffffff;
+  --brand-surface-2: #eef2f6;
+  --brand-text: #13263c;
+  --brand-muted: #2a6098;
+  --brand-muted-2: #68c0fb;
+  --brand-border: rgba(19 38 60 / 0.1);
+  --brand-border-hover: rgba(19 38 60 / 0.2);
+
+  // PrimeNG font override
+  --p-font-family: 'DM Sans', system-ui, sans-serif;
+}
+
+// ─── Auth shared: logo + back link ───────────────────────────────────────────
+.form-panel__logo-img {
+  height: 25px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+  margin-bottom: 2rem;
+  align-self: flex-end;
+}
+
+// ─── PrimeNG global overrides ─────────────────────────────────────────────────
+
+.p-divider {
+  margin: 0.5rem 0 !important;
+}
+
+.avatar-ring__placeholder {
+  width: 100% !important;
+  height: 100% !important;
+  background: var(--brand-navy) !important;
+  color: var(--brand-white) !important;
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+  border-radius: 0 !important;
+}
+
+.form-panel__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--brand-muted);
+  text-decoration: none;
+  margin-bottom: 2.5rem;
+  align-self: flex-start;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: var(--brand-text);
+
+    .pi {
+      transform: translateX(-3px);
+    }
+  }
+
+  .pi {
+    font-size: 0.8em;
+    transition: transform 0.2s ease;
+  }
+}

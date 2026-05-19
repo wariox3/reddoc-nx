@@ -7,7 +7,10 @@ export const ROUTE_PATHS = {
     verifyEmail: '/auth/verify-email',
     resendVerification: '/auth/resend-verification',
   },
-  dashboard: {
-    root: '/dashboard',
+  contenedores: {
+    root: '/contenedores',
+  },
+  tenant: {
+    dashboard: (slug: string) => `/t/${slug}/dashboard`,
   },
 };

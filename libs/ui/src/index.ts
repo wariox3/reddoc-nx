@@ -1,1 +1,13 @@
-export * from './lib/ui/ui';
+export { TurnstileComponent } from './lib/turnstile/turnstile.component';
+export { LoginComponent } from './lib/auth/login/login.component';
+export { RegisterComponent } from './lib/auth/register/register.component';
+export { ForgotPasswordComponent } from './lib/auth/forgot-password/forgot-password.component';
+export { ResetPasswordComponent } from './lib/auth/reset-password/reset-password.component';
+export { ResendVerificationComponent } from './lib/auth/resend-verification/resend-verification.component';
+export { VerifyEmailComponent } from './lib/auth/verify-email/verify-email.component';
+export { CiudadAutocompleteComponent } from './lib/components/ciudad-autocomplete/ciudad-autocomplete.component';
+export { IdentificacionSelectComponent } from './lib/components/identificacion-select/identificacion-select.component';
+export { LanguageToggleComponent } from './lib/components/language-toggle/language-toggle.component';
+export { UserAvatarComponent } from './lib/components/user-avatar/user-avatar.component';
+export type { AuthDict, AuthTranslationsHost } from './lib/auth/i18n';
+export { authEs, authEn } from './lib/auth/i18n';

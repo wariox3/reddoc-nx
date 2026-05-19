@@ -1,0 +1,135 @@
+import { Component, computed, effect, inject, signal } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { DrawerModule } from 'primeng/drawer';
+import { I18nService, TenantService } from '@reddoc/core';
+import { UserMenuComponent } from '../../shared/user-menu/user-menu.component';
+import { ActiveModuleStore } from '@erp/core/erp-modules';
+import type { AppDict } from '@erp/i18n';
+import { ModuleBarComponent } from '../module-bar/module-bar.component';
+import type {
+  SidebarAccordion,
+  SidebarLeafItem,
+  SidebarSection,
+  SidebarSimpleItem,
+} from '../sidebar/sidebar-menu.types';
+
+/**
+ * Layout principal del workspace de un tenant.
+ *
+ * El header aloja un topbar de módulos (`<app-module-bar>`) que cambia el
+ * módulo activo vía URL. El sidebar se filtra al módulo activo leyendo
+ * `ActiveModuleStore.activeDescriptor()` — cada módulo aporta su propio
+ * menú vía su `ErpModuleDescriptor`.
+ */
+@Component({
+  selector: 'app-workspace-layout',
+  standalone: true,
+  imports: [
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
+    NgTemplateOutlet,
+    DrawerModule,
+    UserMenuComponent,
+    ModuleBarComponent,
+  ],
+  templateUrl: './workspace-layout.component.html',
+  styleUrl: './workspace-layout.component.scss',
+})
+export class WorkspaceLayoutComponent {
+  private readonly i18n = inject<I18nService<AppDict>>(I18nService);
+  private readonly tenant = inject(TenantService);
+  private readonly activeModuleStore = inject(ActiveModuleStore);
+
+  protected readonly t = this.i18n.t;
+
+  /** Slug del tenant activo; necesario para resolver paths absolutos. */
+  protected readonly tenantSlug = this.tenant.currentSlug;
+
+  /** Descriptor del módulo activo, o `null` si estamos en una ruta global. */
+  protected readonly activeDescriptor = this.activeModuleStore.activeDescriptor;
+
+  /** Secciones del sidebar: las del módulo activo, o vacío si no hay módulo. */
+  protected readonly sections = computed<readonly SidebarSection[]>(
+    () => this.activeDescriptor()?.menu ?? [],
+  );
+
+  /** Ids de acordeones expandidos. Reinicia al cambiar de módulo. */
+  private readonly expandedAccordionIds = signal<ReadonlySet<string>>(new Set());
+
+  protected readonly drawerVisible = signal(false);
+
+  constructor() {
+    // Cada vez que cambia el módulo activo, expandimos todos sus acordeones por defecto.
+    effect(() => {
+      const sections = this.sections();
+      const accordionIds = sections
+        .filter((s): s is SidebarAccordion => s.kind === 'accordion')
+        .map((s) => s.id);
+      this.expandedAccordionIds.set(new Set(accordionIds));
+    });
+  }
+
+  // ── API protegida (template) ──────────────────────────────────────────────
+
+  protected isItem(section: SidebarSection): section is SidebarSimpleItem {
+    return section.kind === 'item';
+  }
+
+  protected asAccordion(section: SidebarSection): SidebarAccordion {
+    return section as SidebarAccordion;
+  }
+
+  protected isExpanded(accordionId: string): boolean {
+    return this.expandedAccordionIds().has(accordionId);
+  }
+
+  protected toggleAccordion(accordionId: string): void {
+    this.expandedAccordionIds.update((current) => {
+      const next = new Set(current);
+      if (next.has(accordionId)) next.delete(accordionId);
+      else next.add(accordionId);
+      return next;
+    });
+  }
+
+  protected toggleDrawer(): void {
+    this.drawerVisible.update((v) => !v);
+  }
+
+  /**
+   * Path absoluto para un item simple del menú del módulo activo.
+   * Los paths declarados en el descriptor son relativos al módulo —
+   * se les prepende `/t/<slug>/<moduleId>/`.
+   */
+  protected itemPath(item: SidebarSimpleItem): string {
+    return this.buildPath(item.path);
+  }
+
+  /** Path absoluto para un item dentro de un acordeón. */
+  protected leafPath(leaf: SidebarLeafItem): string {
+    return this.buildPath(leaf.path);
+  }
+
+  private buildPath(relativePath: string): string {
+    const slug = this.tenantSlug();
+    const moduleId = this.activeDescriptor()?.id;
+    if (!slug) return `/${relativePath}`;
+    return moduleId ? `/t/${slug}/${moduleId}/${relativePath}` : `/t/${slug}/${relativePath}`;
+  }
+
+  /**
+   * Resuelve una clave i18n con notación de punto contra el diccionario activo.
+   * Devuelve la clave misma si no existe — útil para detectar faltantes en dev.
+   */
+  protected translate(key: string): string {
+    const parts = key.split('.');
+    let current: unknown = this.t();
+    for (const part of parts) {
+      if (current === null || typeof current !== 'object') return key;
+      current = (current as Record<string, unknown>)[part];
+    }
+    return typeof current === 'string' ? current : key;
+  }
+}

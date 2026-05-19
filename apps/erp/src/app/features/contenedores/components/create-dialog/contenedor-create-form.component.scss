@@ -1,0 +1,8 @@
+// PrimeNG aplica su propio borde al input — necesitamos !important para ganarle.
+.cd-input-error {
+  border-color: #dc2626 !important;
+
+  &:focus {
+    box-shadow: 0 0 0 2px rgba(220 38 38 / 0.15) !important;
+  }
+}

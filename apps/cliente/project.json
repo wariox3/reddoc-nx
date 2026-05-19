@@ -1,0 +1,120 @@
+{
+  "name": "cliente",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "prefix": "app",
+  "sourceRoot": "apps/cliente/src",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@angular/build:application",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/cliente",
+        "browser": "apps/cliente/src/main.ts",
+        "polyfills": ["zone.js"],
+        "tsConfig": "apps/cliente/tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "apps/cliente/public"
+          },
+          {
+            "glob": "*.woff2",
+            "input": "node_modules/geist/dist/fonts/geist-sans",
+            "output": "fonts/geist"
+          },
+          {
+            "glob": "logos/**",
+            "input": "libs/ui/src/assets",
+            "output": "/"
+          }
+        ],
+        "styles": ["apps/cliente/src/tailwind.css", "apps/cliente/src/styles.scss"]
+      },
+      "configurations": {
+        "staging": {
+          "fileReplacements": [
+            {
+              "replace": "apps/cliente/src/environments/environment.ts",
+              "with": "apps/cliente/src/environments/environment.staging.ts"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "production": {
+          "fileReplacements": [
+            {
+              "replace": "apps/cliente/src/environments/environment.ts",
+              "with": "apps/cliente/src/environments/environment.prod.ts"
+            }
+          ],
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1.5mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "12kb",
+              "maximumError": "24kb"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "continuous": true,
+      "executor": "@angular/build:dev-server",
+      "options": {
+        "port": 4207
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "cliente:build:production"
+        },
+        "development": {
+          "buildTarget": "cliente:build:development",
+          "proxyConfig": "apps/cliente/proxy.conf.json"
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "extract-i18n": {
+      "executor": "@angular/build:extract-i18n",
+      "options": {
+        "buildTarget": "cliente:build"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/cliente/jest.config.ts",
+        "tsConfig": "apps/cliente/tsconfig.spec.json"
+      }
+    },
+    "serve-static": {
+      "continuous": true,
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "cliente:build",
+        "port": 4207,
+        "staticFilePath": "dist/apps/cliente/browser",
+        "spa": true
+      }
+    }
+  }
+}

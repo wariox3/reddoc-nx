@@ -1,0 +1,129 @@
+<div class="p-8 max-[576px]:px-4 max-[576px]:py-5">
+  <!-- Page header -->
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-brand-text tracking-tight m-0 mb-1">Invitaciones</h1>
+    <p class="text-sm text-brand-muted m-0">
+      Invitaciones para unirte a contenedores de otras cuentas
+    </p>
+  </div>
+
+  <!-- List card -->
+  <div
+    class="bg-brand-surface border border-[rgba(20,48,73,0.1)] rounded-xl overflow-hidden animate-fade-up"
+  >
+    <!-- Card header -->
+    <div class="flex items-center gap-3 px-5 py-4 border-b border-[rgba(20,48,73,0.08)]">
+      <span
+        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-sky-50 text-sky-700"
+      >
+        <i class="pi pi-envelope text-[1.05rem]"></i>
+      </span>
+      <div class="flex flex-1 flex-col gap-[0.1rem] min-w-0">
+        <h2 class="m-0 text-[0.95rem] font-bold text-brand-text tracking-tight">
+          Invitaciones pendientes
+        </h2>
+        <p class="m-0 text-[0.75rem] text-brand-muted">
+          Acepta una invitación para unirte al contenedor
+        </p>
+      </div>
+      @if (!isLoading() && invitaciones().length > 0) {
+        <span
+          class="shrink-0 rounded-full bg-[rgba(20,48,73,0.06)] px-2.5 py-1 text-[0.72rem] font-bold text-brand-navy leading-none"
+        >
+          {{ invitaciones().length }}
+        </span>
+      }
+    </div>
+
+    @if (isLoading()) {
+      <!-- Skeleton rows -->
+      <ul class="flex flex-col gap-1.5 p-2.5">
+        @for (row of [1, 2]; track $index) {
+          <li
+            class="flex items-center gap-3 rounded-lg border border-[rgba(20,48,73,0.07)] px-3.5 py-3"
+          >
+            <div class="h-9 w-9 shrink-0 rounded-lg bg-[rgba(20,48,73,0.06)] animate-pulse"></div>
+            <div class="flex flex-1 flex-col gap-1.5">
+              <div class="h-[0.7rem] w-2/5 rounded bg-[rgba(20,48,73,0.08)] animate-pulse"></div>
+              <div class="h-[0.6rem] w-1/2 rounded bg-[rgba(20,48,73,0.06)] animate-pulse"></div>
+            </div>
+            <div class="h-5 w-16 rounded-full bg-[rgba(20,48,73,0.06)] animate-pulse"></div>
+            <div class="h-8 w-20 rounded-md bg-[rgba(20,48,73,0.06)] animate-pulse"></div>
+          </li>
+        }
+      </ul>
+    } @else if (invitaciones().length === 0) {
+      <!-- Empty state -->
+      <div class="flex flex-col items-center gap-1 px-4 py-12 text-center">
+        <span
+          class="flex h-12 w-12 items-center justify-center rounded-full bg-[rgba(20,48,73,0.05)]"
+        >
+          <i class="pi pi-inbox text-[1.15rem] text-brand-muted"></i>
+        </span>
+        <p class="m-0 mt-2 text-[0.9rem] font-semibold text-brand-navy">
+          Sin invitaciones pendientes
+        </p>
+        <p class="m-0 text-[0.76rem] text-brand-muted max-w-xs">
+          Cuando alguien te invite a unirte a su contenedor, la invitación aparecerá aquí.
+        </p>
+      </div>
+    } @else {
+      <!-- Invitation rows -->
+      <ul class="flex flex-col gap-1.5 p-2.5">
+        @for (inv of invitaciones(); track inv.id) {
+          <li
+            class="flex items-center gap-3 rounded-lg border border-[rgba(20,48,73,0.07)] px-3.5 py-3 transition-colors hover:bg-[rgba(20,48,73,0.025)] hover:border-[rgba(20,48,73,0.12)] max-[480px]:flex-wrap"
+          >
+            <!-- Contenedor avatar (iniciales como placeholder hasta que llegue la imagen) -->
+            <span
+              class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[rgba(20,48,73,0.06)] text-[0.72rem] font-bold tracking-[-0.01em] text-brand-navy"
+            >
+              {{ initials(inv) }}
+            </span>
+
+            <!-- Contenedor + meta -->
+            <div class="flex min-w-0 flex-1 flex-col leading-tight">
+              <span class="truncate text-[0.85rem] font-semibold text-brand-navy">
+                {{ inv.cliente_nombre }}
+              </span>
+              <span class="truncate text-[0.72rem] text-brand-muted">
+                Invitado por {{ inviterLabel(inv) }} · {{ inv.fecha | date: 'dd/MM/yyyy' }}
+              </span>
+            </div>
+
+            <!-- Role pill -->
+            <span
+              class="shrink-0 rounded-full border border-slate-200 bg-slate-50 px-2 py-[0.1rem] text-[0.65rem] font-semibold leading-none text-slate-700"
+            >
+              {{ inv.rol_nombre }}
+            </span>
+
+            <!-- Actions -->
+            <div class="flex shrink-0 items-center gap-2 max-[480px]:w-full">
+              <p-button
+                label="Rechazar"
+                icon="pi pi-times"
+                size="small"
+                severity="secondary"
+                [outlined]="true"
+                [loading]="rejectingId() === inv.id"
+                [disabled]="isBusy()"
+                styleClass="max-[480px]:flex-1"
+                (onClick)="reject(inv)"
+              />
+              <p-button
+                label="Aceptar"
+                icon="pi pi-check"
+                size="small"
+                [loading]="acceptingId() === inv.id"
+                [disabled]="isBusy()"
+                styleClass="max-[480px]:flex-1"
+                (onClick)="accept(inv)"
+              />
+            </div>
+          </li>
+        }
+      </ul>
+    }
+  </div>
+</div>

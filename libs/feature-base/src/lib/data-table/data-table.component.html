@@ -1,0 +1,84 @@
+<p-table
+  [value]="mutableItems()"
+  [paginator]="true"
+  [lazy]="true"
+  [rows]="pageSize()"
+  [totalRecords]="totalCount()"
+  [first]="currentPage() * pageSize()"
+  [loading]="loading()"
+  [rowsPerPageOptions]="mutableRowsPerPage()"
+  [selectionMode]="selectionMode() === 'none' ? null : 'multiple'"
+  [selection]="mutableSelection()"
+  (selectionChange)="onSelectionEvent($event)"
+  (onPage)="onPageEvent($event)"
+  [dataKey]="dataKey()"
+>
+  <ng-template pTemplate="header">
+    <tr>
+      @if (hasSelection()) {
+        <th class="lib-data-table__select-col">
+          <p-tableHeaderCheckbox />
+        </th>
+      }
+      @for (col of columns(); track col.field) {
+        <th
+          [style.width]="col.width"
+          [style.text-align]="col.align ?? 'left'"
+          [pSortableColumn]="col.sortable ? col.field : ''"
+        >
+          {{ translate(col.headerKey) }}
+          @if (col.sortable) {
+            <p-sortIcon [field]="col.field" />
+          }
+        </th>
+      }
+      @if (rowActions().length > 0) {
+        <th class="lib-data-table__actions-col" aria-hidden="true"></th>
+      }
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-row>
+    <tr>
+      @if (hasSelection()) {
+        <td class="lib-data-table__select-col">
+          <p-tableCheckbox [value]="row" />
+        </td>
+      }
+      @for (col of columns(); track col.field) {
+        <td [style.text-align]="col.align ?? 'left'">
+          {{ readValue(row, col.field) }}
+        </td>
+      }
+      @if (rowActions().length > 0) {
+        <td class="lib-data-table__actions-col">
+          <button
+            type="button"
+            class="lib-data-table__row-action"
+            [attr.aria-label]="translate(rowMenuLabelKey())"
+            (click)="rowMenu.toggle($event)"
+          >
+            <i class="pi pi-ellipsis-v"></i>
+          </button>
+          <p-menu #rowMenu [popup]="true" [model]="buildRowMenuItems(row)" appendTo="body" />
+        </td>
+      }
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td
+        [attr.colspan]="
+          columns().length + (hasSelection() ? 1 : 0) + (rowActions().length > 0 ? 1 : 0)
+        "
+      >
+        <div class="lib-data-table__empty">
+          <i class="pi pi-inbox lib-data-table__empty-icon"></i>
+          <p class="lib-data-table__empty-title">{{ translate(emptyTitleKey()) }}</p>
+          <p class="lib-data-table__empty-sub">{{ translate(emptySubKey()) }}</p>
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>

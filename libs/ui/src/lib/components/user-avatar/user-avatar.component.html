@@ -1,0 +1,18 @@
+@if (imageUrl(); as src) {
+  <p-avatar
+    [image]="src"
+    shape="circle"
+    [styleClass]="hostClass()"
+    [style.width.px]="size()"
+    [style.height.px]="size()"
+  />
+} @else {
+  <p-avatar
+    [label]="initials()"
+    shape="circle"
+    [styleClass]="hostClass()"
+    [style.width.px]="size()"
+    [style.height.px]="size()"
+    [style.font-size.px]="size() * 0.36"
+  />
+}

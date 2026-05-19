@@ -1,0 +1,35 @@
+<div class="verify-layout">
+  <div class="verify-card">
+    @if (isLoading()) {
+      <div class="verify-state">
+        <div class="verify-state__icon verify-state__icon--loading">
+          <i class="pi pi-spin pi-spinner"></i>
+        </div>
+        <h2 class="verify-state__title">{{ t().auth.verifyEmail.loading.title }}</h2>
+        <p class="verify-state__desc">{{ t().auth.verifyEmail.loading.desc }}</p>
+      </div>
+    } @else if (verified()) {
+      <div class="verify-state">
+        <div class="verify-state__icon verify-state__icon--success">
+          <i class="pi pi-check-circle"></i>
+        </div>
+        <h2 class="verify-state__title">{{ t().auth.verifyEmail.success.title }}</h2>
+        <p class="verify-state__desc">{{ t().auth.verifyEmail.success.desc }}</p>
+        <a routerLink="/auth/login" class="verify-state__action">
+          {{ t().auth.verifyEmail.success.action }}
+        </a>
+      </div>
+    } @else {
+      <div class="verify-state">
+        <div class="verify-state__icon verify-state__icon--error">
+          <i class="pi pi-times-circle"></i>
+        </div>
+        <h2 class="verify-state__title">{{ t().auth.verifyEmail.error.title }}</h2>
+        <p class="verify-state__desc">{{ errorMessage() }}</p>
+        <a routerLink="/auth/resend-verification" class="verify-state__action">
+          {{ t().auth.verifyEmail.error.action }}
+        </a>
+      </div>
+    }
+  </div>
+</div>

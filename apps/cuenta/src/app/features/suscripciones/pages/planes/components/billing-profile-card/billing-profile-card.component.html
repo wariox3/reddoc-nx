@@ -1,0 +1,80 @@
+<div
+  role="radio"
+  tabindex="0"
+  [attr.aria-checked]="selected()"
+  (click)="onSelect()"
+  (keydown)="onSelectKeydown($event)"
+  class="group relative text-left rounded-xl flex flex-col gap-3 px-[18px] pt-5 pb-3 transition-all duration-150 font-sans w-full h-full focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue/40 focus-visible:ring-offset-2 focus-visible:ring-offset-brand-bg"
+  [class]="
+    selected()
+      ? 'cursor-pointer border-2 border-brand-blue bg-brand-blue/6 shadow-[0_4px_16px_-8px_rgba(0,158,247,0.45)]'
+      : 'cursor-pointer border border-[rgba(20,48,73,0.18)] bg-brand-surface hover:border-brand-blue/40 hover:-translate-y-px shadow-[0_1px_3px_rgba(0,0,0,0.03)]'
+  "
+>
+  <!-- Radio indicator -->
+  <span
+    class="absolute top-4 right-4 h-[17px] w-[17px] rounded-full bg-brand-surface transition-all duration-150"
+    [class]="selected() ? 'border-[5px] border-brand-blue' : 'border-[1.5px] border-brand-muted/50'"
+  ></span>
+
+  <!-- Tipo + hint -->
+  <div class="flex items-baseline gap-2 pr-7">
+    <span class="text-[0.7rem] font-bold tracking-[0.12em] uppercase text-brand-blue font-mono">
+      {{ profile().tipo }}
+    </span>
+    <span class="text-[0.65rem] text-brand-muted/80 tracking-tight"> · {{ tipoHint() }} </span>
+  </div>
+
+  <!-- Identificación: typographic anchor -->
+  <div
+    class="font-mono text-[1.1rem] font-semibold text-brand-text tracking-tight tabular-nums leading-none"
+  >
+    {{ profile().numero }}
+  </div>
+
+  <!-- Nombre -->
+  <div class="text-[0.92rem] font-semibold text-brand-text tracking-[-0.01em] leading-tight">
+    {{ profile().nombre }}
+  </div>
+
+  <!-- Meta info (email, address, city) -->
+  <div class="mt-1 pt-3 border-t border-[rgba(20,48,73,0.07)] flex flex-col gap-1.5">
+    <div class="flex items-start gap-2 text-[0.72rem] text-brand-muted leading-snug">
+      <i class="pi pi-envelope text-[0.62rem] text-brand-muted/70 mt-[3px] shrink-0"></i>
+      <span class="truncate">{{ profile().email }}</span>
+    </div>
+    <div class="flex items-start gap-2 text-[0.72rem] text-brand-muted leading-snug">
+      <i class="pi pi-map-marker text-[0.62rem] text-brand-muted/70 mt-[3px] shrink-0"></i>
+      <span class="leading-snug">
+        {{ profile().direccion }}
+        @if (profile().ciudad) {
+          <br />
+          <span class="text-brand-text/80">{{ profile().ciudad }}</span>
+        }
+      </span>
+    </div>
+  </div>
+
+  <!-- Action footer: revealed on hover/focus; always visible on touch -->
+  <div
+    class="mt-2 pt-2.5 border-t border-dashed border-[rgba(20,48,73,0.10)] flex items-center justify-end gap-1 opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100 [@media(hover:none)]:opacity-100"
+  >
+    <button
+      type="button"
+      (click)="onEdit($event)"
+      [attr.aria-label]="'Editar ' + profile().nombre"
+      class="inline-flex items-center gap-1.5 h-7 px-2 rounded-md text-[0.7rem] font-medium text-brand-muted hover:text-brand-blue hover:bg-brand-blue/8 transition-colors duration-150"
+    >
+      <i class="pi pi-pencil text-[0.7rem]"></i>
+      <span>Editar</span>
+    </button>
+    <button
+      type="button"
+      (click)="onRemove($event)"
+      [attr.aria-label]="'Eliminar ' + profile().nombre"
+      class="inline-flex items-center justify-center h-7 w-7 rounded-md text-brand-muted hover:text-red-600 hover:bg-red-50 transition-colors duration-150"
+    >
+      <i class="pi pi-trash text-[0.75rem]"></i>
+    </button>
+  </div>
+</div>

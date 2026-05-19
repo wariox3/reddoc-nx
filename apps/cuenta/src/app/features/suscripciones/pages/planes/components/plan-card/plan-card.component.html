@@ -1,0 +1,103 @@
+<button
+  type="button"
+  (click)="onClick()"
+  [disabled]="current()"
+  class="relative text-left rounded-xl flex flex-col gap-3 px-[18px] pt-5 pb-4 transition-all duration-150 font-sans w-full h-full"
+  [class]="
+    current()
+      ? 'cursor-not-allowed opacity-55 border border-[rgba(20,48,73,0.18)] bg-brand-surface'
+      : selected()
+        ? 'cursor-pointer border-2 border-brand-blue bg-brand-blue/6 shadow-[0_4px_16px_-8px_rgba(0,158,247,0.45)]'
+        : 'cursor-pointer border border-[rgba(20,48,73,0.18)] bg-brand-surface hover:border-brand-blue/40 hover:-translate-y-px shadow-[0_1px_3px_rgba(0,0,0,0.03)]'
+  "
+>
+  <!-- Top badges -->
+  @if (current()) {
+    <span
+      class="absolute -top-2.5 left-[18px] bg-[rgba(20,48,73,0.18)] text-brand-muted text-[0.62rem] font-bold tracking-[0.06em] uppercase px-2 py-[3px] rounded-full whitespace-nowrap"
+    >
+      Plan actual
+    </span>
+  } @else if (popular()) {
+    <span
+      class="absolute -top-2.5 left-[18px] bg-brand-text text-white text-[0.62rem] font-bold tracking-[0.06em] uppercase px-2 py-[3px] rounded-full whitespace-nowrap"
+    >
+      Recomendado
+    </span>
+  }
+
+  <!-- Radio indicator -->
+  <span
+    class="absolute top-4 right-4 h-[17px] w-[17px] rounded-full bg-brand-surface transition-all duration-150"
+    [class]="selected() ? 'border-[5px] border-brand-blue' : 'border-[1.5px] border-brand-muted/50'"
+  ></span>
+
+  <!-- Tier eyebrow + full name + description -->
+  <div class="pr-7">
+    <div class="text-[0.68rem] font-semibold text-brand-muted tracking-[0.08em] uppercase mb-1">
+      {{ tierName() }}
+    </div>
+    <div class="text-[0.92rem] font-semibold text-brand-text tracking-[-0.01em] leading-tight">
+      {{ plan().nombre }}
+    </div>
+    @if (description(); as desc) {
+      <p class="m-0 mt-1.5 text-[0.72rem] text-brand-muted leading-snug min-h-[2.2em]">
+        {{ desc }}
+      </p>
+    }
+  </div>
+
+  <!-- Price -->
+  <div>
+    <div class="flex items-baseline gap-1">
+      <span
+        class="text-[1.5rem] font-bold text-brand-text tracking-[-0.02em] leading-none tabular-nums"
+      >
+        {{ monthlyLabel() }}
+      </span>
+      <span class="text-[0.78rem] text-brand-muted">/mes</span>
+    </div>
+    @if (annual()) {
+      <div class="text-[0.68rem] text-brand-muted/80 mt-1 tabular-nums">
+        {{ annualTotalLabel() }} facturados anualmente
+      </div>
+    } @else {
+      <div class="text-[0.68rem] text-brand-muted/80 mt-1">Facturación mensual</div>
+    }
+  </div>
+
+  <!-- Features -->
+  @if (features().length > 0) {
+    <ul
+      class="list-none m-0 p-0 pt-3 border-t border-[rgba(20,48,73,0.07)] flex flex-col gap-1.5 mt-1"
+    >
+      @for (f of features(); track f.label) {
+        <li class="flex items-start gap-2 text-[0.76rem] leading-snug">
+          <span
+            class="inline-flex items-center justify-center h-[15px] w-[15px] shrink-0 rounded-full mt-px"
+            [class]="
+              f.included
+                ? 'bg-emerald-50 text-emerald-600'
+                : 'bg-[rgba(20,48,73,0.05)] text-brand-muted/70'
+            "
+          >
+            @if (f.included) {
+              <i class="pi pi-check text-[0.5rem]"></i>
+            } @else {
+              <i class="pi pi-times text-[0.5rem]"></i>
+            }
+          </span>
+          <span
+            [class]="
+              f.included
+                ? 'text-brand-text'
+                : 'text-brand-muted/70 line-through decoration-[rgba(20,48,73,0.2)] decoration-1'
+            "
+          >
+            {{ f.label }}
+          </span>
+        </li>
+      }
+    </ul>
+  }
+</button>

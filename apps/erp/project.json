@@ -19,9 +19,19 @@
           {
             "glob": "**/*",
             "input": "apps/erp/public"
+          },
+          {
+            "glob": "*.woff2",
+            "input": "node_modules/geist/dist/fonts/geist-sans",
+            "output": "fonts/geist"
+          },
+          {
+            "glob": "logos/**",
+            "input": "libs/ui/src/assets",
+            "output": "/"
           }
         ],
-        "styles": ["apps/erp/src/styles.scss"]
+        "styles": ["apps/erp/src/tailwind.css", "apps/erp/src/styles.scss"]
       },
       "configurations": {
         "staging": {
@@ -44,7 +54,7 @@
             {
               "type": "initial",
               "maximumWarning": "500kb",
-              "maximumError": "1mb"
+              "maximumError": "1.5mb"
             },
             {
               "type": "anyComponentStyle",

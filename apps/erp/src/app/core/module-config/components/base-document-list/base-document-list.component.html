@@ -1,0 +1,46 @@
+<div class="base-document-list">
+  <header class="base-document-list__header">
+    <div class="base-document-list__title-block">
+      <h1 class="base-document-list__title">{{ translate(document().displayNameKey) }}</h1>
+      <p class="base-document-list__summary">
+        {{ totalCount() }} {{ translate('common.list.records') }}
+      </p>
+    </div>
+
+    <div class="base-document-list__actions">
+      @if (hasSelection() && capabilities().canDelete) {
+        <p-button
+          icon="pi pi-trash"
+          severity="danger"
+          [outlined]="true"
+          [label]="translate('common.actions.deleteSelected')"
+          (onClick)="removeSelected()"
+        />
+      }
+      @if (capabilities().canCreate) {
+        <p-button
+          icon="pi pi-plus"
+          [label]="translate('common.actions.new')"
+          (onClick)="navigateToNew()"
+        />
+      }
+    </div>
+  </header>
+
+  <lib-data-table
+    [columns]="columns()"
+    [items]="items()"
+    [totalCount]="totalCount()"
+    [loading]="isLoading()"
+    [pageSize]="pageSize()"
+    [currentPage]="currentPage()"
+    [selectionMode]="capabilities().canSelectRows ? 'multiple' : 'none'"
+    [selectedRows]="selectedRows()"
+    [rowActions]="rowActions()"
+    (pageChange)="onPageChange($event)"
+    (selectionChange)="onSelectionChange($event)"
+    (rowActionInvoked)="onRowAction($event)"
+  />
+</div>
+
+<p-confirmDialog />

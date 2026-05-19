@@ -1,0 +1,45 @@
+<div class="flex flex-col gap-5">
+  <input #fileInput type="file" accept="image/*" class="hidden" (change)="onFileChange($event)" />
+
+  @if (!imageChangedEvent()) {
+    <div
+      class="flex flex-col items-center justify-center gap-3 py-12 px-4 border-2 border-dashed border-[rgba(20,48,73,0.1)] rounded-xl bg-brand-bg"
+    >
+      <i class="pi pi-image text-[2.5rem] text-brand-muted-2"></i>
+      <p class="text-sm text-brand-muted m-0">Selecciona una imagen para recortar</p>
+      <p-button label="Elegir imagen" icon="pi pi-upload" (onClick)="selectFile()" />
+    </div>
+  } @else {
+    <image-cropper
+      [imageChangedEvent]="imageChangedEvent()"
+      [maintainAspectRatio]="true"
+      [aspectRatio]="1"
+      [roundCropper]="true"
+      format="jpeg"
+      (imageCropped)="onImageCropped($event)"
+      class="max-h-80 rounded-lg overflow-hidden"
+    />
+  }
+
+  @if (tooBig()) {
+    <p-message
+      severity="error"
+      text="La imagen supera los 2MB. Elige una más pequeña."
+      styleClass="w-full"
+    />
+  }
+
+  <div class="flex justify-end gap-3 pt-2 border-t border-[rgba(20,48,73,0.1)]">
+    <p-button label="Cancelar" severity="secondary" [outlined]="true" (onClick)="cancel()" />
+    @if (!imageChangedEvent()) {
+      <span></span>
+    } @else {
+      <p-button
+        label="Guardar"
+        icon="pi pi-check"
+        [disabled]="!croppedImage() || tooBig()"
+        (onClick)="save()"
+      />
+    }
+  </div>
+</div>

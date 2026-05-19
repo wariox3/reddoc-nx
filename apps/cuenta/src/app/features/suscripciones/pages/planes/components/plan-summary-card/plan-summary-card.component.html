@@ -1,0 +1,71 @@
+<aside
+  class="bg-brand-surface border border-[rgba(20,48,73,0.12)] rounded-[14px] p-5 flex flex-col gap-4 shadow-[0_1px_4px_rgba(0,0,0,0.04)]"
+>
+  <!-- Header -->
+  <header class="flex flex-col gap-1">
+    <span class="font-mono text-[0.62rem] tracking-[0.22em] uppercase text-brand-muted">
+      Resumen
+    </span>
+    <h3 class="m-0 text-[0.95rem] font-semibold text-brand-text tracking-[-0.01em] leading-tight">
+      Tu suscripción
+    </h3>
+  </header>
+
+  <!-- Plan -->
+  <div class="flex flex-col gap-0.5">
+    <span class="text-[0.62rem] font-semibold tracking-[0.1em] uppercase text-brand-muted">
+      Plan
+    </span>
+    <span class="text-[0.86rem] font-semibold text-brand-text leading-tight">
+      {{ plan().nombre }}
+    </span>
+  </div>
+
+  <!-- Frecuencia -->
+  <div class="flex flex-col gap-0.5">
+    <span class="text-[0.62rem] font-semibold tracking-[0.1em] uppercase text-brand-muted">
+      Frecuencia
+    </span>
+    <span class="text-[0.82rem] text-brand-text">{{ frecuenciaLabel() }}</span>
+  </div>
+
+  <!-- Receptor (only if billing profile selected) -->
+  @if (billingProfile(); as bp) {
+    <div class="flex flex-col gap-0.5">
+      <span class="text-[0.62rem] font-semibold tracking-[0.1em] uppercase text-brand-muted">
+        Facturar a
+      </span>
+      <span class="text-[0.82rem] font-semibold text-brand-text leading-tight">
+        {{ bp.nombre }}
+      </span>
+      <span class="text-[0.7rem] font-mono tabular-nums text-brand-muted leading-snug">
+        {{ bp.tipo }} · {{ bp.numero }}
+      </span>
+    </div>
+  }
+
+  <!-- Divider + Total -->
+  <div class="pt-3 border-t border-[rgba(20,48,73,0.1)]">
+    <div class="flex items-baseline justify-between gap-2">
+      <span class="text-[0.78rem] font-semibold text-brand-text">Total</span>
+      <div class="flex items-baseline gap-1">
+        <span
+          class="text-[1.35rem] font-bold text-brand-blue tracking-[-0.02em] tabular-nums leading-none"
+        >
+          {{ chargeAmountLabel() }}
+        </span>
+        <span class="text-[0.65rem] text-brand-muted">{{ chargeSuffix() }}</span>
+      </div>
+    </div>
+    @if (annual()) {
+      <div class="text-right text-[0.65rem] text-brand-muted/80 tabular-nums mt-1">
+        ≈ {{ monthlyEquivalentLabel() }} / mes
+      </div>
+    }
+  </div>
+
+  <!-- Disclaimer -->
+  <p class="m-0 text-[0.65rem] text-brand-muted/80 leading-snug">
+    El cobro se realiza al confirmar. IVA no incluido. Cancelas cuando quieras.
+  </p>
+</aside>

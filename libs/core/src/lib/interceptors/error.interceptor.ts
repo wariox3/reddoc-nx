@@ -28,7 +28,6 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         return handleTooManyRequests(toast, error);
       if (error.status >= 500) return handleServerError(toast, error);
 
-      console.error(`[HTTP ${error.status}] ${error.url}`, error.error);
       return throwError(() => error);
     }),
   );

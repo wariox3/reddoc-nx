@@ -1,0 +1,125 @@
+<div class="lib-data-toolbar">
+  <!-- Grupo lead: search + filtros -->
+  <div class="lib-data-toolbar__group">
+    @if (searchEnabled()) {
+      <label class="lib-data-toolbar__search">
+        <i class="pi pi-search lib-data-toolbar__search-icon" aria-hidden="true"></i>
+        <input
+          type="text"
+          class="lib-data-toolbar__search-input"
+          [placeholder]="translate(searchPlaceholderKey())"
+          [value]="searchValue()"
+          (input)="onSearchInput($event)"
+        />
+        @if (searchValue()) {
+          <button
+            type="button"
+            class="lib-data-toolbar__search-clear"
+            (click)="clearSearch()"
+            [attr.aria-label]="translate('common.actions.clearSearch')"
+          >
+            <i class="pi pi-times"></i>
+          </button>
+        }
+      </label>
+    }
+
+    @if (filtersEnabled()) {
+      <button
+        type="button"
+        class="lib-data-toolbar__btn lib-data-toolbar__btn--ghost"
+        (click)="filtersToggle.emit()"
+      >
+        <i class="pi pi-filter"></i>
+        <span>{{ translate('common.actions.filters') }}</span>
+        @if (activeFiltersCount() > 0) {
+          <span class="lib-data-toolbar__badge">{{ activeFiltersCount() }}</span>
+        }
+      </button>
+      @if (activeFiltersCount() > 0) {
+        <button
+          type="button"
+          class="lib-data-toolbar__btn lib-data-toolbar__btn--ghost"
+          (click)="filtersClear.emit()"
+        >
+          <i class="pi pi-times"></i>
+          <span>{{ translate('common.actions.clearFilters') }}</span>
+        </button>
+      }
+    }
+  </div>
+
+  <div class="lib-data-toolbar__spacer"></div>
+
+  <!-- Delete contextual -->
+  @if (deleteSelectedEnabled() && deleteSelectedCount() > 0) {
+    <button
+      type="button"
+      class="lib-data-toolbar__btn lib-data-toolbar__btn--danger"
+      (click)="deleteSelected.emit()"
+    >
+      <i class="pi pi-trash"></i>
+      <span>{{ translate('common.actions.delete') }} ({{ deleteSelectedCount() }})</span>
+    </button>
+    <span class="lib-data-toolbar__divider" aria-hidden="true"></span>
+  }
+
+  <!-- Trailing actions (exportar, importar, etc.) -->
+  @if (trailingActions().length > 0) {
+    <div class="lib-data-toolbar__group">
+      @for (action of trailingActions(); track action.id) {
+        @if (action.children?.length) {
+          <button
+            type="button"
+            class="lib-data-toolbar__btn lib-data-toolbar__btn--ghost"
+            (click)="menu.toggle($event)"
+          >
+            <i [class]="action.iconClass"></i>
+            <span>{{ translate(action.labelKey) }}</span>
+            <i class="pi pi-chevron-down lib-data-toolbar__dropdown-caret"></i>
+          </button>
+          <p-menu
+            #menu
+            [popup]="true"
+            [model]="toMenuItems(action.children ?? [])"
+            appendTo="body"
+          />
+        } @else {
+          <button
+            type="button"
+            class="lib-data-toolbar__btn lib-data-toolbar__btn--ghost"
+            (click)="actionInvoked.emit(action.id)"
+          >
+            <i [class]="action.iconClass"></i>
+            <span>{{ translate(action.labelKey) }}</span>
+          </button>
+        }
+      }
+    </div>
+  }
+
+  <!-- Refresh (icon-only) -->
+  @if (refreshEnabled()) {
+    <button
+      type="button"
+      class="lib-data-toolbar__btn lib-data-toolbar__btn--icon"
+      [pTooltip]="translate('common.actions.refresh')"
+      tooltipPosition="bottom"
+      (click)="refresh.emit()"
+    >
+      <i class="pi pi-refresh"></i>
+    </button>
+  }
+
+  <!-- Primary action -->
+  @if (primaryAction(); as primary) {
+    <button
+      type="button"
+      class="lib-data-toolbar__btn lib-data-toolbar__btn--primary"
+      (click)="actionInvoked.emit(primary.id)"
+    >
+      <i [class]="primary.iconClass"></i>
+      <span>{{ translate(primary.labelKey) }}</span>
+    </button>
+  }
+</div>
