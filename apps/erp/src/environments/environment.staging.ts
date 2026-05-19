@@ -1,6 +1,6 @@
 export const environment = {
-  production: false,
+  production: true,
   apiUrl: '/api',
-  turnstileSiteKey: 'REEMPLAZAR_STAGING',
+  turnstileSiteKey: '0x4AAAAAADSiAQzHQjzVDw1n',
   cuentaUrl: 'https://cuenta.reddoc.uk',
 };
