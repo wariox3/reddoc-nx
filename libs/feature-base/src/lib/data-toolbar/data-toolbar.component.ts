@@ -44,7 +44,7 @@ export class DataToolbarComponent {
   readonly searchEnabled = input<boolean>(false);
   readonly searchValue = input<string>('');
   readonly searchPlaceholderKey = input<string>('common.search.placeholder');
-  readonly search = output<string>();
+  readonly searched = output<string>();
 
   // ── Filtros ───────────────────────────────────────────────────────────────
   readonly filtersEnabled = input<boolean>(false);
@@ -81,11 +81,11 @@ export class DataToolbarComponent {
 
   protected onSearchInput(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
-    this.search.emit(value);
+    this.searched.emit(value);
   }
 
   protected clearSearch(): void {
-    this.search.emit('');
+    this.searched.emit('');
   }
 
   /**
