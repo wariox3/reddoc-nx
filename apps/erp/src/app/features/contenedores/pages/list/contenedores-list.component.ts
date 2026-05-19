@@ -1,6 +1,6 @@
-import { Component, ViewChild, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, ViewChild, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { Subject, startWith, switchMap } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { Menu, MenuModule } from 'primeng/menu';
@@ -34,6 +34,7 @@ import type { AppDict } from '../../../../i18n';
 })
 export class ContenedoresListComponent {
   private readonly contenedorService = inject(ContenedorService);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly authService = inject(AuthService);
   protected readonly router = inject(Router);
   private readonly tenant = inject(TenantService);
@@ -143,8 +144,13 @@ export class ContenedoresListComponent {
   }
 
   editContenedor(item: Contenedor): void {
-    this.contenedorToEdit.set(item);
-    this.showEdit.set(true);
+    this.contenedorService
+      .getContenedor(item.cliente_id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((contenedor) => {
+        this.contenedorToEdit.set(contenedor);
+        this.showEdit.set(true);
+      });
   }
 
   deleteContenedor(item: Contenedor): void {

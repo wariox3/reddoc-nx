@@ -23,6 +23,10 @@ export class ContenedorService extends BaseHttpService {
     return this.get<ContenedoresResponse>('/contenedor/cliente/lista-usuario/');
   }
 
+  getContenedor(id: number): Observable<Contenedor> {
+    return this.get<Contenedor>(`/contenedor/cliente/${id}/`);
+  }
+
   createContenedor(payload: CreateContenedorRequest): Observable<unknown> {
     return this.post('/contenedor/cliente/', payload);
   }
