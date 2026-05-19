@@ -82,7 +82,7 @@ export class BillingProfileCreateDialogComponent {
       validators: [Validators.required],
     }),
     numero: this.fb.nonNullable.control('', {
-      validators: [Validators.required, Validators.minLength(5)],
+      validators: [Validators.required, Validators.minLength(5), Validators.pattern(/^[0-9]+$/)],
     }),
     nombre: this.fb.nonNullable.control('', {
       validators: [Validators.required, Validators.minLength(3)],
@@ -223,6 +223,15 @@ export class BillingProfileCreateDialogComponent {
       direccion: '',
       ciudad: null,
     });
+  }
+
+  onNumeroInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const cleaned = input.value.replace(/\D/g, '');
+    if (cleaned !== input.value) {
+      input.value = cleaned;
+      this.form.controls.numero.setValue(cleaned, { emitEvent: false });
+    }
   }
 
   private isNit(ident: Identificacion | null): boolean {

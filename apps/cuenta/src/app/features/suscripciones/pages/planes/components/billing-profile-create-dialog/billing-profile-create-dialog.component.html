@@ -75,10 +75,15 @@
             placeholder="Solo dígitos"
             class="w-full font-mono tabular-nums"
             [class.cd-input-error]="form.controls.numero.invalid && form.controls.numero.touched"
+            (input)="onNumeroInput($event)"
           />
           @if (form.controls.numero.invalid && form.controls.numero.touched) {
             <span class="mt-1 text-[0.7rem] tracking-[0.01em] text-red-600">
-              Ingresa al menos 5 dígitos.
+              @if (form.controls.numero.hasError('required')) {
+                Este campo es requerido.
+              } @else {
+                Ingresa al menos 5 dígitos (solo 0-9).
+              }
             </span>
           }
         </div>
