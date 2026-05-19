@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
-import { ENVIRONMENT } from '@reddoc/core';
+import { ENVIRONMENT, resolvePlanCategory } from '@reddoc/core';
 import { BillingProfile } from '../models/billing-profile.model';
 import { PeriodoPago, WompiCheckoutPayload } from '../models/pago.model';
 import { SuscripcionTipo } from '../models/suscripcion-tipo.model';
@@ -8,6 +8,7 @@ import {
   WOMPI_REF_STORAGE_KEY,
   armarCustomerData,
   calcularMontoCents,
+  savePagoIntent,
 } from '../utils/wompi-payload';
 import { SuscripcionPagoService } from './suscripcion-pago.service';
 import { WompiCheckoutService } from './wompi-checkout.service';
@@ -17,6 +18,13 @@ export interface IniciarPagoInput {
   readonly plan: SuscripcionTipo;
   readonly billingProfile: BillingProfile;
   readonly periodo: PeriodoPago;
+}
+
+function categoriaLabel(categoriaId: number): string {
+  const c = resolvePlanCategory(categoriaId);
+  if (c === 'facturacion') return 'Facturación';
+  if (c === 'erp') return 'ERP';
+  return '—';
 }
 
 @Injectable({ providedIn: 'root' })
@@ -53,6 +61,19 @@ export class WompiPaymentOrchestrator {
           if (typeof sessionStorage !== 'undefined') {
             sessionStorage.setItem(WOMPI_REF_STORAGE_KEY, referencia);
           }
+          savePagoIntent({
+            referencia,
+            plan_id: plan.id,
+            plan_nombre: plan.nombre,
+            plan_categoria_label: categoriaLabel(plan.suscripcion_categoria_id),
+            periodo,
+            monto_cents,
+            billing_nombre: billingProfile.nombre,
+            billing_tipo: billingProfile.tipo,
+            billing_numero: billingProfile.numero,
+            billing_email: billingProfile.email,
+            started_at: new Date().toISOString(),
+          });
           this.wompiCheckout.redirectToCheckout({ intencion: payload });
         }),
       );

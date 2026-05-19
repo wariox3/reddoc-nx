@@ -9,11 +9,4 @@ export const SUSCRIPCIONES_ROUTES: Route[] = [
     path: 'planes/:id',
     loadComponent: () => import('./pages/planes/planes.component').then((m) => m.PlanesComponent),
   },
-  {
-    path: 'pago/resultado',
-    loadComponent: () =>
-      import('./pages/pago-resultado/pago-resultado.component').then(
-        (m) => m.PagoResultadoComponent,
-      ),
-  },
 ];

@@ -45,5 +45,14 @@ export const appRoutes: Route[] = [
     ],
   },
 
+  {
+    path: 'suscripciones/pago/resultado',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/suscripciones/pages/pago-resultado/pago-resultado.component').then(
+        (m) => m.PagoResultadoComponent,
+      ),
+  },
+
   { path: '**', redirectTo: 'auth/login' },
 ];

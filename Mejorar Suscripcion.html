@@ -1,0 +1,2495 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reddoc — Mejorar suscripción</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      src="https://unpkg.com/react@18.3.1/umd/react.development.js"
+      integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"
+      integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"
+      integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y"
+      crossorigin="anonymous"
+    ></script>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --bg: #f8f9fa;
+        --card-bg: #ffffff;
+        --border: #e2e8f0;
+        --border-light: #f1f5f9;
+        --text: #13263c;
+        --text-muted: #526680;
+        --text-subtle: #8fa4b8;
+        --navbar-bg: #ffffff;
+      }
+      body {
+        font-family: 'DM Sans', system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        -webkit-font-smoothing: antialiased;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      button {
+        font-family: inherit;
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .step-anim {
+        animation: fadeUp 0.24s ease both;
+      }
+
+      ::-webkit-scrollbar {
+        width: 5px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel" src="tweaks-panel.jsx"></script>
+    <script type="text/babel">
+      const { useState, useEffect, useMemo } = React;
+
+      /* ─────────────────────────── DATA ─────────────────────────── */
+
+      const PLANS_RAW = [
+        {
+          id: 1,
+          nombre: 'Impulso Facturación',
+          precio: '16900.00',
+          suscripcion_clase_id: 1,
+          suscripcion_categoria_id: 1,
+        },
+        {
+          id: 2,
+          nombre: 'Impulso ERP',
+          precio: '22900.00',
+          suscripcion_clase_id: 1,
+          suscripcion_categoria_id: 2,
+        },
+        {
+          id: 3,
+          nombre: 'Crecimiento Facturación',
+          precio: '49900.00',
+          suscripcion_clase_id: 1,
+          suscripcion_categoria_id: 1,
+        },
+        {
+          id: 4,
+          nombre: 'Crecimiento ERP',
+          precio: '74900.00',
+          suscripcion_clase_id: 1,
+          suscripcion_categoria_id: 2,
+        },
+        {
+          id: 5,
+          nombre: 'Expansión Facturación',
+          precio: '95900.00',
+          suscripcion_clase_id: 1,
+          suscripcion_categoria_id: 1,
+        },
+        {
+          id: 6,
+          nombre: 'Expansión ERP',
+          precio: '149000.00',
+          suscripcion_clase_id: 1,
+          suscripcion_categoria_id: 2,
+        },
+        {
+          id: 7,
+          nombre: 'Éxito Facturación',
+          precio: '172900.00',
+          suscripcion_clase_id: 1,
+          suscripcion_categoria_id: 1,
+        },
+        {
+          id: 8,
+          nombre: 'Éxito ERP',
+          precio: '229900.00',
+          suscripcion_clase_id: 1,
+          suscripcion_categoria_id: 2,
+        },
+      ];
+
+      /* Tier label (Impulso/Crecimiento/Expansión/Éxito) -> features */
+      const FEATURES = {
+        Impulso: [
+          'Hasta 3 usuarios',
+          'Funciones esenciales',
+          'Soporte por email',
+          'Reportes básicos',
+        ],
+        Crecimiento: [
+          'Hasta 10 usuarios',
+          'Integraciones estándar',
+          'Soporte prioritario',
+          'Reportes avanzados',
+        ],
+        Expansión: ['Hasta 25 usuarios', 'API completa', 'Soporte 24/7', 'Multi-sucursal'],
+        Éxito: ['Usuarios ilimitados', 'Instancia dedicada', 'Account manager', 'SLA 99.9%'],
+      };
+
+      const STEPS = ['Plan', 'Pago', 'Confirmar'];
+
+      const CATEGORIES = {
+        1: { id: 'fact', label: 'Facturación' },
+        2: { id: 'erp', label: 'ERP' },
+      };
+
+      /* ─────────────────────────── HELPERS ───────────────────────── */
+
+      const fmtPrice = (n) => '$' + Math.round(n).toLocaleString('es-CO');
+
+      const tier = (nombre) => nombre.split(' ')[0];
+      const isPopular = (nombre) => nombre.startsWith('Expansión'); // mid-tier popular
+
+      const initials = (n) =>
+        n
+          .split(' ')
+          .filter(Boolean)
+          .slice(0, 2)
+          .map((w) => w[0])
+          .join('')
+          .toUpperCase();
+
+      /* Read query params for context */
+      const getCtx = () => {
+        const p = new URLSearchParams(window.location.search);
+        return {
+          cliente: p.get('cliente') || 'Empresa',
+          plan_actual: p.get('plan') || 'Prueba ERP',
+          fecha_fin: p.get('fin') || '',
+        };
+      };
+
+      /* ─────────────────────────── ICONS ─────────────────────────── */
+
+      const Svg = ({ children, size = 16, stroke = 2 }) => (
+        <svg
+          width={size}
+          height={size}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={stroke}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          {children}
+        </svg>
+      );
+
+      const IcoCheck = ({ s = 12 }) => (
+        <svg width={s} height={s} viewBox="0 0 14 14" fill="none">
+          <path
+            d="M2 7.5L5.5 11L12 3"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      );
+      const IcoArrowL = ({ s = 14 }) => (
+        <Svg size={s}>
+          <line x1="19" y1="12" x2="5" y2="12" />
+          <polyline points="12 19 5 12 12 5" />
+        </Svg>
+      );
+      const IcoArrowR = ({ s = 14 }) => (
+        <Svg size={s}>
+          <line x1="5" y1="12" x2="19" y2="12" />
+          <polyline points="12 5 19 12 12 19" />
+        </Svg>
+      );
+      const IcoMoon = () => (
+        <Svg size={15}>
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+        </Svg>
+      );
+      const IcoSun = () => (
+        <svg
+          width="15"
+          height="15"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <circle cx="12" cy="12" r="5" />
+          {[0, 45, 90, 135, 180, 225, 270, 315].map((a) => {
+            const r = (a * Math.PI) / 180,
+              x1 = 12 + 8 * Math.cos(r),
+              y1 = 12 + 8 * Math.sin(r),
+              x2 = 12 + 10.5 * Math.cos(r),
+              y2 = 12 + 10.5 * Math.sin(r);
+            return <line key={a} x1={x1} y1={y1} x2={x2} y2={y2} />;
+          })}
+        </svg>
+      );
+      const IcoCaret = () => (
+        <Svg size={12}>
+          <polyline points="9 18 15 12 9 6" />
+        </Svg>
+      );
+      const IcoLock = ({ s = 13 }) => (
+        <Svg size={s}>
+          <rect x="3" y="11" width="18" height="11" rx="2" />
+          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+        </Svg>
+      );
+      const IcoShield = ({ s = 13 }) => (
+        <Svg size={s}>
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+        </Svg>
+      );
+      const IcoEdit = ({ s = 13 }) => (
+        <Svg size={s}>
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+        </Svg>
+      );
+      const IcoSparkle = ({ s = 14 }) => (
+        <Svg size={s}>
+          <path d="M12 2l2 7 7 2-7 2-2 7-2-7-7-2 7-2z" fill="currentColor" stroke="none" />
+        </Svg>
+      );
+
+      /* ─────────────────────────── STEPPER ───────────────────────── */
+
+      const Stepper = ({ current, accent }) => (
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 0, marginBottom: '26px' }}>
+          {STEPS.map((label, i) => (
+            <React.Fragment key={i}>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '6px',
+                }}
+              >
+                <div
+                  style={{
+                    width: '30px',
+                    height: '30px',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    transition: 'all 0.25s',
+                    background: i <= current ? accent : 'var(--bg)',
+                    color: i <= current ? '#fff' : 'var(--text-subtle)',
+                    border: i <= current ? 'none' : '1.5px solid var(--border)',
+                  }}
+                >
+                  {i < current ? <IcoCheck s={12} /> : i + 1}
+                </div>
+                <span
+                  style={{
+                    fontSize: '11px',
+                    whiteSpace: 'nowrap',
+                    fontWeight: i === current ? 600 : 400,
+                    color: i === current ? 'var(--text)' : 'var(--text-subtle)',
+                  }}
+                >
+                  {label}
+                </span>
+              </div>
+              {i < STEPS.length - 1 && (
+                <div
+                  style={{
+                    flex: 1,
+                    height: '1.5px',
+                    margin: '14px 6px 0',
+                    background: i < current ? accent : 'var(--border)',
+                    transition: 'background 0.3s',
+                  }}
+                />
+              )}
+            </React.Fragment>
+          ))}
+        </div>
+      );
+
+      /* ─────────────────────────── CATEGORY TABS ─────────────────── */
+
+      const CategoryTabs = ({ active, onChange, accent }) => (
+        <div
+          style={{
+            display: 'inline-flex',
+            background: 'var(--bg)',
+            border: '1.5px solid var(--border)',
+            borderRadius: '8px',
+            padding: '3px',
+            gap: '2px',
+          }}
+        >
+          {[
+            ['fact', 'Facturación'],
+            ['erp', 'ERP'],
+          ].map(([id, label]) => (
+            <button
+              key={id}
+              onClick={() => onChange(id)}
+              style={{
+                padding: '6px 22px',
+                borderRadius: '6px',
+                border: 'none',
+                background: active === id ? accent : 'transparent',
+                color: active === id ? '#fff' : 'var(--text-muted)',
+                fontSize: '13px',
+                fontWeight: active === id ? 600 : 500,
+                cursor: 'pointer',
+                transition: 'all 0.18s',
+                fontFamily: 'inherit',
+              }}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      );
+
+      /* ─────────────────────────── FREQUENCY TOGGLE ──────────────── */
+
+      const FrequencyToggle = ({ annual, onChange, accent }) => (
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px' }}>
+          <span
+            style={{
+              fontSize: '13px',
+              fontWeight: annual ? 400 : 600,
+              color: annual ? 'var(--text-muted)' : 'var(--text)',
+              transition: 'color 0.15s',
+            }}
+          >
+            Mensual
+          </span>
+
+          <button
+            role="switch"
+            aria-checked={annual}
+            onClick={() => onChange(!annual)}
+            style={{
+              position: 'relative',
+              width: '42px',
+              height: '24px',
+              borderRadius: '100px',
+              border: 'none',
+              cursor: 'pointer',
+              background: annual ? accent : 'var(--border)',
+              transition: 'background 0.2s',
+            }}
+          >
+            <span
+              style={{
+                position: 'absolute',
+                top: '2px',
+                left: annual ? '20px' : '2px',
+                width: '20px',
+                height: '20px',
+                borderRadius: '50%',
+                background: '#fff',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.18)',
+                transition: 'left 0.2s',
+              }}
+            />
+          </button>
+
+          <span
+            style={{
+              fontSize: '13px',
+              fontWeight: annual ? 600 : 400,
+              color: annual ? 'var(--text)' : 'var(--text-muted)',
+              transition: 'color 0.15s',
+            }}
+          >
+            Anual
+          </span>
+
+          <span
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              padding: '3px 9px',
+              borderRadius: '100px',
+              fontSize: '11px',
+              fontWeight: 600,
+              border: `1px solid ${annual ? accent + '66' : 'var(--border)'}`,
+              color: annual ? accent : 'var(--text-subtle)',
+              background: annual ? accent + '12' : 'transparent',
+              transition: 'all 0.18s',
+              letterSpacing: '0.02em',
+            }}
+          >
+            Ahorra 10%
+          </span>
+        </div>
+      );
+
+      /* ─────────────────────────── PLAN CARD ─────────────────────── */
+
+      const PlanCard = ({ plan, selected, onSelect, annual, accent, currentPlanName }) => {
+        const [hover, setHover] = useState(false);
+        const monthly = parseFloat(plan.precio);
+        const displayed = annual ? Math.round(monthly * 0.9) : monthly;
+        const annualTotal = annual ? Math.round(monthly * 0.9 * 12) : null;
+        const tierName = tier(plan.nombre);
+        const popular = isPopular(plan.nombre);
+        const isCurrent = plan.nombre === currentPlanName;
+
+        return (
+          <button
+            type="button"
+            onClick={() => !isCurrent && onSelect(plan.id)}
+            onMouseEnter={() => setHover(true)}
+            onMouseLeave={() => setHover(false)}
+            disabled={isCurrent}
+            style={{
+              position: 'relative',
+              textAlign: 'left',
+              padding: '20px 18px 16px',
+              borderRadius: '12px',
+              cursor: isCurrent ? 'not-allowed' : 'pointer',
+              border: `${selected ? 2 : 1.5}px solid ${selected ? accent : hover && !isCurrent ? accent + '55' : 'var(--border)'}`,
+              background: selected ? accent + '0a' : 'var(--card-bg)',
+              opacity: isCurrent ? 0.55 : 1,
+              transition: 'border-color 0.15s, background 0.15s, transform 0.15s',
+              transform: hover && !selected && !isCurrent ? 'translateY(-1px)' : 'none',
+              fontFamily: 'inherit',
+              color: 'inherit',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px',
+              boxShadow: selected ? `0 4px 16px -8px ${accent}55` : '0 1px 3px rgba(0,0,0,0.03)',
+            }}
+          >
+            {popular && !isCurrent && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '-10px',
+                  left: '18px',
+                  background: 'var(--text)',
+                  color: 'var(--card-bg)',
+                  fontSize: '10px',
+                  fontWeight: 700,
+                  padding: '3px 9px',
+                  borderRadius: '100px',
+                  letterSpacing: '0.06em',
+                  whiteSpace: 'nowrap',
+                  textTransform: 'uppercase',
+                }}
+              >
+                Recomendado
+              </div>
+            )}
+
+            {isCurrent && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '-10px',
+                  left: '18px',
+                  background: 'var(--border)',
+                  color: 'var(--text-muted)',
+                  fontSize: '10px',
+                  fontWeight: 700,
+                  padding: '3px 9px',
+                  borderRadius: '100px',
+                  letterSpacing: '0.06em',
+                  whiteSpace: 'nowrap',
+                  textTransform: 'uppercase',
+                }}
+              >
+                Plan actual
+              </div>
+            )}
+
+            {/* Radio */}
+            <div
+              style={{
+                position: 'absolute',
+                top: '16px',
+                right: '16px',
+                width: '17px',
+                height: '17px',
+                borderRadius: '50%',
+                border: selected ? `5px solid ${accent}` : '1.5px solid var(--text-subtle)',
+                transition: 'border 0.15s',
+                background: 'var(--card-bg)',
+              }}
+            />
+
+            <div style={{ paddingRight: '26px' }}>
+              <div
+                style={{
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  color: 'var(--text-subtle)',
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                  marginBottom: '4px',
+                }}
+              >
+                {tierName}
+              </div>
+              <div
+                style={{
+                  fontSize: '15px',
+                  fontWeight: 600,
+                  color: 'var(--text)',
+                  letterSpacing: '-0.01em',
+                }}
+              >
+                {plan.nombre}
+              </div>
+            </div>
+
+            <div>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
+                <span
+                  style={{
+                    fontSize: '24px',
+                    fontWeight: 700,
+                    color: 'var(--text)',
+                    letterSpacing: '-0.02em',
+                    lineHeight: 1,
+                    fontVariantNumeric: 'tabular-nums',
+                  }}
+                >
+                  {fmtPrice(displayed)}
+                </span>
+                <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>/mes</span>
+              </div>
+              {annual && (
+                <div
+                  style={{
+                    fontSize: '11px',
+                    color: 'var(--text-subtle)',
+                    marginTop: '3px',
+                    fontVariantNumeric: 'tabular-nums',
+                  }}
+                >
+                  {fmtPrice(annualTotal)} facturados anualmente
+                </div>
+              )}
+              {!annual && (
+                <div style={{ fontSize: '11px', color: 'var(--text-subtle)', marginTop: '3px' }}>
+                  Facturación mensual
+                </div>
+              )}
+            </div>
+
+            <div
+              style={{
+                borderTop: '1px solid var(--border-light)',
+                paddingTop: '12px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '7px',
+              }}
+            >
+              {FEATURES[tierName]?.map((f, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span
+                    style={{
+                      width: '15px',
+                      height: '15px',
+                      borderRadius: '50%',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      background: selected ? accent : 'var(--border-light)',
+                      color: selected ? '#fff' : 'var(--text-muted)',
+                      flexShrink: 0,
+                      transition: 'all 0.15s',
+                    }}
+                  >
+                    <IcoCheck s={9} />
+                  </span>
+                  <span style={{ fontSize: '12.5px', color: 'var(--text-muted)' }}>{f}</span>
+                </div>
+              ))}
+            </div>
+          </button>
+        );
+      };
+
+      /* ─────────────────────────── STEP 1: PLAN ──────────────────── */
+
+      const StepPlan = ({
+        plans,
+        planId,
+        setPlanId,
+        category,
+        setCategory,
+        annual,
+        setAnnual,
+        accent,
+        currentPlanName,
+      }) => {
+        const filtered = useMemo(
+          () => plans.filter((p) => CATEGORIES[p.suscripcion_categoria_id].id === category),
+          [plans, category],
+        );
+
+        return (
+          <div style={{ marginTop: '4px' }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '16px',
+                marginBottom: '20px',
+                flexWrap: 'wrap',
+              }}
+            >
+              <CategoryTabs active={category} onChange={setCategory} accent={accent} />
+              <FrequencyToggle annual={annual} onChange={setAnnual} accent={accent} />
+            </div>
+
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                gap: '14px',
+                paddingTop: '10px',
+              }}
+            >
+              {filtered.map((p) => (
+                <PlanCard
+                  key={p.id}
+                  plan={p}
+                  selected={planId === p.id}
+                  onSelect={setPlanId}
+                  annual={annual}
+                  accent={accent}
+                  currentPlanName={currentPlanName}
+                />
+              ))}
+            </div>
+          </div>
+        );
+      };
+
+      /* ─────────────────────────── CARD HELPERS ──────────────────── */
+
+      const detectBrand = (num) => {
+        const n = (num || '').replace(/\s/g, '');
+        if (/^4/.test(n)) return 'visa';
+        if (/^(5[1-5]|2[2-7])/.test(n)) return 'mastercard';
+        if (/^3[47]/.test(n)) return 'amex';
+        if (/^6(?:011|5)/.test(n)) return 'discover';
+        return null;
+      };
+
+      const brandMaxLen = (brand) => (brand === 'amex' ? 15 : 16);
+      const brandCvvLen = (brand) => (brand === 'amex' ? 4 : 3);
+
+      const formatCardNumber = (val, brand) => {
+        const digits = (val || '').replace(/\D/g, '').slice(0, brandMaxLen(brand));
+        if (brand === 'amex') {
+          const g = digits.match(/^(\d{0,4})(\d{0,6})(\d{0,5})$/);
+          return [g[1], g[2], g[3]].filter(Boolean).join(' ');
+        }
+        return digits.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
+      };
+
+      const formatExpiry = (val) => {
+        const digits = (val || '').replace(/\D/g, '').slice(0, 4);
+        if (digits.length <= 2) return digits;
+        return digits.slice(0, 2) + '/' + digits.slice(2);
+      };
+
+      const cardLast4 = (num) => {
+        const n = (num || '').replace(/\s/g, '');
+        return n.length >= 4 ? n.slice(-4) : '••••';
+      };
+
+      const isCardValid = (card) => {
+        const n = (card.number || '').replace(/\s/g, '');
+        const brand = detectBrand(n);
+        const exp = card.expiry || '';
+        const [mm, yy] = exp.split('/');
+        const m = parseInt(mm, 10);
+        const expValid = /^\d{2}\/\d{2}$/.test(exp) && m >= 1 && m <= 12;
+        const numValid = brand === 'amex' ? n.length === 15 : n.length >= 16;
+        const cvvValid = (card.cvv || '').length === brandCvvLen(brand);
+        const nameValid = (card.name || '').trim().length >= 2;
+        return numValid && nameValid && expValid && cvvValid;
+      };
+
+      /* ─────────────────────────── BRAND LOGOS ───────────────────── */
+
+      const VisaLogo = ({ light = true }) => (
+        <svg width="42" height="14" viewBox="0 0 42 14" fill="none">
+          <text
+            x="0"
+            y="12"
+            fontFamily="DM Sans, sans-serif"
+            fontWeight="800"
+            fontSize="13"
+            fontStyle="italic"
+            letterSpacing="0.5"
+            fill={light ? '#fff' : '#1a1f71'}
+          >
+            VISA
+          </text>
+        </svg>
+      );
+
+      const MasterLogo = ({ light = true }) => (
+        <svg width="36" height="22" viewBox="0 0 36 22" fill="none">
+          <circle
+            cx="13"
+            cy="11"
+            r="9"
+            fill={light ? '#ffffff' : '#eb001b'}
+            opacity={light ? 0.95 : 1}
+          />
+          <circle
+            cx="23"
+            cy="11"
+            r="9"
+            fill={light ? '#ffffff' : '#f79e1b'}
+            opacity={light ? 0.45 : 1}
+          />
+        </svg>
+      );
+
+      const AmexLogo = ({ light = true }) => (
+        <svg width="42" height="14" viewBox="0 0 42 14" fill="none">
+          <rect width="42" height="14" rx="2" fill={light ? 'transparent' : '#006fcf'} />
+          <text
+            x="21"
+            y="10"
+            fontFamily="DM Sans, sans-serif"
+            fontWeight="800"
+            fontSize="9"
+            letterSpacing="1"
+            textAnchor="middle"
+            fill={light ? '#fff' : '#fff'}
+          >
+            AMEX
+          </text>
+        </svg>
+      );
+
+      const DiscoverLogo = ({ light = true }) => (
+        <svg width="56" height="14" viewBox="0 0 56 14" fill="none">
+          <text
+            x="0"
+            y="11"
+            fontFamily="DM Sans, sans-serif"
+            fontWeight="700"
+            fontSize="10"
+            letterSpacing="0.5"
+            fill={light ? '#fff' : '#ff6000'}
+          >
+            DISCOVER
+          </text>
+        </svg>
+      );
+
+      const BrandLogo = ({ brand, light = true }) => {
+        if (brand === 'visa') return <VisaLogo light={light} />;
+        if (brand === 'mastercard') return <MasterLogo light={light} />;
+        if (brand === 'amex') return <AmexLogo light={light} />;
+        if (brand === 'discover') return <DiscoverLogo light={light} />;
+        return null;
+      };
+
+      /* ─────────────────────────── CARD VISUAL ───────────────────── */
+
+      const CardVisual = ({ card, flipped, focused, accent }) => {
+        const brand = detectBrand(card.number);
+        const fullPlaceholder = '•••• •••• •••• ••••';
+        const cvvLen = brandCvvLen(brand);
+
+        const num = card.number ? formatCardNumber(card.number, brand) : '';
+        const numDisplay = num.padEnd(fullPlaceholder.length, ' ');
+
+        const groups = numDisplay.match(/.{1,4}/g) || [];
+
+        const focusRing = (active) =>
+          active
+            ? {
+                boxShadow: `inset 0 0 0 1.5px rgba(255,255,255,0.5)`,
+                background: 'rgba(255,255,255,0.06)',
+              }
+            : {};
+
+        return (
+          <div
+            style={{
+              perspective: '1400px',
+              width: '100%',
+              maxWidth: '340px',
+              margin: '0 auto',
+            }}
+          >
+            <div
+              style={{
+                position: 'relative',
+                width: '100%',
+                aspectRatio: '1.586 / 1',
+                transformStyle: 'preserve-3d',
+                transition: 'transform 0.65s cubic-bezier(0.4, 0, 0.2, 1)',
+                transform: flipped ? 'rotateY(180deg)' : 'rotateY(0)',
+              }}
+            >
+              {/* FRONT */}
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  borderRadius: '14px',
+                  background: '#13263c',
+                  color: '#fff',
+                  padding: '20px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  backfaceVisibility: 'hidden',
+                  boxShadow: '0 18px 40px -18px rgba(19,38,60,0.5), 0 2px 8px rgba(0,0,0,0.08)',
+                  overflow: 'hidden',
+                }}
+              >
+                {/* Decorative circles */}
+                <svg
+                  style={{
+                    position: 'absolute',
+                    right: '-50px',
+                    bottom: '-60px',
+                    pointerEvents: 'none',
+                  }}
+                  width="220"
+                  height="220"
+                  viewBox="0 0 220 220"
+                >
+                  <circle cx="140" cy="140" r="95" fill="#fff" opacity="0.035" />
+                  <circle cx="165" cy="165" r="65" fill="#fff" opacity="0.05" />
+                </svg>
+
+                {/* Top row */}
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    position: 'relative',
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: '10px',
+                      fontWeight: 700,
+                      color: '#fff',
+                      opacity: 0.85,
+                      letterSpacing: '0.18em',
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    reddoc
+                  </span>
+                  <div
+                    style={{
+                      height: '22px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      transition: 'opacity 0.25s',
+                      opacity: brand ? 1 : 0.35,
+                    }}
+                  >
+                    {brand ? (
+                      <BrandLogo brand={brand} />
+                    ) : (
+                      <span
+                        style={{
+                          fontSize: '10px',
+                          color: '#fff',
+                          opacity: 0.4,
+                          letterSpacing: '0.1em',
+                        }}
+                      >
+                        CARD
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Chip */}
+                <div style={{ position: 'relative', marginTop: '2px' }}>
+                  <div
+                    style={{
+                      width: '36px',
+                      height: '26px',
+                      borderRadius: '5px',
+                      background: 'linear-gradient(135deg, oklch(0.82 0.11 80), oklch(0.7 0.1 75))',
+                      position: 'relative',
+                      boxShadow: 'inset 0 0 0 0.5px rgba(0,0,0,0.15)',
+                    }}
+                  >
+                    <div
+                      style={{
+                        position: 'absolute',
+                        inset: '4px 6px',
+                        borderTop: '1px solid rgba(0,0,0,0.18)',
+                        borderBottom: '1px solid rgba(0,0,0,0.18)',
+                      }}
+                    />
+                    <div
+                      style={{
+                        position: 'absolute',
+                        left: '50%',
+                        top: '3px',
+                        bottom: '3px',
+                        width: '1px',
+                        background: 'rgba(0,0,0,0.18)',
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Number */}
+                <div
+                  style={{
+                    display: 'flex',
+                    gap: '10px',
+                    position: 'relative',
+                    padding: '8px 4px',
+                    borderRadius: '6px',
+                    fontFamily: 'DM Sans, monospace',
+                    fontVariantNumeric: 'tabular-nums',
+                    fontSize: '19px',
+                    letterSpacing: '0.04em',
+                    fontWeight: 500,
+                    transition: 'background 0.15s, box-shadow 0.15s',
+                    ...focusRing(focused === 'number'),
+                  }}
+                >
+                  {(brand === 'amex'
+                    ? [numDisplay.slice(0, 4), numDisplay.slice(5, 11), numDisplay.slice(12, 17)]
+                    : groups
+                  ).map((g, i) => (
+                    <span
+                      key={i}
+                      style={{
+                        minWidth: brand === 'amex' && i === 1 ? '90px' : '60px',
+                        display: 'inline-block',
+                      }}
+                    >
+                      {g.split('').map((ch, j) => (
+                        <span
+                          key={j}
+                          style={{
+                            color: ch === ' ' || ch === '•' ? 'rgba(255,255,255,0.35)' : '#fff',
+                          }}
+                        >
+                          {ch === ' ' ? '•' : ch}
+                        </span>
+                      ))}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Bottom row: titular + expiry */}
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-end',
+                    gap: '14px',
+                    position: 'relative',
+                  }}
+                >
+                  <div
+                    style={{
+                      flex: 1,
+                      minWidth: 0,
+                      padding: '5px 7px',
+                      borderRadius: '5px',
+                      transition: 'background 0.15s, box-shadow 0.15s',
+                      ...focusRing(focused === 'name'),
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontSize: '8.5px',
+                        color: 'rgba(255,255,255,0.55)',
+                        letterSpacing: '0.12em',
+                        textTransform: 'uppercase',
+                        marginBottom: '3px',
+                        fontWeight: 600,
+                      }}
+                    >
+                      Titular
+                    </div>
+                    <div
+                      style={{
+                        fontSize: '12px',
+                        fontWeight: 600,
+                        letterSpacing: '0.04em',
+                        color: card.name ? '#fff' : 'rgba(255,255,255,0.4)',
+                        textTransform: 'uppercase',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
+                    >
+                      {card.name || 'NOMBRE Y APELLIDO'}
+                    </div>
+                  </div>
+                  <div
+                    style={{
+                      padding: '5px 7px',
+                      borderRadius: '5px',
+                      transition: 'background 0.15s, box-shadow 0.15s',
+                      ...focusRing(focused === 'expiry'),
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontSize: '8.5px',
+                        color: 'rgba(255,255,255,0.55)',
+                        letterSpacing: '0.12em',
+                        textTransform: 'uppercase',
+                        marginBottom: '3px',
+                        fontWeight: 600,
+                      }}
+                    >
+                      Vence
+                    </div>
+                    <div
+                      style={{
+                        fontSize: '12px',
+                        fontWeight: 600,
+                        letterSpacing: '0.04em',
+                        fontVariantNumeric: 'tabular-nums',
+                        color: card.expiry ? '#fff' : 'rgba(255,255,255,0.4)',
+                      }}
+                    >
+                      {card.expiry || 'MM/AA'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* BACK */}
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  borderRadius: '14px',
+                  background: '#13263c',
+                  color: '#fff',
+                  backfaceVisibility: 'hidden',
+                  transform: 'rotateY(180deg)',
+                  boxShadow: '0 18px 40px -18px rgba(19,38,60,0.5), 0 2px 8px rgba(0,0,0,0.08)',
+                  overflow: 'hidden',
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
+                {/* Magnetic stripe */}
+                <div
+                  style={{
+                    marginTop: '22px',
+                    height: '36px',
+                    background: '#0a1626',
+                  }}
+                />
+
+                {/* Signature + CVV */}
+                <div
+                  style={{
+                    padding: '18px 20px 0',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                  }}
+                >
+                  <div
+                    style={{
+                      flex: 1,
+                      height: '30px',
+                      borderRadius: '4px',
+                      background:
+                        'repeating-linear-gradient(45deg, rgba(255,255,255,0.85) 0 4px, rgba(255,255,255,0.7) 4px 8px)',
+                    }}
+                  />
+                  <div
+                    style={{
+                      width: '62px',
+                      height: '30px',
+                      background: '#fff',
+                      color: '#13263c',
+                      borderRadius: '4px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '13px',
+                      fontWeight: 700,
+                      letterSpacing: '0.1em',
+                      fontFamily: 'DM Sans, monospace',
+                      fontVariantNumeric: 'tabular-nums',
+                      boxShadow: focused === 'cvv' ? 'inset 0 0 0 1.5px ' + accent : 'none',
+                      transition: 'box-shadow 0.15s',
+                    }}
+                  >
+                    {(card.cvv || '').padEnd(cvvLen, '•') || '•'.repeat(cvvLen)}
+                  </div>
+                </div>
+
+                <div
+                  style={{
+                    padding: '12px 20px',
+                    fontSize: '9.5px',
+                    color: 'rgba(255,255,255,0.55)',
+                    lineHeight: 1.5,
+                  }}
+                >
+                  El código de seguridad ({cvvLen} dígitos) se encuentra al reverso de tu tarjeta.
+                </div>
+
+                <div
+                  style={{
+                    marginTop: 'auto',
+                    padding: '0 20px 20px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-end',
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: '10px',
+                      fontWeight: 700,
+                      opacity: 0.55,
+                      letterSpacing: '0.18em',
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    reddoc
+                  </span>
+                  <div style={{ opacity: brand ? 0.8 : 0.25 }}>
+                    {brand ? (
+                      <BrandLogo brand={brand} />
+                    ) : (
+                      <span
+                        style={{
+                          fontSize: '10px',
+                          color: '#fff',
+                          opacity: 0.5,
+                          letterSpacing: '0.1em',
+                        }}
+                      >
+                        CARD
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      /* ─────────────────────────── PAYMENT FIELD ─────────────────── */
+
+      const PayField = ({
+        label,
+        value,
+        onChange,
+        onFocus,
+        onBlur,
+        placeholder,
+        autoComplete,
+        inputMode,
+        accent,
+        prefixIcon,
+        suffix,
+      }) => {
+        const [focus, setFocus] = useState(false);
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <label style={{ fontSize: '12.5px', fontWeight: 500, color: 'var(--text)' }}>
+              {label}
+            </label>
+            <div
+              style={{
+                position: 'relative',
+                display: 'flex',
+                alignItems: 'center',
+                padding: '0 12px',
+                borderRadius: '8px',
+                background: 'var(--card-bg)',
+                border: `1.5px solid ${focus ? accent : 'var(--border)'}`,
+                boxShadow: focus ? `0 0 0 3px ${accent}1f` : 'none',
+                transition: 'border-color 0.15s, box-shadow 0.15s',
+              }}
+            >
+              {prefixIcon && (
+                <span style={{ color: 'var(--text-subtle)', marginRight: '8px', display: 'flex' }}>
+                  {prefixIcon}
+                </span>
+              )}
+              <input
+                value={value}
+                placeholder={placeholder}
+                autoComplete={autoComplete}
+                inputMode={inputMode}
+                onChange={(e) => onChange(e.target.value)}
+                onFocus={() => {
+                  setFocus(true);
+                  onFocus && onFocus();
+                }}
+                onBlur={() => {
+                  setFocus(false);
+                  onBlur && onBlur();
+                }}
+                style={{
+                  flex: 1,
+                  padding: '10px 0',
+                  minWidth: 0,
+                  border: 'none',
+                  background: 'transparent',
+                  fontSize: '14px',
+                  color: 'var(--text)',
+                  outline: 'none',
+                  fontFamily: 'inherit',
+                  fontVariantNumeric: 'tabular-nums',
+                  letterSpacing: '0.01em',
+                }}
+              />
+              {suffix}
+            </div>
+          </div>
+        );
+      };
+
+      /* ─────────────────────────── STEP 2: PAYMENT ───────────────── */
+
+      const StepPayment = ({ card, setCard, accent }) => {
+        const [focused, setFocused] = useState(null);
+        const brand = detectBrand(card.number);
+
+        const setField = (field, value) => setCard({ ...card, [field]: value });
+
+        return (
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'minmax(0, 1.15fr) minmax(0, 1fr)',
+              gap: '26px',
+              marginTop: '4px',
+              alignItems: 'start',
+            }}
+          >
+            {/* FORM */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <PayField
+                label="Número de tarjeta"
+                value={card.number}
+                onChange={(v) => setField('number', formatCardNumber(v, detectBrand(v)))}
+                onFocus={() => setFocused('number')}
+                onBlur={() => setFocused(null)}
+                placeholder="1234 5678 9012 3456"
+                autoComplete="cc-number"
+                inputMode="numeric"
+                accent={accent}
+                suffix={
+                  brand && (
+                    <span style={{ display: 'flex', marginLeft: '8px', opacity: 0.9 }}>
+                      <BrandLogo brand={brand} light={false} />
+                    </span>
+                  )
+                }
+              />
+
+              <PayField
+                label="Nombre del titular"
+                value={card.name}
+                onChange={(v) =>
+                  setField(
+                    'name',
+                    v
+                      .replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s.'-]/g, '')
+                      .slice(0, 26)
+                      .toUpperCase(),
+                  )
+                }
+                onFocus={() => setFocused('name')}
+                onBlur={() => setFocused(null)}
+                placeholder="JUAN PÉREZ"
+                autoComplete="cc-name"
+                accent={accent}
+              />
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <PayField
+                  label="Vencimiento"
+                  value={card.expiry}
+                  onChange={(v) => setField('expiry', formatExpiry(v))}
+                  onFocus={() => setFocused('expiry')}
+                  onBlur={() => setFocused(null)}
+                  placeholder="MM/AA"
+                  autoComplete="cc-exp"
+                  inputMode="numeric"
+                  accent={accent}
+                />
+                <PayField
+                  label="CVV"
+                  value={card.cvv}
+                  onChange={(v) =>
+                    setField('cvv', v.replace(/\D/g, '').slice(0, brandCvvLen(brand)))
+                  }
+                  onFocus={() => setFocused('cvv')}
+                  onBlur={() => setFocused(null)}
+                  placeholder={'•'.repeat(brandCvvLen(brand))}
+                  autoComplete="cc-csc"
+                  inputMode="numeric"
+                  accent={accent}
+                />
+              </div>
+
+              {/* Security note */}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '9px',
+                  padding: '11px 12px',
+                  borderRadius: '8px',
+                  background: 'var(--bg)',
+                  border: '1px solid var(--border-light)',
+                  marginTop: '4px',
+                }}
+              >
+                <span style={{ color: 'var(--text-muted)', flexShrink: 0, marginTop: '1px' }}>
+                  <IcoShield s={14} />
+                </span>
+                <div style={{ fontSize: '11.5px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                  Tus datos están protegidos con cifrado de extremo a extremo. Reddoc no almacena el
+                  número completo de tu tarjeta.
+                </div>
+              </div>
+            </div>
+
+            {/* CARD VISUAL */}
+            <div
+              style={{
+                position: 'sticky',
+                top: '72px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '12px',
+              }}
+            >
+              <CardVisual
+                card={card}
+                flipped={focused === 'cvv'}
+                focused={focused}
+                accent={accent}
+              />
+              <div
+                style={{
+                  fontSize: '10.5px',
+                  color: 'var(--text-subtle)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  letterSpacing: '0.04em',
+                }}
+              >
+                <IcoLock s={10} /> Vista previa de tu tarjeta
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      /* ─────────────────────────── STEP 3: CONFIRM ───────────────── */
+
+      const MiniCard = ({ card, accent }) => {
+        const brand = detectBrand(card.number);
+        return (
+          <div
+            style={{
+              width: '56px',
+              height: '36px',
+              flexShrink: 0,
+              borderRadius: '7px',
+              background: '#13263c',
+              color: '#fff',
+              position: 'relative',
+              display: 'flex',
+              alignItems: 'flex-end',
+              justifyContent: 'flex-end',
+              padding: '4px 5px',
+              overflow: 'hidden',
+              boxShadow: '0 2px 6px -2px rgba(19,38,60,0.35)',
+            }}
+          >
+            <svg
+              style={{ position: 'absolute', right: '-12px', bottom: '-14px' }}
+              width="48"
+              height="48"
+              viewBox="0 0 48 48"
+            >
+              <circle cx="30" cy="30" r="22" fill="#fff" opacity="0.06" />
+              <circle cx="36" cy="36" r="14" fill="#fff" opacity="0.08" />
+            </svg>
+            <div style={{ position: 'absolute', top: '4px', left: '5px' }}>
+              <div
+                style={{
+                  width: '10px',
+                  height: '7px',
+                  borderRadius: '1.5px',
+                  background: 'oklch(0.78 0.1 80)',
+                }}
+              />
+            </div>
+            <div
+              style={{
+                position: 'relative',
+                transform: 'scale(0.55)',
+                transformOrigin: 'bottom right',
+              }}
+            >
+              {brand ? <BrandLogo brand={brand} /> : null}
+            </div>
+          </div>
+        );
+      };
+
+      const SummaryRow = ({ label, value, strong, accent }) => (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '7px 0',
+          }}
+        >
+          <span
+            style={{
+              fontSize: '13px',
+              color: strong ? 'var(--text)' : 'var(--text-muted)',
+              fontWeight: strong ? 600 : 400,
+            }}
+          >
+            {label}
+          </span>
+          <span
+            style={{
+              fontSize: strong ? '15px' : '13px',
+              fontWeight: strong ? 700 : 500,
+              color: strong ? accent : 'var(--text)',
+              fontVariantNumeric: 'tabular-nums',
+            }}
+          >
+            {value}
+          </span>
+        </div>
+      );
+
+      const StepConfirm = ({ plan, annual, card, accent, cliente, onEdit }) => {
+        const monthly = parseFloat(plan.precio);
+        const monthlyDisc = annual ? Math.round(monthly * 0.9) : Math.round(monthly);
+        const subtotal = annual ? Math.round(monthly * 12) : Math.round(monthly);
+        const discount = annual ? Math.round(monthly * 12 * 0.1) : 0;
+        const total = annual ? Math.round(monthly * 12 * 0.9) : Math.round(monthly);
+        const brand = detectBrand(card.number);
+
+        const tierName = tier(plan.nombre);
+        const categoryLabel = CATEGORIES[plan.suscripcion_categoria_id].label;
+
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '4px' }}>
+            {/* Plan summary */}
+            <div
+              style={{
+                padding: '16px 18px',
+                borderRadius: '12px',
+                border: `1.5px solid ${accent}`,
+                background: accent + '08',
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
+                  gap: '12px',
+                }}
+              >
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <div
+                    style={{
+                      fontSize: '10px',
+                      fontWeight: 700,
+                      color: accent,
+                      letterSpacing: '0.08em',
+                      textTransform: 'uppercase',
+                      marginBottom: '5px',
+                    }}
+                  >
+                    Plan · {categoryLabel}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: '17px',
+                      fontWeight: 600,
+                      color: 'var(--text)',
+                      letterSpacing: '-0.01em',
+                    }}
+                  >
+                    {plan.nombre}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: '12.5px',
+                      color: 'var(--text-muted)',
+                      marginTop: '4px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      flexWrap: 'wrap',
+                    }}
+                  >
+                    Para{' '}
+                    <strong style={{ color: 'var(--text)', fontWeight: 600 }}>{cliente}</strong>
+                    <span style={{ color: 'var(--text-subtle)' }}>•</span>
+                    Facturación {annual ? 'anual' : 'mensual'}
+                    {annual && (
+                      <span
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          padding: '1px 7px',
+                          borderRadius: '100px',
+                          background: accent + '18',
+                          color: accent,
+                          fontSize: '10.5px',
+                          fontWeight: 600,
+                          letterSpacing: '0.02em',
+                        }}
+                      >
+                        −10%
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <button
+                  onClick={() => onEdit(0)}
+                  style={{
+                    border: '1.5px solid var(--border)',
+                    background: 'var(--card-bg)',
+                    borderRadius: '7px',
+                    padding: '6px 10px',
+                    cursor: 'pointer',
+                    color: 'var(--text-muted)',
+                    fontSize: '12px',
+                    fontWeight: 500,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '5px',
+                    fontFamily: 'inherit',
+                  }}
+                >
+                  <IcoEdit s={11} /> Cambiar
+                </button>
+              </div>
+
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'baseline',
+                  gap: '4px',
+                  marginTop: '14px',
+                  paddingTop: '13px',
+                  borderTop: '1px solid var(--border-light)',
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: '26px',
+                    fontWeight: 700,
+                    color: accent,
+                    letterSpacing: '-0.02em',
+                    fontVariantNumeric: 'tabular-nums',
+                  }}
+                >
+                  {fmtPrice(monthlyDisc)}
+                </span>
+                <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>/mes</span>
+                {annual && (
+                  <span
+                    style={{
+                      fontSize: '12px',
+                      color: 'var(--text-subtle)',
+                      marginLeft: '8px',
+                      fontVariantNumeric: 'tabular-nums',
+                    }}
+                  >
+                    · {fmtPrice(total)} facturados anualmente
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Payment method summary */}
+            <div
+              style={{
+                padding: '14px 16px',
+                borderRadius: '12px',
+                border: '1.5px solid var(--border)',
+                background: 'var(--card-bg)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '13px',
+              }}
+            >
+              <MiniCard card={card} accent={accent} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div
+                  style={{
+                    fontSize: '10px',
+                    fontWeight: 700,
+                    color: 'var(--text-subtle)',
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    marginBottom: '3px',
+                  }}
+                >
+                  Método de pago
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span
+                    style={{
+                      fontSize: '13.5px',
+                      fontWeight: 600,
+                      color: 'var(--text)',
+                      textTransform: 'capitalize',
+                    }}
+                  >
+                    {brand || 'Tarjeta'}
+                  </span>
+                  <span style={{ color: 'var(--text-subtle)', fontSize: '12px' }}>•</span>
+                  <span
+                    style={{
+                      fontSize: '13px',
+                      color: 'var(--text-muted)',
+                      fontVariantNumeric: 'tabular-nums',
+                      letterSpacing: '0.1em',
+                    }}
+                  >
+                    •••• {cardLast4(card.number)}
+                  </span>
+                </div>
+                <div style={{ fontSize: '11.5px', color: 'var(--text-subtle)', marginTop: '2px' }}>
+                  {card.name || '—'} · Vence {card.expiry || 'MM/AA'}
+                </div>
+              </div>
+              <button
+                onClick={() => onEdit(1)}
+                style={{
+                  border: '1.5px solid var(--border)',
+                  background: 'transparent',
+                  borderRadius: '7px',
+                  padding: '6px 10px',
+                  cursor: 'pointer',
+                  color: 'var(--text-muted)',
+                  fontSize: '12px',
+                  fontWeight: 500,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '5px',
+                  fontFamily: 'inherit',
+                }}
+              >
+                <IcoEdit s={11} /> Editar
+              </button>
+            </div>
+
+            {/* Total breakdown */}
+            <div
+              style={{
+                padding: '4px 18px 14px',
+                borderRadius: '12px',
+                border: '1.5px solid var(--border)',
+                background: 'var(--card-bg)',
+              }}
+            >
+              <SummaryRow label="Subtotal" value={fmtPrice(subtotal)} accent={accent} />
+              {annual && (
+                <SummaryRow
+                  label="Descuento anual (10%)"
+                  value={'− ' + fmtPrice(discount)}
+                  accent={accent}
+                />
+              )}
+              <SummaryRow label="IVA" value="Incluido" accent={accent} />
+              <div
+                style={{
+                  borderTop: '1px solid var(--border-light)',
+                  marginTop: '4px',
+                  paddingTop: '2px',
+                }}
+              >
+                <SummaryRow
+                  label={annual ? 'Total anual' : 'Total mensual'}
+                  value={fmtPrice(total)}
+                  strong
+                  accent={accent}
+                />
+              </div>
+            </div>
+
+            {/* Renewal note */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '9px',
+                padding: '10px 4px',
+                fontSize: '11.5px',
+                color: 'var(--text-muted)',
+                lineHeight: 1.55,
+              }}
+            >
+              <span style={{ color: 'var(--text-subtle)', flexShrink: 0, marginTop: '1px' }}>
+                <IcoShield s={13} />
+              </span>
+              <span>
+                Al confirmar aceptas los términos del servicio. Tu suscripción se renueva
+                automáticamente cada {annual ? 'año' : 'mes'}. Puedes cancelar cuando quieras desde
+                el panel de suscripciones.
+              </span>
+            </div>
+          </div>
+        );
+      };
+
+      /* ─────────────────────────── SUCCESS ───────────────────────── */
+
+      const SuccessScreen = ({ plan, accent, cliente, annual, onDone }) => {
+        const total = plan
+          ? Math.round(parseFloat(plan.precio) * (annual ? 0.9 : 1) * (annual ? 12 : 1))
+          : 0;
+        return (
+          <div
+            className="step-anim"
+            style={{
+              background: 'var(--card-bg)',
+              border: '1.5px solid var(--border)',
+              borderRadius: '14px',
+              padding: '52px 32px',
+              textAlign: 'center',
+              boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+            }}
+          >
+            <div
+              style={{
+                width: '58px',
+                height: '58px',
+                borderRadius: '50%',
+                background: accent + '18',
+                border: `2px solid ${accent}`,
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: accent,
+                marginBottom: '18px',
+              }}
+            >
+              <IcoCheck s={22} />
+            </div>
+            <h2
+              style={{
+                fontSize: '19px',
+                fontWeight: 700,
+                color: 'var(--text)',
+                marginBottom: '8px',
+                letterSpacing: '-0.01em',
+              }}
+            >
+              ¡Suscripción activada!
+            </h2>
+            <p
+              style={{
+                fontSize: '13.5px',
+                color: 'var(--text-muted)',
+                lineHeight: 1.6,
+                maxWidth: '380px',
+                margin: '0 auto 24px',
+              }}
+            >
+              El plan <strong style={{ color: 'var(--text)' }}>{plan?.nombre}</strong> ya está
+              activo para <strong style={{ color: 'var(--text)' }}>{cliente}</strong>. Recibirás un
+              correo con la factura por {fmtPrice(total)}.
+            </p>
+            <div
+              style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}
+            >
+              <a
+                href="Suscripciones.html"
+                style={{
+                  padding: '9px 18px',
+                  borderRadius: '8px',
+                  border: '1.5px solid var(--border)',
+                  background: 'transparent',
+                  color: 'var(--text)',
+                  fontSize: '13px',
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                }}
+              >
+                Volver a suscripciones
+              </a>
+              <button
+                onClick={onDone}
+                style={{
+                  padding: '9px 22px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  background: accent,
+                  color: '#fff',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  fontFamily: 'inherit',
+                }}
+              >
+                Ir al dashboard →
+              </button>
+            </div>
+          </div>
+        );
+      };
+
+      /* ─────────────────────────── CONTEXT HEADER ────────────────── */
+
+      const ContextHeader = ({ cliente, planActual }) => (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            padding: '14px 16px',
+            background: 'var(--card-bg)',
+            border: '1.5px solid var(--border)',
+            borderRadius: '10px',
+            marginBottom: '24px',
+          }}
+        >
+          <div
+            style={{
+              width: '40px',
+              height: '40px',
+              flexShrink: 0,
+              borderRadius: '10px',
+              border: '1.5px solid var(--border)',
+              background: 'var(--bg)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '13px',
+              fontWeight: 600,
+              color: 'var(--text)',
+              letterSpacing: '0.02em',
+            }}
+          >
+            {initials(cliente)}
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div
+              style={{
+                fontSize: '10.5px',
+                color: 'var(--text-subtle)',
+                letterSpacing: '0.06em',
+                textTransform: 'uppercase',
+                fontWeight: 600,
+                marginBottom: '2px',
+              }}
+            >
+              Mejorando suscripción de
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ fontSize: '14.5px', fontWeight: 600, color: 'var(--text)' }}>
+                {cliente}
+              </span>
+              <span style={{ color: 'var(--text-subtle)', fontSize: '12px' }}>•</span>
+              <span style={{ fontSize: '12.5px', color: 'var(--text-muted)' }}>
+                Plan actual: {planActual}
+              </span>
+            </div>
+          </div>
+        </div>
+      );
+
+      /* ─────────────────────────── NAVBAR ────────────────────────── */
+
+      const Navbar = ({ dark, setDark, accent }) => {
+        const links = ['Dashboard', 'Empresas', 'Facturación', 'Reportes', 'Configuración'];
+        return (
+          <nav
+            style={{
+              height: '54px',
+              borderBottom: '1px solid var(--border)',
+              background: 'var(--navbar-bg)',
+              display: 'flex',
+              alignItems: 'center',
+              padding: '0 24px',
+              position: 'sticky',
+              top: 0,
+              zIndex: 100,
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '9px',
+                marginRight: '28px',
+                flexShrink: 0,
+              }}
+            >
+              <div
+                style={{
+                  width: '27px',
+                  height: '27px',
+                  borderRadius: '6px',
+                  background: accent,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+                  <rect x="2" y="2" width="6" height="8.5" rx="1.2" fill="white" opacity="0.95" />
+                  <rect x="7" y="4.5" width="6" height="8.5" rx="1.2" fill="white" opacity="0.45" />
+                </svg>
+              </div>
+              <span
+                style={{
+                  fontSize: '14.5px',
+                  fontWeight: 700,
+                  color: 'var(--text)',
+                  letterSpacing: '-0.02em',
+                }}
+              >
+                reddoc
+              </span>
+            </div>
+            <div style={{ display: 'flex', gap: '2px', flex: 1 }}>
+              {links.map((l, i) => (
+                <a
+                  key={l}
+                  href="#"
+                  style={{
+                    padding: '5px 10px',
+                    borderRadius: '6px',
+                    fontSize: '13px',
+                    fontWeight: i === 1 ? 500 : 400,
+                    color: i === 1 ? accent : 'var(--text-muted)',
+                    background: i === 1 ? accent + '12' : 'transparent',
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  {l}
+                </a>
+              ))}
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
+              <button
+                onClick={() => setDark(!dark)}
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '7px',
+                  border: '1.5px solid var(--border)',
+                  background: 'transparent',
+                  color: 'var(--text-muted)',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                {dark ? <IcoSun /> : <IcoMoon />}
+              </button>
+              <div
+                style={{
+                  width: '30px',
+                  height: '30px',
+                  borderRadius: '50%',
+                  background: accent,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#fff',
+                  fontSize: '10.5px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  letterSpacing: '0.04em',
+                }}
+              >
+                MR
+              </div>
+            </div>
+          </nav>
+        );
+      };
+
+      /* ─────────────────────────── APP ───────────────────────────── */
+
+      const ACCENTS = ['#009ef7', '#7c3aed', '#059669', '#e11d48'];
+
+      const App = () => {
+        const { TweaksPanel, TweakSection, TweakToggle, TweakColor, useTweaks } = window;
+
+        const [t, setTweak] = useTweaks(
+          /*EDITMODE-BEGIN*/ {
+            dark: false,
+            accent: '#009ef7',
+          } /*EDITMODE-END*/,
+        );
+
+        const ctx = useMemo(getCtx, []);
+        const [step, setStep] = useState(0);
+        const [animKey, setAnimKey] = useState(0);
+        const [planId, setPlanId] = useState(null);
+        const [category, setCategory] = useState('erp');
+        const [annual, setAnnual] = useState(false);
+        const [card, setCard] = useState({ number: '', name: '', expiry: '', cvv: '' });
+        const [loading, setLoading] = useState(false);
+        const [done, setDone] = useState(false);
+
+        useEffect(() => {
+          const r = document.documentElement;
+          if (t.dark) {
+            r.style.setProperty('--bg', '#13263c');
+            r.style.setProperty('--card-bg', '#1a3350');
+            r.style.setProperty('--border', '#22436a');
+            r.style.setProperty('--border-light', '#1d3b5e');
+            r.style.setProperty('--text', '#f0f6fc');
+            r.style.setProperty('--text-muted', '#9ab5cf');
+            r.style.setProperty('--text-subtle', '#4f7396');
+            r.style.setProperty('--navbar-bg', '#0e1e2e');
+          } else {
+            r.style.setProperty('--bg', '#f8f9fa');
+            r.style.setProperty('--card-bg', '#ffffff');
+            r.style.setProperty('--border', '#e2e8f0');
+            r.style.setProperty('--border-light', '#f1f5f9');
+            r.style.setProperty('--text', '#13263c');
+            r.style.setProperty('--text-muted', '#526680');
+            r.style.setProperty('--text-subtle', '#8fa4b8');
+            r.style.setProperty('--navbar-bg', '#ffffff');
+          }
+          document.body.style.background = 'var(--bg)';
+        }, [t.dark]);
+
+        const accent = t.accent;
+        const selectedPlan = PLANS_RAW.find((p) => p.id === planId);
+
+        const canNext = step === 0 ? planId !== null : step === 1 ? isCardValid(card) : true;
+
+        const next = () => {
+          if (!canNext) return;
+          setStep((s) => s + 1);
+          setAnimKey((k) => k + 1);
+        };
+        const back = () => {
+          if (step === 0) {
+            window.location.href = 'Suscripciones.html';
+            return;
+          }
+          setStep((s) => s - 1);
+          setAnimKey((k) => k + 1);
+        };
+        const goEdit = (s) => {
+          setStep(s);
+          setAnimKey((k) => k + 1);
+        };
+
+        const confirmPayment = () => {
+          setLoading(true);
+          setTimeout(() => {
+            setLoading(false);
+            setDone(true);
+          }, 1400);
+        };
+
+        const HEADERS = [
+          [
+            'Selecciona un plan',
+            `Elige entre planes de ${CATEGORIES[1].label} o ${CATEGORIES[2].label} y la frecuencia de facturación.`,
+          ],
+          [
+            'Información de pago',
+            'Ingresa los datos de tu tarjeta. La vista previa se actualiza en tiempo real.',
+          ],
+          ['Confirma y activa', 'Revisa el resumen antes de procesar el pago.'],
+        ];
+
+        return (
+          <div
+            style={{
+              minHeight: '100vh',
+              background: 'var(--bg)',
+              color: 'var(--text)',
+              transition: 'background 0.2s, color 0.2s',
+            }}
+          >
+            <Navbar dark={t.dark} setDark={(v) => setTweak('dark', v)} accent={accent} />
+
+            <div style={{ maxWidth: '880px', margin: '0 auto', padding: '34px 24px 90px' }}>
+              {/* Breadcrumb */}
+              <div
+                style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '18px' }}
+              >
+                {[
+                  ['Inicio', '#'],
+                  ['Suscripciones', 'Suscripciones.html'],
+                  ['Mejorar', null],
+                ].map(([c, href], i, arr) => (
+                  <React.Fragment key={c}>
+                    {href ? (
+                      <a
+                        href={href}
+                        style={{
+                          fontSize: '12.5px',
+                          color: 'var(--text-muted)',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        {c}
+                      </a>
+                    ) : (
+                      <span style={{ fontSize: '12.5px', color: 'var(--text)', fontWeight: 500 }}>
+                        {c}
+                      </span>
+                    )}
+                    {i < arr.length - 1 && (
+                      <span style={{ color: 'var(--text-subtle)', display: 'flex' }}>
+                        <IcoCaret />
+                      </span>
+                    )}
+                  </React.Fragment>
+                ))}
+              </div>
+
+              {/* Page title */}
+              <div style={{ marginBottom: '24px' }}>
+                <h1
+                  style={{
+                    fontSize: '24px',
+                    fontWeight: 700,
+                    color: 'var(--text)',
+                    letterSpacing: '-0.025em',
+                    marginBottom: '4px',
+                  }}
+                >
+                  Mejorar suscripción
+                </h1>
+                <p style={{ fontSize: '13.5px', color: 'var(--text-muted)' }}>
+                  Activa un plan completo para seguir operando sin límites.
+                </p>
+              </div>
+
+              <ContextHeader cliente={ctx.cliente} planActual={ctx.plan_actual} />
+
+              {done ? (
+                <SuccessScreen
+                  plan={selectedPlan}
+                  accent={accent}
+                  cliente={ctx.cliente}
+                  annual={annual}
+                  onDone={() => {
+                    window.location.href = 'Suscripciones.html';
+                  }}
+                />
+              ) : (
+                <>
+                  <Stepper current={step} accent={accent} />
+
+                  {/* Card */}
+                  <div
+                    style={{
+                      background: 'var(--card-bg)',
+                      border: '1.5px solid var(--border)',
+                      borderRadius: '14px',
+                      padding: '24px 26px 26px',
+                      marginBottom: '14px',
+                      boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+                    }}
+                  >
+                    <div style={{ marginBottom: '14px' }}>
+                      <h2
+                        style={{
+                          fontSize: '15.5px',
+                          fontWeight: 600,
+                          color: 'var(--text)',
+                          letterSpacing: '-0.01em',
+                        }}
+                      >
+                        {HEADERS[step][0]}
+                      </h2>
+                      <p
+                        style={{ fontSize: '12.5px', color: 'var(--text-muted)', marginTop: '3px' }}
+                      >
+                        {HEADERS[step][1]}
+                      </p>
+                    </div>
+
+                    <div key={animKey} className="step-anim">
+                      {step === 0 && (
+                        <StepPlan
+                          plans={PLANS_RAW}
+                          planId={planId}
+                          setPlanId={setPlanId}
+                          category={category}
+                          setCategory={setCategory}
+                          annual={annual}
+                          setAnnual={setAnnual}
+                          accent={accent}
+                          currentPlanName={ctx.plan_actual}
+                        />
+                      )}
+                      {step === 1 && <StepPayment card={card} setCard={setCard} accent={accent} />}
+                      {step === 2 && selectedPlan && (
+                        <StepConfirm
+                          plan={selectedPlan}
+                          annual={annual}
+                          card={card}
+                          accent={accent}
+                          cliente={ctx.cliente}
+                          onEdit={goEdit}
+                        />
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Navigation */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <button
+                      onClick={back}
+                      style={{
+                        padding: '9px 16px',
+                        borderRadius: '8px',
+                        border: '1.5px solid var(--border)',
+                        background: 'transparent',
+                        color: 'var(--text)',
+                        fontSize: '13.5px',
+                        fontWeight: 500,
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '7px',
+                        transition: 'all 0.15s',
+                      }}
+                    >
+                      <IcoArrowL s={13} />
+                      {step === 0 ? 'Volver' : 'Atrás'}
+                    </button>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      {step === 0 && !canNext && (
+                        <span style={{ fontSize: '12px', color: 'var(--text-subtle)' }}>
+                          Selecciona un plan para continuar
+                        </span>
+                      )}
+                      {step === 0 && canNext && selectedPlan && (
+                        <span
+                          style={{
+                            fontSize: '12.5px',
+                            color: 'var(--text-muted)',
+                            fontVariantNumeric: 'tabular-nums',
+                          }}
+                        >
+                          {selectedPlan.nombre} ·{' '}
+                          <strong style={{ color: 'var(--text)' }}>
+                            {fmtPrice(
+                              Math.round(parseFloat(selectedPlan.precio) * (annual ? 0.9 : 1)),
+                            )}
+                            /mes
+                          </strong>
+                        </span>
+                      )}
+                      {step === 1 && !canNext && (
+                        <span style={{ fontSize: '12px', color: 'var(--text-subtle)' }}>
+                          Completa los datos de la tarjeta
+                        </span>
+                      )}
+                      {step === 1 && canNext && (
+                        <span
+                          style={{
+                            fontSize: '12.5px',
+                            color: 'var(--text-muted)',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                          }}
+                        >
+                          <IcoCheck s={11} /> Tarjeta válida
+                        </span>
+                      )}
+
+                      {step < STEPS.length - 1 ? (
+                        <button
+                          onClick={next}
+                          disabled={!canNext}
+                          style={{
+                            padding: '9px 20px',
+                            borderRadius: '8px',
+                            border: 'none',
+                            background: canNext ? accent : 'var(--border)',
+                            color: canNext ? '#fff' : 'var(--text-subtle)',
+                            fontSize: '13.5px',
+                            fontWeight: 600,
+                            cursor: canNext ? 'pointer' : 'not-allowed',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '7px',
+                            transition: 'all 0.15s',
+                          }}
+                        >
+                          Continuar
+                          <IcoArrowR s={13} />
+                        </button>
+                      ) : (
+                        <button
+                          onClick={confirmPayment}
+                          disabled={loading || !selectedPlan}
+                          style={{
+                            padding: '9px 22px',
+                            borderRadius: '8px',
+                            border: 'none',
+                            background: loading ? accent + 'cc' : accent,
+                            color: '#fff',
+                            fontSize: '13.5px',
+                            fontWeight: 600,
+                            cursor: loading ? 'wait' : 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            minWidth: '180px',
+                            justifyContent: 'center',
+                            transition: 'all 0.15s',
+                          }}
+                        >
+                          {loading ? (
+                            <>
+                              <div
+                                style={{
+                                  width: '13px',
+                                  height: '13px',
+                                  border: '2px solid rgba(255,255,255,0.3)',
+                                  borderTop: '2px solid #fff',
+                                  borderRadius: '50%',
+                                  animation: 'spin 0.75s linear infinite',
+                                }}
+                              />
+                              Procesando…
+                            </>
+                          ) : (
+                            <>
+                              <IcoLock s={13} /> Pagar y activar
+                            </>
+                          )}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {TweaksPanel && (
+              <TweaksPanel>
+                <TweakSection title="Apariencia">
+                  <TweakToggle
+                    label="Modo oscuro"
+                    value={t.dark}
+                    onChange={(v) => setTweak('dark', v)}
+                  />
+                </TweakSection>
+                <TweakSection title="Color de acento">
+                  <TweakColor
+                    value={t.accent}
+                    options={ACCENTS}
+                    onChange={(v) => setTweak('accent', v)}
+                  />
+                </TweakSection>
+              </TweaksPanel>
+            )}
+          </div>
+        );
+      };
+
+      ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+  </body>
+</html>

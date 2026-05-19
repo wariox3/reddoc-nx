@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reddoc Cuenta · Procesando pago — mockup</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap"
+    />
+    <link rel="stylesheet" href="https://unpkg.com/primeicons@7.0.0/primeicons.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'brand-navy': '#13263c',
+              'brand-blue': '#009ef7',
+              'brand-bg': '#f8f9fa',
+              'brand-surface': '#ffffff',
+              'brand-surface-2': '#eef2f6',
+              'brand-text': '#13263c',
+              'brand-muted': '#2a6098',
+              'brand-muted-2': '#68c0fb',
+            },
+            fontFamily: {
+              sans: ['DM Sans', 'system-ui', 'sans-serif'],
+              mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: 'DM Sans', system-ui, sans-serif;
+      }
+
+      /* Brand drift blobs */
+      @keyframes drift1 {
+        from {
+          transform: translate(0, 0) scale(1);
+        }
+        to {
+          transform: translate(40px, 30px) scale(1.1);
+        }
+      }
+      @keyframes drift2 {
+        from {
+          transform: translate(0, 0) scale(1);
+        }
+        to {
+          transform: translate(-30px, -20px) scale(1.08);
+        }
+      }
+      .animate-drift1 {
+        animation: drift1 18s ease-in-out infinite alternate;
+      }
+      .animate-drift2 {
+        animation: drift2 22s ease-in-out infinite alternate;
+      }
+
+      /* Fade-up entrance */
+      @keyframes fade-up {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .fade-up-1 {
+        animation: fade-up 0.6s ease both 0.05s;
+      }
+      .fade-up-2 {
+        animation: fade-up 0.6s ease both 0.18s;
+      }
+      .fade-up-3 {
+        animation: fade-up 0.6s ease both 0.32s;
+      }
+      .fade-up-4 {
+        animation: fade-up 0.6s ease both 0.46s;
+      }
+
+      /* SVG spinner — arco giratorio brand-blue */
+      @keyframes spin-arc {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @keyframes dash-cycle {
+        0% {
+          stroke-dashoffset: 0;
+        }
+        50% {
+          stroke-dashoffset: -220;
+        }
+        100% {
+          stroke-dashoffset: -440;
+        }
+      }
+      .spinner-ring {
+        transform-origin: center;
+        animation: spin-arc 1.6s linear infinite;
+      }
+      .spinner-arc {
+        stroke-dasharray: 110 330;
+        animation: dash-cycle 1.6s ease-in-out infinite;
+      }
+
+      /* Puntos pulsantes */
+      @keyframes dot-bounce {
+        0%,
+        80%,
+        100% {
+          transform: scale(0.55);
+          opacity: 0.35;
+        }
+        40% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      .dot {
+        animation: dot-bounce 1.4s ease-in-out infinite;
+      }
+      .dot:nth-child(2) {
+        animation-delay: 0.16s;
+      }
+      .dot:nth-child(3) {
+        animation-delay: 0.32s;
+      }
+
+      /* Línea de progreso indeterminada */
+      @keyframes progress-indeterminate {
+        0% {
+          left: -40%;
+          width: 40%;
+        }
+        60% {
+          left: 100%;
+          width: 40%;
+        }
+        100% {
+          left: 100%;
+          width: 40%;
+        }
+      }
+      .progress-bar {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        background: #009ef7;
+        border-radius: 999px;
+        animation: progress-indeterminate 1.8s ease-in-out infinite;
+      }
+    </style>
+  </head>
+  <body class="bg-brand-bg text-brand-text overflow-x-hidden">
+    <!-- Minimal topbar -->
+    <header
+      class="sticky top-0 z-30 flex items-center gap-2 px-6 py-3 border-b border-[rgba(20,48,73,0.1)] bg-brand-bg/85 backdrop-blur"
+    >
+      <span class="h-2 w-2 rounded-full bg-brand-blue"></span>
+      <span class="text-[0.95rem] font-bold tracking-tight text-brand-navy">Reddoc</span>
+      <span class="text-[0.62rem] font-mono uppercase tracking-[0.18em] text-brand-muted ml-1"
+        >Cuenta</span
+      >
+    </header>
+
+    <!-- Page -->
+    <main
+      class="relative min-h-[calc(100vh-49px)] flex items-center justify-center p-8 max-[576px]:px-4 max-[576px]:py-8"
+    >
+      <!-- Drift blobs -->
+      <div class="pointer-events-none absolute inset-0 overflow-hidden z-0">
+        <div
+          class="absolute -top-20 right-[10%] h-64 w-64 rounded-full bg-brand-blue/8 blur-3xl animate-drift1"
+        ></div>
+        <div
+          class="absolute top-[40%] -left-10 h-72 w-72 rounded-full bg-brand-muted-2/15 blur-3xl animate-drift2"
+        ></div>
+        <div
+          class="absolute bottom-0 right-[20%] h-48 w-48 rounded-full bg-brand-blue/5 blur-3xl animate-drift1"
+          style="animation-delay: -9s"
+        ></div>
+      </div>
+
+      <div class="relative z-10 w-full max-w-sm flex flex-col items-center gap-6">
+        <!-- Card principal -->
+        <div
+          class="w-full bg-brand-surface border border-[rgba(20,48,73,0.1)] rounded-2xl px-8 py-10 max-[576px]:px-6 flex flex-col items-center gap-6 fade-up-1"
+          style="
+            box-shadow:
+              0 4px 32px rgba(0, 158, 247, 0.07),
+              0 1px 4px rgba(20, 48, 73, 0.06);
+          "
+        >
+          <!-- Spinner SVG -->
+          <div class="fade-up-1">
+            <svg width="72" height="72" viewBox="0 0 72 72" fill="none" class="spinner-ring">
+              <!-- Track -->
+              <circle
+                cx="36"
+                cy="36"
+                r="30"
+                stroke="rgba(0,158,247,0.12)"
+                stroke-width="4"
+                fill="none"
+              />
+              <!-- Arc -->
+              <circle
+                cx="36"
+                cy="36"
+                r="30"
+                stroke="#009ef7"
+                stroke-width="4"
+                fill="none"
+                stroke-linecap="round"
+                class="spinner-arc"
+                style="transform-origin: center; transform: rotate(-90deg)"
+              />
+            </svg>
+          </div>
+
+          <!-- Texto -->
+          <div class="flex flex-col items-center gap-2 text-center fade-up-2">
+            <h1
+              class="m-0 text-[1.45rem] font-bold text-brand-text tracking-[-0.02em] leading-tight"
+            >
+              Gracias por tu pago
+            </h1>
+            <p class="m-0 text-[0.875rem] text-brand-muted leading-relaxed max-w-[22rem]">
+              Estamos procesando la transacción.<br />
+              Esto solo toma unos segundos.
+            </p>
+          </div>
+
+          <!-- Puntos de actividad -->
+          <div class="flex items-center gap-2 fade-up-3">
+            <span class="dot h-[7px] w-[7px] rounded-full bg-brand-blue inline-block"></span>
+            <span class="dot h-[7px] w-[7px] rounded-full bg-brand-blue inline-block"></span>
+            <span class="dot h-[7px] w-[7px] rounded-full bg-brand-blue inline-block"></span>
+          </div>
+
+          <!-- Barra de progreso indeterminada -->
+          <div class="w-full fade-up-3">
+            <div
+              class="relative h-[3px] w-full rounded-full bg-[rgba(0,158,247,0.12)] overflow-hidden"
+            >
+              <div class="progress-bar"></div>
+            </div>
+          </div>
+
+          <!-- Referencia (cuando está disponible) -->
+          <div class="w-full pt-1 border-t border-[rgba(20,48,73,0.07)] fade-up-4">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-[0.68rem] font-mono uppercase tracking-[0.14em] text-brand-muted/70"
+                >Referencia</span
+              >
+              <span
+                class="inline-flex items-center gap-1.5 rounded-md bg-brand-surface-2 border border-[rgba(20,48,73,0.08)] px-2 py-1 font-mono text-[0.62rem] tracking-wide text-brand-muted"
+              >
+                <i class="pi pi-hashtag text-[0.52rem] opacity-50"></i>
+                12-5-M-1-20260519134416
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Nota tranquilizadora -->
+        <p
+          class="text-center text-[0.72rem] text-brand-muted/70 leading-relaxed max-w-[20rem] fade-up-4"
+        >
+          No cierres esta ventana. Si el proceso demora más de lo esperado, recibirás un correo con
+          el resultado.
+        </p>
+
+        <!-- Footnote Wompi -->
+        <div
+          class="flex items-center gap-1.5 text-[0.62rem] font-mono uppercase tracking-[0.14em] text-brand-muted/60 fade-up-4"
+        >
+          <i class="pi pi-lock text-[0.58rem] text-emerald-500/80"></i>
+          <span>Pago procesado por Wompi</span>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>
