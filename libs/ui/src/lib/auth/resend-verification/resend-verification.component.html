@@ -83,21 +83,25 @@
           />
         </form>
       } @else {
-        <div class="success-state">
-          <div class="success-state__icon"><i class="pi pi-envelope"></i></div>
-          <h2 class="success-state__title">{{ t().auth.resendVerification.success.title }}</h2>
-          <p class="success-state__desc">{{ t().auth.resendVerification.success.desc }}</p>
+        <lib-auth-success-state
+          icon="pi-envelope"
+          [title]="t().auth.resendVerification.success.title"
+          [description]="t().auth.resendVerification.success.desc"
+        >
           @if (cooldown() > 0) {
-            <p class="success-state__cooldown">
+            <p class="text-xs text-brand-muted m-0">
               {{ t().auth.resendVerification.success.cooldownPrefix }}{{ cooldown()
               }}{{ t().auth.resendVerification.success.cooldownSuffix }}
             </p>
           } @else {
-            <button class="success-state__back" (click)="resendAgain()">
+            <button
+              class="text-sm font-semibold text-brand-blue bg-transparent border-0 cursor-pointer p-0 transition-opacity hover:opacity-75"
+              (click)="resendAgain()"
+            >
               {{ t().auth.resendVerification.success.resend }}
             </button>
           }
-        </div>
+        </lib-auth-success-state>
       }
     </div>
   </div>

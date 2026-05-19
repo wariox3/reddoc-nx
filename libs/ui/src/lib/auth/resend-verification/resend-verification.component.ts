@@ -6,6 +6,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { APP_BRANDING, AUTH_SERVICE, I18nService, extractErrorMessage } from '@reddoc/core';
 import { TurnstileComponent } from '../../turnstile/turnstile.component';
+import { AuthSuccessStateComponent } from '../auth-success-state/auth-success-state.component';
 import type { AuthTranslationsHost } from '../i18n';
 
 @Component({
@@ -18,6 +19,7 @@ import type { AuthTranslationsHost } from '../i18n';
     InputTextModule,
     MessageModule,
     TurnstileComponent,
+    AuthSuccessStateComponent,
   ],
   templateUrl: './resend-verification.component.html',
   styleUrl: './resend-verification.component.scss',

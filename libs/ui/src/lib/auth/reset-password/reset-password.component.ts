@@ -18,6 +18,7 @@ import {
   extractErrorMessage,
 } from '@reddoc/core';
 import { TurnstileComponent } from '../../turnstile/turnstile.component';
+import { AuthSuccessStateComponent } from '../auth-success-state/auth-success-state.component';
 import type { AuthTranslationsHost } from '../i18n';
 
 function passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
@@ -38,6 +39,7 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
     PasswordModule,
     MessageModule,
     TurnstileComponent,
+    AuthSuccessStateComponent,
   ],
   templateUrl: './reset-password.component.html',
   styleUrl: './reset-password.component.scss',
