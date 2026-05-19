@@ -4,6 +4,7 @@
     "secure": true,
     "changeOrigin": true,
     "pathRewrite": { "^/api": "" },
+    "cookieDomainRewrite": "",
     "logLevel": "info"
   }
 }
