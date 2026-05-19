@@ -1,18 +1,12 @@
 import { Injectable, inject } from '@angular/core';
 import { ENVIRONMENT } from '@reddoc/core';
-import { MetodoPago, WompiCheckoutError, WompiCheckoutPayload } from '../models/pago.model';
+import { WompiCheckoutError, WompiCheckoutPayload } from '../models/pago.model';
 
 const WOMPI_CHECKOUT_BASE = 'https://checkout.wompi.co/p/';
 
 interface OpenCheckoutInput {
   readonly intencion: WompiCheckoutPayload;
-  readonly metodoPago: MetodoPago;
 }
-
-const METODO_PAGO_TO_WOMPI: Record<MetodoPago, string> = {
-  tarjeta: 'CARD',
-  pse: 'PSE',
-};
 
 @Injectable({ providedIn: 'root' })
 export class WompiCheckoutService {
@@ -20,7 +14,9 @@ export class WompiCheckoutService {
 
   /**
    * Construye la URL del Web Checkout sin redirigir. Útil para tests y para
-   * inspeccionarla antes de mandar al usuario.
+   * inspeccionarla antes de mandar al usuario. El método de pago lo elige el
+   * usuario en la propia pantalla de Wompi (tarjeta, PSE, Nequi, etc.), por
+   * eso no pasamos `payment-method-type`.
    */
   buildCheckoutUrl(input: OpenCheckoutInput): string {
     const publicKey = input.intencion.public_key?.trim() || this.environment.wompiPublicKey?.trim();
@@ -44,7 +40,6 @@ export class WompiCheckoutService {
     params.set('reference', input.intencion.referencia);
     params.set('signature:integrity', input.intencion.hash);
     params.set('redirect-url', input.intencion.redirect_url);
-    params.set('payment-method-type', METODO_PAGO_TO_WOMPI[input.metodoPago]);
 
     const customer = input.intencion.customer_data;
     if (customer?.email) params.set('customer-data:email', customer.email);

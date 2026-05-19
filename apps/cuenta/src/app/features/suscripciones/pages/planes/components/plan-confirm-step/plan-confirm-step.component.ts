@@ -1,12 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  effect,
-  input,
-  model,
-  output,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import {
   getPlanDescription,
   getPlanFeatures,
@@ -15,7 +7,6 @@ import {
 } from '@reddoc/core';
 import type { PlanFeature } from '@reddoc/core';
 import { BillingProfile } from '../../../../models/billing-profile.model';
-import { MetodoPago } from '../../../../models/pago.model';
 import { SuscripcionTipo } from '../../../../models/suscripcion-tipo.model';
 import {
   annualTotal as computeAnnualTotal,
@@ -35,20 +26,8 @@ export class PlanConfirmStepComponent {
   readonly billingProfile = input<BillingProfile | null>(null);
   readonly annual = input<boolean>(false);
 
-  readonly metodoPago = model<MetodoPago>('tarjeta');
-  readonly autoRenovacion = model<boolean>(true);
-
   readonly cambiarPlan = output<void>();
   readonly cambiarFacturacion = output<void>();
-
-  constructor() {
-    // PSE no soporta tokenización para cobros recurrentes en Wompi.
-    effect(() => {
-      if (this.metodoPago() === 'pse' && this.autoRenovacion()) {
-        this.autoRenovacion.set(false);
-      }
-    });
-  }
 
   readonly tierName = computed(() => {
     const nombre = this.plan().nombre;
@@ -122,17 +101,6 @@ export class PlanConfirmStepComponent {
       year: 'numeric',
     });
   });
-
-  readonly autoRenovacionDeshabilitada = computed(() => this.metodoPago() === 'pse');
-
-  seleccionarMetodo(metodo: MetodoPago): void {
-    this.metodoPago.set(metodo);
-  }
-
-  toggleAutoRenovacion(): void {
-    if (this.autoRenovacionDeshabilitada()) return;
-    this.autoRenovacion.update((v) => !v);
-  }
 
   onCambiarPlan(): void {
     this.cambiarPlan.emit();

@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { ENVIRONMENT } from '@reddoc/core';
 import { BillingProfile } from '../models/billing-profile.model';
-import { MetodoPago, PeriodoPago, WompiCheckoutPayload } from '../models/pago.model';
+import { PeriodoPago, WompiCheckoutPayload } from '../models/pago.model';
 import { SuscripcionTipo } from '../models/suscripcion-tipo.model';
 import {
   WOMPI_REF_STORAGE_KEY,
@@ -17,7 +17,6 @@ export interface IniciarPagoInput {
   readonly plan: SuscripcionTipo;
   readonly billingProfile: BillingProfile;
   readonly periodo: PeriodoPago;
-  readonly metodoPago: MetodoPago;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -27,7 +26,7 @@ export class WompiPaymentOrchestrator {
   private readonly environment = inject(ENVIRONMENT);
 
   iniciarPago(input: IniciarPagoInput): Observable<void> {
-    const { suscripcionId, plan, billingProfile, periodo, metodoPago } = input;
+    const { suscripcionId, plan, billingProfile, periodo } = input;
     const monto_cents = calcularMontoCents(plan.precio, periodo === 'A');
 
     return this.pagoService
@@ -54,7 +53,7 @@ export class WompiPaymentOrchestrator {
           if (typeof sessionStorage !== 'undefined') {
             sessionStorage.setItem(WOMPI_REF_STORAGE_KEY, referencia);
           }
-          this.wompiCheckout.redirectToCheckout({ intencion: payload, metodoPago });
+          this.wompiCheckout.redirectToCheckout({ intencion: payload });
         }),
       );
   }

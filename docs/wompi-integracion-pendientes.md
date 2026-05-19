@@ -78,32 +78,31 @@ Cuando el frontend manda al usuario al Web Checkout, Wompi rechaza con 403 (Clou
 
 **Alternativa para dev local con flujo completo**: usar `ngrok http 4203` y setear `wompiRedirectOrigin` con la URL pública que ngrok genera. Así el redirect vuelve a tu localhost vía túnel.
 
-## 4. Tokenización para auto-renovación
+## 4. Modelo de cobro: recurrente por defecto
 
-Para que el cronjob mensual pueda cobrar sin pedir tarjeta de nuevo:
+Decidido: **toda suscripción es recurrente por defecto** (patrón SaaS estándar tipo Netflix/Spotify). El wizard NO le pregunta al usuario "¿querés auto-renovación?" ni "¿con qué método pagás?" — el usuario elige el método directamente en la ventana de Wompi (tarjeta, PSE, Nequi, Bancolombia, billeteras), y el backend decide qué hacer al recibir el webhook según el método que se haya usado:
 
-- Tras el primer pago `APPROVED` con tarjeta, el webhook recibe `payment_source_id` (o `payment_method.installments` + token). El backend debe persistirlo en la suscripción/contacto.
-- Cobros recurrentes: backend hace `POST https://production.wompi.co/v1/transactions` con `payment_source_id` (sin pasar por el checkout web).
-- Cancelación: al desactivar auto-renovación desde la cuenta, el backend invalida el `payment_source` y deja de cobrar.
+- **Pago con tarjeta** → Wompi devuelve `payment_source_id` en el webhook. Backend lo persiste asociado al contacto/suscripción y queda **recurrente**: el cronjob cobra automáticamente al final de cada ciclo vía `POST https://production.wompi.co/v1/transactions` con ese `payment_source_id`.
+- **Pago con PSE, Nequi u otro método NO tokenizable** → no hay `payment_source_id`. La suscripción queda activa pero **no recurrente**: el usuario tiene que volver al wizard cada ciclo y pagar manualmente. El backend debería mandar un email de aviso ("tu suscripción vence en N días") antes del vencimiento.
 
-**Pendiente:** definir el cronjob de cobros y la UI de "gestionar tarjeta guardada / cancelar suscripción" (fuera del scope actual del wizard).
+**Cancelación:** desde una pantalla de "gestionar suscripción" (TODO, fuera de scope del wizard) el usuario puede cancelar la renovación automática — backend invalida el `payment_source_id` y deja de cobrar.
 
-> Nota: con el nuevo flujo el frontend ya no manda `auto_renovacion` ni `metodo_pago` en el request al endpoint de integridad (el body solo lleva los IDs + monto). Esa información debe inferirse desde el webhook (Wompi indica el `payment_method_type` y si quedó tokenizada la tarjeta). Validar con backend cómo va a saber si el usuario quiere o no auto-renovación — opciones: (a) que el backend la persista al armar la referencia (recibirla como flag adicional en el request del endpoint de integridad), (b) que el frontend la persista en una tabla aparte antes de redirigir, (c) que el usuario configure auto-renovación post-pago desde el portal.
+> Nota: el body del request al endpoint de integridad **no lleva ni `metodo_pago` ni `auto_renovacion`** (solo los IDs + monto). Toda la inferencia ocurre en el webhook leyendo `transaction.payment_method.type`.
 
-## 5. PSE + auto-renovación
+**Pendiente:**
 
-Decidido: si el usuario elige PSE, el toggle de auto-renovación se deshabilita con tooltip ("PSE requiere pago manual cada ciclo"). PSE no soporta tokenización en Wompi.
+- Definir el cronjob de cobros recurrentes (backend).
+- Pantalla "Gestionar suscripción / Cancelar" en `cuenta` (fuera de scope del wizard actual).
+- Emails de aviso de vencimiento para suscripciones no-recurrentes (PSE, etc.).
 
-A futuro, el backend debería mandar un email tipo "tu suscripción vence en 5 días, paga acá" con un link al wizard.
-
-## 6. Bundle size pre-existente
+## 5. Bundle size pre-existente
 
 El initial bundle de `cuenta` está en 1.08 MB, sobre el budget configurado de 1.00 MB (`apps/cuenta/project.json` → `budgets.initial.maximumError`). Esto **no** fue introducido por la integración de Wompi (los chunks de `planes-component` y `pago-resultado-component` van lazy). Pero conviene resolverlo antes de prod:
 
 - Opción a: subir el budget a `1.2mb` y monitorear.
 - Opción b: code-splitting del initial (rutas de auth lazy, evitar imports de PrimeNG en el bootstrap).
 
-## 7. Cosas menores / nice-to-have
+## 6. Cosas menores / nice-to-have
 
 - Link real a Términos y Política de privacidad en `plan-confirm-step.component.html` (hoy son `href="#"`).
 - Pantallas separadas para "pago pendiente" y "pago fallido" más elaboradas (hoy comparten layout en `pago-resultado.component.html`).

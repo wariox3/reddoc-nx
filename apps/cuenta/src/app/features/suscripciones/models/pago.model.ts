@@ -1,7 +1,3 @@
-export type MetodoPago = 'tarjeta' | 'pse';
-
-export type FrecuenciaPago = 'mensual' | 'anual';
-
 export type PeriodoPago = 'M' | 'A';
 
 export interface IntegridadRequest {

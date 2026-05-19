@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { getInitials, ToastService } from '@reddoc/core';
 import { BillingProfile } from '../../models/billing-profile.model';
-import { MetodoPago, WompiCheckoutError } from '../../models/pago.model';
+import { WompiCheckoutError } from '../../models/pago.model';
 import { Suscripcion } from '../../models/suscripcion.model';
 import {
   SUSCRIPCION_CATEGORIA_ERP,
@@ -75,8 +75,6 @@ export class PlanesComponent implements OnInit {
   readonly isDeletingBilling = signal(false);
 
   // Step 3: payment
-  readonly metodoPago = signal<MetodoPago>('tarjeta');
-  readonly autoRenovacion = signal(true);
   readonly isStartingPayment = signal(false);
 
   readonly stepLabels = STEP_LABELS;
@@ -336,7 +334,6 @@ export class PlanesComponent implements OnInit {
         plan,
         billingProfile: bp,
         periodo: this.annual() ? 'A' : 'M',
-        metodoPago: this.metodoPago(),
       })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({

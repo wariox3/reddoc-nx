@@ -121,145 +121,28 @@
     }
   </div>
 
-  <!-- ===== 3. Método de pago ===== -->
+  <!-- ===== 3. Aviso de renovación ===== -->
   <section
-    class="rounded-xl border border-[rgba(20,48,73,0.12)] bg-brand-bg/40 p-5 flex flex-col gap-3"
+    class="rounded-xl border border-[rgba(20,48,73,0.12)] bg-brand-bg/40 p-5 flex items-start gap-3"
   >
-    <header>
-      <div
-        class="font-mono text-[0.62rem] tracking-[0.16em] uppercase text-brand-muted font-semibold"
-      >
-        Método de pago
-      </div>
-      <div class="text-[0.85rem] font-semibold text-brand-text tracking-[-0.01em] mt-0.5">
-        Elige cómo querés pagar
-      </div>
-    </header>
-
-    <div
-      class="grid grid-cols-1 sm:grid-cols-2 gap-3"
-      role="radiogroup"
-      aria-label="Método de pago"
+    <span
+      class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-blue/10 text-brand-blue"
     >
-      <button
-        type="button"
-        role="radio"
-        [attr.aria-checked]="metodoPago() === 'tarjeta'"
-        (click)="seleccionarMetodo('tarjeta')"
-        class="relative text-left rounded-xl p-4 transition-all duration-150 cursor-pointer flex items-center gap-3"
-        [class]="
-          metodoPago() === 'tarjeta'
-            ? 'border-2 border-brand-blue bg-brand-blue/6 shadow-[0_4px_16px_-8px_rgba(0,158,247,0.45)]'
-            : 'border border-[rgba(20,48,73,0.18)] bg-brand-surface hover:border-brand-blue/40'
-        "
-      >
-        <span
-          class="h-[17px] w-[17px] shrink-0 rounded-full bg-brand-surface"
-          [class]="
-            metodoPago() === 'tarjeta'
-              ? 'border-[5px] border-brand-blue'
-              : 'border-[1.5px] border-brand-muted/50'
-          "
-        ></span>
-        <span
-          class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-blue/10 text-brand-blue"
-        >
-          <i class="pi pi-credit-card text-[1rem]"></i>
-        </span>
-        <div class="flex-1 min-w-0">
-          <div class="text-[0.86rem] font-semibold text-brand-text leading-tight">
-            Tarjeta de crédito o débito
-          </div>
-          <div class="text-[0.7rem] text-brand-muted mt-0.5">
-            Visa, Mastercard, AmEx · Soporta auto-renovación
-          </div>
-        </div>
-      </button>
-
-      <button
-        type="button"
-        role="radio"
-        [attr.aria-checked]="metodoPago() === 'pse'"
-        (click)="seleccionarMetodo('pse')"
-        class="relative text-left rounded-xl p-4 transition-all duration-150 cursor-pointer flex items-center gap-3"
-        [class]="
-          metodoPago() === 'pse'
-            ? 'border-2 border-brand-blue bg-brand-blue/6 shadow-[0_4px_16px_-8px_rgba(0,158,247,0.45)]'
-            : 'border border-[rgba(20,48,73,0.18)] bg-brand-surface hover:border-brand-blue/40'
-        "
-      >
-        <span
-          class="h-[17px] w-[17px] shrink-0 rounded-full bg-brand-surface"
-          [class]="
-            metodoPago() === 'pse'
-              ? 'border-[5px] border-brand-blue'
-              : 'border-[1.5px] border-brand-muted/50'
-          "
-        ></span>
-        <span
-          class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-blue/10 text-brand-blue"
-        >
-          <i class="pi pi-building-columns text-[1rem]"></i>
-        </span>
-        <div class="flex-1 min-w-0">
-          <div class="text-[0.86rem] font-semibold text-brand-text leading-tight">PSE</div>
-          <div class="text-[0.7rem] text-brand-muted mt-0.5">
-            Débito desde tu banco · Pago manual cada ciclo
-          </div>
-        </div>
-      </button>
+      <i class="pi pi-sync text-[1rem]"></i>
+    </span>
+    <div class="min-w-0">
+      <div class="text-[0.88rem] font-semibold text-brand-text tracking-[-0.01em]">
+        Renovación automática
+      </div>
+      <p class="m-0 text-[0.74rem] text-brand-muted leading-snug mt-1 max-w-prose">
+        Si pagás con tarjeta, cobramos automáticamente al final de cada ciclo para mantener tu
+        suscripción activa. Podés cancelar cuando quieras desde tu cuenta. Con PSE o billeteras
+        digitales el cobro es manual cada ciclo y te avisamos por correo antes del vencimiento.
+      </p>
     </div>
   </section>
 
-  <!-- ===== 4. Auto-renovación ===== -->
-  <section
-    class="rounded-xl border border-[rgba(20,48,73,0.12)] bg-brand-bg/40 p-5 flex items-start justify-between gap-4"
-  >
-    <div class="flex items-start gap-3 min-w-0">
-      <span
-        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-blue/10 text-brand-blue"
-      >
-        <i class="pi pi-sync text-[1rem]"></i>
-      </span>
-      <div class="min-w-0">
-        <div class="text-[0.88rem] font-semibold text-brand-text tracking-[-0.01em]">
-          Renovar automáticamente
-        </div>
-        <p class="m-0 text-[0.74rem] text-brand-muted leading-snug mt-1 max-w-prose">
-          @if (autoRenovacionDeshabilitada()) {
-            PSE requiere pago manual cada ciclo. Te enviaremos un recordatorio por correo antes de
-            la próxima renovación.
-          } @else {
-            Cobramos tu tarjeta al final de cada ciclo para mantener tu suscripción activa. Puedes
-            cancelar cuando quieras desde tu cuenta.
-          }
-        </p>
-      </div>
-    </div>
-
-    <button
-      type="button"
-      role="switch"
-      [attr.aria-checked]="autoRenovacion()"
-      [disabled]="autoRenovacionDeshabilitada()"
-      (click)="toggleAutoRenovacion()"
-      class="relative w-[42px] h-[24px] rounded-full border-0 transition-colors duration-200 shrink-0"
-      [class]="
-        autoRenovacionDeshabilitada()
-          ? 'bg-[rgba(20,48,73,0.12)] cursor-not-allowed'
-          : autoRenovacion()
-            ? 'bg-brand-blue cursor-pointer'
-            : 'bg-[rgba(20,48,73,0.18)] cursor-pointer'
-      "
-    >
-      <span
-        class="absolute top-[2px] w-[20px] h-[20px] rounded-full bg-white shadow-[0_1px_3px_rgba(0,0,0,0.18)] transition-[left] duration-200"
-        [style.left.px]="autoRenovacion() && !autoRenovacionDeshabilitada() ? 20 : 2"
-      ></span>
-    </button>
-  </section>
-
-  <!-- ===== 5. Resumen del cobro ===== -->
+  <!-- ===== 4. Resumen del cobro ===== -->
   <section class="rounded-xl border border-brand-blue/30 bg-brand-blue/5 p-5 flex flex-col gap-3">
     <header>
       <div
@@ -306,15 +189,12 @@
         <i class="pi pi-calendar text-[0.7rem]"></i>
         Próxima renovación:
         <strong class="text-brand-text font-semibold">{{ proximaRenovacionLabel() }}</strong>
-        @if (!autoRenovacionDeshabilitada() && autoRenovacion()) {
-          <span class="text-brand-blue font-semibold">· auto</span>
-        }
       </span>
       <span class="text-brand-muted">IVA incluido</span>
     </div>
   </section>
 
-  <!-- ===== 6. Aviso legal ===== -->
+  <!-- ===== 5. Aviso legal ===== -->
   <div class="flex items-center justify-between gap-3 flex-wrap text-[0.7rem] text-brand-muted">
     <p class="m-0 leading-snug max-w-[420px]">
       Al pagar aceptás los
