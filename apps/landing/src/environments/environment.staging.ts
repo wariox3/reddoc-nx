@@ -1,4 +1,5 @@
 export const environment = {
   production: false,
-  appUrl: 'http://app.reddoc.uk',
+  appUrl: 'https://app.reddoc.uk',
+  leadEndpoint: 'https://semantica.com.co/api/negocio/nuevo',
 };

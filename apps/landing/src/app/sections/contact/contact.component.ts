@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { I18nService } from '../../i18n/i18n.service';
+import { environment } from '../../../environments/environment';
 
-const LEAD_ENDPOINT = 'https://semantica.com.co/api/negocio/nuevo';
 const CODIGO_PROYECTO = 8;
 
 @Component({
@@ -43,7 +43,7 @@ export class ContactComponent {
     this.loading.set(true);
 
     this.http
-      .post(LEAD_ENDPOINT, {
+      .post(environment.leadEndpoint, {
         nombre: name,
         correo: email,
         telefono: phone,
