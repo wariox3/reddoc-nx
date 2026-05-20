@@ -55,3 +55,9 @@ export {
 export type { TenantSlug, ContenedorAccess, ContenedorAccessService } from './lib/tenant';
 export * from './lib/data-list';
 export * from './lib/plans';
+export {
+  normalizeHttpError,
+  classifyStatus,
+  NON_FIELD_KEY,
+} from './lib/utils/error-normalizer';
+export type { NormalizedError, ApiErrorKind } from './lib/utils/error-normalizer';

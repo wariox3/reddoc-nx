@@ -1,4 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
+import { normalizeInternal } from './error-normalizer';
 
 export interface ApiError {
   code: string;
@@ -12,6 +13,10 @@ export interface ApiErrorResponse {
   request_id: string;
 }
 
+/**
+ * @deprecated Usa `normalizeHttpError` de `./error-normalizer`, que entiende todos los
+ * formatos de error del backend (envelope envuelto, DRF, detail, string plano).
+ */
 export function parseApiError(err: HttpErrorResponse): ApiError | null {
   const body = err.error;
   if (
@@ -34,15 +39,12 @@ export function isUnverifiedAccountError(err: unknown): boolean {
   return false;
 }
 
+/**
+ * Extrae un mensaje legible de un error HTTP. Si el body no trae un mensaje real,
+ * retorna el `fallback` provisto por el caller.
+ */
 export function extractErrorMessage(err: unknown, fallback: string): string {
-  const httpErr = err as HttpErrorResponse | undefined;
-  if (httpErr?.error) {
-    const apiError = (httpErr.error as ApiErrorResponse)?.error;
-    if (apiError?.message) return apiError.message;
-
-    const legacy = httpErr.error as Record<string, unknown>;
-    if (typeof legacy['detail'] === 'string') return legacy['detail'];
-    if (typeof legacy['message'] === 'string') return legacy['message'];
-  }
-  return fallback;
+  if (!(err instanceof HttpErrorResponse)) return fallback;
+  const { message, messageFromBody } = normalizeInternal(err);
+  return messageFromBody ? message : fallback;
 }
