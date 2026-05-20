@@ -59,3 +59,4 @@ export { normalizeHttpError, classifyStatus, NON_FIELD_KEY } from './lib/utils/e
 export type { NormalizedError, ApiErrorKind } from './lib/utils/error-normalizer';
 export { applyServerErrors, clearServerError } from './lib/utils/form-errors';
 export type { ServerFieldMap, ApplyServerErrorsResult } from './lib/utils/form-errors';
+export { FormErrorService } from './lib/services/form-error.service';

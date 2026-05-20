@@ -6,6 +6,7 @@ export { ForgotPasswordComponent } from './lib/auth/forgot-password/forgot-passw
 export { ResetPasswordComponent } from './lib/auth/reset-password/reset-password.component';
 export { ResendVerificationComponent } from './lib/auth/resend-verification/resend-verification.component';
 export { VerifyEmailComponent } from './lib/auth/verify-email/verify-email.component';
+export { FieldErrorComponent } from './lib/components/field-error/field-error.component';
 export { CiudadAutocompleteComponent } from './lib/components/ciudad-autocomplete/ciudad-autocomplete.component';
 export { IdentificacionSelectComponent } from './lib/components/identificacion-select/identificacion-select.component';
 export { LanguageToggleComponent } from './lib/components/language-toggle/language-toggle.component';

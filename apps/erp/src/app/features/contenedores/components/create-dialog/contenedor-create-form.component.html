@@ -23,19 +23,13 @@
         form.controls.nombre.invalid && (form.controls.nombre.touched || form.controls.nombre.dirty)
       "
     />
-    @if (
-      form.controls.nombre.invalid && (form.controls.nombre.touched || form.controls.nombre.dirty)
-    ) {
-      <span class="mt-1 text-[0.7rem] tracking-[0.01em] text-red-600">
-        @if (form.controls.nombre.hasError('serverError')) {
-          {{ form.controls.nombre.getError('serverError') }}
-        } @else if (form.controls.nombre.hasError('required')) {
-          {{ t().contenedores.create.validation.nameRequired }}
-        } @else if (form.controls.nombre.hasError('minlength')) {
-          {{ t().contenedores.create.validation.nameMin2 }}
-        }
-      </span>
-    }
+    <lib-field-error
+      [control]="form.controls.nombre"
+      [messages]="{
+        required: t().contenedores.create.validation.nameRequired,
+        minlength: t().contenedores.create.validation.nameMin2,
+      }"
+    />
   </div>
 
   <!-- Teléfono -->
@@ -58,20 +52,13 @@
         (form.controls.telefono.touched || form.controls.telefono.dirty)
       "
     />
-    @if (
-      form.controls.telefono.invalid &&
-      (form.controls.telefono.touched || form.controls.telefono.dirty)
-    ) {
-      <span class="mt-1 text-[0.7rem] tracking-[0.01em] text-red-600">
-        @if (form.controls.telefono.hasError('serverError')) {
-          {{ form.controls.telefono.getError('serverError') }}
-        } @else if (form.controls.telefono.hasError('maxlength')) {
-          {{ t().contenedores.create.validation.phoneMax20 }}
-        } @else {
-          {{ t().contenedores.create.validation.phoneRequired }}
-        }
-      </span>
-    }
+    <lib-field-error
+      [control]="form.controls.telefono"
+      [messages]="{
+        required: t().contenedores.create.validation.phoneRequired,
+        maxlength: t().contenedores.create.validation.phoneMax20,
+      }"
+    />
   </div>
 
   <!-- Correo -->
@@ -93,19 +80,13 @@
         form.controls.correo.invalid && (form.controls.correo.touched || form.controls.correo.dirty)
       "
     />
-    @if (
-      form.controls.correo.invalid && (form.controls.correo.touched || form.controls.correo.dirty)
-    ) {
-      <span class="mt-1 text-[0.7rem] tracking-[0.01em] text-red-600">
-        @if (form.controls.correo.hasError('serverError')) {
-          {{ form.controls.correo.getError('serverError') }}
-        } @else if (form.controls.correo.hasError('required')) {
-          {{ t().contenedores.create.validation.emailRequired }}
-        } @else if (form.controls.correo.hasError('email')) {
-          {{ t().contenedores.create.validation.emailInvalid }}
-        }
-      </span>
-    }
+    <lib-field-error
+      [control]="form.controls.correo"
+      [messages]="{
+        required: t().contenedores.create.validation.emailRequired,
+        email: t().contenedores.create.validation.emailInvalid,
+      }"
+    />
   </div>
 
   <!-- Footer -->
