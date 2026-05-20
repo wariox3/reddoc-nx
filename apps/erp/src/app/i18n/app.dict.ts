@@ -115,6 +115,7 @@ export interface AppDict extends AuthTranslationsHost {
         nameRequired: string;
         nameMin2: string;
         phoneRequired: string;
+        phoneMax20: string;
         emailRequired: string;
         emailInvalid: string;
       };

@@ -23,7 +23,9 @@
     />
     @if (form.controls.nombre.invalid && form.controls.nombre.touched) {
       <span class="mt-1 text-[0.7rem] tracking-[0.01em] text-red-600">
-        @if (form.controls.nombre.hasError('required')) {
+        @if (form.controls.nombre.hasError('serverError')) {
+          {{ form.controls.nombre.getError('serverError') }}
+        } @else if (form.controls.nombre.hasError('required')) {
           {{ t().contenedores.create.validation.nameRequired }}
         } @else if (form.controls.nombre.hasError('minlength')) {
           {{ t().contenedores.create.validation.nameMin2 }}
@@ -51,7 +53,13 @@
     />
     @if (form.controls.telefono.invalid && form.controls.telefono.touched) {
       <span class="mt-1 text-[0.7rem] tracking-[0.01em] text-red-600">
-        {{ t().contenedores.create.validation.phoneRequired }}
+        @if (form.controls.telefono.hasError('serverError')) {
+          {{ form.controls.telefono.getError('serverError') }}
+        } @else if (form.controls.telefono.hasError('maxlength')) {
+          {{ t().contenedores.create.validation.phoneMax20 }}
+        } @else {
+          {{ t().contenedores.create.validation.phoneRequired }}
+        }
       </span>
     }
   </div>
@@ -75,7 +83,9 @@
     />
     @if (form.controls.correo.invalid && form.controls.correo.touched) {
       <span class="mt-1 text-[0.7rem] tracking-[0.01em] text-red-600">
-        @if (form.controls.correo.hasError('required')) {
+        @if (form.controls.correo.hasError('serverError')) {
+          {{ form.controls.correo.getError('serverError') }}
+        } @else if (form.controls.correo.hasError('required')) {
           {{ t().contenedores.create.validation.emailRequired }}
         } @else if (form.controls.correo.hasError('email')) {
           {{ t().contenedores.create.validation.emailInvalid }}

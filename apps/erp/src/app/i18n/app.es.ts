@@ -136,6 +136,7 @@ export const es: AppDict = {
         nameRequired: 'El nombre es obligatorio.',
         nameMin2: 'Mínimo 2 caracteres.',
         phoneRequired: 'El teléfono es obligatorio.',
+        phoneMax20: 'Máximo 20 caracteres.',
         emailRequired: 'El correo es obligatorio.',
         emailInvalid: 'Ingresá un correo válido.',
       },

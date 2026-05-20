@@ -9,10 +9,17 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { I18nService, ToastService } from '@reddoc/core';
+import {
+  I18nService,
+  ToastService,
+  applyServerErrors,
+  clearServerError,
+  normalizeHttpError,
+} from '@reddoc/core';
 import { AuthService } from '../../../auth/services/auth.service';
 import { Contenedor } from '../../models/contenedor.model';
 import { ContenedorService } from '../../services/contenedor.service';
@@ -49,7 +56,7 @@ export class ContenedorCreateFormComponent {
   readonly form = this.fb.group({
     nombre: ['', [Validators.required, Validators.minLength(2)]],
     schema_name: ['', [Validators.required, Validators.pattern(/^[a-z0-9][a-z0-9_]*$/)]],
-    telefono: ['', [Validators.required]],
+    telefono: ['', [Validators.required, Validators.maxLength(20)]],
     correo: ['', [Validators.required, Validators.email]],
     suscripcion_tipo_id: [13],
     frecuencia: ['P'],
@@ -69,6 +76,13 @@ export class ContenedorCreateFormComponent {
         .replace(/\s+/g, '_')
         .replace(/[^a-z0-9_]/g, '');
       this.form.controls.schema_name.setValue(slug, { emitEvent: false });
+    });
+
+    // Limpia el error del servidor en cuanto el usuario edita el campo.
+    (['nombre', 'telefono', 'correo'] as const).forEach((field) => {
+      this.form.controls[field].valueChanges
+        .pipe(takeUntilDestroyed())
+        .subscribe(() => clearServerError(this.form.controls[field]));
     });
 
     effect(() => {
@@ -105,10 +119,9 @@ export class ContenedorCreateFormComponent {
             this.toastService.success(toasts.success.title, toasts.success.desc);
             this.updated.emit();
           },
-          error: () => {
+          error: (err) => {
             this.isSaving.set(false);
-            const toasts = this.t().contenedores.edit.toasts;
-            this.toastService.error(toasts.error.title, toasts.error.desc);
+            this.surfaceServerErrors(err, this.t().contenedores.edit.toasts.error.title);
           },
         });
     } else {
@@ -126,14 +139,29 @@ export class ContenedorCreateFormComponent {
             this.toastService.success(toasts.success.title, toasts.success.desc);
             this.created.emit();
           },
-          error: () => {
+          error: (err) => {
             this.isSaving.set(false);
             this.creationOverlay.emit(null);
-            const toasts = this.t().contenedores.create.toasts;
-            this.toastService.error(toasts.error.title, toasts.error.desc);
+            this.surfaceServerErrors(err, this.t().contenedores.create.toasts.error.title);
           },
         });
     }
+  }
+
+  /**
+   * Maneja el error de un submit: los errores de validación por campo se muestran inline
+   * sobre cada control; lo que no se asocie a un campo (o un error general) va a un toast.
+   * Los errores no-validación (500, 403, etc.) ya los muestra el interceptor.
+   */
+  private surfaceServerErrors(err: HttpErrorResponse, errorTitle: string): void {
+    const normalized = normalizeHttpError(err);
+    if (normalized.kind !== 'validation') return;
+
+    const { unmatched, appliedToForm } = applyServerErrors(this.form, normalized);
+    if (appliedToForm && unmatched.length === 0) return;
+
+    const detail = unmatched.length > 0 ? unmatched.join(' ') : normalized.message;
+    this.toastService.error(errorTitle, detail);
   }
 
   onCancel(): void {
