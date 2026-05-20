@@ -19,9 +19,13 @@
       formControlName="nombre"
       [placeholder]="t().contenedores.create.fields.namePlaceholder"
       class="w-full"
-      [class.cd-input-error]="form.controls.nombre.invalid && form.controls.nombre.touched"
+      [class.cd-input-error]="
+        form.controls.nombre.invalid && (form.controls.nombre.touched || form.controls.nombre.dirty)
+      "
     />
-    @if (form.controls.nombre.invalid && form.controls.nombre.touched) {
+    @if (
+      form.controls.nombre.invalid && (form.controls.nombre.touched || form.controls.nombre.dirty)
+    ) {
       <span class="mt-1 text-[0.7rem] tracking-[0.01em] text-red-600">
         @if (form.controls.nombre.hasError('serverError')) {
           {{ form.controls.nombre.getError('serverError') }}
@@ -49,9 +53,15 @@
       formControlName="telefono"
       [placeholder]="t().contenedores.create.fields.phonePlaceholder"
       class="w-full"
-      [class.cd-input-error]="form.controls.telefono.invalid && form.controls.telefono.touched"
+      [class.cd-input-error]="
+        form.controls.telefono.invalid &&
+        (form.controls.telefono.touched || form.controls.telefono.dirty)
+      "
     />
-    @if (form.controls.telefono.invalid && form.controls.telefono.touched) {
+    @if (
+      form.controls.telefono.invalid &&
+      (form.controls.telefono.touched || form.controls.telefono.dirty)
+    ) {
       <span class="mt-1 text-[0.7rem] tracking-[0.01em] text-red-600">
         @if (form.controls.telefono.hasError('serverError')) {
           {{ form.controls.telefono.getError('serverError') }}
@@ -79,9 +89,13 @@
       formControlName="correo"
       [placeholder]="t().contenedores.create.fields.emailPlaceholder"
       class="w-full"
-      [class.cd-input-error]="form.controls.correo.invalid && form.controls.correo.touched"
+      [class.cd-input-error]="
+        form.controls.correo.invalid && (form.controls.correo.touched || form.controls.correo.dirty)
+      "
     />
-    @if (form.controls.correo.invalid && form.controls.correo.touched) {
+    @if (
+      form.controls.correo.invalid && (form.controls.correo.touched || form.controls.correo.dirty)
+    ) {
       <span class="mt-1 text-[0.7rem] tracking-[0.01em] text-red-600">
         @if (form.controls.correo.hasError('serverError')) {
           {{ form.controls.correo.getError('serverError') }}
