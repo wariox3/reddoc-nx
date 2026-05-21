@@ -12,7 +12,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { I18nService, ToastService } from '@reddoc/core';
+import { FieldErrorComponent } from '@reddoc/ui';
+import { I18nService, ToastService, FormErrorService } from '@reddoc/core';
 import { AuthService } from '../../../auth/services/auth.service';
 import { Contenedor } from '../../models/contenedor.model';
 import { ContenedorService } from '../../services/contenedor.service';
@@ -21,7 +22,7 @@ import type { AppDict } from '../../../../i18n';
 @Component({
   selector: 'app-contenedor-create-form',
   standalone: true,
-  imports: [ReactiveFormsModule, ButtonModule, InputTextModule],
+  imports: [ReactiveFormsModule, ButtonModule, InputTextModule, FieldErrorComponent],
   templateUrl: './contenedor-create-form.component.html',
   styleUrl: './contenedor-create-form.component.scss',
 })
@@ -29,6 +30,7 @@ export class ContenedorCreateFormComponent {
   private readonly fb = inject(FormBuilder);
   private readonly contenedorService = inject(ContenedorService);
   private readonly toastService = inject(ToastService);
+  private readonly formErrors = inject(FormErrorService);
   private readonly authService = inject(AuthService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly i18n = inject<I18nService<AppDict>>(I18nService);
@@ -49,7 +51,7 @@ export class ContenedorCreateFormComponent {
   readonly form = this.fb.group({
     nombre: ['', [Validators.required, Validators.minLength(2)]],
     schema_name: ['', [Validators.required, Validators.pattern(/^[a-z0-9][a-z0-9_]*$/)]],
-    telefono: ['', [Validators.required]],
+    telefono: ['', [Validators.required, Validators.maxLength(20)]],
     correo: ['', [Validators.required, Validators.email]],
     suscripcion_tipo_id: [13],
     frecuencia: ['P'],
@@ -105,10 +107,9 @@ export class ContenedorCreateFormComponent {
             this.toastService.success(toasts.success.title, toasts.success.desc);
             this.updated.emit();
           },
-          error: () => {
+          error: (err) => {
             this.isSaving.set(false);
-            const toasts = this.t().contenedores.edit.toasts;
-            this.toastService.error(toasts.error.title, toasts.error.desc);
+            this.formErrors.handle(this.form, err, this.t().contenedores.edit.toasts.error.title);
           },
         });
     } else {
@@ -126,11 +127,10 @@ export class ContenedorCreateFormComponent {
             this.toastService.success(toasts.success.title, toasts.success.desc);
             this.created.emit();
           },
-          error: () => {
+          error: (err) => {
             this.isSaving.set(false);
             this.creationOverlay.emit(null);
-            const toasts = this.t().contenedores.create.toasts;
-            this.toastService.error(toasts.error.title, toasts.error.desc);
+            this.formErrors.handle(this.form, err, this.t().contenedores.create.toasts.error.title);
           },
         });
     }

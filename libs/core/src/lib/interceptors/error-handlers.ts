@@ -3,7 +3,8 @@ import { catchError, Observable, switchMap, throwError } from 'rxjs';
 import { AuthServiceContract } from '../tokens';
 import { ToastService } from '../services/toast.service';
 import { TokenRefreshService } from '../services/token-refresh.service';
-import { parseApiError } from '../utils/error.utils';
+import { normalizeHttpError } from '../utils/error-normalizer';
+import { isUnverifiedAccountError } from '../utils/error.utils';
 
 function isAuthUrl(url: string, skipUrls: string[]): boolean {
   return skipUrls.some((endpoint) => url.includes(endpoint));
@@ -13,7 +14,7 @@ export function handleConnectionError(
   toast: ToastService,
   error: HttpErrorResponse,
 ): Observable<never> {
-  toast.error('Error de conexion', 'No se pudo conectar con el servidor.');
+  toast.error('Error de conexión', normalizeHttpError(error).message);
   return throwError(() => error);
 }
 
@@ -56,14 +57,25 @@ export function handleUnauthorized(
 }
 
 export function handleForbidden(toast: ToastService, error: HttpErrorResponse): Observable<never> {
-  const apiError = parseApiError(error);
-
-  if (apiError?.['is_verified'] === false) {
+  if (isUnverifiedAccountError(error)) {
     return throwError(() => error);
   }
+  toast.error('Acceso denegado', normalizeHttpError(error).message);
+  return throwError(() => error);
+}
 
-  const message = apiError?.message ?? 'No tienes permisos para realizar esta accion.';
-  toast.error('Acceso denegado', message);
+export function handleNotFoundOrClient(
+  toast: ToastService,
+  error: HttpErrorResponse,
+): Observable<never> {
+  const normalized = normalizeHttpError(error);
+  const summary =
+    normalized.kind === 'notFound'
+      ? 'No encontrado'
+      : normalized.kind === 'conflict'
+        ? 'Conflicto'
+        : 'Solicitud no procesada';
+  toast.error(summary, normalized.message);
   return throwError(() => error);
 }
 
@@ -71,10 +83,7 @@ export function handleTooManyRequests(
   toast: ToastService,
   error: HttpErrorResponse,
 ): Observable<never> {
-  const apiError = parseApiError(error);
-  const message =
-    apiError?.message ?? 'Has excedido el limite de solicitudes. Intenta de nuevo mas tarde.';
-  toast.warn('Demasiadas solicitudes', message);
+  toast.warn('Demasiadas solicitudes', normalizeHttpError(error).message);
   return throwError(() => error);
 }
 
@@ -82,8 +91,6 @@ export function handleServerError(
   toast: ToastService,
   error: HttpErrorResponse,
 ): Observable<never> {
-  const apiError = parseApiError(error);
-  const message = apiError?.message ?? 'Ocurrio un error inesperado. Intenta de nuevo.';
-  toast.error('Error del servidor', message);
+  toast.error('Error del servidor', normalizeHttpError(error).message);
   return throwError(() => error);
 }
