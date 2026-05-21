@@ -24,6 +24,7 @@ import {
   ReddocPreset,
   authInterceptor,
   errorInterceptor,
+  tenantInterceptor,
   provideI18n,
 } from '@reddoc/core';
 import { AuthService } from './features/auth/services/auth.service';
@@ -42,7 +43,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(appRoutes, withComponentInputBinding()),
-    provideHttpClient(withInterceptors([authInterceptor, errorInterceptor])),
+    provideHttpClient(withInterceptors([authInterceptor, tenantInterceptor, errorInterceptor])),
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {
