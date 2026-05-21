@@ -18,4 +18,14 @@ export const CONTACTO_ROUTES: Route[] = [
         (m) => m.ContactosListComponent,
       ),
   },
+  {
+    path: 'new',
+    loadComponent: () =>
+      import('./pages/contacto-form/contacto-form.component').then((m) => m.ContactoFormComponent),
+  },
+  {
+    path: 'edit/:id',
+    loadComponent: () =>
+      import('./pages/contacto-form/contacto-form.component').then((m) => m.ContactoFormComponent),
+  },
 ];

@@ -71,6 +71,55 @@ export interface AppDict extends AuthTranslationsHost {
         correo: string;
         telefono: string;
       };
+      form: {
+        createTitle: string;
+        createSubtitle: string;
+        editTitle: string;
+        editSubtitle: string;
+        sections: { principal: string; cliente: string; proveedor: string };
+        fields: {
+          tipoPersona: string;
+          regimen: string;
+          identificacion: string;
+          numeroIdentificacion: string;
+          digitoVerificacion: string;
+          nombreCorto: string;
+          nombre1: string;
+          nombre2: string;
+          apellido1: string;
+          apellido2: string;
+          telefono: string;
+          celular: string;
+          ciudad: string;
+          direccion: string;
+          barrio: string;
+          correo: string;
+          cliente: string;
+          proveedor: string;
+          empleado: string;
+          plazoPago: string;
+          precio: string;
+          asesor: string;
+          correoFacturacion: string;
+          banco: string;
+          numeroCuenta: string;
+          cuentaBancoClase: string;
+          plazoPagoProveedor: string;
+        };
+        tipoPersonaOptions: { juridica: string; natural: string };
+        pendingPlaceholder: string;
+        validation: { required: string; emailInvalid: string };
+        submitCreate: string;
+        submitEdit: string;
+        cancel: string;
+        toasts: {
+          createSuccess: { title: string; desc: string };
+          createError: { title: string; desc: string };
+          editSuccess: { title: string; desc: string };
+          editError: { title: string; desc: string };
+          loadError: { title: string; desc: string };
+        };
+      };
     };
   };
   contenedores: {

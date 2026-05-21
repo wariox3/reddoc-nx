@@ -1,0 +1,279 @@
+import { Component, DestroyRef, type OnInit, computed, inject, input, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
+import { CheckboxModule } from 'primeng/checkbox';
+import { FieldErrorComponent } from '@reddoc/ui';
+import { FormErrorService, I18nService, TenantService, ToastService } from '@reddoc/core';
+import type { AppDict } from '@erp/i18n';
+import { ContactoService } from '../../contacto.service';
+import type { ContactoPayload } from '../../contacto.model';
+
+/** Opción de un `<p-select>`: etiqueta visible + id que viaja al backend. */
+interface SelectOption {
+  readonly label: string;
+  readonly value: number;
+}
+
+/**
+ * Formulario de alta/edición de contacto.
+ *
+ * Master del módulo General (camino B). La misma página cubre crear y editar:
+ * sin `:id` → alta; con `:id` → edición (el id llega por `withComponentInputBinding`).
+ *
+ * Estado actual — UI completa:
+ * los 9 selectores que dependen de endpoints `general/<recurso>/seleccionar/` se
+ * renderizan deshabilitados (sin opciones). Cada `*Options` queda como array vacío
+ * con un `TODO(api)` indicando su endpoint; se conectan uno a uno más adelante.
+ * El único selector activo es `tipo_persona`, con opciones hardcodeadas, porque
+ * gobierna qué campos de nombre se muestran.
+ */
+@Component({
+  selector: 'app-contacto-form',
+  standalone: true,
+  imports: [
+    ReactiveFormsModule,
+    ButtonModule,
+    InputTextModule,
+    SelectModule,
+    CheckboxModule,
+    FieldErrorComponent,
+  ],
+  templateUrl: './contacto-form.component.html',
+  styleUrl: './contacto-form.component.scss',
+})
+export class ContactoFormComponent implements OnInit {
+  private readonly fb = inject(FormBuilder);
+  private readonly contactoService = inject(ContactoService);
+  private readonly toast = inject(ToastService);
+  private readonly formErrors = inject(FormErrorService);
+  private readonly tenant = inject(TenantService);
+  private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly i18n = inject<I18nService<AppDict>>(I18nService);
+
+  protected readonly t = this.i18n.t;
+
+  /** Id del contacto a editar (route param `:id`). Ausente en modo alta. */
+  readonly id = input<string>();
+
+  protected readonly isEditMode = computed(() => !!this.id());
+  protected readonly isSaving = signal(false);
+
+  // ── tipo_persona: 1 = Jurídica, 2 = Natural ────────────────────────────────
+  private readonly tipoPersona = signal<number | null>(1);
+  protected readonly esNatural = computed(() => this.tipoPersona() === 2);
+
+  protected readonly tipoPersonaOptions = computed<SelectOption[]>(() => {
+    const o = this.t().entities.contacto.form.tipoPersonaOptions;
+    return [
+      { label: o.juridica, value: 1 },
+      { label: o.natural, value: 2 },
+    ];
+  });
+
+  // ── Selectores pendientes de API (ver TODO de cada endpoint) ────────────────
+  // TODO(api): general/regimen/seleccionar/  { inactivo: 'False' }
+  protected readonly regimenOptions: SelectOption[] = [];
+  // TODO(api): general/identificacion/seleccionar/  (filtrar por tipo_persona)
+  protected readonly identificacionOptions: SelectOption[] = [];
+  // TODO(api): general/ciudad/seleccionar/  ?nombre__icontains=<texto>  (búsqueda)
+  protected readonly ciudadOptions: SelectOption[] = [];
+  // TODO(api): general/plazo_pago/seleccionar/
+  protected readonly plazoPagoOptions: SelectOption[] = [];
+  // TODO(api): general/precio/seleccionar/  { venta: 'True' }
+  protected readonly precioOptions: SelectOption[] = [];
+  // TODO(api): general/asesor/seleccionar/
+  protected readonly asesorOptions: SelectOption[] = [];
+  // TODO(api): general/banco/seleccionar/  { limit: 50 }
+  protected readonly bancoOptions: SelectOption[] = [];
+  // TODO(api): general/cuenta_banco_clase/seleccionar/
+  protected readonly cuentaBancoClaseOptions: SelectOption[] = [];
+
+  // ── Formulario ──────────────────────────────────────────────────────────────
+  // Los controles respaldados por un selector API arrancan `disabled` hasta que
+  // su endpoint esté disponible. `tipo_persona` arranca en Jurídica (1).
+  protected readonly form = this.fb.group({
+    tipo_persona: this.fb.control<number | null>(1, Validators.required),
+    regimen: this.fb.control<number | null>({ value: null, disabled: true }, Validators.required),
+    identificacion: this.fb.control<number | null>(
+      { value: null, disabled: true },
+      Validators.required,
+    ),
+    numero_identificacion: ['', Validators.required],
+    digito_verificacion: this.fb.control<string>({ value: '', disabled: true }),
+    nombre_corto: ['', Validators.required],
+    nombre1: [''],
+    nombre2: [''],
+    apellido1: [''],
+    apellido2: [''],
+    telefono: ['', Validators.required],
+    celular: ['', Validators.required],
+    ciudad: this.fb.control<number | null>({ value: null, disabled: true }, Validators.required),
+    direccion: ['', Validators.required],
+    barrio: [''],
+    correo: ['', [Validators.required, Validators.email]],
+    cliente: [false],
+    proveedor: [false],
+    empleado: [false],
+    plazo_pago: this.fb.control<number | null>(
+      { value: null, disabled: true },
+      Validators.required,
+    ),
+    precio: this.fb.control<number | null>({ value: null, disabled: true }),
+    asesor: this.fb.control<number | null>({ value: null, disabled: true }),
+    correo_facturacion_electronica: ['', Validators.email],
+    banco: this.fb.control<number | null>({ value: null, disabled: true }),
+    numero_cuenta: [''],
+    cuenta_banco_clase: this.fb.control<number | null>({ value: null, disabled: true }),
+    plazo_pago_proveedor: this.fb.control<number | null>({ value: null, disabled: true }),
+  });
+
+  constructor() {
+    this.form.controls.tipo_persona.valueChanges.pipe(takeUntilDestroyed()).subscribe((value) => {
+      this.tipoPersona.set(value);
+      this.applyTipoPersonaValidators(value);
+    });
+  }
+
+  ngOnInit(): void {
+    const id = this.id();
+    if (id) this.loadContacto(Number(id));
+  }
+
+  protected onSubmit(): void {
+    if (this.form.invalid || this.isSaving()) return;
+    this.isSaving.set(true);
+
+    const toasts = this.t().entities.contacto.form.toasts;
+    const id = this.id();
+    const operation = id
+      ? this.contactoService.update(Number(id), this.buildPayload())
+      : this.contactoService.create(this.buildPayload());
+
+    operation.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.isSaving.set(false);
+        const ok = id ? toasts.editSuccess : toasts.createSuccess;
+        this.toast.success(ok.title, ok.desc);
+        this.navigateToList();
+      },
+      error: (err: unknown) => {
+        this.isSaving.set(false);
+        const fail = id ? toasts.editError : toasts.createError;
+        this.formErrors.handle(this.form, err, fail.title);
+      },
+    });
+  }
+
+  protected onCancel(): void {
+    this.navigateToList();
+  }
+
+  // ── Internos ────────────────────────────────────────────────────────────────
+
+  /**
+   * Ajusta los validadores de los campos de nombre según el tipo de persona:
+   * Jurídica exige `nombre_corto`; Natural exige `nombre1` + `apellido1`.
+   */
+  private applyTipoPersonaValidators(tipo: number | null): void {
+    const esNatural = tipo === 2;
+    const { nombre_corto, nombre1, apellido1 } = this.form.controls;
+
+    nombre_corto.setValidators(esNatural ? [] : [Validators.required]);
+    nombre1.setValidators(esNatural ? [Validators.required] : []);
+    apellido1.setValidators(esNatural ? [Validators.required] : []);
+
+    nombre_corto.updateValueAndValidity();
+    nombre1.updateValueAndValidity();
+    apellido1.updateValueAndValidity();
+  }
+
+  private loadContacto(id: number): void {
+    this.contactoService
+      .getById(id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (c) => {
+          // `regimen` y `cuenta_banco_clase` se omiten: selectores pendientes de API.
+          this.form.patchValue({
+            tipo_persona: c.tipo_persona,
+            identificacion: c.identificacion,
+            numero_identificacion: c.numero_identificacion,
+            digito_verificacion: c.digito_verificacion ?? '',
+            nombre_corto: c.nombre_corto,
+            nombre1: c.nombre1 ?? '',
+            nombre2: c.nombre2 ?? '',
+            apellido1: c.apellido1 ?? '',
+            apellido2: c.apellido2 ?? '',
+            telefono: c.telefono ?? '',
+            celular: c.celular ?? '',
+            ciudad: c.ciudad,
+            direccion: c.direccion ?? '',
+            barrio: c.barrio ?? '',
+            correo: c.correo ?? '',
+            cliente: c.cliente,
+            proveedor: c.proveedor,
+            empleado: c.empleado,
+            plazo_pago: c.plazo_pago,
+            precio: c.precio,
+            asesor: c.asesor,
+            correo_facturacion_electronica: c.correo_facturacion_electronica ?? '',
+            banco: c.banco,
+            numero_cuenta: c.numero_cuenta ?? '',
+            plazo_pago_proveedor: c.plazo_pago_proveedor,
+          });
+        },
+        error: () => {
+          const toasts = this.t().entities.contacto.form.toasts;
+          this.toast.error(toasts.loadError.title, toasts.loadError.desc);
+        },
+      });
+  }
+
+  /**
+   * Construye el payload del backend. Los strings vacíos se normalizan a `null`
+   * acá (en vez de en el blur de cada campo, como hacía el legacy).
+   */
+  private buildPayload(): ContactoPayload {
+    const v = this.form.getRawValue();
+    return {
+      tipo_persona: v.tipo_persona,
+      regimen: v.regimen,
+      identificacion: v.identificacion,
+      numero_identificacion: v.numero_identificacion ?? '',
+      digito_verificacion: v.digito_verificacion || null,
+      nombre_corto: v.nombre_corto || null,
+      nombre1: v.nombre1 || null,
+      nombre2: v.nombre2 || null,
+      apellido1: v.apellido1 || null,
+      apellido2: v.apellido2 || null,
+      telefono: v.telefono || null,
+      celular: v.celular || null,
+      ciudad: v.ciudad,
+      direccion: v.direccion || null,
+      barrio: v.barrio || null,
+      correo: v.correo || null,
+      cliente: v.cliente ?? false,
+      proveedor: v.proveedor ?? false,
+      empleado: v.empleado ?? false,
+      plazo_pago: v.plazo_pago,
+      precio: v.precio,
+      asesor: v.asesor,
+      correo_facturacion_electronica: v.correo_facturacion_electronica || null,
+      banco: v.banco,
+      numero_cuenta: v.numero_cuenta || null,
+      cuenta_banco_clase: v.cuenta_banco_clase,
+      plazo_pago_proveedor: v.plazo_pago_proveedor,
+    };
+  }
+
+  private navigateToList(): void {
+    const slug = this.tenant.currentSlug();
+    if (!slug) return;
+    void this.router.navigate(['/t', slug, 'general', 'contactos']);
+  }
+}

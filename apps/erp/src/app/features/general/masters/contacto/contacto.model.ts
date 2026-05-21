@@ -43,13 +43,33 @@ export interface Contacto {
 
 /** Payload para crear o actualizar un contacto. */
 export interface ContactoPayload {
-  readonly nombre_corto: string;
+  readonly tipo_persona: number | null;
+  readonly regimen: number | null;
+  readonly identificacion: number | null;
   readonly numero_identificacion: string;
-  readonly correo?: string | null;
-  readonly telefono?: string | null;
-  readonly cliente?: boolean;
-  readonly proveedor?: boolean;
-  readonly empleado?: boolean;
+  readonly digito_verificacion: string | null;
+  readonly nombre_corto: string | null;
+  readonly nombre1: string | null;
+  readonly nombre2: string | null;
+  readonly apellido1: string | null;
+  readonly apellido2: string | null;
+  readonly telefono: string | null;
+  readonly celular: string | null;
+  readonly ciudad: number | null;
+  readonly direccion: string | null;
+  readonly barrio: string | null;
+  readonly correo: string | null;
+  readonly cliente: boolean;
+  readonly proveedor: boolean;
+  readonly empleado: boolean;
+  readonly plazo_pago: number | null;
+  readonly precio: number | null;
+  readonly asesor: number | null;
+  readonly correo_facturacion_electronica: string | null;
+  readonly banco: number | null;
+  readonly numero_cuenta: string | null;
+  readonly cuenta_banco_clase: number | null;
+  readonly plazo_pago_proveedor: number | null;
 }
 
 /** Forma cruda de la respuesta paginada del backend de contactos. */
