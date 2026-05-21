@@ -1,33 +1,39 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { LAST_TENANT_KEY, type ContenedorAccess } from './tenant.types';
 
+/**
+ * Estado del tenant activo.
+ *
+ * El **slug** es la fuente de verdad: se deriva de la URL `/t/:tenantSlug` y es
+ * lo único que necesita el grueso de la app (interceptor, layouts, navegación).
+ * `currentContenedor` es enriquecimiento opcional — el objeto completo solo está
+ * disponible cuando el usuario entró vía la página de contenedores.
+ */
 @Injectable({ providedIn: 'root' })
 export class TenantService {
-  private readonly _accesos = signal<ContenedorAccess[]>([]);
-  private readonly _current = signal<ContenedorAccess | null>(null);
+  private readonly _slug = signal<string | null>(null);
+  private readonly _contenedor = signal<ContenedorAccess | null>(null);
 
-  readonly accesos = this._accesos.asReadonly();
-  readonly currentContenedor = this._current.asReadonly();
-  readonly currentSlug = computed(() => this._current()?.schema_name ?? null);
+  /** Slug del tenant activo. Fuente de verdad. */
+  readonly currentSlug = this._slug.asReadonly();
+  /** Objeto completo del tenant activo, si se dispone. */
+  readonly currentContenedor = this._contenedor.asReadonly();
 
-  setAccesos(list: ContenedorAccess[]): void {
-    this._accesos.set(list);
-  }
-
-  setCurrent(contenedor: ContenedorAccess): void {
-    this._current.set(contenedor);
-    this.persist(contenedor.schema_name);
-  }
-
+  /** Fija el tenant activo a partir del slug de la URL. */
   setSlug(slug: string): void {
-    const match = this._accesos().find((c) => c.schema_name === slug);
-    if (match) this._current.set(match);
+    this._slug.set(slug);
     this.persist(slug);
   }
 
+  /** Fija el tenant activo con su objeto completo (también actualiza el slug). */
+  setCurrent(contenedor: ContenedorAccess): void {
+    this._contenedor.set(contenedor);
+    this.setSlug(contenedor.schema_name);
+  }
+
   clear(): void {
-    this._current.set(null);
-    this._accesos.set([]);
+    this._slug.set(null);
+    this._contenedor.set(null);
   }
 
   getLastSlug(): string | null {

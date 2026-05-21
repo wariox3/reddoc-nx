@@ -16,7 +16,6 @@ import { environment } from '../environments/environment';
 import {
   APP_BRANDING,
   AUTH_DEFAULT_SKIP_URLS,
-  CONTENEDOR_ACCESS_SERVICE,
   ENVIRONMENT,
   ROUTE_PATHS_TOKEN,
   AUTH_SERVICE,
@@ -28,7 +27,6 @@ import {
   provideI18n,
 } from '@reddoc/core';
 import { AuthService } from './features/auth/services/auth.service';
-import { ContenedorService } from './features/contenedores/services/contenedor.service';
 import { ROUTE_PATHS } from './core/constants/route-paths.constants';
 import {
   ENTITY_DATA_GATEWAY,
@@ -76,7 +74,6 @@ export const appConfig: ApplicationConfig = {
       useValue: { appName: 'ERP', tagline: 'Gestiona tu empresa desde un solo lugar.' },
     },
     { provide: AUTH_SERVICE, useExisting: AuthService },
-    { provide: CONTENEDOR_ACCESS_SERVICE, useExisting: ContenedorService },
     { provide: MODULE_REGISTRY, useValue: ERP_MODULE_REGISTRY },
     { provide: ENTITY_DATA_GATEWAY, useExisting: HttpEntityDataGateway },
     {
