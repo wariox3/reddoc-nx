@@ -45,19 +45,17 @@
 
     <div class="px-5 py-5 max-[576px]:px-4 max-[576px]:py-4">
       <div class="grid grid-cols-1 gap-x-5 gap-y-4 sm:grid-cols-2">
-        <!-- Tipo de persona (selector activo, controla los campos de nombre) -->
+        <!-- Tipo de persona (controla los campos de nombre) -->
         <div class="flex flex-col gap-1.5">
           <label for="tipo_persona" class="contacto-form__label">
             {{ t().entities.contacto.form.fields.tipoPersona }}
             <span class="ml-px text-red-500">*</span>
           </label>
-          <p-select
+          <app-api-select
             inputId="tipo_persona"
             formControlName="tipo_persona"
-            [options]="tipoPersonaOptions()"
-            optionLabel="label"
-            optionValue="value"
-            styleClass="w-full"
+            endpoint="/general/tipo-persona/seleccionar/"
+            [invalid]="form.controls.tipo_persona.invalid && form.controls.tipo_persona.touched"
           />
           <lib-field-error
             [control]="form.controls.tipo_persona"
@@ -82,20 +80,16 @@
           />
         </div>
 
-        <!-- Tipo de identificación (selector pendiente de API) -->
+        <!-- Tipo de identificación -->
         <div class="flex flex-col gap-1.5">
           <label for="identificacion" class="contacto-form__label">
             {{ t().entities.contacto.form.fields.identificacion }}
             <span class="ml-px text-red-500">*</span>
           </label>
-          <p-select
+          <lib-identificacion-select
             inputId="identificacion"
             formControlName="identificacion"
-            [options]="identificacionOptions"
-            optionLabel="label"
-            optionValue="value"
-            [placeholder]="t().entities.contacto.form.pendingPlaceholder"
-            styleClass="w-full"
+            [invalid]="form.controls.identificacion.invalid && form.controls.identificacion.touched"
           />
         </div>
 
@@ -311,20 +305,17 @@
 
     <div class="px-5 py-5 max-[576px]:px-4 max-[576px]:py-4">
       <div class="grid grid-cols-1 gap-x-5 gap-y-4 sm:grid-cols-2">
-        <!-- Plazo de pago (selector pendiente de API) -->
+        <!-- Plazo de pago -->
         <div class="flex flex-col gap-1.5">
           <label for="plazo_pago" class="contacto-form__label">
             {{ t().entities.contacto.form.fields.plazoPago }}
             <span class="ml-px text-red-500">*</span>
           </label>
-          <p-select
+          <app-api-select
             inputId="plazo_pago"
             formControlName="plazo_pago"
-            [options]="plazoPagoOptions"
-            optionLabel="label"
-            optionValue="value"
-            [placeholder]="t().entities.contacto.form.pendingPlaceholder"
-            styleClass="w-full"
+            endpoint="/general/plazo-pago/seleccionar/"
+            [invalid]="form.controls.plazo_pago.invalid && form.controls.plazo_pago.touched"
           />
         </div>
 
@@ -441,19 +432,19 @@
           />
         </div>
 
-        <!-- Plazo de pago proveedor (selector pendiente de API) -->
+        <!-- Plazo de pago proveedor -->
         <div class="flex flex-col gap-1.5">
           <label for="plazo_pago_proveedor" class="contacto-form__label">
             {{ t().entities.contacto.form.fields.plazoPagoProveedor }}
           </label>
-          <p-select
+          <app-api-select
             inputId="plazo_pago_proveedor"
             formControlName="plazo_pago_proveedor"
-            [options]="plazoPagoOptions"
-            optionLabel="label"
-            optionValue="value"
-            [placeholder]="t().entities.contacto.form.pendingPlaceholder"
-            styleClass="w-full"
+            endpoint="/general/plazo-pago/seleccionar/"
+            [invalid]="
+              form.controls.plazo_pago_proveedor.invalid &&
+              form.controls.plazo_pago_proveedor.touched
+            "
           />
         </div>
       </div>

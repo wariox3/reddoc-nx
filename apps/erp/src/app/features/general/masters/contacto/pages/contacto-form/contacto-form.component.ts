@@ -6,8 +6,18 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { CheckboxModule } from 'primeng/checkbox';
-import { FieldErrorComponent } from '@reddoc/ui';
-import { FormErrorService, I18nService, TenantService, ToastService } from '@reddoc/core';
+import { FieldErrorComponent, IdentificacionSelectComponent } from '@reddoc/ui';
+import {
+  FormErrorService,
+  I18nService,
+  Identificacion,
+  TenantService,
+  ToastService,
+} from '@reddoc/core';
+import {
+  ErpApiSelectComponent,
+  ErpSelectOption,
+} from '@erp/core/components/api-select/erp-api-select.component';
 import type { AppDict } from '@erp/i18n';
 import { ContactoService } from '../../contacto.service';
 import type { ContactoPayload } from '../../contacto.model';
@@ -41,6 +51,8 @@ interface SelectOption {
     SelectModule,
     CheckboxModule,
     FieldErrorComponent,
+    IdentificacionSelectComponent,
+    ErpApiSelectComponent,
   ],
   templateUrl: './contacto-form.component.html',
   styleUrl: './contacto-form.component.scss',
@@ -64,26 +76,14 @@ export class ContactoFormComponent implements OnInit {
   protected readonly isSaving = signal(false);
 
   // ── tipo_persona: 1 = Jurídica, 2 = Natural ────────────────────────────────
-  private readonly tipoPersona = signal<number | null>(1);
+  private readonly tipoPersona = signal<number | null>(null);
   protected readonly esNatural = computed(() => this.tipoPersona() === 2);
-
-  protected readonly tipoPersonaOptions = computed<SelectOption[]>(() => {
-    const o = this.t().entities.contacto.form.tipoPersonaOptions;
-    return [
-      { label: o.juridica, value: 1 },
-      { label: o.natural, value: 2 },
-    ];
-  });
 
   // ── Selectores pendientes de API (ver TODO de cada endpoint) ────────────────
   // TODO(api): general/regimen/seleccionar/  { inactivo: 'False' }
   protected readonly regimenOptions: SelectOption[] = [];
-  // TODO(api): general/identificacion/seleccionar/  (filtrar por tipo_persona)
-  protected readonly identificacionOptions: SelectOption[] = [];
   // TODO(api): general/ciudad/seleccionar/  ?nombre__icontains=<texto>  (búsqueda)
   protected readonly ciudadOptions: SelectOption[] = [];
-  // TODO(api): general/plazo_pago/seleccionar/
-  protected readonly plazoPagoOptions: SelectOption[] = [];
   // TODO(api): general/precio/seleccionar/  { venta: 'True' }
   protected readonly precioOptions: SelectOption[] = [];
   // TODO(api): general/asesor/seleccionar/
@@ -97,12 +97,9 @@ export class ContactoFormComponent implements OnInit {
   // Los controles respaldados por un selector API arrancan `disabled` hasta que
   // su endpoint esté disponible. `tipo_persona` arranca en Jurídica (1).
   protected readonly form = this.fb.group({
-    tipo_persona: this.fb.control<number | null>(1, Validators.required),
+    tipo_persona: this.fb.control<ErpSelectOption | null>(null, Validators.required),
     regimen: this.fb.control<number | null>({ value: null, disabled: true }, Validators.required),
-    identificacion: this.fb.control<number | null>(
-      { value: null, disabled: true },
-      Validators.required,
-    ),
+    identificacion: this.fb.control<Identificacion | null>(null, Validators.required),
     numero_identificacion: ['', Validators.required],
     digito_verificacion: this.fb.control<string>({ value: '', disabled: true }),
     nombre_corto: ['', Validators.required],
@@ -119,23 +116,21 @@ export class ContactoFormComponent implements OnInit {
     cliente: [false],
     proveedor: [false],
     empleado: [false],
-    plazo_pago: this.fb.control<number | null>(
-      { value: null, disabled: true },
-      Validators.required,
-    ),
+    plazo_pago: this.fb.control<ErpSelectOption | null>(null, Validators.required),
     precio: this.fb.control<number | null>({ value: null, disabled: true }),
     asesor: this.fb.control<number | null>({ value: null, disabled: true }),
     correo_facturacion_electronica: ['', Validators.email],
     banco: this.fb.control<number | null>({ value: null, disabled: true }),
     numero_cuenta: [''],
     cuenta_banco_clase: this.fb.control<number | null>({ value: null, disabled: true }),
-    plazo_pago_proveedor: this.fb.control<number | null>({ value: null, disabled: true }),
+    plazo_pago_proveedor: this.fb.control<ErpSelectOption | null>(null),
   });
 
   constructor() {
     this.form.controls.tipo_persona.valueChanges.pipe(takeUntilDestroyed()).subscribe((value) => {
-      this.tipoPersona.set(value);
-      this.applyTipoPersonaValidators(value);
+      const id = value?.id ?? null;
+      this.tipoPersona.set(id);
+      this.applyTipoPersonaValidators(id);
     });
   }
 
@@ -200,8 +195,8 @@ export class ContactoFormComponent implements OnInit {
         next: (c) => {
           // `regimen` y `cuenta_banco_clase` se omiten: selectores pendientes de API.
           this.form.patchValue({
-            tipo_persona: c.tipo_persona,
-            identificacion: c.identificacion,
+            tipo_persona: { id: c.tipo_persona, nombre: c.tipo_persona_nombre },
+            identificacion: { id: c.identificacion, nombre: c.identificacion_nombre },
             numero_identificacion: c.numero_identificacion,
             digito_verificacion: c.digito_verificacion ?? '',
             nombre_corto: c.nombre_corto,
@@ -218,13 +213,14 @@ export class ContactoFormComponent implements OnInit {
             cliente: c.cliente,
             proveedor: c.proveedor,
             empleado: c.empleado,
-            plazo_pago: c.plazo_pago,
+            plazo_pago: c.plazo_pago !== null ? { id: c.plazo_pago, nombre: '' } : null,
             precio: c.precio,
             asesor: c.asesor,
             correo_facturacion_electronica: c.correo_facturacion_electronica ?? '',
             banco: c.banco,
             numero_cuenta: c.numero_cuenta ?? '',
-            plazo_pago_proveedor: c.plazo_pago_proveedor,
+            plazo_pago_proveedor:
+              c.plazo_pago_proveedor !== null ? { id: c.plazo_pago_proveedor, nombre: '' } : null,
           });
         },
         error: () => {
@@ -241,9 +237,9 @@ export class ContactoFormComponent implements OnInit {
   private buildPayload(): ContactoPayload {
     const v = this.form.getRawValue();
     return {
-      tipo_persona: v.tipo_persona,
+      tipo_persona: v.tipo_persona?.id ?? null,
       regimen: v.regimen,
-      identificacion: v.identificacion,
+      identificacion: v.identificacion?.id ?? null,
       numero_identificacion: v.numero_identificacion ?? '',
       digito_verificacion: v.digito_verificacion || null,
       nombre_corto: v.nombre_corto || null,
@@ -260,14 +256,14 @@ export class ContactoFormComponent implements OnInit {
       cliente: v.cliente ?? false,
       proveedor: v.proveedor ?? false,
       empleado: v.empleado ?? false,
-      plazo_pago: v.plazo_pago,
+      plazo_pago: v.plazo_pago?.id ?? null,
       precio: v.precio,
       asesor: v.asesor,
       correo_facturacion_electronica: v.correo_facturacion_electronica || null,
       banco: v.banco,
       numero_cuenta: v.numero_cuenta || null,
       cuenta_banco_clase: v.cuenta_banco_clase,
-      plazo_pago_proveedor: v.plazo_pago_proveedor,
+      plazo_pago_proveedor: v.plazo_pago_proveedor?.id ?? null,
     };
   }
 
