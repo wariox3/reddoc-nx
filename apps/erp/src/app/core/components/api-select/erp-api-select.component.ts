@@ -2,7 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
-  OnInit,
+  effect,
   forwardRef,
   inject,
   input,
@@ -49,7 +49,7 @@ export interface ErpSelectOption {
     },
   ],
 })
-export class ErpApiSelectComponent implements ControlValueAccessor, OnInit {
+export class ErpApiSelectComponent implements ControlValueAccessor {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = inject(ENVIRONMENT).apiUrl;
   private readonly destroyRef = inject(DestroyRef);
@@ -68,29 +68,31 @@ export class ErpApiSelectComponent implements ControlValueAccessor, OnInit {
   private onChangeFn: (value: ErpSelectOption | null) => void = () => undefined;
   onTouchedFn: () => void = () => undefined;
 
-  ngOnInit(): void {
-    const rawParams = this.params();
-    let httpParams = new HttpParams();
-    for (const [key, val] of Object.entries(rawParams)) {
-      httpParams = httpParams.set(key, val);
-    }
-
-    this.loading.set(true);
-    this.http
-      .get<PaginatedResponse<ErpSelectOption>>(`${this.baseUrl}${this.endpoint()}`, {
-        params: httpParams,
-      })
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (res) => {
-          this.options.set(res.results);
-          this.loading.set(false);
-        },
-        error: () => {
-          this.options.set([]);
-          this.loading.set(false);
-        },
-      });
+  constructor() {
+    effect(() => {
+      const rawParams = this.params();
+      const endpoint = this.endpoint();
+      let httpParams = new HttpParams();
+      for (const [key, val] of Object.entries(rawParams)) {
+        httpParams = httpParams.set(key, val);
+      }
+      this.loading.set(true);
+      this.http
+        .get<PaginatedResponse<ErpSelectOption>>(`${this.baseUrl}${endpoint}`, {
+          params: httpParams,
+        })
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (res) => {
+            this.options.set(res.results);
+            this.loading.set(false);
+          },
+          error: () => {
+            this.options.set([]);
+            this.loading.set(false);
+          },
+        });
+    });
   }
 
   writeValue(value: ErpSelectOption | null): void {
