@@ -203,20 +203,22 @@
           />
         </div>
 
-        <!-- Ciudad (selector pendiente de API) -->
+        <!-- Ciudad -->
         <div class="flex flex-col gap-1.5">
           <label for="ciudad" class="contacto-form__label">
             {{ t().entities.contacto.form.fields.ciudad }}
             <span class="ml-px text-red-500">*</span>
           </label>
-          <p-select
+          <app-api-autocomplete
             inputId="ciudad"
             formControlName="ciudad"
-            [options]="ciudadOptions"
-            optionLabel="label"
-            optionValue="value"
-            [placeholder]="t().entities.contacto.form.pendingPlaceholder"
-            styleClass="w-full"
+            endpoint="/general/ciudad/seleccionar/"
+            [placeholder]="t().entities.contacto.form.fields.ciudadPlaceholder"
+            [invalid]="form.controls.ciudad.invalid && form.controls.ciudad.touched"
+          />
+          <lib-field-error
+            [control]="form.controls.ciudad"
+            [messages]="{ required: t().entities.contacto.form.validation.required }"
           />
         </div>
 
@@ -392,19 +394,17 @@
 
     <div class="px-5 py-5 max-[576px]:px-4 max-[576px]:py-4">
       <div class="grid grid-cols-1 gap-x-5 gap-y-4 sm:grid-cols-2">
-        <!-- Banco (selector pendiente de API) -->
+        <!-- Banco -->
         <div class="flex flex-col gap-1.5">
           <label for="banco" class="contacto-form__label">
             {{ t().entities.contacto.form.fields.banco }}
           </label>
-          <p-select
+          <app-api-autocomplete
             inputId="banco"
             formControlName="banco"
-            [options]="bancoOptions"
-            optionLabel="label"
-            optionValue="value"
-            [placeholder]="t().entities.contacto.form.pendingPlaceholder"
-            styleClass="w-full"
+            endpoint="/general/banco/seleccionar/"
+            [placeholder]="t().entities.contacto.form.fields.bancoPlaceholder"
+            [invalid]="form.controls.banco.invalid && form.controls.banco.touched"
           />
         </div>
 

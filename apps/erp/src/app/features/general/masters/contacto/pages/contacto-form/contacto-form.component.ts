@@ -18,6 +18,7 @@ import {
   ErpApiSelectComponent,
   ErpSelectOption,
 } from '@erp/core/components/api-select/erp-api-select.component';
+import { ErpApiAutocompleteComponent } from '@erp/core/components/api-autocomplete/erp-api-autocomplete.component';
 import type { AppDict } from '@erp/i18n';
 import { ContactoService } from '../../contacto.service';
 import type { ContactoPayload } from '../../contacto.model';
@@ -53,6 +54,7 @@ interface SelectOption {
     FieldErrorComponent,
     IdentificacionSelectComponent,
     ErpApiSelectComponent,
+    ErpApiAutocompleteComponent,
   ],
   templateUrl: './contacto-form.component.html',
   styleUrl: './contacto-form.component.scss',
@@ -82,14 +84,10 @@ export class ContactoFormComponent implements OnInit {
   // ── Selectores pendientes de API (ver TODO de cada endpoint) ────────────────
   // TODO(api): general/regimen/seleccionar/  { inactivo: 'False' }
   protected readonly regimenOptions: SelectOption[] = [];
-  // TODO(api): general/ciudad/seleccionar/  ?nombre__icontains=<texto>  (búsqueda)
-  protected readonly ciudadOptions: SelectOption[] = [];
   // TODO(api): general/precio/seleccionar/  { venta: 'True' }
   protected readonly precioOptions: SelectOption[] = [];
   // TODO(api): general/asesor/seleccionar/
   protected readonly asesorOptions: SelectOption[] = [];
-  // TODO(api): general/banco/seleccionar/  { limit: 50 }
-  protected readonly bancoOptions: SelectOption[] = [];
   // TODO(api): general/cuenta_banco_clase/seleccionar/
   protected readonly cuentaBancoClaseOptions: SelectOption[] = [];
 
@@ -109,7 +107,7 @@ export class ContactoFormComponent implements OnInit {
     apellido2: [''],
     telefono: ['', Validators.required],
     celular: ['', Validators.required],
-    ciudad: this.fb.control<number | null>({ value: null, disabled: true }, Validators.required),
+    ciudad: this.fb.control<ErpSelectOption | null>(null, Validators.required),
     direccion: ['', Validators.required],
     barrio: [''],
     correo: ['', [Validators.required, Validators.email]],
@@ -120,7 +118,7 @@ export class ContactoFormComponent implements OnInit {
     precio: this.fb.control<number | null>({ value: null, disabled: true }),
     asesor: this.fb.control<number | null>({ value: null, disabled: true }),
     correo_facturacion_electronica: ['', Validators.email],
-    banco: this.fb.control<number | null>({ value: null, disabled: true }),
+    banco: this.fb.control<ErpSelectOption | null>(null),
     numero_cuenta: [''],
     cuenta_banco_clase: this.fb.control<number | null>({ value: null, disabled: true }),
     plazo_pago_proveedor: this.fb.control<ErpSelectOption | null>(null),
@@ -206,7 +204,7 @@ export class ContactoFormComponent implements OnInit {
             apellido2: c.apellido2 ?? '',
             telefono: c.telefono ?? '',
             celular: c.celular ?? '',
-            ciudad: c.ciudad,
+            ciudad: { id: c.ciudad, nombre: c.ciudad_nombre },
             direccion: c.direccion ?? '',
             barrio: c.barrio ?? '',
             correo: c.correo ?? '',
@@ -217,7 +215,7 @@ export class ContactoFormComponent implements OnInit {
             precio: c.precio,
             asesor: c.asesor,
             correo_facturacion_electronica: c.correo_facturacion_electronica ?? '',
-            banco: c.banco,
+            banco: c.banco !== null ? { id: c.banco, nombre: '' } : null,
             numero_cuenta: c.numero_cuenta ?? '',
             plazo_pago_proveedor:
               c.plazo_pago_proveedor !== null ? { id: c.plazo_pago_proveedor, nombre: '' } : null,
@@ -249,7 +247,7 @@ export class ContactoFormComponent implements OnInit {
       apellido2: v.apellido2 || null,
       telefono: v.telefono || null,
       celular: v.celular || null,
-      ciudad: v.ciudad,
+      ciudad: v.ciudad?.id ?? null,
       direccion: v.direccion || null,
       barrio: v.barrio || null,
       correo: v.correo || null,
@@ -260,7 +258,7 @@ export class ContactoFormComponent implements OnInit {
       precio: v.precio,
       asesor: v.asesor,
       correo_facturacion_electronica: v.correo_facturacion_electronica || null,
-      banco: v.banco,
+      banco: v.banco?.id ?? null,
       numero_cuenta: v.numero_cuenta || null,
       cuenta_banco_clase: v.cuenta_banco_clase,
       plazo_pago_proveedor: v.plazo_pago_proveedor?.id ?? null,

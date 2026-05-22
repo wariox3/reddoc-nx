@@ -93,6 +93,7 @@ export interface AppDict extends AuthTranslationsHost {
           telefono: string;
           celular: string;
           ciudad: string;
+          ciudadPlaceholder: string;
           direccion: string;
           barrio: string;
           correo: string;
@@ -104,6 +105,7 @@ export interface AppDict extends AuthTranslationsHost {
           asesor: string;
           correoFacturacion: string;
           banco: string;
+          bancoPlaceholder: string;
           numeroCuenta: string;
           cuentaBancoClase: string;
           plazoPagoProveedor: string;
