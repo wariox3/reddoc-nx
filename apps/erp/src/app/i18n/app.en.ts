@@ -95,6 +95,12 @@ export const en: AppDict = {
           cliente: 'Customer information',
           proveedor: 'Supplier information',
         },
+        sectionsHint: {
+          principal: 'Identification, contact and classification',
+          cliente: 'Commercial sales terms',
+          proveedor: 'Banking details for payments',
+        },
+        clasificacion: 'This contact is',
         fields: {
           tipoPersona: 'Person type',
           regimen: 'Tax regime',

@@ -19,7 +19,7 @@ export const CONTACTO_ROUTES: Route[] = [
       ),
   },
   {
-    path: 'new',
+    path: 'nuevo',
     loadComponent: () =>
       import('./pages/contacto-form/contacto-form.component').then((m) => m.ContactoFormComponent),
   },

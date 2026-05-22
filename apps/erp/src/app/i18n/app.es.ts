@@ -86,7 +86,7 @@ export const es: AppDict = {
         telefono: 'Teléfono',
       },
       form: {
-        createTitle: 'nuevo contacto',
+        createTitle: 'Nuevo contacto',
         createSubtitle: 'Registrá un nuevo contacto',
         editTitle: 'editar contacto',
         editSubtitle: 'Actualizá los datos del contacto',
@@ -95,6 +95,12 @@ export const es: AppDict = {
           cliente: 'Información cliente',
           proveedor: 'Información proveedor',
         },
+        sectionsHint: {
+          principal: 'Identificación, contacto y clasificación',
+          cliente: 'Condiciones comerciales de venta',
+          proveedor: 'Datos bancarios para pagos',
+        },
+        clasificacion: 'El contacto es',
         fields: {
           tipoPersona: 'Tipo de persona',
           regimen: 'Régimen',

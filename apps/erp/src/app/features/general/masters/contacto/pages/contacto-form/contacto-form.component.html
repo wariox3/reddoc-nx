@@ -1,429 +1,467 @@
-<header class="contacto-form__header">
-  <div class="contacto-form__title-block">
-    <h1 class="contacto-form__title">
-      @if (isEditMode()) {
-        {{ t().entities.contacto.form.editTitle }}
-      } @else {
-        {{ t().entities.contacto.form.createTitle }}
-      }
-    </h1>
-    <p class="contacto-form__subtitle">
-      @if (isEditMode()) {
-        {{ t().entities.contacto.form.editSubtitle }}
-      } @else {
-        {{ t().entities.contacto.form.createSubtitle }}
-      }
-    </p>
-  </div>
+<!-- ── Encabezado de página ──────────────────────────────────────────────── -->
+<header>
+  <button
+    type="button"
+    (click)="onCancel()"
+    class="mb-2 inline-flex cursor-pointer items-center gap-1.5 border-0 bg-transparent p-0 text-[0.78rem] font-medium text-brand-muted transition-colors hover:text-brand-text"
+  >
+    <i class="pi pi-arrow-left text-[0.7rem]"></i>
+    {{ t().entities.contacto.name }}
+  </button>
+  <h1 class="m-0 text-2xl font-bold tracking-tight text-brand-text">
+    @if (isEditMode()) {
+      {{ t().entities.contacto.form.editTitle }}
+    } @else {
+      {{ t().entities.contacto.form.createTitle }}
+    }
+  </h1>
+  <p class="m-0 mt-1 text-sm text-brand-muted">
+    @if (isEditMode()) {
+      {{ t().entities.contacto.form.editSubtitle }}
+    } @else {
+      {{ t().entities.contacto.form.createSubtitle }}
+    }
+  </p>
 </header>
 
-<form [formGroup]="form" (ngSubmit)="onSubmit()" autocomplete="off" class="flex flex-col gap-4">
+<form [formGroup]="form" (ngSubmit)="onSubmit()" autocomplete="off" class="flex flex-col gap-5">
   <!-- ── Sección 1: Información principal ──────────────────────────────────── -->
-  <section class="card">
-    <h2 class="contacto-form__section-title">
-      {{ t().entities.contacto.form.sections.principal }}
-    </h2>
-
-    <div class="grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2 lg:grid-cols-3">
-      <!-- Tipo de persona (selector activo, controla los campos de nombre) -->
-      <div class="flex flex-col">
-        <label for="tipo_persona" class="contacto-form__label">
-          {{ t().entities.contacto.form.fields.tipoPersona }}
-          <span class="text-red-500">*</span>
-        </label>
-        <p-select
-          inputId="tipo_persona"
-          formControlName="tipo_persona"
-          [options]="tipoPersonaOptions()"
-          optionLabel="label"
-          optionValue="value"
-          styleClass="w-full"
-        />
-        <lib-field-error
-          [control]="form.controls.tipo_persona"
-          [messages]="{ required: t().entities.contacto.form.validation.required }"
-        />
-      </div>
-
-      <!-- Régimen (selector pendiente de API) -->
-      <div class="flex flex-col">
-        <label for="regimen" class="contacto-form__label">
-          {{ t().entities.contacto.form.fields.regimen }}
-          <span class="text-red-500">*</span>
-        </label>
-        <p-select
-          inputId="regimen"
-          formControlName="regimen"
-          [options]="regimenOptions"
-          optionLabel="label"
-          optionValue="value"
-          [placeholder]="t().entities.contacto.form.pendingPlaceholder"
-          styleClass="w-full"
-        />
-      </div>
-
-      <!-- Tipo de identificación (selector pendiente de API) -->
-      <div class="flex flex-col">
-        <label for="identificacion" class="contacto-form__label">
-          {{ t().entities.contacto.form.fields.identificacion }}
-          <span class="text-red-500">*</span>
-        </label>
-        <p-select
-          inputId="identificacion"
-          formControlName="identificacion"
-          [options]="identificacionOptions"
-          optionLabel="label"
-          optionValue="value"
-          [placeholder]="t().entities.contacto.form.pendingPlaceholder"
-          styleClass="w-full"
-        />
-      </div>
-
-      <!-- Número de identificación -->
-      <div class="flex flex-col">
-        <label for="numero_identificacion" class="contacto-form__label">
-          {{ t().entities.contacto.form.fields.numeroIdentificacion }}
-          <span class="text-red-500">*</span>
-        </label>
-        <input
-          id="numero_identificacion"
-          pInputText
-          type="text"
-          formControlName="numero_identificacion"
-          class="w-full"
-        />
-        <lib-field-error
-          [control]="form.controls.numero_identificacion"
-          [messages]="{ required: t().entities.contacto.form.validation.required }"
-        />
-      </div>
-
-      <!-- Dígito de verificación (deshabilitado: auto-cálculo pendiente) -->
-      <div class="flex flex-col">
-        <label for="digito_verificacion" class="contacto-form__label">
-          {{ t().entities.contacto.form.fields.digitoVerificacion }}
-        </label>
-        <input
-          id="digito_verificacion"
-          pInputText
-          type="text"
-          formControlName="digito_verificacion"
-          class="w-full"
-        />
-      </div>
-
-      <!-- Nombre: Jurídica → nombre_corto · Natural → nombre1/2 + apellido1/2 -->
-      @if (esNatural()) {
-        <div class="flex flex-col">
-          <label for="nombre1" class="contacto-form__label">
-            {{ t().entities.contacto.form.fields.nombre1 }}
-            <span class="text-red-500">*</span>
-          </label>
-          <input id="nombre1" pInputText type="text" formControlName="nombre1" class="w-full" />
-          <lib-field-error
-            [control]="form.controls.nombre1"
-            [messages]="{ required: t().entities.contacto.form.validation.required }"
-          />
-        </div>
-
-        <div class="flex flex-col">
-          <label for="nombre2" class="contacto-form__label">
-            {{ t().entities.contacto.form.fields.nombre2 }}
-          </label>
-          <input id="nombre2" pInputText type="text" formControlName="nombre2" class="w-full" />
-        </div>
-
-        <div class="flex flex-col">
-          <label for="apellido1" class="contacto-form__label">
-            {{ t().entities.contacto.form.fields.apellido1 }}
-            <span class="text-red-500">*</span>
-          </label>
-          <input id="apellido1" pInputText type="text" formControlName="apellido1" class="w-full" />
-          <lib-field-error
-            [control]="form.controls.apellido1"
-            [messages]="{ required: t().entities.contacto.form.validation.required }"
-          />
-        </div>
-
-        <div class="flex flex-col">
-          <label for="apellido2" class="contacto-form__label">
-            {{ t().entities.contacto.form.fields.apellido2 }}
-          </label>
-          <input id="apellido2" pInputText type="text" formControlName="apellido2" class="w-full" />
-        </div>
-      } @else {
-        <div class="flex flex-col sm:col-span-2">
-          <label for="nombre_corto" class="contacto-form__label">
-            {{ t().entities.contacto.form.fields.nombreCorto }}
-            <span class="text-red-500">*</span>
-          </label>
-          <input
-            id="nombre_corto"
-            pInputText
-            type="text"
-            formControlName="nombre_corto"
-            class="w-full"
-          />
-          <lib-field-error
-            [control]="form.controls.nombre_corto"
-            [messages]="{ required: t().entities.contacto.form.validation.required }"
-          />
-        </div>
-      }
-
-      <!-- Teléfono -->
-      <div class="flex flex-col">
-        <label for="telefono" class="contacto-form__label">
-          {{ t().entities.contacto.form.fields.telefono }}
-          <span class="text-red-500">*</span>
-        </label>
-        <input id="telefono" pInputText type="tel" formControlName="telefono" class="w-full" />
-        <lib-field-error
-          [control]="form.controls.telefono"
-          [messages]="{ required: t().entities.contacto.form.validation.required }"
-        />
-      </div>
-
-      <!-- Celular -->
-      <div class="flex flex-col">
-        <label for="celular" class="contacto-form__label">
-          {{ t().entities.contacto.form.fields.celular }}
-          <span class="text-red-500">*</span>
-        </label>
-        <input id="celular" pInputText type="tel" formControlName="celular" class="w-full" />
-        <lib-field-error
-          [control]="form.controls.celular"
-          [messages]="{ required: t().entities.contacto.form.validation.required }"
-        />
-      </div>
-
-      <!-- Ciudad (selector pendiente de API) -->
-      <div class="flex flex-col">
-        <label for="ciudad" class="contacto-form__label">
-          {{ t().entities.contacto.form.fields.ciudad }}
-          <span class="text-red-500">*</span>
-        </label>
-        <p-select
-          inputId="ciudad"
-          formControlName="ciudad"
-          [options]="ciudadOptions"
-          optionLabel="label"
-          optionValue="value"
-          [placeholder]="t().entities.contacto.form.pendingPlaceholder"
-          styleClass="w-full"
-        />
-      </div>
-
-      <!-- Dirección -->
-      <div class="flex flex-col">
-        <label for="direccion" class="contacto-form__label">
-          {{ t().entities.contacto.form.fields.direccion }}
-          <span class="text-red-500">*</span>
-        </label>
-        <input id="direccion" pInputText type="text" formControlName="direccion" class="w-full" />
-        <lib-field-error
-          [control]="form.controls.direccion"
-          [messages]="{ required: t().entities.contacto.form.validation.required }"
-        />
-      </div>
-
-      <!-- Barrio -->
-      <div class="flex flex-col">
-        <label for="barrio" class="contacto-form__label">
-          {{ t().entities.contacto.form.fields.barrio }}
-        </label>
-        <input id="barrio" pInputText type="text" formControlName="barrio" class="w-full" />
-      </div>
-
-      <!-- Correo -->
-      <div class="flex flex-col sm:col-span-2">
-        <label for="correo" class="contacto-form__label">
-          {{ t().entities.contacto.form.fields.correo }}
-          <span class="text-red-500">*</span>
-        </label>
-        <input id="correo" pInputText type="email" formControlName="correo" class="w-full" />
-        <lib-field-error
-          [control]="form.controls.correo"
-          [messages]="{
-            required: t().entities.contacto.form.validation.required,
-            email: t().entities.contacto.form.validation.emailInvalid,
-          }"
-        />
+  <section class="overflow-hidden rounded-xl border border-[rgba(20,48,73,0.1)] bg-brand-surface">
+    <div class="flex items-center gap-3 border-b border-[rgba(20,48,73,0.08)] px-5 py-4">
+      <span
+        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-sky-50 text-sky-700"
+      >
+        <i class="pi pi-id-card text-[1.05rem]"></i>
+      </span>
+      <div class="flex min-w-0 flex-1 flex-col gap-[0.1rem]">
+        <h2 class="m-0 text-[0.95rem] font-bold tracking-tight text-brand-text">
+          {{ t().entities.contacto.form.sections.principal }}
+        </h2>
+        <p class="m-0 text-[0.75rem] text-brand-muted">
+          {{ t().entities.contacto.form.sectionsHint.principal }}
+        </p>
       </div>
     </div>
 
-    <!-- Clasificación -->
-    <div class="contacto-form__flags">
-      <div class="flex items-center gap-2">
-        <p-checkbox inputId="cliente" formControlName="cliente" [binary]="true" />
-        <label for="cliente" class="contacto-form__flag-label">
-          {{ t().entities.contacto.form.fields.cliente }}
-        </label>
+    <div class="px-5 py-5 max-[576px]:px-4 max-[576px]:py-4">
+      <div class="grid grid-cols-1 gap-x-5 gap-y-4 sm:grid-cols-2">
+        <!-- Tipo de persona (selector activo, controla los campos de nombre) -->
+        <div class="flex flex-col gap-1.5">
+          <label for="tipo_persona" class="contacto-form__label">
+            {{ t().entities.contacto.form.fields.tipoPersona }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <p-select
+            inputId="tipo_persona"
+            formControlName="tipo_persona"
+            [options]="tipoPersonaOptions()"
+            optionLabel="label"
+            optionValue="value"
+            styleClass="w-full"
+          />
+          <lib-field-error
+            [control]="form.controls.tipo_persona"
+            [messages]="{ required: t().entities.contacto.form.validation.required }"
+          />
+        </div>
+
+        <!-- Régimen (selector pendiente de API) -->
+        <div class="flex flex-col gap-1.5">
+          <label for="regimen" class="contacto-form__label">
+            {{ t().entities.contacto.form.fields.regimen }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <p-select
+            inputId="regimen"
+            formControlName="regimen"
+            [options]="regimenOptions"
+            optionLabel="label"
+            optionValue="value"
+            [placeholder]="t().entities.contacto.form.pendingPlaceholder"
+            styleClass="w-full"
+          />
+        </div>
+
+        <!-- Tipo de identificación (selector pendiente de API) -->
+        <div class="flex flex-col gap-1.5">
+          <label for="identificacion" class="contacto-form__label">
+            {{ t().entities.contacto.form.fields.identificacion }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <p-select
+            inputId="identificacion"
+            formControlName="identificacion"
+            [options]="identificacionOptions"
+            optionLabel="label"
+            optionValue="value"
+            [placeholder]="t().entities.contacto.form.pendingPlaceholder"
+            styleClass="w-full"
+          />
+        </div>
+
+        <!-- Número de identificación + dígito de verificación -->
+        <div class="flex flex-col gap-1.5">
+          <label for="numero_identificacion" class="contacto-form__label">
+            {{ t().entities.contacto.form.fields.numeroIdentificacion }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <div class="flex gap-2">
+            <input
+              id="numero_identificacion"
+              pInputText
+              type="text"
+              formControlName="numero_identificacion"
+              class="flex-1"
+              fluid
+            />
+            <input
+              id="digito_verificacion"
+              pInputText
+              type="text"
+              formControlName="digito_verificacion"
+              class="w-16 text-center"
+              [placeholder]="t().entities.contacto.form.fields.digitoVerificacion"
+              [attr.aria-label]="t().entities.contacto.form.fields.digitoVerificacion"
+            />
+          </div>
+          <lib-field-error
+            [control]="form.controls.numero_identificacion"
+            [messages]="{ required: t().entities.contacto.form.validation.required }"
+          />
+        </div>
+
+        <!-- Nombre: Jurídica → nombre_corto · Natural → nombre1/2 + apellido1/2 -->
+        @if (esNatural()) {
+          <div class="flex flex-col gap-1.5">
+            <label for="nombre1" class="contacto-form__label">
+              {{ t().entities.contacto.form.fields.nombre1 }}
+              <span class="ml-px text-red-500">*</span>
+            </label>
+            <input id="nombre1" pInputText type="text" formControlName="nombre1" fluid />
+            <lib-field-error
+              [control]="form.controls.nombre1"
+              [messages]="{ required: t().entities.contacto.form.validation.required }"
+            />
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <label for="nombre2" class="contacto-form__label">
+              {{ t().entities.contacto.form.fields.nombre2 }}
+            </label>
+            <input id="nombre2" pInputText type="text" formControlName="nombre2" fluid />
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <label for="apellido1" class="contacto-form__label">
+              {{ t().entities.contacto.form.fields.apellido1 }}
+              <span class="ml-px text-red-500">*</span>
+            </label>
+            <input id="apellido1" pInputText type="text" formControlName="apellido1" fluid />
+            <lib-field-error
+              [control]="form.controls.apellido1"
+              [messages]="{ required: t().entities.contacto.form.validation.required }"
+            />
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <label for="apellido2" class="contacto-form__label">
+              {{ t().entities.contacto.form.fields.apellido2 }}
+            </label>
+            <input id="apellido2" pInputText type="text" formControlName="apellido2" fluid />
+          </div>
+        } @else {
+          <div class="flex flex-col gap-1.5 sm:col-span-2">
+            <label for="nombre_corto" class="contacto-form__label">
+              {{ t().entities.contacto.form.fields.nombreCorto }}
+              <span class="ml-px text-red-500">*</span>
+            </label>
+            <input id="nombre_corto" pInputText type="text" formControlName="nombre_corto" fluid />
+            <lib-field-error
+              [control]="form.controls.nombre_corto"
+              [messages]="{ required: t().entities.contacto.form.validation.required }"
+            />
+          </div>
+        }
+
+        <!-- Teléfono -->
+        <div class="flex flex-col gap-1.5">
+          <label for="telefono" class="contacto-form__label">
+            {{ t().entities.contacto.form.fields.telefono }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <input id="telefono" pInputText type="tel" formControlName="telefono" fluid />
+          <lib-field-error
+            [control]="form.controls.telefono"
+            [messages]="{ required: t().entities.contacto.form.validation.required }"
+          />
+        </div>
+
+        <!-- Celular -->
+        <div class="flex flex-col gap-1.5">
+          <label for="celular" class="contacto-form__label">
+            {{ t().entities.contacto.form.fields.celular }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <input id="celular" pInputText type="tel" formControlName="celular" fluid />
+          <lib-field-error
+            [control]="form.controls.celular"
+            [messages]="{ required: t().entities.contacto.form.validation.required }"
+          />
+        </div>
+
+        <!-- Ciudad (selector pendiente de API) -->
+        <div class="flex flex-col gap-1.5">
+          <label for="ciudad" class="contacto-form__label">
+            {{ t().entities.contacto.form.fields.ciudad }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <p-select
+            inputId="ciudad"
+            formControlName="ciudad"
+            [options]="ciudadOptions"
+            optionLabel="label"
+            optionValue="value"
+            [placeholder]="t().entities.contacto.form.pendingPlaceholder"
+            styleClass="w-full"
+          />
+        </div>
+
+        <!-- Dirección -->
+        <div class="flex flex-col gap-1.5">
+          <label for="direccion" class="contacto-form__label">
+            {{ t().entities.contacto.form.fields.direccion }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <input id="direccion" pInputText type="text" formControlName="direccion" fluid />
+          <lib-field-error
+            [control]="form.controls.direccion"
+            [messages]="{ required: t().entities.contacto.form.validation.required }"
+          />
+        </div>
+
+        <!-- Barrio -->
+        <div class="flex flex-col gap-1.5">
+          <label for="barrio" class="contacto-form__label">
+            {{ t().entities.contacto.form.fields.barrio }}
+          </label>
+          <input id="barrio" pInputText type="text" formControlName="barrio" fluid />
+        </div>
+
+        <!-- Correo -->
+        <div class="flex flex-col gap-1.5 sm:col-span-2">
+          <label for="correo" class="contacto-form__label">
+            {{ t().entities.contacto.form.fields.correo }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <input id="correo" pInputText type="email" formControlName="correo" fluid />
+          <lib-field-error
+            [control]="form.controls.correo"
+            [messages]="{
+              required: t().entities.contacto.form.validation.required,
+              email: t().entities.contacto.form.validation.emailInvalid,
+            }"
+          />
+        </div>
       </div>
-      <div class="flex items-center gap-2">
-        <p-checkbox inputId="proveedor" formControlName="proveedor" [binary]="true" />
-        <label for="proveedor" class="contacto-form__flag-label">
-          {{ t().entities.contacto.form.fields.proveedor }}
-        </label>
-      </div>
-      <div class="flex items-center gap-2">
-        <p-checkbox inputId="empleado" formControlName="empleado" [binary]="true" />
-        <label for="empleado" class="contacto-form__flag-label">
-          {{ t().entities.contacto.form.fields.empleado }}
-        </label>
+
+      <!-- Clasificación del contacto -->
+      <div class="mt-5 border-t border-[rgba(20,48,73,0.08)] pt-4">
+        <span class="contacto-form__label">{{ t().entities.contacto.form.clasificacion }}</span>
+        <div class="mt-2.5 flex flex-wrap gap-x-6 gap-y-2.5">
+          <label for="cliente" class="flex cursor-pointer items-center gap-2">
+            <p-checkbox inputId="cliente" formControlName="cliente" [binary]="true" />
+            <span class="text-[0.85rem] text-brand-text">
+              {{ t().entities.contacto.form.fields.cliente }}
+            </span>
+          </label>
+          <label for="proveedor" class="flex cursor-pointer items-center gap-2">
+            <p-checkbox inputId="proveedor" formControlName="proveedor" [binary]="true" />
+            <span class="text-[0.85rem] text-brand-text">
+              {{ t().entities.contacto.form.fields.proveedor }}
+            </span>
+          </label>
+          <label for="empleado" class="flex cursor-pointer items-center gap-2">
+            <p-checkbox inputId="empleado" formControlName="empleado" [binary]="true" />
+            <span class="text-[0.85rem] text-brand-text">
+              {{ t().entities.contacto.form.fields.empleado }}
+            </span>
+          </label>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- ── Sección 2: Información cliente ────────────────────────────────────── -->
-  <section class="card">
-    <h2 class="contacto-form__section-title">
-      {{ t().entities.contacto.form.sections.cliente }}
-    </h2>
-
-    <div class="grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2 lg:grid-cols-3">
-      <!-- Plazo de pago (selector pendiente de API) -->
-      <div class="flex flex-col">
-        <label for="plazo_pago" class="contacto-form__label">
-          {{ t().entities.contacto.form.fields.plazoPago }}
-          <span class="text-red-500">*</span>
-        </label>
-        <p-select
-          inputId="plazo_pago"
-          formControlName="plazo_pago"
-          [options]="plazoPagoOptions"
-          optionLabel="label"
-          optionValue="value"
-          [placeholder]="t().entities.contacto.form.pendingPlaceholder"
-          styleClass="w-full"
-        />
+  <section class="overflow-hidden rounded-xl border border-[rgba(20,48,73,0.1)] bg-brand-surface">
+    <div class="flex items-center gap-3 border-b border-[rgba(20,48,73,0.08)] px-5 py-4">
+      <span
+        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-sky-50 text-sky-700"
+      >
+        <i class="pi pi-credit-card text-[1.05rem]"></i>
+      </span>
+      <div class="flex min-w-0 flex-1 flex-col gap-[0.1rem]">
+        <h2 class="m-0 text-[0.95rem] font-bold tracking-tight text-brand-text">
+          {{ t().entities.contacto.form.sections.cliente }}
+        </h2>
+        <p class="m-0 text-[0.75rem] text-brand-muted">
+          {{ t().entities.contacto.form.sectionsHint.cliente }}
+        </p>
       </div>
+    </div>
 
-      <!-- Lista de precios (selector pendiente de API) -->
-      <div class="flex flex-col">
-        <label for="precio" class="contacto-form__label">
-          {{ t().entities.contacto.form.fields.precio }}
-        </label>
-        <p-select
-          inputId="precio"
-          formControlName="precio"
-          [options]="precioOptions"
-          optionLabel="label"
-          optionValue="value"
-          [placeholder]="t().entities.contacto.form.pendingPlaceholder"
-          styleClass="w-full"
-        />
-      </div>
+    <div class="px-5 py-5 max-[576px]:px-4 max-[576px]:py-4">
+      <div class="grid grid-cols-1 gap-x-5 gap-y-4 sm:grid-cols-2">
+        <!-- Plazo de pago (selector pendiente de API) -->
+        <div class="flex flex-col gap-1.5">
+          <label for="plazo_pago" class="contacto-form__label">
+            {{ t().entities.contacto.form.fields.plazoPago }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <p-select
+            inputId="plazo_pago"
+            formControlName="plazo_pago"
+            [options]="plazoPagoOptions"
+            optionLabel="label"
+            optionValue="value"
+            [placeholder]="t().entities.contacto.form.pendingPlaceholder"
+            styleClass="w-full"
+          />
+        </div>
 
-      <!-- Asesor (selector pendiente de API) -->
-      <div class="flex flex-col">
-        <label for="asesor" class="contacto-form__label">
-          {{ t().entities.contacto.form.fields.asesor }}
-        </label>
-        <p-select
-          inputId="asesor"
-          formControlName="asesor"
-          [options]="asesorOptions"
-          optionLabel="label"
-          optionValue="value"
-          [placeholder]="t().entities.contacto.form.pendingPlaceholder"
-          styleClass="w-full"
-        />
-      </div>
+        <!-- Lista de precios (selector pendiente de API) -->
+        <div class="flex flex-col gap-1.5">
+          <label for="precio" class="contacto-form__label">
+            {{ t().entities.contacto.form.fields.precio }}
+          </label>
+          <p-select
+            inputId="precio"
+            formControlName="precio"
+            [options]="precioOptions"
+            optionLabel="label"
+            optionValue="value"
+            [placeholder]="t().entities.contacto.form.pendingPlaceholder"
+            styleClass="w-full"
+          />
+        </div>
 
-      <!-- Correo facturación electrónica -->
-      <div class="flex flex-col sm:col-span-2 lg:col-span-3">
-        <label for="correo_facturacion_electronica" class="contacto-form__label">
-          {{ t().entities.contacto.form.fields.correoFacturacion }}
-        </label>
-        <input
-          id="correo_facturacion_electronica"
-          pInputText
-          type="email"
-          formControlName="correo_facturacion_electronica"
-          class="w-full"
-        />
-        <lib-field-error
-          [control]="form.controls.correo_facturacion_electronica"
-          [messages]="{ email: t().entities.contacto.form.validation.emailInvalid }"
-        />
+        <!-- Asesor (selector pendiente de API) -->
+        <div class="flex flex-col gap-1.5">
+          <label for="asesor" class="contacto-form__label">
+            {{ t().entities.contacto.form.fields.asesor }}
+          </label>
+          <p-select
+            inputId="asesor"
+            formControlName="asesor"
+            [options]="asesorOptions"
+            optionLabel="label"
+            optionValue="value"
+            [placeholder]="t().entities.contacto.form.pendingPlaceholder"
+            styleClass="w-full"
+          />
+        </div>
+
+        <!-- Correo facturación electrónica -->
+        <div class="flex flex-col gap-1.5">
+          <label for="correo_facturacion_electronica" class="contacto-form__label">
+            {{ t().entities.contacto.form.fields.correoFacturacion }}
+          </label>
+          <input
+            id="correo_facturacion_electronica"
+            pInputText
+            type="email"
+            formControlName="correo_facturacion_electronica"
+            fluid
+          />
+          <lib-field-error
+            [control]="form.controls.correo_facturacion_electronica"
+            [messages]="{ email: t().entities.contacto.form.validation.emailInvalid }"
+          />
+        </div>
       </div>
     </div>
   </section>
 
   <!-- ── Sección 3: Información proveedor ──────────────────────────────────── -->
-  <section class="card">
-    <h2 class="contacto-form__section-title">
-      {{ t().entities.contacto.form.sections.proveedor }}
-    </h2>
-
-    <div class="grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2 lg:grid-cols-3">
-      <!-- Banco (selector pendiente de API) -->
-      <div class="flex flex-col">
-        <label for="banco" class="contacto-form__label">
-          {{ t().entities.contacto.form.fields.banco }}
-        </label>
-        <p-select
-          inputId="banco"
-          formControlName="banco"
-          [options]="bancoOptions"
-          optionLabel="label"
-          optionValue="value"
-          [placeholder]="t().entities.contacto.form.pendingPlaceholder"
-          styleClass="w-full"
-        />
+  <section class="overflow-hidden rounded-xl border border-[rgba(20,48,73,0.1)] bg-brand-surface">
+    <div class="flex items-center gap-3 border-b border-[rgba(20,48,73,0.08)] px-5 py-4">
+      <span
+        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-sky-50 text-sky-700"
+      >
+        <i class="pi pi-wallet text-[1.05rem]"></i>
+      </span>
+      <div class="flex min-w-0 flex-1 flex-col gap-[0.1rem]">
+        <h2 class="m-0 text-[0.95rem] font-bold tracking-tight text-brand-text">
+          {{ t().entities.contacto.form.sections.proveedor }}
+        </h2>
+        <p class="m-0 text-[0.75rem] text-brand-muted">
+          {{ t().entities.contacto.form.sectionsHint.proveedor }}
+        </p>
       </div>
+    </div>
 
-      <!-- Número de cuenta -->
-      <div class="flex flex-col">
-        <label for="numero_cuenta" class="contacto-form__label">
-          {{ t().entities.contacto.form.fields.numeroCuenta }}
-        </label>
-        <input
-          id="numero_cuenta"
-          pInputText
-          type="text"
-          formControlName="numero_cuenta"
-          class="w-full"
-        />
-      </div>
+    <div class="px-5 py-5 max-[576px]:px-4 max-[576px]:py-4">
+      <div class="grid grid-cols-1 gap-x-5 gap-y-4 sm:grid-cols-2">
+        <!-- Banco (selector pendiente de API) -->
+        <div class="flex flex-col gap-1.5">
+          <label for="banco" class="contacto-form__label">
+            {{ t().entities.contacto.form.fields.banco }}
+          </label>
+          <p-select
+            inputId="banco"
+            formControlName="banco"
+            [options]="bancoOptions"
+            optionLabel="label"
+            optionValue="value"
+            [placeholder]="t().entities.contacto.form.pendingPlaceholder"
+            styleClass="w-full"
+          />
+        </div>
 
-      <!-- Clase de cuenta (selector pendiente de API) -->
-      <div class="flex flex-col">
-        <label for="cuenta_banco_clase" class="contacto-form__label">
-          {{ t().entities.contacto.form.fields.cuentaBancoClase }}
-        </label>
-        <p-select
-          inputId="cuenta_banco_clase"
-          formControlName="cuenta_banco_clase"
-          [options]="cuentaBancoClaseOptions"
-          optionLabel="label"
-          optionValue="value"
-          [placeholder]="t().entities.contacto.form.pendingPlaceholder"
-          styleClass="w-full"
-        />
-      </div>
+        <!-- Número de cuenta -->
+        <div class="flex flex-col gap-1.5">
+          <label for="numero_cuenta" class="contacto-form__label">
+            {{ t().entities.contacto.form.fields.numeroCuenta }}
+          </label>
+          <input id="numero_cuenta" pInputText type="text" formControlName="numero_cuenta" fluid />
+        </div>
 
-      <!-- Plazo de pago proveedor (selector pendiente de API) -->
-      <div class="flex flex-col">
-        <label for="plazo_pago_proveedor" class="contacto-form__label">
-          {{ t().entities.contacto.form.fields.plazoPagoProveedor }}
-        </label>
-        <p-select
-          inputId="plazo_pago_proveedor"
-          formControlName="plazo_pago_proveedor"
-          [options]="plazoPagoOptions"
-          optionLabel="label"
-          optionValue="value"
-          [placeholder]="t().entities.contacto.form.pendingPlaceholder"
-          styleClass="w-full"
-        />
+        <!-- Clase de cuenta (selector pendiente de API) -->
+        <div class="flex flex-col gap-1.5">
+          <label for="cuenta_banco_clase" class="contacto-form__label">
+            {{ t().entities.contacto.form.fields.cuentaBancoClase }}
+          </label>
+          <p-select
+            inputId="cuenta_banco_clase"
+            formControlName="cuenta_banco_clase"
+            [options]="cuentaBancoClaseOptions"
+            optionLabel="label"
+            optionValue="value"
+            [placeholder]="t().entities.contacto.form.pendingPlaceholder"
+            styleClass="w-full"
+          />
+        </div>
+
+        <!-- Plazo de pago proveedor (selector pendiente de API) -->
+        <div class="flex flex-col gap-1.5">
+          <label for="plazo_pago_proveedor" class="contacto-form__label">
+            {{ t().entities.contacto.form.fields.plazoPagoProveedor }}
+          </label>
+          <p-select
+            inputId="plazo_pago_proveedor"
+            formControlName="plazo_pago_proveedor"
+            [options]="plazoPagoOptions"
+            optionLabel="label"
+            optionValue="value"
+            [placeholder]="t().entities.contacto.form.pendingPlaceholder"
+            styleClass="w-full"
+          />
+        </div>
       </div>
     </div>
   </section>
 
   <!-- ── Footer ────────────────────────────────────────────────────────────── -->
-  <div class="contacto-form__footer">
+  <div class="flex items-center justify-end gap-3 pb-1">
     <p-button
       type="button"
       [label]="t().entities.contacto.form.cancel"

@@ -77,6 +77,8 @@ export interface AppDict extends AuthTranslationsHost {
         editTitle: string;
         editSubtitle: string;
         sections: { principal: string; cliente: string; proveedor: string };
+        sectionsHint: { principal: string; cliente: string; proveedor: string };
+        clasificacion: string;
         fields: {
           tipoPersona: string;
           regimen: string;
