@@ -112,7 +112,7 @@ export class ContactosListComponent {
   protected onToolbarAction(actionId: string): void {
     switch (actionId) {
       case 'new':
-        this.router.navigate(this.buildRouteCommands('new'));
+        this.router.navigate(this.buildRouteCommands('nuevo'));
         break;
       case 'export':
         // TODO: implementar exportación a Excel

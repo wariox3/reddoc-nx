@@ -8,6 +8,7 @@ export { authGuard } from './lib/guards/auth.guard';
 export { publicGuard } from './lib/guards/public.guard';
 export { authInterceptor } from './lib/interceptors/auth.interceptor';
 export { errorInterceptor } from './lib/interceptors/error.interceptor';
+export { tenantInterceptor } from './lib/interceptors/tenant.interceptor';
 export type { PaginatedResponse } from './lib/models/pagination.model';
 export type {
   BaseUsuario,
@@ -46,13 +47,8 @@ export { getInitials } from './lib/utils/string.utils';
 export type { ApiError, ApiErrorResponse } from './lib/utils/error.utils';
 export { I18nService, provideI18n, SUPPORTED_LANGS, DEFAULT_LANG } from './lib/i18n';
 export type { Lang } from './lib/i18n';
-export {
-  TenantService,
-  tenantGuard,
-  CONTENEDOR_ACCESS_SERVICE,
-  LAST_TENANT_KEY,
-} from './lib/tenant';
-export type { TenantSlug, ContenedorAccess, ContenedorAccessService } from './lib/tenant';
+export { TenantService, tenantGuard, TENANT_SCOPED, LAST_TENANT_KEY } from './lib/tenant';
+export type { TenantSlug, ContenedorAccess } from './lib/tenant';
 export * from './lib/data-list';
 export * from './lib/plans';
 export { normalizeHttpError, classifyStatus, NON_FIELD_KEY } from './lib/utils/error-normalizer';

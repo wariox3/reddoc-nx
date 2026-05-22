@@ -1,7 +1,7 @@
 :host {
   display: block;
   min-height: 100vh;
-  background: #f0f4f8;
+  background: var(--brand-bg);
 }
 
 // ─── Header (shared chrome — duplicated in workspace-layout for V1) ──────────

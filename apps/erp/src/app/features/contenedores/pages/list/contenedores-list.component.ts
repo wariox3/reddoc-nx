@@ -103,7 +103,6 @@ export class ContenedoresListComponent {
   }
 
   enterContenedor(item: Contenedor): void {
-    this.tenant.setAccesos(this.contenedores());
     this.tenant.setCurrent(item);
     this.router.navigateByUrl(ROUTE_PATHS.tenant.dashboard(item.schema_name));
   }

@@ -17,7 +17,7 @@ export class PermissionsService {
   readonly enabledModuleIds = computed<ReadonlySet<string>>(() => {
     // Tocamos el signal para que el computed se recalcule cuando cambia de tenant.
     // En el futuro: leer flags `plan_*` del contenedor y filtrar.
-    this.tenant.currentContenedor();
+    this.tenant.currentSlug();
     return new Set(ERP_MODULES.map((m) => m.id));
   });
 

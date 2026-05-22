@@ -22,7 +22,6 @@ export const rootRedirectGuard: CanActivateFn = () => {
 
   return contenedorService.getAccesos().pipe(
     map((res) => {
-      tenant.setAccesos(res.results);
       const match = res.results.find((c) => c.schema_name === lastSlug);
       if (!match) {
         return router.createUrlTree([ROUTE_PATHS.contenedores.root]);
