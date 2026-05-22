@@ -47,7 +47,7 @@ export { getInitials } from './lib/utils/string.utils';
 export type { ApiError, ApiErrorResponse } from './lib/utils/error.utils';
 export { I18nService, provideI18n, SUPPORTED_LANGS, DEFAULT_LANG } from './lib/i18n';
 export type { Lang } from './lib/i18n';
-export { TenantService, tenantGuard, LAST_TENANT_KEY } from './lib/tenant';
+export { TenantService, tenantGuard, TENANT_SCOPED, LAST_TENANT_KEY } from './lib/tenant';
 export type { TenantSlug, ContenedorAccess } from './lib/tenant';
 export * from './lib/data-list';
 export * from './lib/plans';

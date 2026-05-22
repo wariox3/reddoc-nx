@@ -20,6 +20,9 @@ export interface UpdateContenedorRequest {
 
 @Injectable({ providedIn: 'root' })
 export class ContenedorService extends BaseHttpService {
+  // Endpoints en el schema público (/contenedor/, /seguridad/usuario…): sin X-Tenant.
+  protected override readonly tenantScoped = false;
+
   getAccesos(): Observable<ContenedoresResponse> {
     return this.get<ContenedoresResponse>('/contenedor/cliente/lista-usuario/');
   }

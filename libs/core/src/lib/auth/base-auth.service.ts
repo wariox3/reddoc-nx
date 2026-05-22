@@ -1,6 +1,7 @@
 import { computed, inject, signal } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { TENANT_SCOPED } from '../tenant/tenant-http-context';
 import { Observable, catchError, of, switchMap, tap } from 'rxjs';
 import {
   BaseUsuario,
@@ -57,59 +58,94 @@ export abstract class BaseAuthService<TUser extends BaseUsuario> {
   protected readonly apiEndpoints: AuthApiEndpoints = AUTH_API_ENDPOINTS;
   protected abstract readonly loginRoute: string;
 
+  /**
+   * Los endpoints de sesión viven en el schema público: nunca llevan
+   * `X-Tenant`. Cada petición de este servicio se marca con este context.
+   */
+  private globalContext(): HttpContext {
+    return new HttpContext().set(TENANT_SCOPED, false);
+  }
+
   private readonly _currentUser = signal<TUser | null>(null);
   readonly currentUser = this._currentUser.asReadonly();
   readonly isAuthenticated = computed(() => !!this._currentUser());
 
   login(credentials: LoginRequest): Observable<TUser | null> {
     return this.http
-      .post(`${this.environment.apiUrl}${this.apiEndpoints.login}`, credentials)
+      .post(`${this.environment.apiUrl}${this.apiEndpoints.login}`, credentials, {
+        context: this.globalContext(),
+      })
       .pipe(switchMap(() => this.me()));
   }
 
   me(): Observable<TUser | null> {
-    return this.http.get<TUser>(`${this.environment.apiUrl}${this.apiEndpoints.me}`).pipe(
-      tap((user) => {
-        this._currentUser.set(user);
-      }),
-      catchError(() => {
-        this._currentUser.set(null);
-        return of(null);
-      }),
-    );
+    return this.http
+      .get<TUser>(`${this.environment.apiUrl}${this.apiEndpoints.me}`, {
+        context: this.globalContext(),
+      })
+      .pipe(
+        tap((user) => {
+          this._currentUser.set(user);
+        }),
+        catchError(() => {
+          this._currentUser.set(null);
+          return of(null);
+        }),
+      );
   }
 
   refresh(): Observable<void> {
-    return this.http.post<void>(`${this.environment.apiUrl}${this.apiEndpoints.refresh}`, {});
+    return this.http.post<void>(
+      `${this.environment.apiUrl}${this.apiEndpoints.refresh}`,
+      {},
+      {
+        context: this.globalContext(),
+      },
+    );
   }
 
   logout(): void {
     this.clearSession();
     this.http
-      .post(`${this.environment.apiUrl}${this.apiEndpoints.logout}`, {})
+      .post(
+        `${this.environment.apiUrl}${this.apiEndpoints.logout}`,
+        {},
+        {
+          context: this.globalContext(),
+        },
+      )
       .pipe(catchError(() => of(null)))
       .subscribe();
   }
 
   forgotPassword(email: string, captchaToken?: string): Observable<void> {
-    return this.http.post<void>(`${this.environment.apiUrl}${this.apiEndpoints.forgotPassword}`, {
-      email,
-      ...(captchaToken && { turnstile_token: captchaToken }),
-    });
+    return this.http.post<void>(
+      `${this.environment.apiUrl}${this.apiEndpoints.forgotPassword}`,
+      {
+        email,
+        ...(captchaToken && { turnstile_token: captchaToken }),
+      },
+      { context: this.globalContext() },
+    );
   }
 
   resetPassword(token: string, password: string, captchaToken?: string): Observable<void> {
-    return this.http.post<void>(`${this.environment.apiUrl}${this.apiEndpoints.resetPassword}`, {
-      token,
-      nueva_clave: password,
-      ...(captchaToken && { turnstile_token: captchaToken }),
-    });
+    return this.http.post<void>(
+      `${this.environment.apiUrl}${this.apiEndpoints.resetPassword}`,
+      {
+        token,
+        nueva_clave: password,
+        ...(captchaToken && { turnstile_token: captchaToken }),
+      },
+      { context: this.globalContext() },
+    );
   }
 
   resendVerification(data: ResendVerificationRequest): Observable<void> {
     return this.http.post<void>(
       `${this.environment.apiUrl}${this.apiEndpoints.resendVerification}`,
       data,
+      { context: this.globalContext() },
     );
   }
 
@@ -117,6 +153,7 @@ export abstract class BaseAuthService<TUser extends BaseUsuario> {
     return this.http.post<RegisterResponse>(
       `${this.environment.apiUrl}${this.apiEndpoints.register}`,
       data,
+      { context: this.globalContext() },
     );
   }
 
@@ -124,6 +161,7 @@ export abstract class BaseAuthService<TUser extends BaseUsuario> {
     const params = new HttpParams().set('token', token);
     return this.http.get<void>(`${this.environment.apiUrl}${this.apiEndpoints.verifyEmail}`, {
       params,
+      context: this.globalContext(),
     });
   }
 

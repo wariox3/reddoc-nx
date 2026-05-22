@@ -207,6 +207,17 @@ Regla: lo que solo importa a un master vive dentro del master.
 
 **No usar el framework para**: `contenedores`, `dashboard`, settings de usuario, wizards. Esas son features tradicionales sin tabla genérica.
 
+### Tenant scoping de las peticiones HTTP (`X-Tenant`)
+
+El `tenantInterceptor` (`libs/core`) agrega la cabecera `X-Tenant` con el slug del tenant activo. **No conoce ninguna feature**: cada petición declara su scope mediante el `HttpContextToken` `TENANT_SCOPED` (default `true` — la mayoría de los endpoints del ERP son tenant-scoped).
+
+- **Master tenant-scoped** (lo normal): nada que hacer. `BaseHttpService` ya marca `tenantScoped = true`.
+- **Servicio global** (endpoint en el schema público — `/contenedor/`, `/seguridad/usuario…`, catálogos globales): declarar `protected override readonly tenantScoped = false;` **en el propio servicio**. No se toca `libs/core`. Si el servicio inicializa una petición en un field initializer, el override debe declararse **antes** de ese campo.
+- **Servicio con endpoints mixtos** (raro): pasar un `HttpContext` con `TENANT_SCOPED` por petición.
+- `BaseAuthService` ya marca sus llamadas `/seguridad/*` como globales.
+
+Olvidar marcar un servicio global → el backend resuelve contra el schema del tenant y responde **404**. El fix es local al servicio, visible en su code review.
+
 ## Key conventions
 
 - **Standalone components** throughout — no NgModules.
