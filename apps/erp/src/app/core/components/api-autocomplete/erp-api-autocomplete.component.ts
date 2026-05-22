@@ -23,7 +23,8 @@ import { ErpSelectOption } from '@erp/core/components/api-select/erp-api-select.
     <p-autocomplete
       [inputId]="inputId()"
       [ngModel]="value()"
-      (ngModelChange)="onValueChange($event)"
+      (onSelect)="onValueChange($event.value)"
+      (onClear)="onValueChange(null)"
       (onBlur)="onTouchedFn()"
       [suggestions]="suggestions()"
       (completeMethod)="onSearch($event)"
@@ -72,6 +73,7 @@ export class ErpApiAutocompleteComponent implements ControlValueAccessor {
 
   private onChangeFn: (value: ErpSelectOption | null) => void = () => undefined;
   onTouchedFn: () => void = () => undefined;
+  private skipNextFocus = false;
 
   writeValue(value: ErpSelectOption | null): void {
     this.value.set(value ?? null);
@@ -92,9 +94,14 @@ export class ErpApiAutocompleteComponent implements ControlValueAccessor {
   onValueChange(next: ErpSelectOption | null): void {
     this.value.set(next);
     this.onChangeFn(next);
+    if (next !== null) this.skipNextFocus = true;
   }
 
   onFocusInput(): void {
+    if (this.skipNextFocus) {
+      this.skipNextFocus = false;
+      return;
+    }
     if (this.suggestions().length > 0) {
       this.ac?.show();
       return;
