@@ -4,7 +4,6 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { SelectModule } from 'primeng/select';
 import { CheckboxModule } from 'primeng/checkbox';
 import { FieldErrorComponent } from '@reddoc/ui';
 import { FormErrorService, I18nService, TenantService, ToastService } from '@reddoc/core';
@@ -19,24 +18,11 @@ import type { ContactoPayload } from '../../contacto.model';
 import { calcularDigitoVerificacion } from '../../utils/digito-verificacion.util';
 import { construirNombreCorto } from '../../utils/nombre-corto.util';
 
-/** Opción de un `<p-select>`: etiqueta visible + id que viaja al backend. */
-interface SelectOption {
-  readonly label: string;
-  readonly value: number;
-}
-
 /**
  * Formulario de alta/edición de contacto.
  *
  * Master del módulo General (camino B). La misma página cubre crear y editar:
  * sin `:id` → alta; con `:id` → edición (el id llega por `withComponentInputBinding`).
- *
- * Estado actual — UI completa:
- * los 9 selectores que dependen de endpoints `general/<recurso>/seleccionar/` se
- * renderizan deshabilitados (sin opciones). Cada `*Options` queda como array vacío
- * con un `TODO(api)` indicando su endpoint; se conectan uno a uno más adelante.
- * El único selector activo es `tipo_persona`, con opciones hardcodeadas, porque
- * gobierna qué campos de nombre se muestran.
  */
 @Component({
   selector: 'app-contacto-form',
@@ -45,7 +31,6 @@ interface SelectOption {
     ReactiveFormsModule,
     ButtonModule,
     InputTextModule,
-    SelectModule,
     CheckboxModule,
     FieldErrorComponent,
     ErpApiSelectComponent,
@@ -79,10 +64,6 @@ export class ContactoFormComponent implements OnInit {
     const id = this.tipoPersona();
     return id !== null ? { tipo_persona_id: String(id) } : ({} as Record<string, string>);
   });
-
-  // ── Selectores pendientes de API (ver TODO de cada endpoint) ────────────────
-  // TODO(api): general/cuenta_banco_clase/seleccionar/
-  protected readonly cuentaBancoClaseOptions: SelectOption[] = [];
 
   /** El endpoint de precio devuelve listas de venta y compra; filtramos venta. */
   protected readonly precioParams: Record<string, string> = { venta: 'True' };
@@ -118,7 +99,7 @@ export class ContactoFormComponent implements OnInit {
     correo_facturacion_electronica: ['', Validators.email],
     banco: this.fb.control<ErpSelectOption | null>(null),
     numero_cuenta: [''],
-    cuenta_banco_clase: this.fb.control<number | null>({ value: null, disabled: true }),
+    cuenta_banco_clase: this.fb.control<ErpSelectOption | null>(null),
     plazo_pago_proveedor: this.fb.control<ErpSelectOption | null>(null),
   });
 
@@ -199,7 +180,6 @@ export class ContactoFormComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (c) => {
-          // `cuenta_banco_clase` se omite: selector pendiente de API.
           this.form.patchValue({
             tipo_persona: { id: c.tipo_persona, nombre: c.tipo_persona_nombre },
             regimen: c.regimen !== null ? { id: c.regimen, nombre: '' } : null,
@@ -225,6 +205,8 @@ export class ContactoFormComponent implements OnInit {
             correo_facturacion_electronica: c.correo_facturacion_electronica ?? '',
             banco: c.banco !== null ? { id: c.banco, nombre: '' } : null,
             numero_cuenta: c.numero_cuenta ?? '',
+            cuenta_banco_clase:
+              c.cuenta_banco_clase !== null ? { id: c.cuenta_banco_clase, nombre: '' } : null,
             plazo_pago_proveedor:
               c.plazo_pago_proveedor !== null ? { id: c.plazo_pago_proveedor, nombre: '' } : null,
           });
@@ -276,7 +258,7 @@ export class ContactoFormComponent implements OnInit {
       correo_facturacion_electronica: v.correo_facturacion_electronica || null,
       banco: v.banco?.id ?? null,
       numero_cuenta: v.numero_cuenta || null,
-      cuenta_banco_clase: v.cuenta_banco_clase,
+      cuenta_banco_clase: v.cuenta_banco_clase?.id ?? null,
       plazo_pago_proveedor: v.plazo_pago_proveedor?.id ?? null,
     };
   }

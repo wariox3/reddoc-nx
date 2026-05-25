@@ -38,7 +38,7 @@ export interface Contacto {
   readonly plazo_pago: number | null;
   readonly plazo_pago_proveedor: number | null;
   readonly banco: number | null;
-  readonly cuenta_banco_clase: string | null;
+  readonly cuenta_banco_clase: number | null;
   readonly activo?: boolean;
 }
 

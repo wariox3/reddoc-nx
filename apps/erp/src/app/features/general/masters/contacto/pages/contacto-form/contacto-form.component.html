@@ -413,19 +413,15 @@
           <input id="numero_cuenta" pInputText type="text" formControlName="numero_cuenta" fluid />
         </div>
 
-        <!-- Clase de cuenta (selector pendiente de API) -->
+        <!-- Clase de cuenta -->
         <div class="flex flex-col gap-1.5">
           <label for="cuenta_banco_clase" class="contacto-form__label">
             {{ t().entities.contacto.form.fields.cuentaBancoClase }}
           </label>
-          <p-select
+          <app-api-select
             inputId="cuenta_banco_clase"
             formControlName="cuenta_banco_clase"
-            [options]="cuentaBancoClaseOptions"
-            optionLabel="label"
-            optionValue="value"
-            [placeholder]="t().entities.contacto.form.pendingPlaceholder"
-            styleClass="w-full"
+            endpoint="/general/cuenta_banco_clase/seleccionar/"
           />
         </div>
 
