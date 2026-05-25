@@ -33,7 +33,9 @@
   </div>
 
   <!-- Nombre -->
-  <div class="text-[0.92rem] font-semibold text-brand-text tracking-[-0.01em] leading-tight">
+  <div
+    class="truncate text-[0.92rem] font-semibold text-brand-text tracking-[-0.01em] leading-tight"
+  >
     {{ profile().nombre }}
   </div>
 
@@ -45,11 +47,10 @@
     </div>
     <div class="flex items-start gap-2 text-[0.72rem] text-brand-muted leading-snug">
       <i class="pi pi-map-marker text-[0.62rem] text-brand-muted/70 mt-[3px] shrink-0"></i>
-      <span class="leading-snug">
+      <span class="line-clamp-2 leading-snug">
         {{ profile().direccion }}
         @if (profile().ciudad) {
-          <br />
-          <span class="text-brand-text/80">{{ profile().ciudad }}</span>
+          · <span class="text-brand-text/80">{{ profile().ciudad }}</span>
         }
       </span>
     </div>

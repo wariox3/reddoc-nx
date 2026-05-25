@@ -79,7 +79,9 @@
               >
                 Facturar a
               </div>
-              <div class="text-[0.95rem] font-semibold text-brand-text tracking-[-0.01em] mt-0.5">
+              <div
+                class="truncate text-[0.95rem] font-semibold text-brand-text tracking-[-0.01em] mt-0.5"
+              >
                 {{ bp.nombre }}
               </div>
               <div class="text-[0.72rem] font-mono tabular-nums text-brand-muted mt-0.5">
@@ -114,7 +116,12 @@
             <dt class="text-[0.62rem] font-semibold uppercase tracking-[0.1em] text-brand-muted">
               Dirección
             </dt>
-            <dd class="m-0 text-brand-text">{{ bp.direccion }} · {{ bp.ciudad }}</dd>
+            <dd class="m-0 line-clamp-2 text-brand-text">
+              {{ bp.direccion }}
+              @if (bp.ciudad) {
+                · {{ bp.ciudad }}
+              }
+            </dd>
           </div>
         </dl>
       </section>
