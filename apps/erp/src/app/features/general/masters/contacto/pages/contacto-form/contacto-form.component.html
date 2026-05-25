@@ -63,20 +63,22 @@
           />
         </div>
 
-        <!-- Régimen (selector pendiente de API) -->
+        <!-- Régimen -->
         <div class="flex flex-col gap-1.5">
           <label for="regimen" class="contacto-form__label">
             {{ t().entities.contacto.form.fields.regimen }}
             <span class="ml-px text-red-500">*</span>
           </label>
-          <p-select
+          <app-api-select
             inputId="regimen"
             formControlName="regimen"
-            [options]="regimenOptions"
-            optionLabel="label"
-            optionValue="value"
-            [placeholder]="t().entities.contacto.form.pendingPlaceholder"
-            styleClass="w-full"
+            endpoint="/general/regimen/seleccionar/"
+            [params]="regimenParams"
+            [invalid]="form.controls.regimen.invalid && form.controls.regimen.touched"
+          />
+          <lib-field-error
+            [control]="form.controls.regimen"
+            [messages]="{ required: t().entities.contacto.form.validation.required }"
           />
         </div>
 
@@ -323,35 +325,28 @@
           />
         </div>
 
-        <!-- Lista de precios (selector pendiente de API) -->
+        <!-- Lista de precios -->
         <div class="flex flex-col gap-1.5">
           <label for="precio" class="contacto-form__label">
             {{ t().entities.contacto.form.fields.precio }}
           </label>
-          <p-select
+          <app-api-select
             inputId="precio"
             formControlName="precio"
-            [options]="precioOptions"
-            optionLabel="label"
-            optionValue="value"
-            [placeholder]="t().entities.contacto.form.pendingPlaceholder"
-            styleClass="w-full"
+            endpoint="/general/precio/seleccionar/"
+            [params]="precioParams"
           />
         </div>
 
-        <!-- Asesor (selector pendiente de API) -->
+        <!-- Asesor -->
         <div class="flex flex-col gap-1.5">
           <label for="asesor" class="contacto-form__label">
             {{ t().entities.contacto.form.fields.asesor }}
           </label>
-          <p-select
+          <app-api-select
             inputId="asesor"
             formControlName="asesor"
-            [options]="asesorOptions"
-            optionLabel="label"
-            optionValue="value"
-            [placeholder]="t().entities.contacto.form.pendingPlaceholder"
-            styleClass="w-full"
+            endpoint="/general/asesor/seleccionar/"
           />
         </div>
 
@@ -418,19 +413,15 @@
           <input id="numero_cuenta" pInputText type="text" formControlName="numero_cuenta" fluid />
         </div>
 
-        <!-- Clase de cuenta (selector pendiente de API) -->
+        <!-- Clase de cuenta -->
         <div class="flex flex-col gap-1.5">
           <label for="cuenta_banco_clase" class="contacto-form__label">
             {{ t().entities.contacto.form.fields.cuentaBancoClase }}
           </label>
-          <p-select
+          <app-api-select
             inputId="cuenta_banco_clase"
             formControlName="cuenta_banco_clase"
-            [options]="cuentaBancoClaseOptions"
-            optionLabel="label"
-            optionValue="value"
-            [placeholder]="t().entities.contacto.form.pendingPlaceholder"
-            styleClass="w-full"
+            endpoint="/general/cuenta_banco_clase/seleccionar/"
           />
         </div>
 

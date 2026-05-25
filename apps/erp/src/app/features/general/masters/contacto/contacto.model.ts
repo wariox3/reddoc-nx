@@ -1,6 +1,9 @@
 /**
  * Contacto: cubre clientes, proveedores y empleados sobre el mismo recurso.
  * El backend discrimina internamente por los flags `cliente`, `proveedor`, `empleado`.
+ *
+ * Shape de lectura: los relacionales viajan como `<campo>_id` + `<campo>_nombre`.
+ * En escritura (`ContactoPayload`) los mismos campos se envían sin sufijo.
  */
 export interface Contacto {
   readonly id: number;
@@ -26,18 +29,20 @@ export interface Contacto {
   readonly numero_cuenta: string | null;
   readonly numero_licencia: string | null;
   readonly fecha_vence_licencia: string | null;
-  readonly identificacion: number;
+  readonly identificacion_id: number;
   readonly identificacion_nombre: string;
-  readonly ciudad: number;
+  readonly ciudad_id: number;
   readonly ciudad_nombre: string;
-  readonly tipo_persona: number;
+  readonly tipo_persona_id: number;
   readonly tipo_persona_nombre: string;
-  readonly asesor: number | null;
-  readonly precio: number | null;
-  readonly plazo_pago: number | null;
-  readonly plazo_pago_proveedor: number | null;
-  readonly banco: number | null;
-  readonly cuenta_banco_clase: string | null;
+  readonly regimen_id: number | null;
+  readonly asesor_id: number | null;
+  readonly precio_id: number | null;
+  readonly plazo_pago_id: number | null;
+  readonly plazo_pago_proveedor_id: number | null;
+  readonly banco_id: number | null;
+  readonly banco_nombre: string | null;
+  readonly cuenta_banco_clase_id: number | null;
   readonly activo?: boolean;
 }
 

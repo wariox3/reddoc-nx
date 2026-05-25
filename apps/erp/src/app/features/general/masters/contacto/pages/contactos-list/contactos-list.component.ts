@@ -206,7 +206,7 @@ export class ContactosListComponent {
   }
 
   private navigateToEdit(id: number): void {
-    this.router.navigate(this.buildRouteCommands('edit', id));
+    this.router.navigate(this.buildRouteCommands('editar', id));
   }
 
   /**
