@@ -16,6 +16,7 @@ import { ErpApiAutocompleteComponent } from '@erp/core/components/api-autocomple
 import type { AppDict } from '@erp/i18n';
 import { ContactoService } from '../../contacto.service';
 import type { ContactoPayload } from '../../contacto.model';
+import { calcularDigitoVerificacion } from '../../utils/digito-verificacion.util';
 
 /** Opción de un `<p-select>`: etiqueta visible + id que viaja al backend. */
 interface SelectOption {
@@ -128,6 +129,15 @@ export class ContactoFormComponent implements OnInit {
       this.applyTipoPersonaValidators(id);
       this.form.controls.identificacion.setValue(null);
     });
+
+    // El dígito de verificación se deriva del número de identificación.
+    this.form.controls.numero_identificacion.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((numero) => {
+        this.form.controls.digito_verificacion.setValue(calcularDigitoVerificacion(numero ?? ''), {
+          emitEvent: false,
+        });
+      });
   }
 
   ngOnInit(): void {
@@ -194,7 +204,6 @@ export class ContactoFormComponent implements OnInit {
             tipo_persona: { id: c.tipo_persona, nombre: c.tipo_persona_nombre },
             identificacion: { id: c.identificacion, nombre: c.identificacion_nombre },
             numero_identificacion: c.numero_identificacion,
-            digito_verificacion: c.digito_verificacion ?? '',
             nombre_corto: c.nombre_corto,
             nombre1: c.nombre1 ?? '',
             nombre2: c.nombre2 ?? '',
