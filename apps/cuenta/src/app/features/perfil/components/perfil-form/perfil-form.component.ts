@@ -27,9 +27,15 @@ export class PerfilFormComponent implements OnInit {
   readonly isPristine = signal(true);
 
   readonly form = this.fb.group({
-    nombre_corto: ['', Validators.maxLength(50)],
-    celular: ['', [Validators.required, Validators.pattern(/^\+?[0-9\s\-()]{7,20}$/)]],
-    numero_identificacion: ['', [Validators.required, Validators.pattern(/^[0-9]{5,20}$/)]],
+    nombre_corto: ['', Validators.maxLength(255)],
+    celular: [
+      '',
+      [Validators.required, Validators.maxLength(50), Validators.pattern(/^\+?[0-9\s\-()]{7,50}$/)],
+    ],
+    numero_identificacion: [
+      '',
+      [Validators.required, Validators.maxLength(20), Validators.pattern(/^[0-9]{5,20}$/)],
+    ],
     email: [{ value: '', disabled: true }],
   });
 
