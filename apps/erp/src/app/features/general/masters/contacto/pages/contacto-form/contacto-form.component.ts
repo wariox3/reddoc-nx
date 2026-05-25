@@ -17,6 +17,7 @@ import type { AppDict } from '@erp/i18n';
 import { ContactoService } from '../../contacto.service';
 import type { ContactoPayload } from '../../contacto.model';
 import { calcularDigitoVerificacion } from '../../utils/digito-verificacion.util';
+import { construirNombreCorto } from '../../utils/nombre-corto.util';
 
 /** Opción de un `<p-select>`: etiqueta visible + id que viaja al backend. */
 interface SelectOption {
@@ -241,13 +242,21 @@ export class ContactoFormComponent implements OnInit {
    */
   private buildPayload(): ContactoPayload {
     const v = this.form.getRawValue();
+    const nombreCorto = this.esNatural()
+      ? construirNombreCorto({
+          nombre1: v.nombre1,
+          nombre2: v.nombre2,
+          apellido1: v.apellido1,
+          apellido2: v.apellido2,
+        })
+      : (v.nombre_corto ?? '');
     return {
       tipo_persona: v.tipo_persona?.id ?? null,
       regimen: v.regimen,
       identificacion: v.identificacion?.id ?? null,
       numero_identificacion: v.numero_identificacion ?? '',
       digito_verificacion: v.digito_verificacion || null,
-      nombre_corto: v.nombre_corto || null,
+      nombre_corto: nombreCorto || null,
       nombre1: v.nombre1 || null,
       nombre2: v.nombre2 || null,
       apellido1: v.apellido1 || null,
