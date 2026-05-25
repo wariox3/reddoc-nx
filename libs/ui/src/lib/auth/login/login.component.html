@@ -65,9 +65,11 @@
   <div class="bg-brand-bg flex items-center justify-center p-8">
     <div class="w-full max-w-[400px] flex flex-col animate-fade-up">
       <img src="/logos/reddoc.svg" alt="RedDoc" class="form-panel__logo-img" />
-      <a href="/" class="form-panel__back">
-        <i class="pi pi-arrow-left"></i> {{ t().auth.backToHome }}
-      </a>
+      @if (env.landingUrl) {
+        <a [href]="env.landingUrl" class="form-panel__back">
+          <i class="pi pi-arrow-left"></i> {{ t().auth.backToHome }}
+        </a>
+      }
       <div class="mb-8">
         <h2
           class="text-[1.75rem] font-extrabold tracking-tight text-brand-text m-0 mb-2 leading-[1.15]"

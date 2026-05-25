@@ -8,6 +8,7 @@ import { MessageModule } from 'primeng/message';
 import {
   APP_BRANDING,
   AUTH_SERVICE,
+  ENVIRONMENT,
   I18nService,
   ROUTE_PATHS_TOKEN,
   extractErrorMessage,
@@ -42,6 +43,7 @@ export class LoginComponent {
     appName: 'Plataforma',
     tagline: 'Gestiona tu empresa desde un solo lugar.',
   };
+  protected readonly env = inject(ENVIRONMENT);
   protected readonly t = inject<I18nService<AuthTranslationsHost>>(I18nService).t;
 
   readonly isLoading = signal(false);

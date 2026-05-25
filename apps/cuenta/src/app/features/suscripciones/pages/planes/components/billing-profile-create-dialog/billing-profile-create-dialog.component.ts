@@ -17,8 +17,18 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { Ciudad, Identificacion, IdentificacionService, ToastService } from '@reddoc/core';
-import { CiudadAutocompleteComponent, IdentificacionSelectComponent } from '@reddoc/ui';
+import {
+  Ciudad,
+  Identificacion,
+  IdentificacionService,
+  ToastService,
+  FormErrorService,
+} from '@reddoc/core';
+import {
+  CiudadAutocompleteComponent,
+  IdentificacionSelectComponent,
+  FieldErrorComponent,
+} from '@reddoc/ui';
 import { Observable } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
@@ -46,6 +56,7 @@ interface BillingProfileForm {
     ReactiveFormsModule,
     CiudadAutocompleteComponent,
     IdentificacionSelectComponent,
+    FieldErrorComponent,
   ],
   templateUrl: './billing-profile-create-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -55,6 +66,7 @@ export class BillingProfileCreateDialogComponent {
   private readonly billingService = inject(BillingProfilesService);
   private readonly identificacionService = inject(IdentificacionService);
   private readonly toast = inject(ToastService);
+  private readonly formErrors = inject(FormErrorService);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly visible = input<boolean>(false);
@@ -90,7 +102,7 @@ export class BillingProfileCreateDialogComponent {
       ],
     }),
     nombre: this.fb.nonNullable.control('', {
-      validators: [Validators.required, Validators.minLength(3)],
+      validators: [Validators.required, Validators.minLength(3), Validators.maxLength(100)],
     }),
     email: this.fb.nonNullable.control('', {
       validators: [Validators.required, Validators.email],
@@ -99,7 +111,7 @@ export class BillingProfileCreateDialogComponent {
       validators: [Validators.required, Validators.pattern(/^[0-9]{7,15}$/)],
     }),
     direccion: this.fb.nonNullable.control('', {
-      validators: [Validators.required, Validators.minLength(5)],
+      validators: [Validators.required, Validators.minLength(5), Validators.maxLength(255)],
     }),
     ciudad: this.fb.control<Ciudad | null>(null, { validators: [Validators.required] }),
   });
@@ -176,13 +188,11 @@ export class BillingProfileCreateDialogComponent {
         this.visibleChange.emit(false);
       },
       error: (err) => {
-        console.error('[billing] submit error:', err);
         this.isSubmitting.set(false);
-        this.toast.error(
-          'Error',
-          current
-            ? 'No se pudo actualizar el perfil de facturación.'
-            : 'No se pudo crear el perfil de facturación.',
+        this.formErrors.handle(
+          this.form,
+          err,
+          current ? 'Error al actualizar el perfil' : 'Error al crear el perfil',
         );
       },
     });

@@ -11,6 +11,7 @@ import {
 export interface ReddocEnvironment {
   apiUrl: string;
   turnstileSiteKey: string;
+  landingUrl?: string;
   cuentaUrl?: string;
   wompiPublicKey?: string;
   /**

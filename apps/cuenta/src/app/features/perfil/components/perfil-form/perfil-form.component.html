@@ -21,7 +21,7 @@
     <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
       <div class="flex flex-col gap-5">
         <div class="grid grid-cols-2 max-[576px]:grid-cols-1 gap-1.5">
-          <div>
+          <div class="flex flex-col gap-1.5">
             <label
               for="pf-nombre"
               class="text-[0.855rem] font-semibold text-brand-text tracking-tight"
@@ -34,7 +34,12 @@
               formControlName="nombre_corto"
               placeholder="Ej. María García"
               fluid
+              [class.cd-input-error]="
+                nombreCortoControl.invalid &&
+                (nombreCortoControl.touched || nombreCortoControl.dirty)
+              "
             />
+            <lib-field-error [control]="nombreCortoControl" />
           </div>
         </div>
 
@@ -52,10 +57,16 @@
               formControlName="celular"
               placeholder="+57 300 000 0000"
               fluid
+              [class.cd-input-error]="
+                celularControl.invalid && (celularControl.touched || celularControl.dirty)
+              "
             />
-            @if (celularControl.invalid && celularControl.touched) {
-              <small class="text-[0.78rem] text-red-500">Este campo es obligatorio</small>
-            }
+            <lib-field-error
+              [control]="celularControl"
+              [messages]="{
+                pattern: 'Solo dígitos, espacios, guiones y paréntesis (7–20 caracteres).',
+              }"
+            />
           </div>
 
           <div class="flex flex-col gap-1.5">
@@ -68,10 +79,15 @@
               formControlName="numero_identificacion"
               placeholder="12345678"
               fluid
+              [class.cd-input-error]="
+                identificacionControl.invalid &&
+                (identificacionControl.touched || identificacionControl.dirty)
+              "
             />
-            @if (identificacionControl.invalid && identificacionControl.touched) {
-              <small class="text-[0.78rem] text-red-500">Este campo es obligatorio</small>
-            }
+            <lib-field-error
+              [control]="identificacionControl"
+              [messages]="{ pattern: 'Solo dígitos, entre 5 y 20 caracteres.' }"
+            />
           </div>
         </div>
 

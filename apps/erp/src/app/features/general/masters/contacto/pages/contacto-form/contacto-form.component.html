@@ -86,9 +86,11 @@
             {{ t().entities.contacto.form.fields.identificacion }}
             <span class="ml-px text-red-500">*</span>
           </label>
-          <lib-identificacion-select
+          <app-api-select
             inputId="identificacion"
             formControlName="identificacion"
+            endpoint="/general/identificacion/seleccionar/"
+            [params]="identificacionParams()"
             [invalid]="form.controls.identificacion.invalid && form.controls.identificacion.touched"
           />
         </div>

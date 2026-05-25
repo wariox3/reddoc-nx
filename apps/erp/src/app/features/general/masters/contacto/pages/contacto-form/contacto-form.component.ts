@@ -6,14 +6,8 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { CheckboxModule } from 'primeng/checkbox';
-import { FieldErrorComponent, IdentificacionSelectComponent } from '@reddoc/ui';
-import {
-  FormErrorService,
-  I18nService,
-  Identificacion,
-  TenantService,
-  ToastService,
-} from '@reddoc/core';
+import { FieldErrorComponent } from '@reddoc/ui';
+import { FormErrorService, I18nService, TenantService, ToastService } from '@reddoc/core';
 import {
   ErpApiSelectComponent,
   ErpSelectOption,
@@ -52,7 +46,6 @@ interface SelectOption {
     SelectModule,
     CheckboxModule,
     FieldErrorComponent,
-    IdentificacionSelectComponent,
     ErpApiSelectComponent,
     ErpApiAutocompleteComponent,
   ],
@@ -80,6 +73,10 @@ export class ContactoFormComponent implements OnInit {
   // ── tipo_persona: 1 = Jurídica, 2 = Natural ────────────────────────────────
   private readonly tipoPersona = signal<number | null>(null);
   protected readonly esNatural = computed(() => this.tipoPersona() === 2);
+  protected readonly identificacionParams = computed<Record<string, string>>(() => {
+    const id = this.tipoPersona();
+    return id !== null ? { tipo_persona_id: String(id) } : ({} as Record<string, string>);
+  });
 
   // ── Selectores pendientes de API (ver TODO de cada endpoint) ────────────────
   // TODO(api): general/regimen/seleccionar/  { inactivo: 'False' }
@@ -97,7 +94,7 @@ export class ContactoFormComponent implements OnInit {
   protected readonly form = this.fb.group({
     tipo_persona: this.fb.control<ErpSelectOption | null>(null, Validators.required),
     regimen: this.fb.control<number | null>({ value: null, disabled: true }, Validators.required),
-    identificacion: this.fb.control<Identificacion | null>(null, Validators.required),
+    identificacion: this.fb.control<ErpSelectOption | null>(null, Validators.required),
     numero_identificacion: ['', Validators.required],
     digito_verificacion: this.fb.control<string>({ value: '', disabled: true }),
     nombre_corto: ['', Validators.required],
@@ -129,6 +126,7 @@ export class ContactoFormComponent implements OnInit {
       const id = value?.id ?? null;
       this.tipoPersona.set(id);
       this.applyTipoPersonaValidators(id);
+      this.form.controls.identificacion.setValue(null);
     });
   }
 
