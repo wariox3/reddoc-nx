@@ -83,10 +83,11 @@ export class ContactoFormComponent implements OnInit {
   // ── Selectores pendientes de API (ver TODO de cada endpoint) ────────────────
   // TODO(api): general/regimen/seleccionar/  { inactivo: 'False' }
   protected readonly regimenOptions: SelectOption[] = [];
-  // TODO(api): general/precio/seleccionar/  { venta: 'True' }
-  protected readonly precioOptions: SelectOption[] = [];
   // TODO(api): general/cuenta_banco_clase/seleccionar/
   protected readonly cuentaBancoClaseOptions: SelectOption[] = [];
+
+  /** El endpoint de precio devuelve listas de venta y compra; filtramos venta. */
+  protected readonly precioParams: Record<string, string> = { venta: 'True' };
 
   // ── Formulario ──────────────────────────────────────────────────────────────
   // Los controles respaldados por un selector API arrancan `disabled` hasta que
@@ -112,7 +113,7 @@ export class ContactoFormComponent implements OnInit {
     proveedor: [false],
     empleado: [false],
     plazo_pago: this.fb.control<ErpSelectOption | null>(null, Validators.required),
-    precio: this.fb.control<number | null>({ value: null, disabled: true }),
+    precio: this.fb.control<ErpSelectOption | null>(null),
     asesor: this.fb.control<ErpSelectOption | null>(null),
     correo_facturacion_electronica: ['', Validators.email],
     banco: this.fb.control<ErpSelectOption | null>(null),
@@ -218,7 +219,7 @@ export class ContactoFormComponent implements OnInit {
             proveedor: c.proveedor,
             empleado: c.empleado,
             plazo_pago: c.plazo_pago !== null ? { id: c.plazo_pago, nombre: '' } : null,
-            precio: c.precio,
+            precio: c.precio !== null ? { id: c.precio, nombre: '' } : null,
             asesor: c.asesor !== null ? { id: c.asesor, nombre: '' } : null,
             correo_facturacion_electronica: c.correo_facturacion_electronica ?? '',
             banco: c.banco !== null ? { id: c.banco, nombre: '' } : null,
@@ -269,7 +270,7 @@ export class ContactoFormComponent implements OnInit {
       proveedor: v.proveedor ?? false,
       empleado: v.empleado ?? false,
       plazo_pago: v.plazo_pago?.id ?? null,
-      precio: v.precio,
+      precio: v.precio?.id ?? null,
       asesor: v.asesor?.id ?? null,
       correo_facturacion_electronica: v.correo_facturacion_electronica || null,
       banco: v.banco?.id ?? null,

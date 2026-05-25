@@ -323,19 +323,16 @@
           />
         </div>
 
-        <!-- Lista de precios (selector pendiente de API) -->
+        <!-- Lista de precios -->
         <div class="flex flex-col gap-1.5">
           <label for="precio" class="contacto-form__label">
             {{ t().entities.contacto.form.fields.precio }}
           </label>
-          <p-select
+          <app-api-select
             inputId="precio"
             formControlName="precio"
-            [options]="precioOptions"
-            optionLabel="label"
-            optionValue="value"
-            [placeholder]="t().entities.contacto.form.pendingPlaceholder"
-            styleClass="w-full"
+            endpoint="/general/precio/seleccionar/"
+            [params]="precioParams"
           />
         </div>
 
