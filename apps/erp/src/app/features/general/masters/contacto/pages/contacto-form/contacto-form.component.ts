@@ -71,8 +71,6 @@ export class ContactoFormComponent implements OnInit {
   protected readonly regimenParams: Record<string, string> = { inactivo: 'False' };
 
   // ── Formulario ──────────────────────────────────────────────────────────────
-  // Los controles respaldados por un selector API arrancan `disabled` hasta que
-  // su endpoint esté disponible. `tipo_persona` arranca en Jurídica (1).
   protected readonly form = this.fb.group({
     tipo_persona: this.fb.control<ErpSelectOption | null>(null, Validators.required),
     regimen: this.fb.control<ErpSelectOption | null>(null, Validators.required),
