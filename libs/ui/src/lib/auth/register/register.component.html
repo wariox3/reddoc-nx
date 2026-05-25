@@ -191,7 +191,11 @@
             />
             <label for="terms" class="text-[0.82rem] text-brand-muted cursor-pointer">
               {{ t().auth.register.terms.acceptPrefix }}
-              <a (click)="termsDialogVisible.set(true); $event.preventDefault()" href="#">
+              <a
+                (click)="termsDialogVisible.set(true); $event.preventDefault()"
+                href="#"
+                class="underline"
+              >
                 {{ t().auth.register.terms.link }}
               </a>
             </label>
