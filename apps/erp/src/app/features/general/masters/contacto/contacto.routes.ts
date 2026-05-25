@@ -24,7 +24,7 @@ export const CONTACTO_ROUTES: Route[] = [
       import('./pages/contacto-form/contacto-form.component').then((m) => m.ContactoFormComponent),
   },
   {
-    path: 'edit/:id',
+    path: 'editar/:id',
     loadComponent: () =>
       import('./pages/contacto-form/contacto-form.component').then((m) => m.ContactoFormComponent),
   },
