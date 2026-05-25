@@ -85,8 +85,6 @@ export class ContactoFormComponent implements OnInit {
   protected readonly regimenOptions: SelectOption[] = [];
   // TODO(api): general/precio/seleccionar/  { venta: 'True' }
   protected readonly precioOptions: SelectOption[] = [];
-  // TODO(api): general/asesor/seleccionar/
-  protected readonly asesorOptions: SelectOption[] = [];
   // TODO(api): general/cuenta_banco_clase/seleccionar/
   protected readonly cuentaBancoClaseOptions: SelectOption[] = [];
 
@@ -115,7 +113,7 @@ export class ContactoFormComponent implements OnInit {
     empleado: [false],
     plazo_pago: this.fb.control<ErpSelectOption | null>(null, Validators.required),
     precio: this.fb.control<number | null>({ value: null, disabled: true }),
-    asesor: this.fb.control<number | null>({ value: null, disabled: true }),
+    asesor: this.fb.control<ErpSelectOption | null>(null),
     correo_facturacion_electronica: ['', Validators.email],
     banco: this.fb.control<ErpSelectOption | null>(null),
     numero_cuenta: [''],
@@ -221,7 +219,7 @@ export class ContactoFormComponent implements OnInit {
             empleado: c.empleado,
             plazo_pago: c.plazo_pago !== null ? { id: c.plazo_pago, nombre: '' } : null,
             precio: c.precio,
-            asesor: c.asesor,
+            asesor: c.asesor !== null ? { id: c.asesor, nombre: '' } : null,
             correo_facturacion_electronica: c.correo_facturacion_electronica ?? '',
             banco: c.banco !== null ? { id: c.banco, nombre: '' } : null,
             numero_cuenta: c.numero_cuenta ?? '',
@@ -272,7 +270,7 @@ export class ContactoFormComponent implements OnInit {
       empleado: v.empleado ?? false,
       plazo_pago: v.plazo_pago?.id ?? null,
       precio: v.precio,
-      asesor: v.asesor,
+      asesor: v.asesor?.id ?? null,
       correo_facturacion_electronica: v.correo_facturacion_electronica || null,
       banco: v.banco?.id ?? null,
       numero_cuenta: v.numero_cuenta || null,

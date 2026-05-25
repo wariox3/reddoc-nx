@@ -339,19 +339,15 @@
           />
         </div>
 
-        <!-- Asesor (selector pendiente de API) -->
+        <!-- Asesor -->
         <div class="flex flex-col gap-1.5">
           <label for="asesor" class="contacto-form__label">
             {{ t().entities.contacto.form.fields.asesor }}
           </label>
-          <p-select
+          <app-api-select
             inputId="asesor"
             formControlName="asesor"
-            [options]="asesorOptions"
-            optionLabel="label"
-            optionValue="value"
-            [placeholder]="t().entities.contacto.form.pendingPlaceholder"
-            styleClass="w-full"
+            endpoint="/general/asesor/seleccionar/"
           />
         </div>
 
