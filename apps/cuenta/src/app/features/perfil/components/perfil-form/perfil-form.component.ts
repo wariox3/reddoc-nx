@@ -5,12 +5,13 @@ import { InputTextModule } from 'primeng/inputtext';
 import { DividerModule } from 'primeng/divider';
 import { AuthService } from '../../../auth/services/auth.service';
 import { PerfilService } from '../../services/perfil.service';
-import { ToastService, extractErrorMessage } from '@reddoc/core';
+import { ToastService, FormErrorService } from '@reddoc/core';
+import { FieldErrorComponent } from '@reddoc/ui';
 
 @Component({
   selector: 'app-perfil-form',
   standalone: true,
-  imports: [ReactiveFormsModule, ButtonModule, InputTextModule, DividerModule],
+  imports: [ReactiveFormsModule, ButtonModule, InputTextModule, DividerModule, FieldErrorComponent],
   templateUrl: './perfil-form.component.html',
 })
 export class PerfilFormComponent implements OnInit {
@@ -20,14 +21,15 @@ export class PerfilFormComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly perfilService = inject(PerfilService);
   private readonly toast = inject(ToastService);
+  private readonly formErrors = inject(FormErrorService);
 
   readonly isSaving = signal(false);
   readonly isPristine = signal(true);
 
   readonly form = this.fb.group({
-    nombre_corto: [''],
-    celular: ['', Validators.required],
-    numero_identificacion: ['', Validators.required],
+    nombre_corto: ['', Validators.maxLength(50)],
+    celular: ['', [Validators.required, Validators.pattern(/^\+?[0-9\s\-()]{7,20}$/)]],
+    numero_identificacion: ['', [Validators.required, Validators.pattern(/^[0-9]{5,20}$/)]],
     email: [{ value: '', disabled: true }],
   });
 
@@ -67,8 +69,8 @@ export class PerfilFormComponent implements OnInit {
         this.saved.emit();
       },
       error: (err) => {
-        this.toast.error('Error', extractErrorMessage(err, 'No se pudo guardar los cambios.'));
         this.isSaving.set(false);
+        this.formErrors.handle(this.form, err, 'Error al guardar perfil');
       },
     });
   }
