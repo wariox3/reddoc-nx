@@ -63,20 +63,22 @@
           />
         </div>
 
-        <!-- Régimen (selector pendiente de API) -->
+        <!-- Régimen -->
         <div class="flex flex-col gap-1.5">
           <label for="regimen" class="contacto-form__label">
             {{ t().entities.contacto.form.fields.regimen }}
             <span class="ml-px text-red-500">*</span>
           </label>
-          <p-select
+          <app-api-select
             inputId="regimen"
             formControlName="regimen"
-            [options]="regimenOptions"
-            optionLabel="label"
-            optionValue="value"
-            [placeholder]="t().entities.contacto.form.pendingPlaceholder"
-            styleClass="w-full"
+            endpoint="/general/regimen/seleccionar/"
+            [params]="regimenParams"
+            [invalid]="form.controls.regimen.invalid && form.controls.regimen.touched"
+          />
+          <lib-field-error
+            [control]="form.controls.regimen"
+            [messages]="{ required: t().entities.contacto.form.validation.required }"
           />
         </div>
 

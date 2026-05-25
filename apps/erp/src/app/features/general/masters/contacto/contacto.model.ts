@@ -32,6 +32,7 @@ export interface Contacto {
   readonly ciudad_nombre: string;
   readonly tipo_persona: number;
   readonly tipo_persona_nombre: string;
+  readonly regimen: number | null;
   readonly asesor: number | null;
   readonly precio: number | null;
   readonly plazo_pago: number | null;

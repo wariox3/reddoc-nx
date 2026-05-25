@@ -81,20 +81,20 @@ export class ContactoFormComponent implements OnInit {
   });
 
   // ── Selectores pendientes de API (ver TODO de cada endpoint) ────────────────
-  // TODO(api): general/regimen/seleccionar/  { inactivo: 'False' }
-  protected readonly regimenOptions: SelectOption[] = [];
   // TODO(api): general/cuenta_banco_clase/seleccionar/
   protected readonly cuentaBancoClaseOptions: SelectOption[] = [];
 
   /** El endpoint de precio devuelve listas de venta y compra; filtramos venta. */
   protected readonly precioParams: Record<string, string> = { venta: 'True' };
+  /** El endpoint de régimen incluye opciones inactivas; las excluimos. */
+  protected readonly regimenParams: Record<string, string> = { inactivo: 'False' };
 
   // ── Formulario ──────────────────────────────────────────────────────────────
   // Los controles respaldados por un selector API arrancan `disabled` hasta que
   // su endpoint esté disponible. `tipo_persona` arranca en Jurídica (1).
   protected readonly form = this.fb.group({
     tipo_persona: this.fb.control<ErpSelectOption | null>(null, Validators.required),
-    regimen: this.fb.control<number | null>({ value: null, disabled: true }, Validators.required),
+    regimen: this.fb.control<ErpSelectOption | null>(null, Validators.required),
     identificacion: this.fb.control<ErpSelectOption | null>(null, Validators.required),
     numero_identificacion: ['', Validators.required],
     digito_verificacion: this.fb.control<string>({ value: '', disabled: true }),
@@ -199,9 +199,10 @@ export class ContactoFormComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (c) => {
-          // `regimen` y `cuenta_banco_clase` se omiten: selectores pendientes de API.
+          // `cuenta_banco_clase` se omite: selector pendiente de API.
           this.form.patchValue({
             tipo_persona: { id: c.tipo_persona, nombre: c.tipo_persona_nombre },
+            regimen: c.regimen !== null ? { id: c.regimen, nombre: '' } : null,
             identificacion: { id: c.identificacion, nombre: c.identificacion_nombre },
             numero_identificacion: c.numero_identificacion,
             nombre_corto: c.nombre_corto,
@@ -251,7 +252,7 @@ export class ContactoFormComponent implements OnInit {
       : (v.nombre_corto ?? '');
     return {
       tipo_persona: v.tipo_persona?.id ?? null,
-      regimen: v.regimen,
+      regimen: v.regimen?.id ?? null,
       identificacion: v.identificacion?.id ?? null,
       numero_identificacion: v.numero_identificacion ?? '',
       digito_verificacion: v.digito_verificacion || null,
