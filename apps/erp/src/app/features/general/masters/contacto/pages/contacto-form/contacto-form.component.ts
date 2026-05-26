@@ -1,15 +1,7 @@
 import { Component, DestroyRef, type OnInit, computed, inject, input, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import {
-  type AbstractControl,
-  type AsyncValidatorFn,
-  FormBuilder,
-  ReactiveFormsModule,
-  type ValidationErrors,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { type Observable, catchError, map, of, switchMap, timer } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -22,9 +14,13 @@ import {
 import { ErpApiAutocompleteComponent } from '@erp/core/components/api-autocomplete/erp-api-autocomplete.component';
 import type { AppDict } from '@erp/i18n';
 import { ContactoService } from '../../contacto.service';
-import type { ContactoPayload } from '../../contacto.model';
+import { CONTACTO_LIST_PATH, TIPO_PERSONA } from '../../contacto.constants';
+import { contactoToFormValue, formValueToPayload } from '../../contacto.mapper';
 import { calcularDigitoVerificacion } from '../../utils/digito-verificacion.util';
-import { construirNombreCorto } from '../../utils/nombre-corto.util';
+import {
+  type NumeroIdentificacionSnapshot,
+  numeroIdentificacionUnicoValidator,
+} from '../../validators/numero-identificacion-unico.validator';
 
 /**
  * Formulario de alta/edición de contacto.
@@ -65,25 +61,15 @@ export class ContactoFormComponent implements OnInit {
   protected readonly isEditMode = computed(() => !!this.id());
   protected readonly isSaving = signal(false);
 
-  // ── tipo_persona: 1 = Jurídica, 2 = Natural ────────────────────────────────
   private readonly tipoPersona = signal<number | null>(null);
-  protected readonly esNatural = computed(() => this.tipoPersona() === 2);
+  protected readonly esNatural = computed(() => this.tipoPersona() === TIPO_PERSONA.NATURAL);
 
-  // ── clasificación: cliente / proveedor ──────────────────────────────────────
-  private readonly clienteValue = signal(false);
-  private readonly proveedorValue = signal(false);
-  protected readonly esCliente = computed(() => this.clienteValue());
-  protected readonly esProveedor = computed(() => this.proveedorValue());
+  protected readonly esCliente = signal(false);
+  protected readonly esProveedor = signal(false);
 
-  /**
-   * Snapshot del contacto cargado en modo edición. Usado por el async validator
-   * para omitir la consulta al backend cuando no cambió ni el número ni el tipo
-   * de identificación (replica el comportamiento del legacy).
-   */
-  private readonly originalIdentificacion = signal<{
-    numero_identificacion: string;
-    identificacion_id: number;
-  } | null>(null);
+  /** Snapshot del contacto cargado en edición; usado por el async validator. */
+  private readonly originalIdentificacion = signal<NumeroIdentificacionSnapshot | null>(null);
+
   protected readonly identificacionParams = computed<Record<string, string>>(() => {
     const id = this.tipoPersona();
     return id !== null ? { tipo_persona_id: String(id) } : ({} as Record<string, string>);
@@ -94,7 +80,6 @@ export class ContactoFormComponent implements OnInit {
   /** El endpoint de régimen incluye opciones inactivas; las excluimos. */
   protected readonly regimenParams: Record<string, string> = { inactivo: 'False' };
 
-  // ── Formulario ──────────────────────────────────────────────────────────────
   protected readonly form = this.fb.group({
     tipo_persona: this.fb.control<ErpSelectOption | null>(null, Validators.required),
     regimen: this.fb.control<ErpSelectOption | null>(null, Validators.required),
@@ -126,39 +111,7 @@ export class ContactoFormComponent implements OnInit {
   });
 
   constructor() {
-    this.form.controls.tipo_persona.valueChanges.pipe(takeUntilDestroyed()).subscribe((value) => {
-      const id = value?.id ?? null;
-      this.tipoPersona.set(id);
-      this.applyTipoPersonaValidators(id);
-      this.form.controls.identificacion.setValue(null);
-    });
-
-    this.form.controls.cliente.valueChanges
-      .pipe(takeUntilDestroyed())
-      .subscribe((v) => this.clienteValue.set(v ?? false));
-
-    this.form.controls.proveedor.valueChanges
-      .pipe(takeUntilDestroyed())
-      .subscribe((v) => this.proveedorValue.set(v ?? false));
-
-    // El dígito de verificación se deriva del número de identificación.
-    this.form.controls.numero_identificacion.valueChanges
-      .pipe(takeUntilDestroyed())
-      .subscribe((numero) => {
-        this.form.controls.digito_verificacion.setValue(calcularDigitoVerificacion(numero ?? ''), {
-          emitEvent: false,
-        });
-      });
-
-    // Async validator: consulta al backend si el número ya está registrado.
-    this.form.controls.numero_identificacion.addAsyncValidators(
-      this.validarNumeroIdentificacionUnico(),
-    );
-
-    // Cambiar el tipo de identificación dispara la revalidación del número.
-    this.form.controls.identificacion.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => {
-      this.form.controls.numero_identificacion.updateValueAndValidity();
-    });
+    this.setupFormReactions();
   }
 
   ngOnInit(): void {
@@ -172,9 +125,10 @@ export class ContactoFormComponent implements OnInit {
 
     const toasts = this.t().entities.contacto.form.toasts;
     const id = this.id();
+    const payload = formValueToPayload(this.form.getRawValue());
     const operation = id
-      ? this.contactoService.update(Number(id), this.buildPayload())
-      : this.contactoService.create(this.buildPayload());
+      ? this.contactoService.update(Number(id), payload)
+      : this.contactoService.create(payload);
 
     operation.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
@@ -197,12 +151,52 @@ export class ContactoFormComponent implements OnInit {
 
   // ── Internos ────────────────────────────────────────────────────────────────
 
+  /** Conecta los `valueChanges` del form a los signals y al async validator. */
+  private setupFormReactions(): void {
+    const { controls } = this.form;
+
+    controls.tipo_persona.valueChanges.pipe(takeUntilDestroyed()).subscribe((value) => {
+      const id = value?.id ?? null;
+      this.tipoPersona.set(id);
+      this.applyTipoPersonaValidators(id);
+      controls.identificacion.setValue(null);
+    });
+
+    controls.cliente.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((v) => this.esCliente.set(v ?? false));
+
+    controls.proveedor.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((v) => this.esProveedor.set(v ?? false));
+
+    // El dígito de verificación se deriva del número de identificación.
+    controls.numero_identificacion.valueChanges.pipe(takeUntilDestroyed()).subscribe((numero) => {
+      controls.digito_verificacion.setValue(calcularDigitoVerificacion(numero ?? ''), {
+        emitEvent: false,
+      });
+    });
+
+    controls.numero_identificacion.addAsyncValidators(
+      numeroIdentificacionUnicoValidator(
+        this.contactoService,
+        () => controls.identificacion.value?.id ?? null,
+        () => this.originalIdentificacion(),
+      ),
+    );
+
+    // Cambiar el tipo de identificación dispara la revalidación del número.
+    controls.identificacion.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => {
+      controls.numero_identificacion.updateValueAndValidity();
+    });
+  }
+
   /**
    * Ajusta los validadores de los campos de nombre según el tipo de persona:
    * Jurídica exige `nombre_corto`; Natural exige `nombre1` + `apellido1`.
    */
   private applyTipoPersonaValidators(tipo: number | null): void {
-    const esNatural = tipo === 2;
+    const esNatural = tipo === TIPO_PERSONA.NATURAL;
     const { nombre_corto, nombre1, apellido1 } = this.form.controls;
 
     nombre_corto.setValidators(esNatural ? [] : [Validators.required]);
@@ -212,45 +206,6 @@ export class ContactoFormComponent implements OnInit {
     nombre_corto.updateValueAndValidity();
     nombre1.updateValueAndValidity();
     apellido1.updateValueAndValidity();
-  }
-
-  /**
-   * Async validator que verifica contra el backend si la combinación
-   * `(identificacion_id, numero_identificacion)` ya está registrada.
-   *
-   * - Devuelve `null` (válido) si falta cualquiera de los dos datos.
-   * - En edición, devuelve `null` si ninguno de los dos cambió respecto al
-   *   contacto original cargado (evita consultas innecesarias).
-   * - Aplica un debounce de 300 ms para no consultar en cada tecla.
-   * - Si la red falla, no rompe el formulario: trata el campo como válido.
-   */
-  private validarNumeroIdentificacionUnico(): AsyncValidatorFn {
-    return (control: AbstractControl): Observable<ValidationErrors | null> => {
-      const numero = (control.value ?? '') as string;
-      const identificacionId = this.form.controls.identificacion.value?.id ?? null;
-
-      if (!numero || identificacionId === null) return of(null);
-
-      const original = this.originalIdentificacion();
-      if (
-        original &&
-        original.numero_identificacion === numero &&
-        original.identificacion_id === identificacionId
-      ) {
-        return of(null);
-      }
-
-      return timer(300).pipe(
-        switchMap(() =>
-          this.contactoService.validar({
-            identificacion_id: identificacionId,
-            numero_identificacion: numero,
-          }),
-        ),
-        map((res) => (res.validacion ? { numeroIdentificacionExistente: true } : null)),
-        catchError(() => of(null)),
-      );
-    };
   }
 
   private loadContacto(id: number): void {
@@ -263,38 +218,7 @@ export class ContactoFormComponent implements OnInit {
             numero_identificacion: c.numero_identificacion,
             identificacion_id: c.identificacion_id,
           });
-          this.form.patchValue({
-            tipo_persona: { id: c.tipo_persona_id, nombre: c.tipo_persona_nombre },
-            regimen: c.regimen_id !== null ? { id: c.regimen_id, nombre: '' } : null,
-            identificacion: { id: c.identificacion_id, nombre: c.identificacion_nombre },
-            numero_identificacion: c.numero_identificacion,
-            nombre_corto: c.nombre_corto,
-            nombre1: c.nombre1 ?? '',
-            nombre2: c.nombre2 ?? '',
-            apellido1: c.apellido1 ?? '',
-            apellido2: c.apellido2 ?? '',
-            telefono: c.telefono ?? '',
-            celular: c.celular ?? '',
-            ciudad: { id: c.ciudad_id, nombre: c.ciudad_nombre },
-            direccion: c.direccion ?? '',
-            barrio: c.barrio ?? '',
-            correo: c.correo ?? '',
-            cliente: c.cliente,
-            proveedor: c.proveedor,
-            empleado: c.empleado,
-            plazo_pago: c.plazo_pago_id !== null ? { id: c.plazo_pago_id, nombre: '' } : null,
-            precio: c.precio_id !== null ? { id: c.precio_id, nombre: '' } : null,
-            asesor: c.asesor_id !== null ? { id: c.asesor_id, nombre: '' } : null,
-            correo_facturacion_electronica: c.correo_facturacion_electronica ?? '',
-            banco: c.banco_id !== null ? { id: c.banco_id, nombre: c.banco_nombre ?? '' } : null,
-            numero_cuenta: c.numero_cuenta ?? '',
-            cuenta_banco_clase:
-              c.cuenta_banco_clase_id !== null ? { id: c.cuenta_banco_clase_id, nombre: '' } : null,
-            plazo_pago_proveedor:
-              c.plazo_pago_proveedor_id !== null
-                ? { id: Number(c.plazo_pago_proveedor_id), nombre: '' }
-                : null,
-          });
+          this.form.patchValue(contactoToFormValue(c));
         },
         error: () => {
           const toasts = this.t().entities.contacto.form.toasts;
@@ -303,54 +227,9 @@ export class ContactoFormComponent implements OnInit {
       });
   }
 
-  /**
-   * Construye el payload del backend. Los strings vacíos se normalizan a `null`
-   * acá (en vez de en el blur de cada campo, como hacía el legacy).
-   */
-  private buildPayload(): ContactoPayload {
-    const v = this.form.getRawValue();
-    const nombreCorto = this.esNatural()
-      ? construirNombreCorto({
-          nombre1: v.nombre1,
-          nombre2: v.nombre2,
-          apellido1: v.apellido1,
-          apellido2: v.apellido2,
-        })
-      : (v.nombre_corto ?? '');
-    return {
-      tipo_persona: v.tipo_persona?.id ?? null,
-      regimen: v.regimen?.id ?? null,
-      identificacion: v.identificacion?.id ?? null,
-      numero_identificacion: v.numero_identificacion ?? '',
-      digito_verificacion: v.digito_verificacion || null,
-      nombre_corto: nombreCorto || null,
-      nombre1: v.nombre1 || null,
-      nombre2: v.nombre2 || null,
-      apellido1: v.apellido1 || null,
-      apellido2: v.apellido2 || null,
-      telefono: v.telefono || null,
-      celular: v.celular || null,
-      ciudad: v.ciudad?.id ?? null,
-      direccion: v.direccion || null,
-      barrio: v.barrio || null,
-      correo: v.correo || null,
-      cliente: v.cliente ?? false,
-      proveedor: v.proveedor ?? false,
-      empleado: v.empleado ?? false,
-      plazo_pago: v.plazo_pago?.id ?? null,
-      precio: v.precio?.id ?? null,
-      asesor: v.asesor?.id ?? null,
-      correo_facturacion_electronica: v.correo_facturacion_electronica || null,
-      banco: v.banco?.id ?? null,
-      numero_cuenta: v.numero_cuenta || null,
-      cuenta_banco_clase: v.cuenta_banco_clase?.id ?? null,
-      plazo_pago_proveedor: v.plazo_pago_proveedor?.id ?? null,
-    };
-  }
-
   private navigateToList(): void {
     const slug = this.tenant.currentSlug();
     if (!slug) return;
-    void this.router.navigate(['/t', slug, 'general', 'contactos']);
+    void this.router.navigate(['/t', slug, ...CONTACTO_LIST_PATH]);
   }
 }

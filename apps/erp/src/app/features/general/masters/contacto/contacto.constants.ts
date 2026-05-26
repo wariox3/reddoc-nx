@@ -3,6 +3,15 @@ import type { RowAction, ToolbarAction } from '@reddoc/feature-base';
 
 export const CONTACTOS_FILTERS_STORAGE_KEY = 'contactos:filters:v1';
 
+/** IDs del catálogo `tipo_persona` del backend. */
+export const TIPO_PERSONA = {
+  JURIDICA: 1,
+  NATURAL: 2,
+} as const;
+
+/** Segmentos de ruta del listado, relativos al tenant. */
+export const CONTACTO_LIST_PATH = ['general', 'contactos'] as const;
+
 export const CONTACTOS_COLUMNS: readonly ColumnDef[] = [
   {
     field: 'id',
