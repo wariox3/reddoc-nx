@@ -112,7 +112,11 @@ export interface AppDict extends AuthTranslationsHost {
         };
         tipoPersonaOptions: { juridica: string; natural: string };
         pendingPlaceholder: string;
-        validation: { required: string; emailInvalid: string };
+        validation: {
+          required: string;
+          emailInvalid: string;
+          numeroIdentificacionExistente: string;
+        };
         submitCreate: string;
         submitEdit: string;
         cancel: string;

@@ -140,6 +140,7 @@ export const es: AppDict = {
         validation: {
           required: 'Este campo es obligatorio.',
           emailInvalid: 'Ingresá un correo válido.',
+          numeroIdentificacionExistente: 'Este número de identificación ya está registrado.',
         },
         submitCreate: 'Crear contacto',
         submitEdit: 'Guardar cambios',

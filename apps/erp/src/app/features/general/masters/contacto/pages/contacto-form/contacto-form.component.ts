@@ -1,7 +1,15 @@
 import { Component, DestroyRef, type OnInit, computed, inject, input, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  type AbstractControl,
+  type AsyncValidatorFn,
+  FormBuilder,
+  ReactiveFormsModule,
+  type ValidationErrors,
+  Validators,
+} from '@angular/forms';
 import { Router } from '@angular/router';
+import { type Observable, catchError, map, of, switchMap, timer } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -60,6 +68,22 @@ export class ContactoFormComponent implements OnInit {
   // ── tipo_persona: 1 = Jurídica, 2 = Natural ────────────────────────────────
   private readonly tipoPersona = signal<number | null>(null);
   protected readonly esNatural = computed(() => this.tipoPersona() === 2);
+
+  // ── clasificación: cliente / proveedor ──────────────────────────────────────
+  private readonly clienteValue = signal(false);
+  private readonly proveedorValue = signal(false);
+  protected readonly esCliente = computed(() => this.clienteValue());
+  protected readonly esProveedor = computed(() => this.proveedorValue());
+
+  /**
+   * Snapshot del contacto cargado en modo edición. Usado por el async validator
+   * para omitir la consulta al backend cuando no cambió ni el número ni el tipo
+   * de identificación (replica el comportamiento del legacy).
+   */
+  private readonly originalIdentificacion = signal<{
+    numero_identificacion: string;
+    identificacion_id: number;
+  } | null>(null);
   protected readonly identificacionParams = computed<Record<string, string>>(() => {
     const id = this.tipoPersona();
     return id !== null ? { tipo_persona_id: String(id) } : ({} as Record<string, string>);
@@ -109,6 +133,14 @@ export class ContactoFormComponent implements OnInit {
       this.form.controls.identificacion.setValue(null);
     });
 
+    this.form.controls.cliente.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((v) => this.clienteValue.set(v ?? false));
+
+    this.form.controls.proveedor.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((v) => this.proveedorValue.set(v ?? false));
+
     // El dígito de verificación se deriva del número de identificación.
     this.form.controls.numero_identificacion.valueChanges
       .pipe(takeUntilDestroyed())
@@ -117,6 +149,16 @@ export class ContactoFormComponent implements OnInit {
           emitEvent: false,
         });
       });
+
+    // Async validator: consulta al backend si el número ya está registrado.
+    this.form.controls.numero_identificacion.addAsyncValidators(
+      this.validarNumeroIdentificacionUnico(),
+    );
+
+    // Cambiar el tipo de identificación dispara la revalidación del número.
+    this.form.controls.identificacion.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => {
+      this.form.controls.numero_identificacion.updateValueAndValidity();
+    });
   }
 
   ngOnInit(): void {
@@ -172,12 +214,55 @@ export class ContactoFormComponent implements OnInit {
     apellido1.updateValueAndValidity();
   }
 
+  /**
+   * Async validator que verifica contra el backend si la combinación
+   * `(identificacion_id, numero_identificacion)` ya está registrada.
+   *
+   * - Devuelve `null` (válido) si falta cualquiera de los dos datos.
+   * - En edición, devuelve `null` si ninguno de los dos cambió respecto al
+   *   contacto original cargado (evita consultas innecesarias).
+   * - Aplica un debounce de 300 ms para no consultar en cada tecla.
+   * - Si la red falla, no rompe el formulario: trata el campo como válido.
+   */
+  private validarNumeroIdentificacionUnico(): AsyncValidatorFn {
+    return (control: AbstractControl): Observable<ValidationErrors | null> => {
+      const numero = (control.value ?? '') as string;
+      const identificacionId = this.form.controls.identificacion.value?.id ?? null;
+
+      if (!numero || identificacionId === null) return of(null);
+
+      const original = this.originalIdentificacion();
+      if (
+        original &&
+        original.numero_identificacion === numero &&
+        original.identificacion_id === identificacionId
+      ) {
+        return of(null);
+      }
+
+      return timer(300).pipe(
+        switchMap(() =>
+          this.contactoService.validar({
+            identificacion_id: identificacionId,
+            numero_identificacion: numero,
+          }),
+        ),
+        map((res) => (res.validacion ? { numeroIdentificacionExistente: true } : null)),
+        catchError(() => of(null)),
+      );
+    };
+  }
+
   private loadContacto(id: number): void {
     this.contactoService
       .getById(id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (c) => {
+          this.originalIdentificacion.set({
+            numero_identificacion: c.numero_identificacion,
+            identificacion_id: c.identificacion_id,
+          });
           this.form.patchValue({
             tipo_persona: { id: c.tipo_persona_id, nombre: c.tipo_persona_nombre },
             regimen: c.regimen_id !== null ? { id: c.regimen_id, nombre: '' } : null,
