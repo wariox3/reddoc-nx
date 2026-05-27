@@ -1,0 +1,127 @@
+<div class="p-8 max-[576px]:px-4 max-[576px]:py-5">
+  <!-- Page header -->
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-brand-text tracking-tight m-0 mb-1">Facturación</h1>
+    <p class="text-sm text-brand-muted m-0">
+      Historial de movimientos y facturas de tus contenedores
+    </p>
+  </div>
+
+  @if (isLoading()) {
+    <!-- Loading: filas esqueleto -->
+    <div
+      class="bg-brand-surface border border-[rgba(20,48,73,0.1)] rounded-xl overflow-hidden animate-pulse"
+    >
+      @for (row of [1, 2, 3, 4]; track $index) {
+        <div
+          class="flex items-center gap-4 px-5 py-4 border-t border-[rgba(20,48,73,0.05)] first:border-t-0"
+        >
+          <div class="w-10 shrink-0 flex flex-col items-end gap-1">
+            <div class="h-3 w-6 rounded bg-[rgba(20,48,73,0.08)]"></div>
+            <div class="h-[0.5rem] w-5 rounded bg-[rgba(20,48,73,0.05)]"></div>
+          </div>
+          <div class="h-9 w-9 shrink-0 rounded-lg bg-[rgba(20,48,73,0.05)]"></div>
+          <div class="flex-1 flex flex-col gap-1.5">
+            <div class="h-[0.7rem] w-1/2 rounded bg-[rgba(20,48,73,0.08)]"></div>
+            <div class="h-[0.55rem] w-1/4 rounded bg-[rgba(20,48,73,0.05)]"></div>
+          </div>
+          <div class="flex flex-col items-end gap-1">
+            <div class="h-[0.75rem] w-20 rounded bg-[rgba(20,48,73,0.08)]"></div>
+            <div class="h-[0.5rem] w-7 rounded bg-[rgba(20,48,73,0.05)]"></div>
+          </div>
+        </div>
+      }
+    </div>
+  } @else if (movimientos().length === 0) {
+    <!-- Empty state -->
+    <div class="bg-brand-surface border border-[rgba(20,48,73,0.1)] rounded-xl animate-fade-up">
+      <div class="flex flex-col items-center gap-1 px-4 py-14 text-center">
+        <span
+          class="flex h-12 w-12 items-center justify-center rounded-full bg-[rgba(20,48,73,0.05)]"
+        >
+          <i class="pi pi-receipt text-[1.15rem] text-brand-muted"></i>
+        </span>
+        <p class="m-0 mt-2 text-[0.9rem] font-semibold text-brand-navy">Sin facturas</p>
+        <p class="m-0 text-[0.76rem] text-brand-muted max-w-xs">
+          Aquí aparecerán tus comprobantes cuando contrates o renueves una suscripción.
+        </p>
+      </div>
+    </div>
+  } @else {
+    <!-- Grupos por mes -->
+    <div class="flex flex-col gap-5 animate-fade-up">
+      @for (group of groups(); track group.key) {
+        <section>
+          <!-- Header del mes -->
+          <div class="px-1 mb-2">
+            <h2
+              class="text-[0.68rem] uppercase tracking-[0.1em] font-semibold text-brand-muted m-0"
+            >
+              {{ group.label }}
+            </h2>
+          </div>
+
+          <div
+            class="bg-brand-surface border border-[rgba(20,48,73,0.1)] rounded-xl overflow-hidden"
+          >
+            @for (m of group.items; track m.id) {
+              <div
+                class="flex items-center gap-4 px-5 py-3.5 border-t border-[rgba(20,48,73,0.05)] first:border-t-0 transition-colors duration-100 hover:bg-[rgba(20,48,73,0.025)]"
+              >
+                <!-- Sello de fecha: día + mes abreviado -->
+                <div class="w-10 shrink-0 text-right">
+                  <div class="text-base font-semibold text-brand-navy leading-none tabular-nums">
+                    {{ formatDia(m.fecha) }}
+                  </div>
+                  <div
+                    class="text-[0.6rem] uppercase tracking-[0.08em] text-brand-muted mt-1 font-medium"
+                  >
+                    {{ formatMesCorto(m.fecha) }}
+                  </div>
+                </div>
+
+                <!-- Icono del tipo de movimiento -->
+                <span
+                  class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[rgba(20,48,73,0.05)]"
+                >
+                  <i [class]="tipoIcon(m.tipo) + ' text-[0.85rem] text-brand-navy'"></i>
+                </span>
+
+                <!-- Concepto + cliente -->
+                <div class="flex-1 min-w-0">
+                  <div class="text-sm font-medium text-brand-text truncate">
+                    {{ m.concepto }}
+                  </div>
+                  <div
+                    class="text-[0.7rem] text-brand-muted flex items-center gap-2 mt-0.5 truncate"
+                  >
+                    <span>{{ tipoLabel(m.tipo) }}</span>
+                    @if (m.cliente_nombre) {
+                      <span class="text-[rgba(20,48,73,0.2)]">·</span>
+                      <span class="inline-flex items-center gap-1 text-brand-muted truncate">
+                        <i class="pi pi-building text-[0.6rem]"></i>
+                        <span class="truncate">{{ m.cliente_nombre }}</span>
+                      </span>
+                    }
+                  </div>
+                </div>
+
+                <!-- Monto: right-aligned, tabular-nums -->
+                <div class="text-right shrink-0">
+                  <div class="text-sm font-semibold text-brand-navy tabular-nums leading-none">
+                    {{ formatMonto(m.valor) }}
+                  </div>
+                  <div
+                    class="text-[0.58rem] uppercase tracking-[0.1em] text-brand-muted mt-1 font-medium"
+                  >
+                    COP
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </section>
+      }
+    </div>
+  }
+</div>
