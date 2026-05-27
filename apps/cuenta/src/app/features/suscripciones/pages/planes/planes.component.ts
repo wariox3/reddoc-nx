@@ -1,7 +1,7 @@
 import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { getInitials, ToastService } from '@reddoc/core';
+import { getInitials, resolvePlanCategory, ToastService } from '@reddoc/core';
 import { BillingProfile } from '../../models/billing-profile.model';
 import { WompiCheckoutError } from '../../models/pago.model';
 import { Suscripcion } from '../../models/suscripcion.model';
@@ -62,7 +62,7 @@ export class PlanesComponent implements OnInit {
   readonly suscripcion = signal<Suscripcion | null>(null);
 
   readonly step = signal<0 | 1 | 2>(0);
-  readonly track = signal<Track>('erp');
+  readonly track = signal<Track>('facturacion');
   readonly annual = signal(false);
   readonly selectedPlanId = signal<number | null>(null);
 
@@ -81,7 +81,7 @@ export class PlanesComponent implements OnInit {
 
   readonly visiblePlanes = computed(() => {
     const categoria =
-      this.track() === 'erp' ? SUSCRIPCION_CATEGORIA_FACTURACION : SUSCRIPCION_CATEGORIA_ERP;
+      this.track() === 'erp' ? SUSCRIPCION_CATEGORIA_ERP : SUSCRIPCION_CATEGORIA_FACTURACION;
     return this.allPlanes().filter((p) => p.suscripcion_categoria_id === categoria);
   });
 
@@ -195,8 +195,15 @@ export class PlanesComponent implements OnInit {
     const sus = this.suscripcion();
     if (planes.length === 0 || sus === null) return;
     if (this.selectedPlanId() !== null) return;
-    const currentInList = planes.some((p) => p.id === sus.suscripcion_tipo);
-    if (!currentInList) {
+    const current = planes.find((p) => p.id === sus.suscripcion_tipo);
+    if (current) {
+      this.selectedPlanId.set(current.id);
+      const category = resolvePlanCategory(current.suscripcion_categoria_id);
+      if (category === 'erp' || category === 'facturacion') {
+        this.track.set(category);
+      }
+      if (sus.frecuencia === 'A') this.annual.set(true);
+    } else {
       this.selectedPlanId.set(FALLBACK_PRESELECTED_PLAN_ID);
     }
   }
