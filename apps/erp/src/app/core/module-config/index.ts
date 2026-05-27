@@ -57,6 +57,10 @@ export { HttpEntityDataGateway } from './data/http-entity-data-gateway.service';
 // Storage helper
 export { buildEntityStorageKey } from './storage/build-entity-storage-key';
 
+// Constants del dominio
+export { DOCUMENT_TYPE_ID } from './constants/document-types.constants';
+export type { DocumentTypeId, DocumentTypeKey } from './constants/document-types.constants';
+
 // Components
 // NOTA: BaseDocumentListComponent NO se exporta desde aquí para evitar que
 // PrimeNG entre en el bundle inicial. Los consumidores deben usar:

@@ -169,6 +169,16 @@ export const es: AppDict = {
         },
       },
     },
+    facturaVenta: {
+      name: 'Factura de venta',
+      columns: {
+        numero: 'Número',
+        fecha: 'Fecha',
+        contacto: 'Contacto',
+        total: 'Total',
+        estado: 'Estado',
+      },
+    },
   },
   contenedores: {
     list: {

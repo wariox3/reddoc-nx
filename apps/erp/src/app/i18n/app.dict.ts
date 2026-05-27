@@ -129,6 +129,16 @@ export interface AppDict extends AuthTranslationsHost {
         };
       };
     };
+    facturaVenta: {
+      name: string;
+      columns: {
+        numero: string;
+        fecha: string;
+        contacto: string;
+        total: string;
+        estado: string;
+      };
+    };
   };
   contenedores: {
     list: {
