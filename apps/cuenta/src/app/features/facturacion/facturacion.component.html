@@ -122,6 +122,25 @@
           </div>
         </section>
       }
+
+      @if (hasMore()) {
+        <div class="flex justify-center pt-1">
+          <button
+            type="button"
+            class="inline-flex items-center gap-2 rounded-lg border border-[rgba(20,48,73,0.12)] bg-brand-surface px-4 py-2 text-[0.8rem] font-medium text-brand-navy transition-colors duration-100 hover:bg-[rgba(20,48,73,0.04)] disabled:opacity-60 disabled:cursor-not-allowed"
+            [disabled]="isLoadingMore()"
+            (click)="loadMore()"
+          >
+            @if (isLoadingMore()) {
+              <i class="pi pi-spin pi-spinner text-[0.8rem]"></i>
+              <span>Cargando…</span>
+            } @else {
+              <i class="pi pi-chevron-down text-[0.7rem]"></i>
+              <span>Cargar más</span>
+            }
+          </button>
+        </div>
+      }
     </div>
   }
 </div>

@@ -5,7 +5,9 @@ import { Movimiento } from '../models/movimiento.model';
 
 @Injectable({ providedIn: 'root' })
 export class FacturacionService extends BaseHttpService {
-  getMovimientos(): Observable<PaginatedResponse<Movimiento>> {
-    return this.get<PaginatedResponse<Movimiento>>('/contenedor/movimiento/lista-usuario/');
+  getMovimientos(page = 1): Observable<PaginatedResponse<Movimiento>> {
+    return this.get<PaginatedResponse<Movimiento>>('/contenedor/movimiento/lista-usuario/', {
+      page,
+    });
   }
 }
