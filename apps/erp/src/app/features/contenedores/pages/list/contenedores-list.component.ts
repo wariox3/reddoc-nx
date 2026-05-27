@@ -5,10 +5,11 @@ import { Subject, startWith, switchMap } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { Menu, MenuModule } from 'primeng/menu';
 import { MenuItem } from 'primeng/api';
-import { I18nService, TenantService, getInitials } from '@reddoc/core';
+import { ENVIRONMENT, I18nService, TenantService, getInitials } from '@reddoc/core';
 import { AuthService } from '../../../auth/services/auth.service';
 import { Contenedor } from '../../models/contenedor.model';
 import { ContenedorService } from '../../services/contenedor.service';
+import { isSuscripcionExpired } from '../../utils/contenedor-suscripcion.utils';
 import { ContenedoresCreateDialogComponent } from '../../components/create-dialog/contenedores-create-dialog.component';
 import { ContenedoresDeleteDialogComponent } from '../../components/delete-dialog/contenedores-delete-dialog.component';
 import { ContenedoresInviteDialogComponent } from '../../components/invite-dialog/contenedores-invite-dialog.component';
@@ -38,6 +39,7 @@ export class ContenedoresListComponent {
   private readonly authService = inject(AuthService);
   protected readonly router = inject(Router);
   private readonly tenant = inject(TenantService);
+  private readonly env = inject(ENVIRONMENT);
   private readonly i18n = inject<I18nService<AppDict>>(I18nService);
 
   protected readonly t = this.i18n.t;
@@ -103,8 +105,18 @@ export class ContenedoresListComponent {
   }
 
   enterContenedor(item: Contenedor): void {
+    if (isSuscripcionExpired(item.suscripcion_fecha_fin)) {
+      if (item.rol_id === 1) this.renewContenedor();
+      return;
+    }
     this.tenant.setCurrent(item);
     this.router.navigateByUrl(ROUTE_PATHS.tenant.dashboard(item.schema_name));
+  }
+
+  renewContenedor(): void {
+    const base = this.env.cuentaUrl;
+    if (!base) return;
+    window.open(`${base}/suscripciones`, '_blank', 'noopener');
   }
 
   openRowMenu(event: Event, item: Contenedor): void {

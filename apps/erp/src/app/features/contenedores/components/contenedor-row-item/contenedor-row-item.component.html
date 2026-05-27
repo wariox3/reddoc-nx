@@ -1,11 +1,13 @@
 <div
   role="button"
-  tabindex="0"
+  [attr.tabindex]="isExpired() && !isOwner() ? -1 : 0"
   class="cl-row"
+  [class.cl-row--expired]="isExpired()"
+  [class.cl-row--locked]="isExpired() && !isOwner()"
   [style.--i]="index()"
-  (click)="enter.emit()"
-  (keydown.enter)="enter.emit()"
-  (keydown.space)="$event.preventDefault(); enter.emit()"
+  (click)="onActivate()"
+  (keydown.enter)="onActivate()"
+  (keydown.space)="$event.preventDefault(); onActivate()"
 >
   <!-- Monogram -->
   <span class="cl-row__monogram" aria-hidden="true">{{ avatarLabel() }}</span>
@@ -43,45 +45,69 @@
   <!-- Suscripción: plan pill + fecha de vencimiento -->
   @if (contenedor().suscripcion_suscripcion_tipo_nombre) {
     <span class="cl-row__suscripcion hidden sm:flex flex-col items-end gap-1 shrink-0">
-      <span
-        class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[0.68rem] font-semibold leading-none border"
-        [ngClass]="{
-          'bg-amber-50 text-amber-700 border-amber-200':
-            contenedor().suscripcion_frecuencia === 'P',
-          'bg-sky-50 text-sky-700 border-sky-200': contenedor().suscripcion_frecuencia === 'M',
-          'bg-emerald-50 text-emerald-700 border-emerald-200':
-            contenedor().suscripcion_frecuencia === 'A',
-        }"
-      >
+      @if (isExpired()) {
         <span
-          class="w-1.5 h-1.5 rounded-full inline-block shrink-0"
-          [ngClass]="{
-            'bg-amber-500': contenedor().suscripcion_frecuencia === 'P',
-            'bg-sky-500': contenedor().suscripcion_frecuencia === 'M',
-            'bg-emerald-500': contenedor().suscripcion_frecuencia === 'A',
-          }"
-        ></span>
-        {{ contenedor().suscripcion_suscripcion_tipo_nombre }}
-        @if (frecuenciaLabel()) {
-          <span class="opacity-60">· {{ frecuenciaLabel() }}</span>
-        }
-      </span>
-      @if (contenedor().suscripcion_fecha_fin) {
-        <span
-          class="inline-flex mt-2 items-center gap-1 text-[0.65rem] leading-none text-brand-muted"
+          class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[0.68rem] font-semibold leading-none border bg-rose-50 text-rose-700 border-rose-200"
         >
-          <i class="pi pi-calendar text-[0.9em]"></i>
-          {{ expiryLabel() }}
+          <span class="w-1.5 h-1.5 rounded-full bg-rose-500 inline-block shrink-0"></span>
+          {{ expiredBadgeLabel() }}
+          <span class="opacity-60">· {{ contenedor().suscripcion_suscripcion_tipo_nombre }}</span>
         </span>
+      } @else {
+        <span
+          class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[0.68rem] font-semibold leading-none border"
+          [ngClass]="{
+            'bg-amber-50 text-amber-700 border-amber-200':
+              contenedor().suscripcion_frecuencia === 'P',
+            'bg-sky-50 text-sky-700 border-sky-200': contenedor().suscripcion_frecuencia === 'M',
+            'bg-emerald-50 text-emerald-700 border-emerald-200':
+              contenedor().suscripcion_frecuencia === 'A',
+          }"
+        >
+          <span
+            class="w-1.5 h-1.5 rounded-full inline-block shrink-0"
+            [ngClass]="{
+              'bg-amber-500': contenedor().suscripcion_frecuencia === 'P',
+              'bg-sky-500': contenedor().suscripcion_frecuencia === 'M',
+              'bg-emerald-500': contenedor().suscripcion_frecuencia === 'A',
+            }"
+          ></span>
+          {{ contenedor().suscripcion_suscripcion_tipo_nombre }}
+          @if (frecuenciaLabel()) {
+            <span class="opacity-60">· {{ frecuenciaLabel() }}</span>
+          }
+        </span>
+        @if (contenedor().suscripcion_fecha_fin) {
+          <span
+            class="inline-flex mt-2 items-center gap-1 text-[0.65rem] leading-none text-brand-muted"
+          >
+            <i class="pi pi-calendar text-[0.9em]"></i>
+            {{ expiryLabel() }}
+          </span>
+        }
       }
     </span>
   }
 
   <!-- CTA -->
-  <span class="cl-row__cta">
-    {{ enterLabel() }}
-    <i class="pi pi-arrow-right" aria-hidden="true"></i>
-  </span>
+  @if (isExpired()) {
+    @if (isOwner()) {
+      <span class="cl-row__cta cl-row__cta--renew">
+        {{ renewLabel() }}
+        <i class="pi pi-external-link" aria-hidden="true"></i>
+      </span>
+    } @else {
+      <span class="cl-row__locked-msg">
+        <i class="pi pi-lock text-[0.7rem]" aria-hidden="true"></i>
+        {{ memberLockedLabel() }}
+      </span>
+    }
+  } @else {
+    <span class="cl-row__cta">
+      {{ enterLabel() }}
+      <i class="pi pi-arrow-right" aria-hidden="true"></i>
+    </span>
+  }
 
   <!-- Acción -->
   @if (isOwner()) {

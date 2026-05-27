@@ -112,7 +112,11 @@
                     [index]="i"
                     [menuLabel]="t().contenedores.list.actions.menuLabel"
                     [enterLabel]="t().contenedores.list.enter"
+                    [renewLabel]="t().contenedores.list.expired.ownerCta"
+                    [memberLockedLabel]="t().contenedores.list.expired.memberLocked"
+                    [expiredBadgeLabel]="t().contenedores.list.expired.badge"
                     (enter)="enterContenedor(item)"
+                    (renew)="renewContenedor()"
                     (menuOpen)="openRowMenu($event, item)"
                   />
                 </li>
@@ -126,7 +130,11 @@
                   [index]="i"
                   [menuLabel]="t().contenedores.list.actions.menuLabel"
                   [enterLabel]="t().contenedores.list.enter"
+                  [renewLabel]="t().contenedores.list.expired.ownerCta"
+                  [memberLockedLabel]="t().contenedores.list.expired.memberLocked"
+                  [expiredBadgeLabel]="t().contenedores.list.expired.badge"
                   (enter)="enterContenedor(item)"
+                  (renew)="renewContenedor()"
                   (menuOpen)="openRowMenu($event, item)"
                 />
               }

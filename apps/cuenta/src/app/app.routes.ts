@@ -42,6 +42,13 @@ export const appRoutes: Route[] = [
             (m) => m.SUSCRIPCIONES_ROUTES,
           ),
       },
+      {
+        path: 'facturacion',
+        loadComponent: () =>
+          import('./features/facturacion/facturacion.component').then(
+            (m) => m.FacturacionComponent,
+          ),
+      },
     ],
   },
 

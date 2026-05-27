@@ -15,35 +15,34 @@ import type { DocumentEntityConfig } from '../types/entity-config.types';
 export const DOCUMENT_KEY_ROUTE_PARAM = 'documentKey';
 
 /**
- * Crea un resolver que valida y resuelve el documento activo dentro del módulo
- * activo, según el parámetro `:documentKey` de la ruta.
+ * Resuelve el documento activo dentro del módulo activo. Dos modos:
+ *
+ *  - **Con id literal** (`activeDocumentResolver('factura-venta')`): identifica
+ *    el documento por nombre fijo. Preferido cuando cada documento es un
+ *    `loadChildren` con sus propias rutas (`list/nuevo/editar/detalle`) y su
+ *    form/detalle viven junto a su config.
+ *  - **Sin argumento** (`activeDocumentResolver()`): lee el id del parámetro
+ *    de ruta `:documentKey`. Útil cuando un padre genérico maneja varios
+ *    documentos con la misma forma de URL.
  *
  * Garantías:
- *  - El módulo ya está cargado (el resolver del padre debió correr antes).
+ *  - El módulo padre ya está cargado en `ModuleNavigationStore`
+ *    (su `activeModuleResolver` debió correr antes).
  *  - El documento existe en `module.documents`.
  *
- * Si cualquiera de estas condiciones falla, lanza un error tipado.
- *
- * Uso:
- *   ```ts
- *   {
- *     path: 'documento/:documentKey',
- *     resolve: { document: activeDocumentResolver() },
- *     children: [...]
- *   }
- *   ```
+ * Lanza errores tipados que el `ErrorHandler` global captura.
  */
-export function activeDocumentResolver(): ResolveFn<DocumentEntityConfig> {
+export function activeDocumentResolver(documentId?: string): ResolveFn<DocumentEntityConfig> {
   return (route: ActivatedRouteSnapshot): DocumentEntityConfig => {
     const navigationStore = inject(ModuleNavigationStore);
-    const documentId = route.paramMap.get(DOCUMENT_KEY_ROUTE_PARAM);
     const activeModule = navigationStore.activeModule();
-
     if (!activeModule) throw new MissingModuleContextError();
-    if (!documentId) throw new MissingDocumentKeyError();
 
-    const document = activeModule.documents.find((candidate) => candidate.id === documentId);
-    if (!document) throw new DocumentNotFoundError(activeModule.id, documentId);
+    const resolvedId = documentId ?? route.paramMap.get(DOCUMENT_KEY_ROUTE_PARAM);
+    if (!resolvedId) throw new MissingDocumentKeyError();
+
+    const document = activeModule.documents.find((candidate) => candidate.id === resolvedId);
+    if (!document) throw new DocumentNotFoundError(activeModule.id, resolvedId);
 
     navigationStore.setActiveDocument(document);
     return document;

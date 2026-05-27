@@ -2,7 +2,10 @@ import { Component, computed, input, output } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { getInitials } from '@reddoc/core';
 import { Contenedor } from '../../models/contenedor.model';
-import { getSuscripcionExpiryLabel } from '../../utils/contenedor-suscripcion.utils';
+import {
+  getSuscripcionExpiryLabel,
+  isSuscripcionExpired,
+} from '../../utils/contenedor-suscripcion.utils';
 
 @Component({
   selector: 'app-contenedor-card-item',
@@ -16,8 +19,12 @@ export class ContenedorCardItemComponent {
   readonly index = input<number>(0);
   readonly menuLabel = input<string>('Opciones');
   readonly enterLabel = input<string>('Ingresar');
+  readonly renewLabel = input<string>('Renovar suscripción');
+  readonly memberLockedLabel = input<string>('Pide al propietario que renueve la suscripción');
+  readonly expiredBadgeLabel = input<string>('Vencida');
 
   readonly enter = output<void>();
+  readonly renew = output<void>();
   readonly menuOpen = output<Event>();
 
   readonly avatarLabel = computed(() => getInitials(this.contenedor().nombre));
@@ -32,4 +39,16 @@ export class ContenedorCardItemComponent {
   );
 
   readonly isOwner = computed(() => this.contenedor().rol_id === 1);
+
+  readonly isExpired = computed(() =>
+    isSuscripcionExpired(this.contenedor().suscripcion_fecha_fin),
+  );
+
+  protected onActivate(): void {
+    if (this.isExpired()) {
+      if (this.isOwner()) this.renew.emit();
+      return;
+    }
+    this.enter.emit();
+  }
 }

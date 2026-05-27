@@ -19,4 +19,7 @@ export const ROUTE_PATHS = {
   suscripciones: {
     root: '/suscripciones',
   },
+  facturacion: {
+    root: '/facturacion',
+  },
 };

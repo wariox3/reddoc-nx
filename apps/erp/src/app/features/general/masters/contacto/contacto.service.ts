@@ -35,6 +35,17 @@ export class ContactoService extends BaseHttpService {
   }
 
   /**
+   * Pregunta al backend si la combinación tipo de identificación + número
+   * ya existe en otro contacto. Respuesta: `validacion: true` ⇒ ya existe.
+   */
+  validar(data: {
+    identificacion_id: number;
+    numero_identificacion: string;
+  }): Observable<{ validacion: boolean; codigo: number }> {
+    return this.post<{ validacion: boolean; codigo: number }>(`${this.resourcePath}validar/`, data);
+  }
+
+  /**
    * Elimina uno o varios contactos.
    * El backend de masters no expone batch-delete, así que paralelizamos
    * DELETEs individuales con `forkJoin`.

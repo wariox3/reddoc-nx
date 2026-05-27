@@ -30,6 +30,7 @@ export class WorkspaceLayoutComponent {
     { label: 'Seguridad', icon: 'pi pi-shield', path: '/seguridad' },
     { label: 'Invitaciones', icon: 'pi pi-envelope', path: '/invitaciones' },
     { label: 'Suscripciones', icon: 'pi pi-credit-card', path: '/suscripciones' },
+    { label: 'Facturación', icon: 'pi pi-receipt', path: '/facturacion' },
   ];
 
   readonly drawerVisible = signal(false);

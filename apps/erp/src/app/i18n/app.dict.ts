@@ -112,7 +112,11 @@ export interface AppDict extends AuthTranslationsHost {
         };
         tipoPersonaOptions: { juridica: string; natural: string };
         pendingPlaceholder: string;
-        validation: { required: string; emailInvalid: string };
+        validation: {
+          required: string;
+          emailInvalid: string;
+          numeroIdentificacionExistente: string;
+        };
         submitCreate: string;
         submitEdit: string;
         cancel: string;
@@ -123,6 +127,16 @@ export interface AppDict extends AuthTranslationsHost {
           editError: { title: string; desc: string };
           loadError: { title: string; desc: string };
         };
+      };
+    };
+    facturaVenta: {
+      name: string;
+      columns: {
+        numero: string;
+        fecha: string;
+        contacto: string;
+        total: string;
+        estado: string;
       };
     };
   };
@@ -151,6 +165,11 @@ export interface AppDict extends AuthTranslationsHost {
       empty: {
         noResults: { title: string; sub: string };
         noContenedores: { title: string; sub: string; cta: string };
+      };
+      expired: {
+        badge: string;
+        ownerCta: string;
+        memberLocked: string;
       };
     };
     create: {

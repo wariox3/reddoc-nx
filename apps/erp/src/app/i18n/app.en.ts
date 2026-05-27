@@ -140,6 +140,7 @@ export const en: AppDict = {
         validation: {
           required: 'This field is required.',
           emailInvalid: 'Enter a valid email.',
+          numeroIdentificacionExistente: 'This identification number is already registered.',
         },
         submitCreate: 'Create contact',
         submitEdit: 'Save changes',
@@ -166,6 +167,16 @@ export const en: AppDict = {
             desc: 'The contact could not be loaded.',
           },
         },
+      },
+    },
+    facturaVenta: {
+      name: 'Sales invoice',
+      columns: {
+        numero: 'Number',
+        fecha: 'Date',
+        contacto: 'Contact',
+        total: 'Total',
+        estado: 'Status',
       },
     },
   },
@@ -201,6 +212,11 @@ export const en: AppDict = {
           sub: 'You do not have any workspaces assigned yet.',
           cta: 'Create first company',
         },
+      },
+      expired: {
+        badge: 'Expired',
+        ownerCta: 'Renew subscription',
+        memberLocked: 'Only the owner can renew',
       },
     },
     create: {

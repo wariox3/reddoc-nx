@@ -1,7 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
-import { serializeListQuery, type ListQuery, type ListResponse } from '@reddoc/core';
+import type {
+  FilterCondition,
+  FilterOperator,
+  ListQuery,
+  ListResponse,
+  SortSpec,
+} from '@reddoc/core';
 import type { EntityConfig } from '../types/entity-config.types';
 import type { EntityDataGateway } from './entity-data-gateway';
 
@@ -15,14 +21,56 @@ interface PaginatedApiResponse {
 }
 
 /**
+ * Filtro tal como lo espera el backend de documentos en `POST /lista/`.
+ * Operadores en español (`=`, `!=`, `>=`, …) y array de objetos en vez de
+ * query params Django-style. El gateway traduce desde el contrato genérico
+ * (`FilterCondition`) a este shape concreto.
+ */
+interface BackendDocumentFilter {
+  readonly propiedad: string;
+  readonly operador: string;
+  readonly valor: string | number | boolean;
+}
+
+/** Body del endpoint `POST <endpoint>/lista/`. */
+interface DocumentListBody {
+  readonly filtros: readonly BackendDocumentFilter[];
+  readonly ordenamientos: readonly string[];
+  readonly pagina: number;
+  readonly tamano_pagina: number;
+}
+
+/**
+ * Mapeo de operadores genéricos (`FilterOperator`) a string que el backend
+ * de documentos espera en `operador`. `=` para igualdad fue confirmado;
+ * el resto sigue convención del legacy y se ajusta aquí si algún filtro
+ * real lo contradice.
+ */
+const BACKEND_OPERATOR: Readonly<Record<FilterOperator, string>> = {
+  eq: '=',
+  neq: '!=',
+  gt: '>',
+  gte: '>=',
+  lt: '<',
+  lte: '<=',
+  contains: 'icontains',
+  startsWith: 'istartswith',
+  endsWith: 'iendswith',
+  in: 'in',
+};
+
+/**
  * Implementación HTTP default del `EntityDataGateway` para documentos
  * transaccionales del framework configuracional.
  *
- * Convenciones del backend (alineadas con Django REST framework):
- *  - Paginación: `count` (total) y `results` (página actual).
- *  - Batch delete: POST `<endpoint>/eliminar/` con `{ ids: [...] }`.
- *  - Filtros: query params `field__operator=value` (helper compartido).
- *  - Ordering: `?ordering=field` o `?ordering=-field` para descendente.
+ * Convenciones del backend de documentos (`/api/general/documento`):
+ *  - **Listado**: POST `<endpoint>/lista/` con body
+ *    `{ filtros, ordenamientos, pagina, tamano_pagina }`. El filtro por
+ *    `documento_tipo_id` se inyecta automáticamente desde
+ *    `DocumentEntityConfig.documentTypeId` — el componente nunca lo declara.
+ *  - **Batch delete**: POST `<endpoint>/eliminar/` con `{ ids: [...] }`.
+ *  - **Lectura individual / mutaciones**: REST estándar (`GET/POST/PATCH /<id>/`).
+ *  - **Paginación de respuesta**: `count` (total) y `results` (página actual).
  *
  * Si una convención cambia, basta proveer otra implementación de
  * `EntityDataGateway` — los componentes base no se enteran.
@@ -32,8 +80,8 @@ export class HttpEntityDataGateway implements EntityDataGateway {
   private readonly http = inject(HttpClient);
 
   list(entity: EntityConfig, query: ListQuery): Observable<ListResponse> {
-    const params = serializeListQuery(query);
-    return this.http.get<PaginatedApiResponse>(entity.endpoint, { params }).pipe(
+    const body = this.buildListBody(entity, query);
+    return this.http.post<PaginatedApiResponse>(`${entity.endpoint}/lista/`, body).pipe(
       map((response) => ({
         results: response.results,
         totalCount: response.count,
@@ -61,4 +109,46 @@ export class HttpEntityDataGateway implements EntityDataGateway {
   remove(entity: EntityConfig, ids: readonly (string | number)[]): Observable<void> {
     return this.http.post<void>(`${entity.endpoint}/eliminar/`, { ids }).pipe(map(() => undefined));
   }
+
+  /**
+   * Arma el body de `POST <endpoint>/lista/` a partir del `ListQuery` genérico.
+   * El filtro por `documento_tipo_id` se inyecta como primer elemento —
+   * es responsabilidad del framework, no del consumidor.
+   */
+  private buildListBody(entity: EntityConfig, query: ListQuery): DocumentListBody {
+    const baseFilter: BackendDocumentFilter = {
+      propiedad: 'documento_tipo_id',
+      operador: '=',
+      valor: entity.documentTypeId,
+    };
+    const userFilters = query.filters.map(toBackendFilter);
+    return {
+      filtros: [baseFilter, ...userFilters],
+      ordenamientos: query.sort.map(encodeSort),
+      pagina: query.page + 1,
+      tamano_pagina: query.pageSize,
+    };
+  }
+}
+
+function toBackendFilter(condition: FilterCondition): BackendDocumentFilter {
+  return {
+    propiedad: condition.field,
+    operador: BACKEND_OPERATOR[condition.operator],
+    valor: normalizeFilterValue(condition.value),
+  };
+}
+
+function normalizeFilterValue(value: FilterCondition['value']): string | number | boolean {
+  // `Array.isArray` no estrecha sobre `readonly`; el chequeo explícito por
+  // ausencia de `join` también devolvería una unión, por lo que serializamos
+  // explícitamente listas a CSV.
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+    return value;
+  }
+  return value.join(',');
+}
+
+function encodeSort(spec: SortSpec): string {
+  return spec.direction === 'desc' ? `-${spec.field}` : spec.field;
 }

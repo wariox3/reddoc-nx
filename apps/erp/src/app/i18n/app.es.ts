@@ -140,6 +140,7 @@ export const es: AppDict = {
         validation: {
           required: 'Este campo es obligatorio.',
           emailInvalid: 'Ingresá un correo válido.',
+          numeroIdentificacionExistente: 'Este número de identificación ya está registrado.',
         },
         submitCreate: 'Crear contacto',
         submitEdit: 'Guardar cambios',
@@ -166,6 +167,16 @@ export const es: AppDict = {
             desc: 'No se pudo cargar el contacto.',
           },
         },
+      },
+    },
+    facturaVenta: {
+      name: 'Factura de venta',
+      columns: {
+        numero: 'Número',
+        fecha: 'Fecha',
+        contacto: 'Contacto',
+        total: 'Total',
+        estado: 'Estado',
       },
     },
   },
@@ -201,6 +212,11 @@ export const es: AppDict = {
           sub: 'Aún no tenés ningún espacio de trabajo asignado.',
           cta: 'Crear primera empresa',
         },
+      },
+      expired: {
+        badge: 'Vencida',
+        ownerCta: 'Renovar suscripción',
+        memberLocked: 'Solo el propietario puede renovar',
       },
     },
     create: {
