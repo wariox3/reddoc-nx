@@ -31,8 +31,8 @@
         <span class="lang-sep">/</span>
         <button type="button" [class.active]="lang() === 'en'" (click)="setLang('en')">EN</button>
       </div>
-      <a class="btn btn-ghost" [href]="appUrl + '/login'">{{ t().nav.login }}</a>
-      <a class="btn btn-primary" [href]="appUrl + '/register'">{{ t().nav.register }}</a>
+      <a class="btn btn-ghost" [href]="appUrl + '/auth/login'">{{ t().nav.login }}</a>
+      <a class="btn btn-primary" [href]="appUrl + '/auth/register'">{{ t().nav.register }}</a>
       <button
         type="button"
         class="burger"
@@ -56,10 +56,10 @@
         <button type="button" [class.active]="lang() === 'en'" (click)="setLang('en')">EN</button>
       </div>
       <div class="mobile-auth">
-        <a class="btn btn-ghost" [href]="appUrl + '/login'" (click)="closeMobile()">{{
+        <a class="btn btn-ghost" [href]="appUrl + '/auth/login'" (click)="closeMobile()">{{
           t().nav.login
         }}</a>
-        <a class="btn btn-primary" [href]="appUrl + '/register'" (click)="closeMobile()">{{
+        <a class="btn btn-primary" [href]="appUrl + '/auth/register'" (click)="closeMobile()">{{
           t().nav.register
         }}</a>
       </div>
