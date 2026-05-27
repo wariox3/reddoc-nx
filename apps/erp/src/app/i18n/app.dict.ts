@@ -166,6 +166,11 @@ export interface AppDict extends AuthTranslationsHost {
         noResults: { title: string; sub: string };
         noContenedores: { title: string; sub: string; cta: string };
       };
+      expired: {
+        badge: string;
+        ownerCta: string;
+        memberLocked: string;
+      };
     };
     create: {
       title: string;

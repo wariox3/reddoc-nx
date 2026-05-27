@@ -213,6 +213,11 @@ export const en: AppDict = {
           cta: 'Create first company',
         },
       },
+      expired: {
+        badge: 'Expired',
+        ownerCta: 'Renew subscription',
+        memberLocked: 'Only the owner can renew',
+      },
     },
     create: {
       title: 'New company',
