@@ -1,9 +1,11 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
-import { AUTH_SERVICE, AUTH_SKIP_URLS } from '../tokens';
+import { AUTH_SERVICE, AUTH_SKIP_URLS, ROUTE_PATHS_TOKEN } from '../tokens';
 import { ToastService } from '../services/toast.service';
 import { TokenRefreshService } from '../services/token-refresh.service';
+import { TenantService } from '../tenant/tenant.service';
 import { classifyStatus } from '../utils/error-normalizer';
 import {
   handleConnectionError,
@@ -32,6 +34,9 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const toast = inject(ToastService);
   const tokenRefresh = inject(TokenRefreshService);
   const skipUrls = inject(AUTH_SKIP_URLS);
+  const router = inject(Router);
+  const tenant = inject(TenantService);
+  const routes = inject(ROUTE_PATHS_TOKEN);
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
@@ -41,7 +46,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         case 'unauthorized':
           return handleUnauthorized(req, next, authService, tokenRefresh, error, skipUrls);
         case 'forbidden':
-          return handleForbidden(toast, error);
+          return handleForbidden(toast, router, tenant, routes, error);
         case 'notFound':
         case 'conflict':
         case 'client':
