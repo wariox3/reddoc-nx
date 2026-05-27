@@ -5,6 +5,7 @@ export interface IntegridadRequest {
   readonly suscripcion_tipo_id: number;
   readonly periodo: PeriodoPago;
   readonly contacto_id: number;
+  readonly cliente_id: number;
   readonly monto_cents: number;
   readonly moneda: 'COP';
 }

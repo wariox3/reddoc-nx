@@ -15,6 +15,7 @@ import { WompiCheckoutService } from './wompi-checkout.service';
 
 export interface IniciarPagoInput {
   readonly suscripcionId: number;
+  readonly clienteId: number;
   readonly plan: SuscripcionTipo;
   readonly billingProfile: BillingProfile;
   readonly periodo: PeriodoPago;
@@ -34,7 +35,7 @@ export class WompiPaymentOrchestrator {
   private readonly environment = inject(ENVIRONMENT);
 
   iniciarPago(input: IniciarPagoInput): Observable<void> {
-    const { suscripcionId, plan, billingProfile, periodo } = input;
+    const { suscripcionId, clienteId, plan, billingProfile, periodo } = input;
     const monto_cents = calcularMontoCents(plan.precio, periodo === 'A');
 
     return this.pagoService
@@ -43,6 +44,7 @@ export class WompiPaymentOrchestrator {
         suscripcion_tipo_id: plan.id,
         periodo,
         contacto_id: billingProfile.id,
+        cliente_id: clienteId,
         monto_cents,
         moneda: 'COP',
       })

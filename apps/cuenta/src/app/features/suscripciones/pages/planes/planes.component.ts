@@ -322,7 +322,8 @@ export class PlanesComponent implements OnInit {
     const plan = this.selectedPlan();
     const bp = this.selectedBillingProfile();
     const id = this.suscripcionId();
-    if (!plan || !bp || id === null) {
+    const suscripcion = this.suscripcion();
+    if (!plan || !bp || id === null || !suscripcion) {
       this.toast.error('Error', 'Faltan datos para procesar el pago.');
       return;
     }
@@ -331,6 +332,7 @@ export class PlanesComponent implements OnInit {
     this.wompiOrchestrator
       .iniciarPago({
         suscripcionId: id,
+        clienteId: suscripcion.cliente,
         plan,
         billingProfile: bp,
         periodo: this.annual() ? 'A' : 'M',
