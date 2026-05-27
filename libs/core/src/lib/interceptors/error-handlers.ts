@@ -1,10 +1,12 @@
 import { HttpErrorResponse, HttpEvent, HttpHandlerFn, HttpRequest } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { catchError, Observable, switchMap, throwError } from 'rxjs';
-import { AuthServiceContract } from '../tokens';
+import { AuthServiceContract, RoutePaths } from '../tokens';
 import { ToastService } from '../services/toast.service';
 import { TokenRefreshService } from '../services/token-refresh.service';
+import { TenantService } from '../tenant/tenant.service';
 import { normalizeHttpError } from '../utils/error-normalizer';
-import { isUnverifiedAccountError } from '../utils/error.utils';
+import { isSuscripcionVencidaError, isUnverifiedAccountError } from '../utils/error.utils';
 
 function isAuthUrl(url: string, skipUrls: string[]): boolean {
   return skipUrls.some((endpoint) => url.includes(endpoint));
@@ -56,10 +58,27 @@ export function handleUnauthorized(
   );
 }
 
-export function handleForbidden(toast: ToastService, error: HttpErrorResponse): Observable<never> {
+export function handleForbidden(
+  toast: ToastService,
+  router: Router,
+  tenant: TenantService,
+  routes: RoutePaths,
+  error: HttpErrorResponse,
+): Observable<never> {
   if (isUnverifiedAccountError(error)) {
     return throwError(() => error);
   }
+
+  if (isSuscripcionVencidaError(error)) {
+    const target = routes.dashboard.root;
+    if (!router.url.startsWith(target)) {
+      tenant.clear();
+      toast.warn('Suscripción vencida', normalizeHttpError(error).message);
+      router.navigateByUrl(target);
+    }
+    return throwError(() => error);
+  }
+
   toast.error('Acceso denegado', normalizeHttpError(error).message);
   return throwError(() => error);
 }

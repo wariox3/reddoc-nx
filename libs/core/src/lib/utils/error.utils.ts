@@ -39,6 +39,13 @@ export function isUnverifiedAccountError(err: unknown): boolean {
   return false;
 }
 
+export function isSuscripcionVencidaError(err: unknown): boolean {
+  const httpErr = err as HttpErrorResponse | undefined;
+  const body = httpErr?.error;
+  if (!body || typeof body !== 'object') return false;
+  return (body as { codigo?: string }).codigo === 'suscripcion_vencida';
+}
+
 /**
  * Extrae un mensaje legible de un error HTTP. Si el body no trae un mensaje real,
  * retorna el `fallback` provisto por el caller.
