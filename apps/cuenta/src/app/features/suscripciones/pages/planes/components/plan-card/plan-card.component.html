@@ -1,21 +1,19 @@
 <button
   type="button"
   (click)="onClick()"
-  [disabled]="current()"
   class="relative text-left rounded-xl flex flex-col gap-3 px-[18px] pt-5 pb-4 transition-all duration-150 font-sans w-full h-full"
   [class]="
-    current()
-      ? 'cursor-not-allowed opacity-55 border border-[rgba(20,48,73,0.18)] bg-brand-surface'
-      : selected()
-        ? 'cursor-pointer border-2 border-brand-blue bg-brand-blue/6 shadow-[0_4px_16px_-8px_rgba(0,158,247,0.45)]'
-        : 'cursor-pointer border border-[rgba(20,48,73,0.18)] bg-brand-surface hover:border-brand-blue/40 hover:-translate-y-px shadow-[0_1px_3px_rgba(0,0,0,0.03)]'
+    selected()
+      ? 'cursor-pointer border-2 border-brand-blue bg-brand-blue/6 shadow-[0_4px_16px_-8px_rgba(0,158,247,0.45)]'
+      : 'cursor-pointer border border-[rgba(20,48,73,0.18)] bg-brand-surface hover:border-brand-blue/40 hover:-translate-y-px shadow-[0_1px_3px_rgba(0,0,0,0.03)]'
   "
 >
   <!-- Top badges -->
   @if (current()) {
     <span
-      class="absolute -top-2.5 left-[18px] bg-[rgba(20,48,73,0.18)] text-brand-muted text-[0.62rem] font-bold tracking-[0.06em] uppercase px-2 py-[3px] rounded-full whitespace-nowrap"
+      class="absolute -top-2.5 left-[18px] inline-flex items-center gap-1 bg-emerald-600 text-white text-[0.62rem] font-bold tracking-[0.06em] uppercase px-2 py-[3px] rounded-full whitespace-nowrap shadow-[0_1px_3px_rgba(5,150,105,0.35)]"
     >
+      <i class="pi pi-check-circle text-[0.6rem]"></i>
       Plan actual
     </span>
   } @else if (popular()) {

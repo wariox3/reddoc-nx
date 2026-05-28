@@ -54,7 +54,6 @@ export class PlanCardComponent {
   readonly annualTotalLabel = computed(() => formatCop(computeAnnualTotal(this.plan().precio)));
 
   onClick(): void {
-    if (this.current()) return;
     this.planSelected.emit(this.plan());
   }
 }

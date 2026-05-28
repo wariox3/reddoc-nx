@@ -19,6 +19,8 @@ export interface IniciarPagoInput {
   readonly plan: SuscripcionTipo;
   readonly billingProfile: BillingProfile;
   readonly periodo: PeriodoPago;
+  /** Saldo a favor del plan vigente en COP. El backend revalida. */
+  readonly saldoNoConsumido?: number;
 }
 
 function categoriaLabel(categoriaId: number): string {
@@ -35,8 +37,10 @@ export class WompiPaymentOrchestrator {
   private readonly environment = inject(ENVIRONMENT);
 
   iniciarPago(input: IniciarPagoInput): Observable<void> {
-    const { suscripcionId, clienteId, plan, billingProfile, periodo } = input;
-    const monto_cents = calcularMontoCents(plan.precio, periodo === 'A');
+    const { suscripcionId, clienteId, plan, billingProfile, periodo, saldoNoConsumido } = input;
+    const baseCents = calcularMontoCents(plan.precio, periodo === 'A');
+    const saldoCents = Math.round((saldoNoConsumido ?? 0) * 100);
+    const monto_cents = Math.max(baseCents - saldoCents, 0);
 
     return this.pagoService
       .firmarIntegridad({

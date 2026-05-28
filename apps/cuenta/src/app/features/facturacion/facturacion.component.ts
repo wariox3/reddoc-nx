@@ -28,6 +28,7 @@ export class FacturacionComponent implements OnInit {
   readonly movimientos = signal<readonly Movimiento[]>([]);
   readonly hasMore = signal(false);
   readonly lastLoadedPage = signal(0);
+  readonly printingId = signal<number | null>(null);
 
   readonly groups = computed<readonly MovimientoGroup[]>(() => groupByMonth(this.movimientos()));
 
@@ -61,6 +62,28 @@ export class FacturacionComponent implements OnInit {
           this.toast.error(
             'Error',
             extractErrorMessage(err, 'No se pudieron cargar más facturas.'),
+          );
+        },
+      });
+  }
+
+  isImprimible(m: Movimiento): boolean {
+    return m.tipo === 'factura';
+  }
+
+  imprimir(m: Movimiento): void {
+    if (this.printingId() === m.id) return;
+    this.printingId.set(m.id);
+    this.facturacionService
+      .imprimirMovimiento(m.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => this.printingId.set(null),
+        error: (err) => {
+          this.printingId.set(null);
+          this.toast.error(
+            'Error',
+            extractErrorMessage(err, 'No se pudo descargar el PDF. Intentá de nuevo.'),
           );
         },
       });

@@ -8,4 +8,5 @@ export interface Suscripcion {
   readonly fecha_inicio: string;
   readonly fecha_fin: string;
   readonly frecuencia: string;
+  readonly precio: string;
 }

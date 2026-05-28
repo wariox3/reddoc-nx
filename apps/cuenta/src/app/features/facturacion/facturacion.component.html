@@ -117,6 +117,24 @@
                     COP
                   </div>
                 </div>
+
+                <!-- Imprimir PDF: solo en facturas -->
+                @if (isImprimible(m)) {
+                  <button
+                    type="button"
+                    (click)="imprimir(m)"
+                    [disabled]="printingId() === m.id"
+                    [attr.aria-label]="'Descargar PDF de ' + m.concepto"
+                    title="Descargar PDF"
+                    class="shrink-0 flex h-8 w-8 items-center justify-center rounded-lg border border-[rgba(20,48,73,0.12)] bg-brand-surface text-brand-muted transition-colors duration-100 hover:text-brand-blue hover:border-brand-blue/40 hover:bg-brand-blue/[0.04] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:text-brand-muted disabled:hover:border-[rgba(20,48,73,0.12)] disabled:hover:bg-brand-surface"
+                  >
+                    @if (printingId() === m.id) {
+                      <i class="pi pi-spin pi-spinner text-[0.72rem]"></i>
+                    } @else {
+                      <i class="pi pi-download text-[0.72rem]"></i>
+                    }
+                  </button>
+                }
               </div>
             }
           </div>

@@ -18,13 +18,19 @@ export class PlanSummaryCardComponent {
   readonly plan = input.required<SuscripcionTipo>();
   readonly annual = input<boolean>(false);
   readonly billingProfile = input<BillingProfile | null>(null);
+  readonly saldoNoConsumido = input<number>(0);
+  readonly totalAPagar = input<number | null>(null);
 
-  /** Monto del ciclo actual: año en modo anual, mes en mensual. Es el número grande. */
-  readonly chargeAmountLabel = computed(() =>
+  readonly costoNuevoPlan = computed(() =>
     this.annual()
-      ? formatCop(computeAnnualTotal(this.plan().precio))
-      : formatCop(displayedMonthly(this.plan().precio, false)),
+      ? computeAnnualTotal(this.plan().precio)
+      : displayedMonthly(this.plan().precio, false),
   );
+
+  readonly totalEfectivo = computed(() => this.totalAPagar() ?? this.costoNuevoPlan());
+
+  /** Monto del ciclo actual con el saldo aplicado. */
+  readonly chargeAmountLabel = computed(() => formatCop(this.totalEfectivo()));
 
   readonly chargeSuffix = computed(() => (this.annual() ? '/año' : '/mes'));
 
@@ -34,4 +40,12 @@ export class PlanSummaryCardComponent {
   );
 
   readonly frecuenciaLabel = computed(() => (this.annual() ? 'Anual · 10% off' : 'Mensual'));
+
+  readonly subtotalLabel = computed(() => formatCop(this.costoNuevoPlan()));
+
+  readonly saldoLabel = computed(() => formatCop(this.saldoNoConsumido()));
+
+  readonly mostrarSaldo = computed(() => this.saldoNoConsumido() > 0);
+
+  readonly cubiertoConSaldo = computed(() => this.totalEfectivo() === 0);
 }

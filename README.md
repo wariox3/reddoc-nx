@@ -55,6 +55,29 @@ npx nx affected -t build
 npm run release            # commit-and-tag-version
 ```
 
+## Apuntar a un backend local
+
+Por defecto las SPAs proxean `/api/*` a `https://reddocapi.uk`. Si corrés el backend Django local en `http://localhost:8000`, serví con el proxy alternativo:
+
+```bash
+npx nx serve erp        --proxy-config=apps/erp/proxy.conf.local.json
+npx nx serve cuenta     --proxy-config=apps/cuenta/proxy.conf.local.json
+npx nx serve transporte --proxy-config=apps/transporte/proxy.conf.local.json
+npx nx serve pos        --proxy-config=apps/pos/proxy.conf.local.json
+npx nx serve turnos     --proxy-config=apps/turnos/proxy.conf.local.json
+npx nx serve cliente    --proxy-config=apps/cliente/proxy.conf.local.json
+```
+
+Sin el flag, `nx serve` sigue usando el `proxy.conf.json` default que apunta a staging — no hace falta revertir nada.
+
+El Django local debe servir las rutas en la raíz (`/seguridad/login/`, no `/api/seguridad/login/`) y tener habilitados para que el login por cookie funcione:
+
+- `CORS_ALLOW_CREDENTIALS = True`
+- `CSRF_COOKIE_SECURE = False`, `SESSION_COOKIE_SECURE = False`
+- `CSRF_TRUSTED_ORIGINS` con `http://localhost:4201`, `:4203`, `:4204`, `:4205`, `:4206`, `:4207`
+
+Si las requests devuelven 404, lo más probable es que el backend local sirva bajo `/api/`. En ese caso, quitá la línea `pathRewrite` del `proxy.conf.local.json` correspondiente.
+
 ## Convenciones
 
 - **Standalone components** en todo el código.
