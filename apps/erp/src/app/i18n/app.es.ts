@@ -48,6 +48,7 @@ export const es: AppDict = {
         desc: 'No se pudieron eliminar los registros. Intentá de nuevo.',
       },
     },
+    boolean: { true: 'SÍ', false: 'NO' },
   },
   layout: {
     menuLabel: 'Abrir menú',
@@ -80,10 +81,15 @@ export const es: AppDict = {
       name: 'Contactos',
       columns: {
         id: 'ID',
+        identificacion_abreviatura: 'Tipo',
+        identificacion: 'Nro. identificación',
         nombre: 'Nombre',
-        identificacion: 'Identificación',
         correo: 'Correo',
         telefono: 'Teléfono',
+        celular: 'Celular',
+        cliente: 'CLI',
+        proveedor: 'PRO',
+        empleado: 'EMP',
       },
       form: {
         createTitle: 'Nuevo contacto',

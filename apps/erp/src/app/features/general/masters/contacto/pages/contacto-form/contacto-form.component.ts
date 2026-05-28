@@ -77,12 +77,8 @@ export class ContactoFormComponent implements OnInit {
 
   /** El endpoint de precio devuelve listas de venta y compra; filtramos venta. */
   protected readonly precioParams: Record<string, string> = { venta: 'True' };
-  /** El endpoint de régimen incluye opciones inactivas; las excluimos. */
-  protected readonly regimenParams: Record<string, string> = { inactivo: 'False' };
-
   protected readonly form = this.fb.group({
     tipo_persona: this.fb.control<ErpSelectOption | null>(null, Validators.required),
-    regimen: this.fb.control<ErpSelectOption | null>(null, Validators.required),
     identificacion: this.fb.control<ErpSelectOption | null>(null, Validators.required),
     numero_identificacion: ['', Validators.required],
     digito_verificacion: this.fb.control<string>({ value: '', disabled: true }),

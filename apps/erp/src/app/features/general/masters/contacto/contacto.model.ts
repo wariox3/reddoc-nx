@@ -18,6 +18,7 @@ export interface Contacto {
   readonly barrio: string | null;
   readonly codigo_ciuu: string | null;
   readonly codigo_postal: string | null;
+  readonly identificacion_abreviatura: string | null;
   readonly telefono: string | null;
   readonly celular: string | null;
   readonly correo: string | null;
@@ -49,7 +50,6 @@ export interface Contacto {
 /** Payload para crear o actualizar un contacto. */
 export interface ContactoPayload {
   readonly tipo_persona: number | null;
-  readonly regimen: number | null;
   readonly identificacion: number | null;
   readonly numero_identificacion: string;
   readonly digito_verificacion: string | null;

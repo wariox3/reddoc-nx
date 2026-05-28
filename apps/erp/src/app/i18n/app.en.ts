@@ -48,6 +48,7 @@ export const en: AppDict = {
         desc: 'Could not delete the records. Please try again.',
       },
     },
+    boolean: { true: 'YES', false: 'NO' },
   },
   layout: {
     menuLabel: 'Open menu',
@@ -80,10 +81,15 @@ export const en: AppDict = {
       name: 'Contacts',
       columns: {
         id: 'ID',
-        nombre: 'Name',
+        identificacion_abreviatura: 'Type',
         identificacion: 'ID number',
+        nombre: 'Name',
         correo: 'Email',
         telefono: 'Phone',
+        celular: 'Mobile',
+        cliente: 'CLI',
+        proveedor: 'PRO',
+        empleado: 'EMP',
       },
       form: {
         createTitle: 'new contact',

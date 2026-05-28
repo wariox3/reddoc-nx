@@ -7,7 +7,6 @@ import type { ErpSelectOption } from '@erp/core/components/api-select/erp-api-se
  */
 export interface ContactoFormRawValue {
   readonly tipo_persona: ErpSelectOption | null;
-  readonly regimen: ErpSelectOption | null;
   readonly identificacion: ErpSelectOption | null;
   readonly numero_identificacion: string | null;
   readonly digito_verificacion: string | null;

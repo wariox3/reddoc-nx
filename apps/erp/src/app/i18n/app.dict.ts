@@ -34,6 +34,7 @@ export interface AppDict extends AuthTranslationsHost {
       deleteSuccess: { title: string; desc: string };
       deleteError: { title: string; desc: string };
     };
+    boolean: { true: string; false: string };
   };
   layout: {
     menuLabel: string;
@@ -68,8 +69,13 @@ export interface AppDict extends AuthTranslationsHost {
         id: string;
         nombre: string;
         identificacion: string;
+        identificacion_abreviatura: string;
         correo: string;
         telefono: string;
+        celular: string;
+        cliente: string;
+        proveedor: string;
+        empleado: string;
       };
       form: {
         createTitle: string;

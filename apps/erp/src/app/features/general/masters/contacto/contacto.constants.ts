@@ -22,10 +22,10 @@ export const CONTACTOS_COLUMNS: readonly ColumnDef[] = [
     sortable: true,
   },
   {
-    field: 'nombre_corto',
-    headerKey: 'entities.contacto.columns.nombre',
+    field: 'identificacion_abreviatura',
+    headerKey: 'entities.contacto.columns.identificacion_abreviatura',
     type: 'text',
-    sortable: true,
+    width: '80px',
   },
   {
     field: 'numero_identificacion',
@@ -33,8 +33,36 @@ export const CONTACTOS_COLUMNS: readonly ColumnDef[] = [
     type: 'text',
     sortable: true,
   },
+  {
+    field: 'nombre_corto',
+    headerKey: 'entities.contacto.columns.nombre',
+    type: 'text',
+    sortable: true,
+  },
   { field: 'correo', headerKey: 'entities.contacto.columns.correo', type: 'text' },
   { field: 'telefono', headerKey: 'entities.contacto.columns.telefono', type: 'text' },
+  { field: 'celular', headerKey: 'entities.contacto.columns.celular', type: 'text' },
+  {
+    field: 'cliente',
+    headerKey: 'entities.contacto.columns.cliente',
+    type: 'boolean',
+    width: '60px',
+    align: 'center',
+  },
+  {
+    field: 'proveedor',
+    headerKey: 'entities.contacto.columns.proveedor',
+    type: 'boolean',
+    width: '60px',
+    align: 'center',
+  },
+  {
+    field: 'empleado',
+    headerKey: 'entities.contacto.columns.empleado',
+    type: 'boolean',
+    width: '60px',
+    align: 'center',
+  },
 ];
 
 export const CONTACTOS_ROW_ACTIONS: readonly RowAction[] = [

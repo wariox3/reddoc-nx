@@ -63,24 +63,8 @@
           />
         </div>
 
-        <!-- Régimen -->
-        <div class="flex flex-col gap-1.5">
-          <label for="regimen" class="contacto-form__label">
-            {{ t().entities.contacto.form.fields.regimen }}
-            <span class="ml-px text-red-500">*</span>
-          </label>
-          <app-api-select
-            inputId="regimen"
-            formControlName="regimen"
-            endpoint="/general/regimen/seleccionar/"
-            [params]="regimenParams"
-            [invalid]="form.controls.regimen.invalid && form.controls.regimen.touched"
-          />
-          <lib-field-error
-            [control]="form.controls.regimen"
-            [messages]="{ required: t().entities.contacto.form.validation.required }"
-          />
-        </div>
+        <!-- Celda vacía para alinear tipo de persona en columna 1 -->
+        <div></div>
 
         <!-- Tipo de identificación -->
         <div class="flex flex-col gap-1.5">

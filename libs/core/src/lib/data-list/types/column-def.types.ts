@@ -39,4 +39,11 @@ export interface ColumnDef {
    * El valor final se busca como `${enumKeyPrefix}.${row[field]}`.
    */
   readonly enumKeyPrefix?: string;
+  /**
+   * Para `type === 'boolean'`: prefijo i18n para resolver los labels de
+   * verdadero y falso. Default: `'common.boolean'`.
+   * Resuelve `${prefix}.true` y `${prefix}.false` del diccionario activo.
+   * Permite personalizar por columna: `'common.boolAccepted'` → "Aceptado/Rechazado".
+   */
+  readonly booleanKeyPrefix?: string;
 }
