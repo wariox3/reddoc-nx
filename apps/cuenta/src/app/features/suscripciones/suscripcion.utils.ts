@@ -69,3 +69,9 @@ export function formatSuscripcionPct(pct: number): string {
 export function formatSuscripcionId(id: number): string {
   return `#${String(id).padStart(4, '0')}`;
 }
+
+export function formatSuscripcionFechaFin(iso: string): string {
+  const [y, m, d] = iso.split('-').map(Number);
+  const date = new Date(y, m - 1, d);
+  return date.toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' });
+}

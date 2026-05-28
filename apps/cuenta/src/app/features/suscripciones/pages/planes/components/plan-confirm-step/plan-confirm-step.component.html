@@ -166,8 +166,14 @@
       </div>
       @if (descuentoAnualLabel(); as descLabel) {
         <div class="flex items-baseline justify-between gap-3">
-          <dt class="text-brand-muted">Descuento anual (10%)</dt>
+          <dt class="text-brand-muted">Descuento anual</dt>
           <dd class="m-0 text-emerald-600 font-semibold tabular-nums">−{{ descLabel }}</dd>
+        </div>
+      }
+      @if (mostrarSaldo()) {
+        <div class="flex items-baseline justify-between gap-3">
+          <dt class="text-brand-muted">Saldo a tu favor del plan vigente</dt>
+          <dd class="m-0 text-emerald-600 font-semibold tabular-nums">−{{ saldoLabel() }}</dd>
         </div>
       }
     </dl>
@@ -181,10 +187,16 @@
           >
             {{ chargeAmountLabel() }}
           </span>
-          <span class="text-[0.7rem] text-brand-muted font-semibold">{{ chargeSuffix() }}</span>
+          @if (!cubiertoConSaldo()) {
+            <span class="text-[0.7rem] text-brand-muted font-semibold">{{ chargeSuffix() }}</span>
+          }
         </div>
       </div>
-      @if (annual()) {
+      @if (cubiertoConSaldo()) {
+        <div class="text-right text-[0.68rem] text-emerald-700 font-semibold tabular-nums mt-1">
+          Cubierto con el saldo de tu plan vigente
+        </div>
+      } @else if (annual()) {
         <div class="text-right text-[0.68rem] text-brand-muted tabular-nums mt-1">
           ≈ {{ monthlyEquivalentLabel() }} / mes
         </div>
@@ -204,14 +216,16 @@
   <!-- ===== 5. Aviso legal ===== -->
   <div class="flex items-center justify-between gap-3 flex-wrap text-[0.7rem] text-brand-muted">
     <p class="m-0 leading-snug max-w-[420px]">
-      Al pagar aceptás los
+      Al {{ cubiertoConSaldo() ? 'actualizar' : 'pagar' }} aceptás los
       <a href="#" class="text-brand-blue hover:underline font-medium">Términos</a>
       y la
       <a href="#" class="text-brand-blue hover:underline font-medium">Política de privacidad</a>.
     </p>
-    <span class="inline-flex items-center gap-1.5 text-brand-text font-semibold">
-      <i class="pi pi-lock text-[0.78rem] text-emerald-600"></i>
-      Pago seguro por Wompi
-    </span>
+    @if (!cubiertoConSaldo()) {
+      <span class="inline-flex items-center gap-1.5 text-brand-text font-semibold">
+        <i class="pi pi-lock text-[0.78rem] text-emerald-600"></i>
+        Pago seguro por Wompi
+      </span>
+    }
   </div>
 </div>

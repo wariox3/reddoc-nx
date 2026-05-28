@@ -22,5 +22,5 @@ export function displayedMonthly(precio: string, annual: boolean): number {
 
 export function annualTotal(precio: string): number {
   const base = parsePrecio(precio);
-  return Math.round(base * (1 - ANNUAL_DISCOUNT) * 12);
+  return Math.round(((base * (1 - ANNUAL_DISCOUNT)) / 30) * 365);
 }

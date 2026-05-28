@@ -8,13 +8,13 @@
       Suscripciones
     </a>
     <i class="pi pi-angle-right text-[0.65rem] text-brand-muted/60"></i>
-    <span class="text-brand-text font-medium">Mejorar</span>
+    <span class="text-brand-text font-medium">Actualizar</span>
   </nav>
 
   <!-- Page title -->
   <header class="mb-6">
     <h1 class="text-[1.5rem] font-bold text-brand-text tracking-[-0.025em] m-0 mb-1">
-      Mejorar suscripción
+      Actualizar suscripción
     </h1>
     <p class="text-[0.85rem] text-brand-muted m-0">
       Activa un plan completo para seguir operando sin límites.
@@ -24,29 +24,99 @@
   <!-- Context header: render inmediato si vino por router state, luego refresca con el GET. -->
   @if (suscripcion(); as s) {
     <div
-      class="flex items-center gap-3 mb-6 p-3.5 rounded-[10px] border border-[rgba(20,48,73,0.12)] bg-brand-surface"
+      class="mb-6 rounded-[10px] border border-[rgba(20,48,73,0.12)] bg-brand-surface overflow-hidden"
     >
-      <span
-        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] border border-[rgba(20,48,73,0.12)] bg-brand-bg text-[0.82rem] font-semibold text-brand-text tracking-[0.02em]"
-      >
-        {{ clienteIniciales() }}
-      </span>
-      <div class="flex-1 min-w-0">
-        <div
-          class="font-mono text-[0.62rem] tracking-[0.16em] uppercase text-brand-muted font-semibold mb-0.5"
+      <!-- Fila superior: avatar + cliente + plan -->
+      <div class="flex items-center gap-3 p-3.5">
+        <span
+          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] border border-[rgba(20,48,73,0.12)] bg-brand-bg text-[0.82rem] font-semibold text-brand-text tracking-[0.02em]"
         >
-          Mejorando suscripción de
-        </div>
-        <div class="flex items-center gap-2 flex-wrap">
-          <span class="text-[0.92rem] font-semibold text-brand-text truncate">
-            {{ s.cliente_nombre }}
-          </span>
-          <span class="text-brand-muted/60 text-[0.75rem]">·</span>
-          <span class="text-[0.78rem] text-brand-muted">
-            Plan actual: {{ s.suscripcion_tipo_nombre }}
-          </span>
+          {{ clienteIniciales() }}
+        </span>
+        <div class="flex-1 min-w-0">
+          <div
+            class="font-mono text-[0.62rem] tracking-[0.16em] uppercase text-brand-muted font-semibold mb-0.5"
+          >
+            Suscripción actual
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-[0.92rem] font-semibold text-brand-text truncate">
+              {{ s.cliente_nombre }}
+            </span>
+            <span class="text-brand-muted/60 text-[0.75rem]">·</span>
+            <span class="text-[0.78rem] text-brand-muted">
+              Plan actual: {{ s.suscripcion_tipo_nombre }}
+            </span>
+          </div>
         </div>
       </div>
+
+      <!-- Fila inferior: stats de la suscripción vigente -->
+      @if (suscripcionStats(); as stats) {
+        <div
+          class="border-t border-[rgba(20,48,73,0.07)] bg-[rgba(20,48,73,0.02)] grid grid-cols-2 sm:grid-cols-4 divide-x divide-[rgba(20,48,73,0.07)]"
+        >
+          <!-- Días restantes -->
+          <div class="flex flex-col gap-0.5 px-4 py-2.5">
+            <span
+              class="font-mono text-[0.58rem] tracking-[0.14em] uppercase font-semibold text-brand-muted"
+            >
+              Días restantes
+            </span>
+            <span
+              class="text-[0.88rem] font-bold tabular-nums"
+              [class.text-emerald-600]="stats.tone === 'success'"
+              [class.text-amber-600]="stats.tone === 'warn'"
+              [class.text-rose-600]="stats.tone === 'danger'"
+            >
+              @if (stats.expired) {
+                Vencida
+              } @else {
+                {{ stats.daysLeft }}
+                <span class="text-[0.7rem] font-normal text-brand-muted">
+                  {{ stats.daysLeft === 1 ? 'día' : 'días' }}
+                </span>
+              }
+            </span>
+          </div>
+
+          <!-- Fecha de vencimiento -->
+          <div class="flex flex-col gap-0.5 px-4 py-2.5">
+            <span
+              class="font-mono text-[0.58rem] tracking-[0.14em] uppercase font-semibold text-brand-muted"
+            >
+              Vence
+            </span>
+            <span class="text-[0.88rem] font-semibold text-brand-text">
+              {{ stats.fechaFin }}
+            </span>
+          </div>
+
+          <!-- Frecuencia -->
+          <div class="flex flex-col gap-0.5 px-4 py-2.5">
+            <span
+              class="font-mono text-[0.58rem] tracking-[0.14em] uppercase font-semibold text-brand-muted"
+            >
+              Frecuencia
+            </span>
+            <span class="text-[0.88rem] font-semibold text-brand-text">
+              {{ stats.frecuenciaLabel }}
+            </span>
+          </div>
+
+          <!-- Saldo restante -->
+          <div class="flex flex-col gap-0.5 px-4 py-2.5">
+            <span
+              class="font-mono text-[0.58rem] tracking-[0.14em] uppercase font-semibold text-brand-muted"
+            >
+              Saldo restante
+            </span>
+            <span class="text-[0.88rem] font-semibold text-brand-text tabular-nums">
+              {{ stats.saldoRestante }}
+            </span>
+          </div>
+        </div>
+      }
     </div>
   }
 
@@ -247,6 +317,8 @@
             [plan]="plan"
             [billingProfile]="selectedBillingProfile()"
             [annual]="annual()"
+            [saldoNoConsumido]="cambioPlanCalc()?.saldoNoConsumido ?? 0"
+            [totalAPagar]="cambioPlanCalc()?.totalAPagar ?? null"
             (cambiarPlan)="goToStep(0)"
             (cambiarFacturacion)="goToStep(1)"
           />
@@ -259,6 +331,8 @@
         [plan]="plan"
         [annual]="annual()"
         [billingProfile]="selectedBillingProfile()"
+        [saldoNoConsumido]="cambioPlanCalc()?.saldoNoConsumido ?? 0"
+        [totalAPagar]="cambioPlanCalc()?.totalAPagar ?? null"
       />
     }
   </div>
@@ -289,6 +363,10 @@
           Facturar a
           <strong class="text-brand-text font-semibold">{{ bp.nombre }}</strong>
         </span>
+      } @else if (step() === 2 && cobroSinPagoWompi()) {
+        <span class="text-[0.78rem] text-emerald-700 font-semibold tabular-nums">
+          Cubierto con saldo
+        </span>
       } @else if (step() === 2 && selectedPlan(); as plan) {
         <span class="text-[0.78rem] text-brand-muted tabular-nums">
           Total
@@ -312,10 +390,31 @@
           Continuar
           <i class="pi pi-arrow-right text-[0.7rem]"></i>
         </button>
+      } @else if (cobroSinPagoWompi()) {
+        <button
+          type="button"
+          (click)="confirmarCambio()"
+          [disabled]="isUpdatingPlan()"
+          class="px-5 py-2.5 rounded-lg border-0 text-[0.85rem] font-semibold inline-flex items-center gap-2 transition-all duration-150 min-w-[200px] justify-center"
+          [class]="
+            isUpdatingPlan()
+              ? 'bg-[rgba(20,48,73,0.12)] text-brand-muted cursor-not-allowed'
+              : 'bg-brand-blue text-white cursor-pointer hover:bg-[#0086d4]'
+          "
+        >
+          @if (isUpdatingPlan()) {
+            <i class="pi pi-spin pi-spinner text-[0.78rem]"></i>
+            Actualizando…
+          } @else {
+            <i class="pi pi-refresh text-[0.7rem]"></i>
+            Actualizar plan
+            <i class="pi pi-arrow-right text-[0.7rem]"></i>
+          }
+        </button>
       } @else {
         <button
           type="button"
-          (click)="pagar()"
+          (click)="confirmarCambio()"
           [disabled]="isStartingPayment()"
           class="px-5 py-2.5 rounded-lg border-0 text-[0.85rem] font-semibold inline-flex items-center gap-2 transition-all duration-150 min-w-[200px] justify-center"
           [class]="
@@ -356,4 +455,22 @@
     (visibleChange)="onDeleteDialogVisibleChange($event)"
     (confirm)="confirmRemoveBillingProfile($event)"
   />
+}
+
+@if (showUpdateConfirmDialog() && suscripcion(); as susActual) {
+  @if (selectedPlan(); as planNuevo) {
+    @if (cambioPlanCalc(); as calc) {
+      <app-plan-update-confirm-dialog
+        [visible]="true"
+        [suscripcionActual]="susActual"
+        [planNuevo]="planNuevo"
+        [periodoNuevo]="annual() ? 'A' : 'M'"
+        [saldoNoConsumido]="calc.saldoNoConsumido"
+        [costoNuevoPlan]="calc.costoNuevoPlan"
+        [isSubmitting]="isUpdatingPlan()"
+        (visibleChange)="onUpdateConfirmDialogVisibleChange($event)"
+        (confirm)="onConfirmActualizarPlan()"
+      />
+    }
+  }
 }

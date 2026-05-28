@@ -25,6 +25,8 @@ export class PlanConfirmStepComponent {
   readonly plan = input.required<SuscripcionTipo>();
   readonly billingProfile = input<BillingProfile | null>(null);
   readonly annual = input<boolean>(false);
+  readonly saldoNoConsumido = input<number>(0);
+  readonly totalAPagar = input<number | null>(null);
 
   readonly cambiarPlan = output<void>();
   readonly cambiarFacturacion = output<void>();
@@ -60,11 +62,15 @@ export class PlanConfirmStepComponent {
 
   readonly frecuenciaLabel = computed(() => (this.annual() ? 'Anual' : 'Mensual'));
 
-  readonly chargeAmountLabel = computed(() =>
+  readonly costoNuevoPlan = computed(() =>
     this.annual()
-      ? formatCop(computeAnnualTotal(this.plan().precio))
-      : formatCop(displayedMonthly(this.plan().precio, false)),
+      ? computeAnnualTotal(this.plan().precio)
+      : displayedMonthly(this.plan().precio, false),
   );
+
+  readonly totalEfectivo = computed(() => this.totalAPagar() ?? this.costoNuevoPlan());
+
+  readonly chargeAmountLabel = computed(() => formatCop(this.totalEfectivo()));
 
   readonly chargeSuffix = computed(() => (this.annual() ? '/año' : '/mes'));
 
@@ -82,6 +88,12 @@ export class PlanConfirmStepComponent {
     const total = computeAnnualTotal(this.plan().precio);
     return formatCop(Math.max(0, base - total));
   });
+
+  readonly saldoLabel = computed(() => formatCop(this.saldoNoConsumido()));
+
+  readonly mostrarSaldo = computed(() => this.saldoNoConsumido() > 0);
+
+  readonly cubiertoConSaldo = computed(() => this.totalEfectivo() === 0);
 
   readonly monthlyEquivalentLabel = computed(() =>
     formatCop(displayedMonthly(this.plan().precio, this.annual())),
