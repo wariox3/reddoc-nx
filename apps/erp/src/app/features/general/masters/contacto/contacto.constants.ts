@@ -40,7 +40,6 @@ export const CONTACTOS_COLUMNS: readonly ColumnDef[] = [
     sortable: true,
   },
   { field: 'correo', headerKey: 'entities.contacto.columns.correo', type: 'text' },
-  { field: 'telefono', headerKey: 'entities.contacto.columns.telefono', type: 'text' },
   { field: 'celular', headerKey: 'entities.contacto.columns.celular', type: 'text' },
   {
     field: 'cliente',
@@ -77,12 +76,12 @@ export const CONTACTOS_PRIMARY_ACTION: ToolbarAction = {
 };
 
 export const CONTACTOS_TRAILING_ACTIONS: readonly ToolbarAction[] = [
-  { id: 'import', labelKey: 'common.actions.import', iconClass: 'pi pi-upload' },
   {
-    id: 'export',
-    labelKey: 'common.actions.export',
-    iconClass: '',
+    id: 'actions',
+    labelKey: 'common.actions.actions',
+    iconClass: 'pi pi-ellipsis-v',
     children: [
+      { id: 'import', labelKey: 'common.actions.import', iconClass: 'pi pi-upload' },
       { id: 'export-excel', labelKey: 'common.actions.exportExcel', iconClass: 'pi pi-file-excel' },
     ],
   },

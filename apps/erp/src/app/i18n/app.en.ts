@@ -7,6 +7,7 @@ export const en: AppDict = {
     comingSoon: 'Coming soon.',
     actions: {
       new: 'New',
+      actions: 'Actions',
       edit: 'Edit',
       delete: 'Delete',
       deleteSelected: 'Delete selected',
@@ -109,6 +110,7 @@ export const en: AppDict = {
         clasificacion: 'This contact is',
         fields: {
           tipoPersona: 'Person type',
+          responsabilidad: 'Responsibility',
           regimen: 'Tax regime',
           identificacion: 'ID type',
           numeroIdentificacion: 'ID number',

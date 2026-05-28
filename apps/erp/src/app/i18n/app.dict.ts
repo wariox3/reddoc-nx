@@ -5,6 +5,7 @@ export interface AppDict extends AuthTranslationsHost {
     comingSoon: string;
     actions: {
       new: string;
+      actions: string;
       edit: string;
       delete: string;
       deleteSelected: string;
@@ -87,6 +88,7 @@ export interface AppDict extends AuthTranslationsHost {
         clasificacion: string;
         fields: {
           tipoPersona: string;
+          responsabilidad: string;
           regimen: string;
           identificacion: string;
           numeroIdentificacion: string;

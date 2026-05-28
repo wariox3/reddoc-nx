@@ -36,6 +36,8 @@ export interface Contacto {
   readonly ciudad_nombre: string;
   readonly tipo_persona_id: number;
   readonly tipo_persona_nombre: string;
+  readonly responsabilidad_id: number;
+  readonly responsabilidad_nombre: string;
   readonly regimen_id: number | null;
   readonly asesor_id: number | null;
   readonly precio_id: number | null;
@@ -50,6 +52,7 @@ export interface Contacto {
 /** Payload para crear o actualizar un contacto. */
 export interface ContactoPayload {
   readonly tipo_persona: number | null;
+  readonly responsabilidad: number | null;
   readonly identificacion: number | null;
   readonly numero_identificacion: string;
   readonly digito_verificacion: string | null;

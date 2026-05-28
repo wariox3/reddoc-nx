@@ -114,7 +114,7 @@ export class ContactosListComponent {
       case 'new':
         this.router.navigate(this.buildRouteCommands('nuevo'));
         break;
-      case 'export':
+      case 'export-excel':
         // TODO: implementar exportación a Excel
         break;
       case 'import':

@@ -79,6 +79,7 @@ export class ContactoFormComponent implements OnInit {
   protected readonly precioParams: Record<string, string> = { venta: 'True' };
   protected readonly form = this.fb.group({
     tipo_persona: this.fb.control<ErpSelectOption | null>(null, Validators.required),
+    responsabilidad: this.fb.control<ErpSelectOption | null>(null, Validators.required),
     identificacion: this.fb.control<ErpSelectOption | null>(null, Validators.required),
     numero_identificacion: ['', Validators.required],
     digito_verificacion: this.fb.control<string>({ value: '', disabled: true }),
