@@ -22,6 +22,9 @@ export type {
 } from './lib/models/auth.model';
 export { BaseHttpService, buildHttpParams } from './lib/services/base-http.service';
 export type { ParamValue } from './lib/services/base-http.service';
+export { FileDownloadService } from './lib/http/file-download.service';
+export type { FileDownloadOptions } from './lib/http/file-download.service';
+export { parseFilename, triggerBrowserDownload } from './lib/http/file-download.utils';
 export { CiudadService } from './lib/services/ciudad.service';
 export type { Ciudad } from './lib/models/ciudad.model';
 export { IdentificacionService } from './lib/services/identificacion.service';
