@@ -54,11 +54,11 @@ export class ContactoService extends BaseHttpService {
    *
    * HttpClient detecta el `FormData` y arma el `multipart/form-data` con el
    * boundary correcto — no hay que setear `Content-Type` manualmente. El campo
-   * `file` es el contrato que espera el backend.
+   * `archivo` es el contrato que espera el backend.
    */
   importar(file: File): Observable<ContactoImportResult> {
     const form = new FormData();
-    form.append('file', file, file.name);
+    form.append('archivo', file, file.name);
     return this.post<ContactoImportResult>(`${this.resourcePath}importar/`, form);
   }
 
