@@ -17,9 +17,11 @@ import {
   type SortSpec,
 } from '@reddoc/core';
 import {
+  BreadcrumbComponent,
   DataFilterModalComponent,
   DataTableComponent,
   DataToolbarComponent,
+  type BreadcrumbItem,
   type PageChangeEvent,
   type RowActionInvokedEvent,
 } from '@reddoc/feature-base';
@@ -54,6 +56,7 @@ import {
   selector: 'app-contactos-list',
   standalone: true,
   imports: [
+    BreadcrumbComponent,
     DataTableComponent,
     DataToolbarComponent,
     DataFilterModalComponent,
@@ -105,6 +108,22 @@ export class ContactosListComponent {
 
   // ── Derivados ─────────────────────────────────────────────────────────────
   protected readonly hasSelection = computed(() => this.selectedRows().length > 0);
+
+  /**
+   * Migas: módulo (General, navegable a su home) → entidad actual (Contactos).
+   * El contacto es un master del módulo `general`, por eso el segmento es fijo.
+   */
+  protected readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => {
+    const slug = this.tenant.currentSlug();
+    return [
+      {
+        label: this.t().modules.general.name,
+        routerLink: slug ? ['/t', slug, 'general'] : undefined,
+      },
+      { label: this.t().entities.contacto.name },
+    ];
+  });
+
   protected readonly columns = CONTACTOS_COLUMNS;
   protected readonly filterFields = CONTACTOS_FILTER_FIELDS;
   protected readonly rowActions = CONTACTOS_ROW_ACTIONS;
