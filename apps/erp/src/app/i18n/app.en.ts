@@ -48,8 +48,49 @@ export const en: AppDict = {
         title: 'Failed to delete',
         desc: 'Could not delete the records. Please try again.',
       },
+      exportError: {
+        title: 'Export error',
+        desc: 'Could not download the Excel file.',
+      },
     },
     boolean: { true: 'YES', false: 'NO' },
+    import: {
+      dropzone: {
+        primary: 'Drag your Excel file here',
+        secondary: 'or click to select it',
+        hint: '{types} files · up to {max} MB',
+        invalidType: 'The file format is not valid.',
+        tooLarge: 'The file exceeds the maximum allowed size.',
+      },
+      fileMeta: { uploadedAt: '{size} · uploaded today at {time}' },
+      removeFile: 'Remove file',
+      tabs: { errors: 'Errors', masters: 'Masters' },
+      emptyStates: {
+        errors: 'Errors will appear here after importing the file.',
+        masters: 'The masters summary will appear here after importing.',
+      },
+      example: {
+        download: 'Download template',
+        downloading: 'Downloading…',
+        error: {
+          title: 'Could not download the template',
+          desc: 'Try again in a few seconds.',
+        },
+      },
+      submit: 'Import',
+      submitting: 'Importing…',
+      cancel: 'Cancel',
+      toasts: {
+        success: {
+          title: 'Import completed',
+          desc: 'The records were processed successfully.',
+        },
+        error: {
+          title: 'Could not import',
+          desc: 'Check the file and try again.',
+        },
+      },
+    },
   },
   layout: {
     menuLabel: 'Open menu',
@@ -80,6 +121,10 @@ export const en: AppDict = {
   entities: {
     contacto: {
       name: 'Contacts',
+      import: {
+        title: 'Import contacts',
+        subtitle: 'Upload an Excel file with the records to load',
+      },
       columns: {
         id: 'ID',
         identificacion_abreviatura: 'Type',

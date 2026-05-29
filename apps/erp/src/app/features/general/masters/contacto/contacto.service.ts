@@ -1,7 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Observable, forkJoin, map } from 'rxjs';
 import { BaseHttpService, serializeListQuery, type ListQuery } from '@reddoc/core';
-import type { Contacto, ContactoListResponse, ContactoPayload } from './contacto.model';
+import type {
+  Contacto,
+  ContactoImportResult,
+  ContactoListResponse,
+  ContactoPayload,
+} from './contacto.model';
 
 /**
  * Servicio HTTP de contactos.
@@ -43,6 +48,19 @@ export class ContactoService extends BaseHttpService {
     numero_identificacion: string;
   }): Observable<{ validacion: boolean; codigo: number }> {
     return this.post<{ validacion: boolean; codigo: number }>(`${this.resourcePath}validar/`, data);
+  }
+
+  /**
+   * Importación masiva desde un archivo Excel.
+   *
+   * HttpClient detecta el `FormData` y arma el `multipart/form-data` con el
+   * boundary correcto — no hay que setear `Content-Type` manualmente. El campo
+   * `file` es el contrato que espera el backend.
+   */
+  importar(file: File): Observable<ContactoImportResult> {
+    const form = new FormData();
+    form.append('file', file, file.name);
+    return this.post<ContactoImportResult>(`${this.resourcePath}importar/`, form);
   }
 
   /**

@@ -65,10 +65,10 @@
   }
 
   <!-- Trailing actions (exportar, importar, etc.) -->
-  @if (trailingActions().length > 0) {
+  @if (resolvedTrailingActions().length > 0) {
     <div class="lib-data-toolbar__group">
-      @for (action of trailingActions(); track action.id) {
-        @if (action.children?.length) {
+      @for (action of resolvedTrailingActions(); track action.id) {
+        @if (action.menuItems; as items) {
           <button
             type="button"
             class="lib-data-toolbar__btn lib-data-toolbar__btn--ghost"
@@ -78,12 +78,7 @@
             <span>{{ translate(action.labelKey) }}</span>
             <i class="pi pi-chevron-down lib-data-toolbar__dropdown-caret"></i>
           </button>
-          <p-menu
-            #menu
-            [popup]="true"
-            [model]="toMenuItems(action.children ?? [])"
-            appendTo="body"
-          />
+          <p-menu #menu [popup]="true" [model]="items" appendTo="body" />
         } @else {
           <button
             type="button"

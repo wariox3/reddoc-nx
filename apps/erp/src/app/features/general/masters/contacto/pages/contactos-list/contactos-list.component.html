@@ -31,3 +31,14 @@
 </div>
 
 <p-confirmDialog />
+
+<app-import-dialog
+  [visible]="importVisible()"
+  (visibleChange)="onImportVisibleChange($event)"
+  [title]="t().entities.contacto.import.title"
+  [subtitle]="t().entities.contacto.import.subtitle"
+  [importing]="importLoading()"
+  [errors]="importErrors()"
+  [mastersTouched]="importMasters()"
+  (importRequested)="onImportRequested($event)"
+/>

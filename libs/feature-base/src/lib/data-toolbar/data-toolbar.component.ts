@@ -1,10 +1,20 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, input, output } from '@angular/core';
+import { Component, computed, inject, input, output } from '@angular/core';
 import { TooltipModule } from 'primeng/tooltip';
 import { MenuModule } from 'primeng/menu';
 import type { MenuItem } from 'primeng/api';
 import { I18nService } from '@reddoc/core';
 import type { ToolbarAction } from './data-toolbar.types';
+
+/**
+ * Trailing action ya resuelta: si tiene `children`, el `menuItems` viene
+ * precomputado como un `MenuItem[]` estable entre change detections.
+ * Mantener una referencia estable es lo que evita el bug de "doble click" en
+ * `<p-menu [model]>` — si el modelo cambia entre CDs el primer click se pierde.
+ */
+interface ResolvedTrailingAction extends ToolbarAction {
+  readonly menuItems: MenuItem[] | null;
+}
 
 /**
  * Toolbar/header tonto para listados. Composición pura: recibe inputs,
@@ -71,13 +81,29 @@ export class DataToolbarComponent {
 
   // ── API protegida (template) ──────────────────────────────────────────────
 
-  protected toMenuItems(children: readonly ToolbarAction[]): MenuItem[] {
-    return children.map((child) => ({
-      label: this.translate(child.labelKey),
-      icon: child.iconClass,
-      command: () => this.actionInvoked.emit(child.id),
+  /**
+   * Trailing actions con su `menuItems` ya resuelto. La referencia del array
+   * es estable entre change detections y solo cambia cuando cambian
+   * `trailingActions` o el idioma activo (a través del signal `i18n.t()`).
+   *
+   * Ojo: pasarle a `<p-menu [model]>` un array nuevo en cada CD provoca que
+   * el primer click sobre un item se pierda — exactamente el bug que esto
+   * evita.
+   */
+  protected readonly resolvedTrailingActions = computed<readonly ResolvedTrailingAction[]>(() => {
+    // Leer `i18n.t()` dentro del computed para invalidarlo al cambiar de idioma.
+    const dict = this.i18n.t();
+    return this.trailingActions().map((action) => ({
+      ...action,
+      menuItems: action.children?.length
+        ? action.children.map((child) => ({
+            label: this.resolveKey(dict, child.labelKey),
+            icon: child.iconClass,
+            command: () => this.actionInvoked.emit(child.id),
+          }))
+        : null,
     }));
-  }
+  });
 
   protected onSearchInput(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
@@ -93,7 +119,10 @@ export class DataToolbarComponent {
    * Devuelve la clave misma si no existe — facilita detectar faltantes en dev.
    */
   protected translate(key: string): string {
-    const dict = this.i18n.t();
+    return this.resolveKey(this.i18n.t(), key);
+  }
+
+  private resolveKey(dict: unknown, key: string): string {
     const parts = key.split('.');
     let current: unknown = dict;
     for (const part of parts) {

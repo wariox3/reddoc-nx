@@ -1,0 +1,162 @@
+// ── Dialog shell — hereda el lenguaje visual de los dialogs del proyecto:
+//    radius 16px, sombra suave + larga, padding propio del header/content/footer.
+//    El mismo patrón vive en contenedores/components/{delete,create,invite}-dialog.
+:host ::ng-deep .cp-import-dialog {
+  border-radius: 16px !important;
+  overflow: hidden;
+  box-shadow:
+    0 4px 6px rgba(20 48 73 / 0.04),
+    0 20px 60px rgba(20 48 73 / 0.14) !important;
+
+  .p-dialog-header {
+    padding: 1.5rem 1.5rem 0;
+    border-bottom: none;
+  }
+
+  .p-dialog-content {
+    padding: 1.25rem 1.5rem 0.75rem;
+  }
+
+  .p-dialog-footer {
+    padding: 0 1.5rem 1.1rem;
+  }
+
+  // Tabs heredan el fondo del dialog (sin la "caja" gris por defecto de PrimeNG).
+  .p-tabs,
+  .p-tablist,
+  .p-tablist-tab-list,
+  .p-tabpanels {
+    background: transparent;
+  }
+
+  .p-tabpanels {
+    padding: 1rem 0 0;
+    min-height: 96px;
+  }
+}
+
+// ── Dropzone — los estados emergen de modificadores, no de !important.
+.cp-import-dialog__dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.25rem 1.5rem;
+  border: 2px dashed rgba(20, 48, 73, 0.15);
+  border-radius: 14px;
+  background: rgba(240, 249, 255, 0.4); // sky-50/40
+  text-align: center;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    transform 200ms ease;
+
+  &:hover {
+    background: rgba(240, 249, 255, 0.7); // sky-50/70
+    border-color: #7dd3fc; // sky-300
+  }
+
+  &:focus-visible {
+    outline: 2px solid #38bdf8; // sky-400
+    outline-offset: 2px;
+  }
+
+  &.is-drag-over {
+    background: #e0f2fe; // sky-100
+    border: 2px solid #0ea5e9; // sky-500
+    transform: scale(1.01);
+  }
+
+  &.is-error {
+    background: rgba(254, 242, 242, 0.5); // red-50/50
+    border-color: #fca5a5; // red-300
+  }
+}
+
+.cp-import-dialog__dropzone-icon {
+  display: inline-flex;
+  width: 56px;
+  height: 56px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: #f0f9ff; // sky-50
+  color: #0369a1; // sky-700
+  transition: color 150ms ease;
+
+  .cp-import-dialog__dropzone.is-error & {
+    background: #fef2f2; // red-50
+    color: #dc2626; // red-600
+  }
+}
+
+// ── File card — el botón "✕" tiene su propia presencia, no es un default.
+.cp-import-dialog__remove {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-brand-muted);
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+
+  &:hover:not(:disabled) {
+    background: rgba(20, 48, 73, 0.06);
+    color: var(--color-brand-text);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// ── Empty state de los tabs — copy explicativo, no "sin datos".
+.cp-import-dialog__empty {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.85rem 0.25rem;
+}
+
+// ── Botón "Descargar ejemplo" — auxiliar, ghost; vive a la izquierda del footer.
+.cp-import-dialog__example {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-brand-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease,
+    border-color 150ms ease;
+
+  &:hover:not(:disabled) {
+    background: rgba(20, 48, 73, 0.04);
+    border-color: rgba(20, 48, 73, 0.1);
+    color: var(--color-brand-text);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #38bdf8;
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}

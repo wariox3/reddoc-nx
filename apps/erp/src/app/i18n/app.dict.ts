@@ -34,8 +34,38 @@ export interface AppDict extends AuthTranslationsHost {
       loadError: { title: string; desc: string };
       deleteSuccess: { title: string; desc: string };
       deleteError: { title: string; desc: string };
+      exportError: { title: string; desc: string };
     };
     boolean: { true: string; false: string };
+    import: {
+      dropzone: {
+        primary: string;
+        secondary: string;
+        /** Soporta los placeholders `{types}` y `{max}`. */
+        hint: string;
+        invalidType: string;
+        tooLarge: string;
+      };
+      fileMeta: {
+        /** Soporta los placeholders `{size}` y `{time}`. */
+        uploadedAt: string;
+      };
+      removeFile: string;
+      tabs: { errors: string; masters: string };
+      emptyStates: { errors: string; masters: string };
+      example: {
+        download: string;
+        downloading: string;
+        error: { title: string; desc: string };
+      };
+      submit: string;
+      submitting: string;
+      cancel: string;
+      toasts: {
+        success: { title: string; desc: string };
+        error: { title: string; desc: string };
+      };
+    };
   };
   layout: {
     menuLabel: string;
@@ -66,6 +96,7 @@ export interface AppDict extends AuthTranslationsHost {
   entities: {
     contacto: {
       name: string;
+      import: { title: string; subtitle: string };
       columns: {
         id: string;
         nombre: string;

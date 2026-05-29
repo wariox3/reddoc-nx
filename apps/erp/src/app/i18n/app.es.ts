@@ -48,8 +48,49 @@ export const es: AppDict = {
         title: 'Error al eliminar',
         desc: 'No se pudieron eliminar los registros. Intentá de nuevo.',
       },
+      exportError: {
+        title: 'Error al exportar',
+        desc: 'No se pudo descargar el archivo Excel.',
+      },
     },
     boolean: { true: 'SÍ', false: 'NO' },
+    import: {
+      dropzone: {
+        primary: 'Arrastrá tu archivo Excel aquí',
+        secondary: 'o hacé clic para seleccionarlo',
+        hint: 'Archivos {types} · hasta {max} MB',
+        invalidType: 'El archivo no tiene un formato válido.',
+        tooLarge: 'El archivo supera el tamaño máximo permitido.',
+      },
+      fileMeta: { uploadedAt: '{size} · cargado hoy {time}' },
+      removeFile: 'Quitar archivo',
+      tabs: { errors: 'Errores', masters: 'Maestros' },
+      emptyStates: {
+        errors: 'Los errores aparecerán aquí después de importar el archivo.',
+        masters: 'El resumen de los maestros aparecerá aquí después de importar.',
+      },
+      example: {
+        download: 'Descargar ejemplo',
+        downloading: 'Descargando…',
+        error: {
+          title: 'No se pudo descargar el ejemplo',
+          desc: 'Reintentá en unos segundos.',
+        },
+      },
+      submit: 'Importar',
+      submitting: 'Importando…',
+      cancel: 'Cancelar',
+      toasts: {
+        success: {
+          title: 'Importación realizada',
+          desc: 'Los registros se procesaron correctamente.',
+        },
+        error: {
+          title: 'No se pudo importar',
+          desc: 'Revisá el archivo y volvé a intentarlo.',
+        },
+      },
+    },
   },
   layout: {
     menuLabel: 'Abrir menú',
@@ -80,6 +121,10 @@ export const es: AppDict = {
   entities: {
     contacto: {
       name: 'Contactos',
+      import: {
+        title: 'Importar contactos',
+        subtitle: 'Subí un Excel con los registros a cargar',
+      },
       columns: {
         id: 'ID',
         identificacion_abreviatura: 'Tipo',

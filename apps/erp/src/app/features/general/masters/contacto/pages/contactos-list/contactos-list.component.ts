@@ -5,6 +5,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { finalize } from 'rxjs';
 import {
+  FileDownloadService,
   FilterStorageService,
   I18nService,
   TenantService,
@@ -19,6 +20,11 @@ import {
   type PageChangeEvent,
   type RowActionInvokedEvent,
 } from '@reddoc/feature-base';
+import { ImportDialogComponent } from '@erp/core/components/import-dialog/import-dialog.component';
+import type {
+  ImportError,
+  MasterTouched,
+} from '@erp/core/components/import-dialog/import-dialog.types';
 import type { AppDict } from '@erp/i18n';
 import { ContactoService } from '../../contacto.service';
 import type { Contacto } from '../../contacto.model';
@@ -43,7 +49,7 @@ import {
 @Component({
   selector: 'app-contactos-list',
   standalone: true,
-  imports: [DataTableComponent, DataToolbarComponent, ConfirmDialogModule],
+  imports: [DataTableComponent, DataToolbarComponent, ConfirmDialogModule, ImportDialogComponent],
   providers: [ConfirmationService],
   templateUrl: './contactos-list.component.html',
   styleUrl: './contactos-list.component.scss',
@@ -51,6 +57,7 @@ import {
 export class ContactosListComponent {
   // ── Colaboradores ─────────────────────────────────────────────────────────
   private readonly service = inject(ContactoService);
+  private readonly fileDownload = inject(FileDownloadService);
   private readonly filterStorage = inject(FilterStorageService);
   private readonly tenant = inject(TenantService);
   private readonly router = inject(Router);
@@ -73,6 +80,17 @@ export class ContactosListComponent {
   protected readonly activeFilters = signal<readonly FilterCondition[]>(
     this.filterStorage.read(CONTACTOS_FILTERS_STORAGE_KEY),
   );
+
+  // ── Estado del dialog de importación ──────────────────────────────────────
+  // El botón "Ejemplo" se deja oculto (exampleConfig: null) hasta que el
+  // backend exponga el endpoint de plantilla. Para habilitarlo, cambiar a:
+  //   { mode: 'enabled', endpoint: '/general/contacto/importar/plantilla/' }
+  // TODO(import-template): habilitar cuando esté disponible en backend.
+  protected readonly isExportingExcel = signal(false);
+  protected readonly importVisible = signal(false);
+  protected readonly importLoading = signal(false);
+  protected readonly importErrors = signal<readonly ImportError[]>([]);
+  protected readonly importMasters = signal<readonly MasterTouched[]>([]);
 
   // ── Derivados ─────────────────────────────────────────────────────────────
   protected readonly hasSelection = computed(() => this.selectedRows().length > 0);
@@ -115,12 +133,41 @@ export class ContactosListComponent {
         this.router.navigate(this.buildRouteCommands('nuevo'));
         break;
       case 'export-excel':
-        // TODO: implementar exportación a Excel
+        this.exportExcel();
         break;
       case 'import':
-        // TODO: implementar importación
+        this.importVisible.set(true);
         break;
     }
+  }
+
+  protected onImportVisibleChange(value: boolean): void {
+    this.importVisible.set(value);
+  }
+
+  protected onImportRequested(file: File): void {
+    if (this.importLoading()) return;
+    this.importLoading.set(true);
+    this.service
+      .importar(file)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.importLoading.set(false)),
+      )
+      .subscribe({
+        next: () => {
+          const toasts = this.t().common.import.toasts;
+          this.toast.success(toasts.success.title, toasts.success.desc);
+          this.importVisible.set(false);
+          this.importErrors.set([]);
+          this.importMasters.set([]);
+          this.loadList();
+        },
+        error: () => {
+          const toasts = this.t().common.import.toasts;
+          this.toast.error(toasts.error.title, toasts.error.desc);
+        },
+      });
   }
 
   protected onSearchChange(value: string): void {
@@ -139,6 +186,24 @@ export class ContactosListComponent {
   }
 
   // ── Internos ──────────────────────────────────────────────────────────────
+
+  private exportExcel(): void {
+    if (this.isExportingExcel()) return;
+    this.isExportingExcel.set(true);
+    this.fileDownload
+      .download('/general/contacto/excel/', { fallbackFilename: 'contactos.xlsx' })
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.isExportingExcel.set(false)),
+      )
+      .subscribe({
+        error: () =>
+          this.toast.error(
+            this.t().common.toasts.exportError.title,
+            this.t().common.toasts.exportError.desc,
+          ),
+      });
+  }
 
   private loadList(): void {
     const query: ListQuery = {

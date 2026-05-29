@@ -85,3 +85,16 @@ export interface ContactoListResponse {
   readonly count: number;
   readonly results: readonly Contacto[];
 }
+
+/**
+ * Respuesta del endpoint de importación masiva.
+ * Shape provisional: crece cuando el backend defina su contrato final.
+ */
+export interface ContactoImportResult {
+  readonly imported_count: number;
+  readonly errors?: ReadonlyArray<{
+    readonly row: number;
+    readonly field?: string;
+    readonly message: string;
+  }>;
+}
