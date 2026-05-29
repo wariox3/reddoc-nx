@@ -37,6 +37,35 @@ export interface AppDict extends AuthTranslationsHost {
       exportError: { title: string; desc: string };
     };
     boolean: { true: string; false: string };
+    filters: {
+      title: string;
+      subtitle: string;
+      addCondition: string;
+      removeCondition: string;
+      where: string;
+      and: string;
+      apply: string;
+      clear: string;
+      cancel: string;
+      noValue: string;
+      valuePlaceholder: string;
+      empty: { title: string; sub: string };
+      operators: {
+        contiene: string;
+        es: string;
+        noEs: string;
+        comienzaCon: string;
+        terminaCon: string;
+        vacio: string;
+        noVacio: string;
+        mayor: string;
+        mayorIgual: string;
+        menor: string;
+        menorIgual: string;
+        esVerdadero: string;
+        esFalso: string;
+      };
+    };
     import: {
       dropzone: {
         primary: string;

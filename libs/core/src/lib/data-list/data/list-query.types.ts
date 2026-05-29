@@ -21,7 +21,8 @@ export type FilterOperator =
   | 'contains' // contiene (string)
   | 'startsWith'
   | 'endsWith'
-  | 'in'; // valor está en una lista
+  | 'in' // valor está en una lista
+  | 'isNull'; // el campo es / no es nulo (el `value` booleano indica cuál)
 
 /**
  * Condición de filtro tal como la emite el componente de filtros

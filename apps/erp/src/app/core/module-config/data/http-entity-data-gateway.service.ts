@@ -57,6 +57,7 @@ const BACKEND_OPERATOR: Readonly<Record<FilterOperator, string>> = {
   startsWith: 'istartswith',
   endsWith: 'iendswith',
   in: 'in',
+  isNull: 'isnull',
 };
 
 /**

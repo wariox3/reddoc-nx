@@ -11,6 +11,9 @@
   [selection]="mutableSelection()"
   (selectionChange)="onSelectionEvent($event)"
   (onPage)="onPageEvent($event)"
+  sortMode="multiple"
+  [multiSortMeta]="primeSort()"
+  (onSort)="onSortEvent($event)"
   [dataKey]="dataKey()"
 >
   <ng-template pTemplate="header">

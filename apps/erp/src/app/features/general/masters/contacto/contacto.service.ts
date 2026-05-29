@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, forkJoin, map } from 'rxjs';
-import { BaseHttpService, serializeListQuery, type ListQuery } from '@reddoc/core';
+import { BaseHttpService, buildListBody, type ListQuery } from '@reddoc/core';
 import type {
   Contacto,
   ContactoImportResult,
@@ -14,17 +14,16 @@ import type {
  * Master administrativo del módulo General. Vive como feature directo
  * (camino B del enfoque híbrido — ver docs/architecture).
  *
- * Reutiliza `serializeListQuery` de `@reddoc/core` para mantener la misma
- * convención de paginación, filtros y ordenamiento que usan los documentos
- * — el backend espera el mismo shape para todos los endpoints listables.
+ * Reutiliza `buildListBody` de `@reddoc/core` para enviar el body
+ * `{ filtros, ordenamientos, pagina, tamano_pagina }` — la misma convención de
+ * filtros y ordenamiento que esperan todos los endpoints listables del backend.
  */
 @Injectable({ providedIn: 'root' })
 export class ContactoService extends BaseHttpService {
   private readonly resourcePath = '/general/contacto/';
 
   list(query: ListQuery): Observable<ContactoListResponse> {
-    const body = this.paramsToRecord(serializeListQuery(query));
-    return this.post<ContactoListResponse>(this.resourcePath + 'lista/', body);
+    return this.post<ContactoListResponse>(this.resourcePath + 'lista/', buildListBody(query));
   }
 
   getById(id: number): Observable<Contacto> {
@@ -79,18 +78,5 @@ export class ContactoService extends BaseHttpService {
     }
     const deletions = ids.map((id) => this.delete<void>(`${this.resourcePath}${id}/`));
     return forkJoin(deletions).pipe(map(() => undefined));
-  }
-
-  /**
-   * `BaseHttpService.get` espera `Record<string, ParamValue>`, no `HttpParams`.
-   * Convertimos preservando los pares clave/valor que produjo `serializeListQuery`.
-   */
-  private paramsToRecord(params: ReturnType<typeof serializeListQuery>): Record<string, string> {
-    const record: Record<string, string> = {};
-    for (const key of params.keys()) {
-      const value = params.get(key);
-      if (value !== null) record[key] = value;
-    }
-    return record;
   }
 }

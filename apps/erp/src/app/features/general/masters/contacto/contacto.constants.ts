@@ -1,4 +1,4 @@
-import type { ColumnDef } from '@reddoc/core';
+import type { ColumnDef, FilterField } from '@reddoc/core';
 import type { RowAction, ToolbarAction } from '@reddoc/feature-base';
 
 export const CONTACTOS_FILTERS_STORAGE_KEY = 'contactos:filters:v1';
@@ -62,6 +62,27 @@ export const CONTACTOS_COLUMNS: readonly ColumnDef[] = [
     width: '60px',
     align: 'center',
   },
+];
+
+/**
+ * Campos por los que se puede filtrar el listado (constructor de filtros).
+ *
+ * Reutilizan las mismas claves i18n que las columnas como label visible. El
+ * `type` determina qué operadores ofrece el modal (ver `FILTER_OPERATORS`).
+ */
+export const CONTACTOS_FILTER_FIELDS: readonly FilterField[] = [
+  { name: 'id', displayNameKey: 'entities.contacto.columns.id', type: 'number' },
+  {
+    name: 'numero_identificacion',
+    displayNameKey: 'entities.contacto.columns.identificacion',
+    type: 'string',
+  },
+  { name: 'nombre_corto', displayNameKey: 'entities.contacto.columns.nombre', type: 'string' },
+  { name: 'correo', displayNameKey: 'entities.contacto.columns.correo', type: 'string' },
+  { name: 'celular', displayNameKey: 'entities.contacto.columns.celular', type: 'string' },
+  { name: 'cliente', displayNameKey: 'entities.contacto.columns.cliente', type: 'boolean' },
+  { name: 'proveedor', displayNameKey: 'entities.contacto.columns.proveedor', type: 'boolean' },
+  { name: 'empleado', displayNameKey: 'entities.contacto.columns.empleado', type: 'boolean' },
 ];
 
 export const CONTACTOS_ROW_ACTIONS: readonly RowAction[] = [

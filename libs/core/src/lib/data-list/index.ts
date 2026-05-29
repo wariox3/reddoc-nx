@@ -4,7 +4,8 @@
  * Solo contiene piezas **agnósticas del dominio**:
  *  - Tipos de columnas y filtros (`ColumnDef`, `FilterField`).
  *  - Contratos de query y respuesta paginada (`ListQuery`, `ListResponse`).
- *  - Serialización a query-params del backend (`serializeListQuery`).
+ *  - Catálogo de operadores de filtro por tipo (`FILTER_OPERATORS`).
+ *  - Serialización al body `{filtros, ordenamientos, …}` del backend (`buildListBody`).
  *  - Persistencia de filtros en localStorage (`FilterStorageService`).
  *
  * El framework configuracional específico del ERP (registry de módulos,
@@ -24,8 +25,19 @@ export type {
   SortSpec,
 } from './data/list-query.types';
 
+// Operadores de filtro (catálogo declarativo por tipo de campo)
+export { FILTER_OPERATORS, getOperatorsForType, getOperatorDef } from './filters/filter-operators';
+export type { FilterOperatorDef, FilterValueKind } from './filters/filter-operators';
+
 // Query serialization
 export { serializeListQuery } from './data/serialize-list-query';
+export {
+  BACKEND_OPERATOR,
+  buildFiltros,
+  buildOrdenamientos,
+  buildListBody,
+} from './data/build-list-body';
+export type { AdvancedListBody, BackendFilter } from './data/build-list-body';
 
 // Storage
 export { FilterStorageService } from './storage/filter-storage.service';

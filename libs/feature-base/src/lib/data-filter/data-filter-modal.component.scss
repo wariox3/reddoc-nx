@@ -1,0 +1,21 @@
+// El layout vive en el template con utilidades Tailwind. Aquí solo lo que no se
+// puede expresar con clases sobre el host de PrimeNG.
+
+:host ::ng-deep {
+  // El <p-select> es la celda de un grid; su host debe ocupar todo el ancho de
+  // la celda (por defecto no se estira) y la altura del control igualar a la de
+  // los inputs para que la fila quede alineada.
+  .p-select {
+    width: 100%;
+  }
+
+  // Cuerpo desplazable cuando hay muchas condiciones. Los paneles de los selects
+  // usan appendTo="body", así que no los recorta este overflow.
+  .lib-data-filter-modal__body {
+    max-height: 56vh;
+    overflow-y: auto;
+    // Aire para que el foco/sombra de los controles no se recorte al hacer scroll.
+    margin: -0.25rem;
+    padding: 0.25rem;
+  }
+}

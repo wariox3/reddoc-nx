@@ -8,9 +8,13 @@
   <lib-data-toolbar
     [primaryAction]="primaryAction"
     [trailingActions]="trailingActions"
+    [filtersEnabled]="true"
+    [activeFiltersCount]="activeFilters().length"
     [deleteSelectedEnabled]="hasSelection()"
     [deleteSelectedCount]="selectedRows().length"
     (actionInvoked)="onToolbarAction($event)"
+    (filtersToggle)="openFilters()"
+    (filtersClear)="clearFilters()"
     (deleteSelected)="removeSelected()"
   />
 
@@ -21,14 +25,24 @@
     [loading]="isLoading()"
     [pageSize]="pageSize()"
     [currentPage]="currentPage()"
+    [sort]="sort()"
     selectionMode="multiple"
     [selectedRows]="selectedRows()"
     [rowActions]="rowActions"
     (pageChange)="onPageChange($event)"
+    (sortChange)="onSortChange($event)"
     (selectionChange)="onSelectionChange($event)"
     (rowActionInvoked)="onRowAction($event)"
   />
 </div>
+
+<lib-data-filter-modal
+  [fields]="filterFields"
+  [value]="activeFilters()"
+  [visible]="filtersVisible()"
+  (visibleChange)="filtersVisible.set($event)"
+  (apply)="onFiltersApply($event)"
+/>
 
 <p-confirmDialog />
 

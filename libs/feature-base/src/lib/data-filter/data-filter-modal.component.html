@@ -1,0 +1,186 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="onVisibleChange($event)"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [style]="{ width: '640px', maxWidth: '94vw' }"
+  styleClass="lib-data-filter-modal"
+>
+  <!-- ── Header ─────────────────────────────────────────────────────────────── -->
+  <ng-template pTemplate="header">
+    <div class="flex items-center gap-3.5">
+      <span
+        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-sky-50 text-sky-700"
+      >
+        <i class="pi pi-filter text-[1.05rem]"></i>
+      </span>
+      <div class="flex min-w-0 flex-col gap-[0.1rem]">
+        <h2 class="m-0 truncate text-[1.05rem] font-extrabold leading-tight tracking-[-0.03em]">
+          {{ translate(titleKey()) }}
+        </h2>
+        <p class="m-0 truncate text-[0.75rem] tracking-[0.01em] text-brand-muted">
+          {{ translate(subtitleKey()) }}
+        </p>
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- ── Body: condiciones ──────────────────────────────────────────────────── -->
+  <div class="lib-data-filter-modal__body flex flex-col gap-3">
+    @if (draft().length === 0) {
+      <div class="flex flex-col items-center gap-1 py-10 text-center">
+        <span
+          class="mb-2 flex h-12 w-12 items-center justify-center rounded-xl bg-sky-50 text-sky-700"
+        >
+          <i class="pi pi-filter-slash text-lg"></i>
+        </span>
+        <p class="m-0 text-[0.9rem] font-semibold text-brand-text">
+          {{ translate('common.filters.empty.title') }}
+        </p>
+        <p class="m-0 max-w-[18rem] text-[0.8rem] leading-snug text-brand-muted">
+          {{ translate('common.filters.empty.sub') }}
+        </p>
+      </div>
+    } @else {
+      @for (row of draft(); track $index) {
+        <div
+          class="flex flex-col gap-3 rounded-lg border border-[rgba(20,48,73,0.1)] bg-brand-surface p-3"
+        >
+          <!-- Conector lógico + quitar -->
+          <div class="flex items-center justify-between">
+            <span
+              class="inline-flex items-center rounded-md px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-[0.06em]"
+              [class.bg-slate-100]="$index === 0"
+              [class.text-brand-muted]="$index === 0"
+              [class.bg-sky-50]="$index > 0"
+              [class.text-sky-700]="$index > 0"
+            >
+              {{
+                $index === 0 ? translate('common.filters.where') : translate('common.filters.and')
+              }}
+            </span>
+            <button
+              type="button"
+              class="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent text-brand-muted transition-colors hover:bg-red-50 hover:text-red-500"
+              [attr.aria-label]="translate('common.filters.removeCondition')"
+              (click)="removeCondition($index)"
+            >
+              <i class="pi pi-times text-[0.7rem]"></i>
+            </button>
+          </div>
+
+          <!-- Propiedad · operador · valor -->
+          <div class="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+            <p-select
+              class="sm:col-span-2"
+              [options]="fieldOptions()"
+              [ngModel]="row.field"
+              (ngModelChange)="onFieldChange($index, $event)"
+              optionLabel="label"
+              optionValue="value"
+              appendTo="body"
+            />
+
+            <p-select
+              [options]="operatorOptionsFor(row)"
+              [ngModel]="row.opId"
+              (ngModelChange)="onOperatorChange($index, $event)"
+              optionLabel="label"
+              optionValue="value"
+              appendTo="body"
+            />
+
+            @switch (valueKindFor(row)) {
+              @case ('none') {
+                <span
+                  class="flex items-center rounded-md border border-dashed border-[rgba(20,48,73,0.18)] bg-slate-50/60 px-3 text-[0.8rem] italic text-brand-muted"
+                >
+                  {{ translate('common.filters.noValue') }}
+                </span>
+              }
+              @case ('number') {
+                <input
+                  #valueInput
+                  pInputText
+                  type="number"
+                  class="w-full"
+                  [attr.data-row]="$index"
+                  [ngModel]="row.value"
+                  (ngModelChange)="onValueChange($index, $event)"
+                  (keydown.enter)="applyFilters()"
+                  [placeholder]="translate('common.filters.valuePlaceholder')"
+                />
+              }
+              @case ('date') {
+                <input
+                  #valueInput
+                  pInputText
+                  type="date"
+                  class="w-full"
+                  [attr.data-row]="$index"
+                  [ngModel]="row.value"
+                  (ngModelChange)="onValueChange($index, $event)"
+                  (keydown.enter)="applyFilters()"
+                />
+              }
+              @default {
+                <input
+                  #valueInput
+                  pInputText
+                  type="text"
+                  class="w-full"
+                  [attr.data-row]="$index"
+                  [ngModel]="row.value"
+                  (ngModelChange)="onValueChange($index, $event)"
+                  (keydown.enter)="applyFilters()"
+                  [placeholder]="translate('common.filters.valuePlaceholder')"
+                />
+              }
+            }
+          </div>
+        </div>
+      }
+    }
+
+    <button
+      type="button"
+      class="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-[rgba(20,48,73,0.2)] bg-transparent px-3 py-2.5 text-[0.82rem] font-semibold text-brand-muted transition-colors hover:border-sky-400 hover:bg-sky-50/40 hover:text-sky-700"
+      (click)="addCondition()"
+    >
+      <i class="pi pi-plus text-[0.72rem]"></i>
+      {{ translate('common.filters.addCondition') }}
+    </button>
+  </div>
+
+  <!-- ── Footer ─────────────────────────────────────────────────────────────── -->
+  <ng-template pTemplate="footer">
+    <div class="flex w-full items-center justify-between gap-3">
+      <p-button
+        [label]="translate('common.filters.clear')"
+        severity="secondary"
+        [text]="true"
+        size="small"
+        icon="pi pi-eraser"
+        [disabled]="draft().length === 0"
+        (onClick)="clearAll()"
+      />
+      <div class="flex gap-2.5">
+        <p-button
+          [label]="translate('common.filters.cancel')"
+          severity="secondary"
+          [outlined]="true"
+          size="small"
+          (onClick)="close()"
+        />
+        <p-button
+          [label]="translate('common.filters.apply')"
+          icon="pi pi-check"
+          size="small"
+          (onClick)="applyFilters()"
+        />
+      </div>
+    </div>
+  </ng-template>
+</p-dialog>

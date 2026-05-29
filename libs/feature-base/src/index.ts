@@ -15,3 +15,5 @@ export type {
 
 export { DataToolbarComponent } from './lib/data-toolbar/data-toolbar.component';
 export type { ToolbarAction } from './lib/data-toolbar/data-toolbar.types';
+
+export { DataFilterModalComponent } from './lib/data-filter/data-filter-modal.component';

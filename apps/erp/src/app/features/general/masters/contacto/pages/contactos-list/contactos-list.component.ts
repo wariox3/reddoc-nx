@@ -10,11 +10,14 @@ import {
   I18nService,
   TenantService,
   ToastService,
+  buildFiltros,
+  buildOrdenamientos,
   type FilterCondition,
   type ListQuery,
   type SortSpec,
 } from '@reddoc/core';
 import {
+  DataFilterModalComponent,
   DataTableComponent,
   DataToolbarComponent,
   type PageChangeEvent,
@@ -30,6 +33,7 @@ import { ContactoService } from '../../contacto.service';
 import type { Contacto } from '../../contacto.model';
 import {
   CONTACTOS_COLUMNS,
+  CONTACTOS_FILTER_FIELDS,
   CONTACTOS_FILTERS_STORAGE_KEY,
   CONTACTOS_PRIMARY_ACTION,
   CONTACTOS_ROW_ACTIONS,
@@ -49,7 +53,13 @@ import {
 @Component({
   selector: 'app-contactos-list',
   standalone: true,
-  imports: [DataTableComponent, DataToolbarComponent, ConfirmDialogModule, ImportDialogComponent],
+  imports: [
+    DataTableComponent,
+    DataToolbarComponent,
+    DataFilterModalComponent,
+    ConfirmDialogModule,
+    ImportDialogComponent,
+  ],
   providers: [ConfirmationService],
   templateUrl: './contactos-list.component.html',
   styleUrl: './contactos-list.component.scss',
@@ -80,6 +90,7 @@ export class ContactosListComponent {
   protected readonly activeFilters = signal<readonly FilterCondition[]>(
     this.filterStorage.read(CONTACTOS_FILTERS_STORAGE_KEY),
   );
+  protected readonly filtersVisible = signal(false);
 
   protected readonly exampleConfig = {
     mode: 'enabled' as const,
@@ -95,6 +106,7 @@ export class ContactosListComponent {
   // ── Derivados ─────────────────────────────────────────────────────────────
   protected readonly hasSelection = computed(() => this.selectedRows().length > 0);
   protected readonly columns = CONTACTOS_COLUMNS;
+  protected readonly filterFields = CONTACTOS_FILTER_FIELDS;
   protected readonly rowActions = CONTACTOS_ROW_ACTIONS;
   protected readonly primaryAction = CONTACTOS_PRIMARY_ACTION;
   protected readonly trailingActions = CONTACTOS_TRAILING_ACTIONS;
@@ -108,6 +120,38 @@ export class ContactosListComponent {
   protected onPageChange(event: PageChangeEvent): void {
     this.currentPage.set(event.page);
     this.pageSize.set(event.pageSize);
+    this.loadList();
+  }
+
+  /**
+   * Ordenamiento multi-columna emitido por los headers de la tabla. Vuelve a
+   * la primera página porque el orden cambia el conjunto visible.
+   */
+  protected onSortChange(sort: readonly SortSpec[]): void {
+    this.sort.set(sort);
+    this.currentPage.set(0);
+    this.loadList();
+  }
+
+  protected openFilters(): void {
+    this.filtersVisible.set(true);
+  }
+
+  /**
+   * Filtros confirmados desde el modal. Se persisten en localStorage para que
+   * sobrevivan a recargas hasta que el usuario los limpie.
+   */
+  protected onFiltersApply(filters: readonly FilterCondition[]): void {
+    this.activeFilters.set(filters);
+    this.filterStorage.write(CONTACTOS_FILTERS_STORAGE_KEY, filters);
+    this.currentPage.set(0);
+    this.loadList();
+  }
+
+  protected clearFilters(): void {
+    this.activeFilters.set([]);
+    this.filterStorage.clear(CONTACTOS_FILTERS_STORAGE_KEY);
+    this.currentPage.set(0);
     this.loadList();
   }
 
@@ -193,7 +237,10 @@ export class ContactosListComponent {
     this.fileDownload
       .download('/general/contacto/excel/', {
         method: 'POST',
-        body: { filters: this.activeFilters() },
+        body: {
+          filtros: buildFiltros(this.activeFilters()),
+          ordenamientos: buildOrdenamientos(this.sort()),
+        },
         fallbackFilename: 'contactos.xlsx',
       })
       .pipe(
