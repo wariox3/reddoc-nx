@@ -5,22 +5,22 @@
   [draggable]="false"
   [resizable]="false"
   [dismissableMask]="true"
-  [style]="{ width: '640px', maxWidth: '94vw' }"
+  [style]="{ width: '620px', maxWidth: '94vw' }"
   styleClass="lib-data-filter-modal"
 >
   <!-- ── Header ─────────────────────────────────────────────────────────────── -->
   <ng-template pTemplate="header">
-    <div class="flex items-center gap-3.5">
+    <div class="flex items-center gap-3">
       <span
-        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-sky-50 text-sky-700"
+        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-[9px] bg-sky-50 text-sky-700"
       >
-        <i class="pi pi-filter text-[1.05rem]"></i>
+        <i class="pi pi-filter text-[0.95rem]"></i>
       </span>
-      <div class="flex min-w-0 flex-col gap-[0.1rem]">
-        <h2 class="m-0 truncate text-[1.05rem] font-extrabold leading-tight tracking-[-0.03em]">
+      <div class="flex min-w-0 flex-col gap-[0.05rem]">
+        <h2 class="m-0 truncate text-[0.95rem] font-bold leading-tight tracking-[-0.02em]">
           {{ translate(titleKey()) }}
         </h2>
-        <p class="m-0 truncate text-[0.75rem] tracking-[0.01em] text-brand-muted">
+        <p class="m-0 truncate text-[0.72rem] tracking-[0.01em] text-brand-muted">
           {{ translate(subtitleKey()) }}
         </p>
       </div>
@@ -28,53 +28,37 @@
   </ng-template>
 
   <!-- ── Body: condiciones ──────────────────────────────────────────────────── -->
-  <div class="lib-data-filter-modal__body flex flex-col gap-3">
+  <div class="lib-data-filter-modal__body flex flex-col gap-2.5">
     @if (draft().length === 0) {
-      <div class="flex flex-col items-center gap-1 py-10 text-center">
+      <div class="flex flex-col items-center gap-1 py-9 text-center">
         <span
-          class="mb-2 flex h-12 w-12 items-center justify-center rounded-xl bg-sky-50 text-sky-700"
+          class="mb-2 flex h-11 w-11 items-center justify-center rounded-xl bg-sky-50 text-sky-700"
         >
-          <i class="pi pi-filter-slash text-lg"></i>
+          <i class="pi pi-filter-slash"></i>
         </span>
-        <p class="m-0 text-[0.9rem] font-semibold text-brand-text">
+        <p class="m-0 text-[0.85rem] font-semibold text-brand-text">
           {{ translate('common.filters.empty.title') }}
         </p>
-        <p class="m-0 max-w-[18rem] text-[0.8rem] leading-snug text-brand-muted">
+        <p class="m-0 max-w-[17rem] text-[0.76rem] leading-snug text-brand-muted">
           {{ translate('common.filters.empty.sub') }}
         </p>
       </div>
     } @else {
       @for (row of draft(); track $index) {
-        <div
-          class="flex flex-col gap-3 rounded-lg border border-[rgba(20,48,73,0.1)] bg-brand-surface p-3"
-        >
-          <!-- Conector lógico + quitar -->
-          <div class="flex items-center justify-between">
-            <span
-              class="inline-flex items-center rounded-md px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-[0.06em]"
-              [class.bg-slate-100]="$index === 0"
-              [class.text-brand-muted]="$index === 0"
-              [class.bg-sky-50]="$index > 0"
-              [class.text-sky-700]="$index > 0"
-            >
-              {{
-                $index === 0 ? translate('common.filters.where') : translate('common.filters.and')
-              }}
-            </span>
-            <button
-              type="button"
-              class="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent text-brand-muted transition-colors hover:bg-red-50 hover:text-red-500"
-              [attr.aria-label]="translate('common.filters.removeCondition')"
-              (click)="removeCondition($index)"
-            >
-              <i class="pi pi-times text-[0.7rem]"></i>
-            </button>
-          </div>
+        <!-- Una condición = una sola línea slim -->
+        <div class="flex items-center gap-2">
+          <span
+            class="w-10 shrink-0 text-[0.65rem] font-bold uppercase tracking-[0.05em]"
+            [class.text-brand-muted]="$index === 0"
+            [class.text-sky-600]="$index > 0"
+          >
+            {{ $index === 0 ? translate('common.filters.where') : translate('common.filters.and') }}
+          </span>
 
-          <!-- Propiedad · operador · valor -->
-          <div class="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+          <div class="w-[148px] shrink-0">
             <p-select
-              class="sm:col-span-2"
+              size="small"
+              panelStyleClass="lib-data-filter-modal__panel"
               [options]="fieldOptions()"
               [ngModel]="row.field"
               (ngModelChange)="onFieldChange($index, $event)"
@@ -82,8 +66,12 @@
               optionValue="value"
               appendTo="body"
             />
+          </div>
 
+          <div class="w-[158px] shrink-0">
             <p-select
+              size="small"
+              panelStyleClass="lib-data-filter-modal__panel"
               [options]="operatorOptionsFor(row)"
               [ngModel]="row.opId"
               (ngModelChange)="onOperatorChange($index, $event)"
@@ -91,65 +79,77 @@
               optionValue="value"
               appendTo="body"
             />
-
-            @switch (valueKindFor(row)) {
-              @case ('none') {
-                <span
-                  class="flex items-center rounded-md border border-dashed border-[rgba(20,48,73,0.18)] bg-slate-50/60 px-3 text-[0.8rem] italic text-brand-muted"
-                >
-                  {{ translate('common.filters.noValue') }}
-                </span>
-              }
-              @case ('number') {
-                <input
-                  #valueInput
-                  pInputText
-                  type="number"
-                  class="w-full"
-                  [attr.data-row]="$index"
-                  [ngModel]="row.value"
-                  (ngModelChange)="onValueChange($index, $event)"
-                  (keydown.enter)="applyFilters()"
-                  [placeholder]="translate('common.filters.valuePlaceholder')"
-                />
-              }
-              @case ('date') {
-                <input
-                  #valueInput
-                  pInputText
-                  type="date"
-                  class="w-full"
-                  [attr.data-row]="$index"
-                  [ngModel]="row.value"
-                  (ngModelChange)="onValueChange($index, $event)"
-                  (keydown.enter)="applyFilters()"
-                />
-              }
-              @default {
-                <input
-                  #valueInput
-                  pInputText
-                  type="text"
-                  class="w-full"
-                  [attr.data-row]="$index"
-                  [ngModel]="row.value"
-                  (ngModelChange)="onValueChange($index, $event)"
-                  (keydown.enter)="applyFilters()"
-                  [placeholder]="translate('common.filters.valuePlaceholder')"
-                />
-              }
-            }
           </div>
+
+          @switch (valueKindFor(row)) {
+            @case ('none') {
+              <span
+                class="lib-data-filter-modal__novalue flex min-w-0 flex-1 items-center rounded-md border border-dashed border-[rgba(20,48,73,0.18)] bg-slate-50/60 px-2.5 text-[0.78rem] italic text-brand-muted"
+              >
+                {{ translate('common.filters.noValue') }}
+              </span>
+            }
+            @case ('number') {
+              <input
+                #valueInput
+                pInputText
+                pSize="small"
+                type="number"
+                class="min-w-0 flex-1"
+                [attr.data-row]="$index"
+                [ngModel]="row.value"
+                (ngModelChange)="onValueChange($index, $event)"
+                (keydown.enter)="applyFilters()"
+                [placeholder]="translate('common.filters.valuePlaceholder')"
+              />
+            }
+            @case ('date') {
+              <input
+                #valueInput
+                pInputText
+                pSize="small"
+                type="date"
+                class="min-w-0 flex-1"
+                [attr.data-row]="$index"
+                [ngModel]="row.value"
+                (ngModelChange)="onValueChange($index, $event)"
+                (keydown.enter)="applyFilters()"
+              />
+            }
+            @default {
+              <input
+                #valueInput
+                pInputText
+                pSize="small"
+                type="text"
+                class="min-w-0 flex-1"
+                [attr.data-row]="$index"
+                [ngModel]="row.value"
+                (ngModelChange)="onValueChange($index, $event)"
+                (keydown.enter)="applyFilters()"
+                [placeholder]="translate('common.filters.valuePlaceholder')"
+              />
+            }
+          }
+
+          <button
+            type="button"
+            class="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent text-brand-muted transition-colors hover:bg-red-50 hover:text-red-500"
+            [attr.aria-label]="translate('common.filters.removeCondition')"
+            (click)="removeCondition($index)"
+          >
+            <i class="pi pi-times text-[0.7rem]"></i>
+          </button>
         </div>
       }
     }
 
     <button
       type="button"
-      class="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-[rgba(20,48,73,0.2)] bg-transparent px-3 py-2.5 text-[0.82rem] font-semibold text-brand-muted transition-colors hover:border-sky-400 hover:bg-sky-50/40 hover:text-sky-700"
+      class="mt-0.5 flex w-full cursor-pointer items-center justify-center gap-2 rounded-md border border-dashed border-[rgba(20,48,73,0.2)] bg-transparent px-3 py-2 text-[0.78rem] font-semibold text-brand-muted transition-colors hover:border-sky-400 hover:bg-sky-50/40 hover:text-sky-700"
       (click)="addCondition()"
     >
-      <i class="pi pi-plus text-[0.72rem]"></i>
+      <i class="pi pi-plus text-[0.7rem]"></i>
       {{ translate('common.filters.addCondition') }}
     </button>
   </div>

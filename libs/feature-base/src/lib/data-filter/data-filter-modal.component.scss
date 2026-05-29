@@ -1,12 +1,38 @@
 // El layout vive en el template con utilidades Tailwind. Aquí solo lo que no se
 // puede expresar con clases sobre el host de PrimeNG.
 
+$control-height: 34px;
+$control-font: 0.8rem; // ≈13px: escala slim de la referencia
+
 :host ::ng-deep {
-  // El <p-select> es la celda de un grid; su host debe ocupar todo el ancho de
-  // la celda (por defecto no se estira) y la altura del control igualar a la de
-  // los inputs para que la fila quede alineada.
+  // El <p-select> ocupa el ancho de su wrapper de ancho fijo (por defecto no se
+  // estira). Se afina a la escala slim: alto compacto y texto pequeño, alineado
+  // con los inputs `pSize="small"` para que toda la fila quede a la misma altura.
   .p-select {
     width: 100%;
+  }
+
+  .p-select.p-select-sm {
+    .p-select-label {
+      padding-block: 0;
+      font-size: $control-font;
+      line-height: $control-height;
+    }
+
+    .p-select-dropdown {
+      width: 1.85rem;
+    }
+  }
+
+  // Inputs de valor en variante small a la misma altura/tipografía que los selects.
+  input.p-inputtext.p-inputtext-sm {
+    height: $control-height;
+    font-size: $control-font;
+  }
+
+  // Caja "sin valor" a la misma altura del control.
+  .lib-data-filter-modal__novalue {
+    height: $control-height;
   }
 
   // Cuerpo desplazable cuando hay muchas condiciones. Los paneles de los selects
@@ -17,5 +43,15 @@
     // Aire para que el foco/sombra de los controles no se recorte al hacer scroll.
     margin: -0.25rem;
     padding: 0.25rem;
+  }
+}
+
+// Overlay de opciones de los <p-select>: va a `body` (fuera del host), así que la
+// regla es global (vía `::ng-deep` inicial) acotada por el `panelStyleClass`. Iguala
+// el tamaño de texto de las opciones a la escala slim de los controles.
+::ng-deep .lib-data-filter-modal__panel {
+  .p-select-option {
+    font-size: $control-font;
+    padding-block: 0.4rem;
   }
 }
