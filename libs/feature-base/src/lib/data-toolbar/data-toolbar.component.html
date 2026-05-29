@@ -78,7 +78,13 @@
             <span>{{ translate(action.labelKey) }}</span>
             <i class="pi pi-chevron-down lib-data-toolbar__dropdown-caret"></i>
           </button>
-          <p-menu #menu [popup]="true" [model]="items" appendTo="body" />
+          <p-menu
+            #menu
+            [popup]="true"
+            [model]="items"
+            appendTo="body"
+            styleClass="lib-data-toolbar__menu"
+          />
         } @else {
           <button
             type="button"

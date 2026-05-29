@@ -100,7 +100,7 @@ export const CONTACTOS_TRAILING_ACTIONS: readonly ToolbarAction[] = [
   {
     id: 'actions',
     labelKey: 'common.actions.actions',
-    iconClass: 'pi pi-ellipsis-v',
+    iconClass: '',
     children: [
       { id: 'import', labelKey: 'common.actions.import', iconClass: 'pi pi-upload' },
       { id: 'export-excel', labelKey: 'common.actions.exportExcel', iconClass: 'pi pi-file-excel' },
