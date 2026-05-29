@@ -191,7 +191,11 @@ export class ContactosListComponent {
     if (this.isExportingExcel()) return;
     this.isExportingExcel.set(true);
     this.fileDownload
-      .download('/general/contacto/excel/', { fallbackFilename: 'contactos.xlsx' })
+      .download('/general/contacto/excel/', {
+        method: 'POST',
+        body: { filters: this.activeFilters() },
+        fallbackFilename: 'contactos.xlsx',
+      })
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         finalize(() => this.isExportingExcel.set(false)),
