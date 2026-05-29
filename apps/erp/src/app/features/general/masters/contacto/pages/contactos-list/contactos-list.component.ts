@@ -81,11 +81,11 @@ export class ContactosListComponent {
     this.filterStorage.read(CONTACTOS_FILTERS_STORAGE_KEY),
   );
 
-  // ── Estado del dialog de importación ──────────────────────────────────────
-  // El botón "Ejemplo" se deja oculto (exampleConfig: null) hasta que el
-  // backend exponga el endpoint de plantilla. Para habilitarlo, cambiar a:
-  //   { mode: 'enabled', endpoint: '/general/contacto/importar/plantilla/' }
-  // TODO(import-template): habilitar cuando esté disponible en backend.
+  protected readonly exampleConfig = {
+    mode: 'enabled' as const,
+    endpoint: '/general/contacto/importar-ejemplo/',
+  };
+
   protected readonly isExportingExcel = signal(false);
   protected readonly importVisible = signal(false);
   protected readonly importLoading = signal(false);
