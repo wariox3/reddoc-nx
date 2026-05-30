@@ -14,7 +14,7 @@ import { construirNombreCorto } from './utils/nombre-corto.util';
 export function contactoToFormValue(c: Contacto): Partial<ContactoFormRawValue> {
   return {
     tipo_persona: { id: c.tipo_persona_id, nombre: c.tipo_persona_nombre },
-    regimen: c.regimen_id !== null ? { id: c.regimen_id, nombre: '' } : null,
+    responsabilidad: { id: c.responsabilidad_id, nombre: c.responsabilidad_nombre },
     identificacion: { id: c.identificacion_id, nombre: c.identificacion_nombre },
     numero_identificacion: c.numero_identificacion,
     nombre_corto: c.nombre_corto,
@@ -69,7 +69,7 @@ export function formValueToPayload(v: ContactoFormRawValue): ContactoPayload {
 
   return {
     tipo_persona: v.tipo_persona?.id ?? null,
-    regimen: v.regimen?.id ?? null,
+    responsabilidad: v.responsabilidad?.id ?? null,
     identificacion: v.identificacion?.id ?? null,
     numero_identificacion: v.numero_identificacion ?? '',
     digito_verificacion: v.digito_verificacion || null,

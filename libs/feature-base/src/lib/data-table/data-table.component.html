@@ -11,6 +11,9 @@
   [selection]="mutableSelection()"
   (selectionChange)="onSelectionEvent($event)"
   (onPage)="onPageEvent($event)"
+  sortMode="multiple"
+  [multiSortMeta]="primeSort()"
+  (onSort)="onSortEvent($event)"
   [dataKey]="dataKey()"
 >
   <ng-template pTemplate="header">
@@ -47,7 +50,29 @@
       }
       @for (col of columns(); track col.field) {
         <td [style.text-align]="col.align ?? 'left'">
-          {{ readValue(row, col.field) }}
+          @switch (col.type) {
+            @case ('boolean') {
+              @let boolVal = readValue(row, col.field);
+              @let prefix = col.booleanKeyPrefix ?? 'common.boolean';
+              <span
+                class="lib-data-table__bool-badge"
+                [class.lib-data-table__bool-badge--true]="boolVal"
+                [class.lib-data-table__bool-badge--false]="!boolVal"
+              >
+                {{ translate(prefix + '.' + boolVal) }}
+              </span>
+            }
+            @case ('enum') {
+              {{
+                col.enumKeyPrefix
+                  ? translate(col.enumKeyPrefix + '.' + readValue(row, col.field))
+                  : readValue(row, col.field)
+              }}
+            }
+            @default {
+              {{ readValue(row, col.field) }}
+            }
+          }
         </td>
       }
       @if (rowActions().length > 0) {

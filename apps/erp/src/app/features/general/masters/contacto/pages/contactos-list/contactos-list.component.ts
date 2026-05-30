@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
@@ -5,26 +6,41 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { finalize } from 'rxjs';
 import {
+  FileDownloadService,
   FilterStorageService,
   I18nService,
   TenantService,
   ToastService,
+  buildFiltros,
+  buildOrdenamientos,
+  quickSearchCondition,
   type FilterCondition,
   type ListQuery,
   type SortSpec,
 } from '@reddoc/core';
 import {
+  BreadcrumbComponent,
+  DataFilterModalComponent,
   DataTableComponent,
   DataToolbarComponent,
+  type BreadcrumbItem,
   type PageChangeEvent,
   type RowActionInvokedEvent,
 } from '@reddoc/feature-base';
+import { ImportDialogComponent } from '@erp/core/components/import-dialog/import-dialog.component';
+import type {
+  ImportError,
+  MasterTouched,
+} from '@erp/core/components/import-dialog/import-dialog.types';
+import { parseImportErrors } from '@erp/core/components/import-dialog/import-dialog.utils';
 import type { AppDict } from '@erp/i18n';
 import { ContactoService } from '../../contacto.service';
 import type { Contacto } from '../../contacto.model';
 import {
   CONTACTOS_COLUMNS,
+  CONTACTOS_FILTER_FIELDS,
   CONTACTOS_FILTERS_STORAGE_KEY,
+  CONTACTOS_QUICK_SEARCH_FIELD,
   CONTACTOS_PRIMARY_ACTION,
   CONTACTOS_ROW_ACTIONS,
   CONTACTOS_TRAILING_ACTIONS,
@@ -43,7 +59,14 @@ import {
 @Component({
   selector: 'app-contactos-list',
   standalone: true,
-  imports: [DataTableComponent, DataToolbarComponent, ConfirmDialogModule],
+  imports: [
+    BreadcrumbComponent,
+    DataTableComponent,
+    DataToolbarComponent,
+    DataFilterModalComponent,
+    ConfirmDialogModule,
+    ImportDialogComponent,
+  ],
   providers: [ConfirmationService],
   templateUrl: './contactos-list.component.html',
   styleUrl: './contactos-list.component.scss',
@@ -51,6 +74,7 @@ import {
 export class ContactosListComponent {
   // ── Colaboradores ─────────────────────────────────────────────────────────
   private readonly service = inject(ContactoService);
+  private readonly fileDownload = inject(FileDownloadService);
   private readonly filterStorage = inject(FilterStorageService);
   private readonly tenant = inject(TenantService);
   private readonly router = inject(Router);
@@ -73,10 +97,41 @@ export class ContactosListComponent {
   protected readonly activeFilters = signal<readonly FilterCondition[]>(
     this.filterStorage.read(CONTACTOS_FILTERS_STORAGE_KEY),
   );
+  protected readonly filtersVisible = signal(false);
+
+  protected readonly exampleConfig = {
+    mode: 'enabled' as const,
+    endpoint: '/general/contacto/importar-ejemplo/',
+  };
+
+  protected readonly isExportingExcel = signal(false);
+  protected readonly importVisible = signal(false);
+  protected readonly importLoading = signal(false);
+  protected readonly importErrors = signal<readonly ImportError[]>([]);
+  protected readonly importErrorSummary = signal('');
+  protected readonly importErrorTotal = signal(0);
+  protected readonly importMasters = signal<readonly MasterTouched[]>([]);
 
   // ── Derivados ─────────────────────────────────────────────────────────────
   protected readonly hasSelection = computed(() => this.selectedRows().length > 0);
+
+  /**
+   * Migas: módulo (General, navegable a su home) → entidad actual (Contactos).
+   * El contacto es un master del módulo `general`, por eso el segmento es fijo.
+   */
+  protected readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => {
+    const slug = this.tenant.currentSlug();
+    return [
+      {
+        label: this.t().modules.general.name,
+        routerLink: slug ? ['/t', slug, 'general'] : undefined,
+      },
+      { label: this.t().entities.contacto.name },
+    ];
+  });
+
   protected readonly columns = CONTACTOS_COLUMNS;
+  protected readonly filterFields = CONTACTOS_FILTER_FIELDS;
   protected readonly rowActions = CONTACTOS_ROW_ACTIONS;
   protected readonly primaryAction = CONTACTOS_PRIMARY_ACTION;
   protected readonly trailingActions = CONTACTOS_TRAILING_ACTIONS;
@@ -90,6 +145,38 @@ export class ContactosListComponent {
   protected onPageChange(event: PageChangeEvent): void {
     this.currentPage.set(event.page);
     this.pageSize.set(event.pageSize);
+    this.loadList();
+  }
+
+  /**
+   * Ordenamiento multi-columna emitido por los headers de la tabla. Vuelve a
+   * la primera página porque el orden cambia el conjunto visible.
+   */
+  protected onSortChange(sort: readonly SortSpec[]): void {
+    this.sort.set(sort);
+    this.currentPage.set(0);
+    this.loadList();
+  }
+
+  protected openFilters(): void {
+    this.filtersVisible.set(true);
+  }
+
+  /**
+   * Filtros confirmados desde el modal. Se persisten en localStorage para que
+   * sobrevivan a recargas hasta que el usuario los limpie.
+   */
+  protected onFiltersApply(filters: readonly FilterCondition[]): void {
+    this.activeFilters.set(filters);
+    this.filterStorage.write(CONTACTOS_FILTERS_STORAGE_KEY, filters);
+    this.currentPage.set(0);
+    this.loadList();
+  }
+
+  protected clearFilters(): void {
+    this.activeFilters.set([]);
+    this.filterStorage.clear(CONTACTOS_FILTERS_STORAGE_KEY);
+    this.currentPage.set(0);
     this.loadList();
   }
 
@@ -114,18 +201,89 @@ export class ContactosListComponent {
       case 'new':
         this.router.navigate(this.buildRouteCommands('nuevo'));
         break;
-      case 'export':
-        // TODO: implementar exportación a Excel
+      case 'export-excel':
+        this.exportExcel();
         break;
       case 'import':
-        // TODO: implementar importación
+        this.importVisible.set(true);
         break;
     }
   }
 
+  protected onImportVisibleChange(value: boolean): void {
+    this.importVisible.set(value);
+  }
+
+  protected onImportRequested(file: File): void {
+    if (this.importLoading()) return;
+    this.importLoading.set(true);
+    // Limpia el resultado del intento anterior (al reintentar tras corregir).
+    this.clearImportErrors();
+    this.service
+      .importar(file)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.importLoading.set(false)),
+      )
+      .subscribe({
+        next: (result) => {
+          // [DEBUG-IMPORT] temporal: ver qué llega en un 200.
+          console.debug('[import] next result =', result, '→ parsed =', parseImportErrors(result));
+          // El backend puede reportar los errores de validación en un 200
+          // ("No se procesó ningún registro"); si los trae, los mostramos en vez
+          // de tratarlo como éxito.
+          if (this.applyImportErrors(parseImportErrors(result))) return;
+          const toasts = this.t().common.import.toasts;
+          this.toast.success(toasts.success.title, toasts.success.desc);
+          this.importVisible.set(false);
+          this.clearImportErrors();
+          this.importMasters.set([]);
+          this.loadList();
+        },
+        error: (err: HttpErrorResponse) => {
+          // [DEBUG-IMPORT] temporal: ver status y body del error.
+          console.debug(
+            '[import] error status =',
+            err.status,
+            'err.error =',
+            err.error,
+            '→ parsed =',
+            parseImportErrors(err.error),
+          );
+          // Errores de validación (4xx) con el mismo shape. Si no hay estructura
+          // (red/desconocido) → toast genérico.
+          if (!this.applyImportErrors(parseImportErrors(err.error))) {
+            const toasts = this.t().common.import.toasts;
+            this.toast.error(toasts.error.title, toasts.error.desc);
+          }
+        },
+      });
+  }
+
+  /**
+   * Vuelca los errores parseados en los signals del diálogo. Devuelve `true` si
+   * había errores/resumen (para que el llamador no siga el camino de éxito).
+   */
+  private applyImportErrors(parsed: ReturnType<typeof parseImportErrors>): boolean {
+    if (parsed.errors.length === 0 && !parsed.summary) return false;
+    this.importErrors.set(parsed.errors);
+    this.importErrorSummary.set(parsed.summary);
+    this.importErrorTotal.set(parsed.total);
+    return true;
+  }
+
+  /** Resetea el resultado de errores de importación (tabla + resumen). */
+  private clearImportErrors(): void {
+    this.importErrors.set([]);
+    this.importErrorSummary.set('');
+    this.importErrorTotal.set(0);
+  }
+
   protected onSearchChange(value: string): void {
+    // El toolbar ya emite el término debounced; aquí solo aplicamos y recargamos.
     this.searchValue.set(value);
-    // TODO: aplicar búsqueda al query del backend cuando se conecte.
+    this.currentPage.set(0);
+    this.loadList();
   }
 
   protected onRefresh(): void {
@@ -140,9 +298,39 @@ export class ContactosListComponent {
 
   // ── Internos ──────────────────────────────────────────────────────────────
 
+  private exportExcel(): void {
+    if (this.isExportingExcel()) return;
+    this.isExportingExcel.set(true);
+    this.fileDownload
+      .download('/general/contacto/excel/', {
+        method: 'POST',
+        body: {
+          filtros: buildFiltros(this.activeFilters()),
+          ordenamientos: buildOrdenamientos(this.sort()),
+        },
+        fallbackFilename: 'contactos.xlsx',
+      })
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.isExportingExcel.set(false)),
+      )
+      .subscribe({
+        error: () =>
+          this.toast.error(
+            this.t().common.toasts.exportError.title,
+            this.t().common.toasts.exportError.desc,
+          ),
+      });
+  }
+
   private loadList(): void {
+    // La búsqueda rápida se añade como un filtro `contiene` más, combinado (AND)
+    // con los filtros avanzados activos.
+    const search = quickSearchCondition(CONTACTOS_QUICK_SEARCH_FIELD, this.searchValue());
+    const filters = search ? [...this.activeFilters(), search] : this.activeFilters();
+
     const query: ListQuery = {
-      filters: this.activeFilters(),
+      filters,
       sort: this.sort(),
       page: this.currentPage(),
       pageSize: this.pageSize(),

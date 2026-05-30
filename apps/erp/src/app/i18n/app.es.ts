@@ -7,6 +7,7 @@ export const es: AppDict = {
     comingSoon: 'Próximamente disponible.',
     actions: {
       new: 'Nuevo',
+      actions: 'Acciones',
       edit: 'Editar',
       delete: 'Eliminar',
       deleteSelected: 'Eliminar seleccionados',
@@ -17,7 +18,7 @@ export const es: AppDict = {
       clearFilters: 'Limpiar filtros',
       clearSearch: 'Limpiar búsqueda',
       refresh: 'Actualizar',
-      exportExcel: 'Excel',
+      exportExcel: 'Exportar excel',
       import: 'Importar',
     },
     search: {
@@ -46,6 +47,85 @@ export const es: AppDict = {
       deleteError: {
         title: 'Error al eliminar',
         desc: 'No se pudieron eliminar los registros. Intentá de nuevo.',
+      },
+      exportError: {
+        title: 'Error al exportar',
+        desc: 'No se pudo descargar el archivo Excel.',
+      },
+    },
+    boolean: { true: 'SÍ', false: 'NO' },
+    filters: {
+      title: 'Filtrar',
+      subtitle: 'Se muestran los registros que cumplan todas las condiciones.',
+      addCondition: 'Añadir condición',
+      removeCondition: 'Quitar condición',
+      where: 'Donde',
+      and: 'Y',
+      apply: 'Aplicar filtros',
+      clear: 'Limpiar todo',
+      cancel: 'Cancelar',
+      noValue: 'Sin valor',
+      valuePlaceholder: 'Valor…',
+      empty: {
+        title: 'Sin condiciones',
+        sub: 'Añade una condición para empezar a filtrar.',
+      },
+      operators: {
+        contiene: 'contiene',
+        es: 'es igual a',
+        noEs: 'no es igual a',
+        comienzaCon: 'comienza con',
+        terminaCon: 'termina con',
+        vacio: 'está vacío',
+        noVacio: 'no está vacío',
+        mayor: 'mayor que',
+        mayorIgual: 'mayor o igual que',
+        menor: 'menor que',
+        menorIgual: 'menor o igual que',
+        esVerdadero: 'es sí',
+        esFalso: 'es no',
+      },
+    },
+    import: {
+      dropzone: {
+        primary: 'Arrastrá tu archivo Excel aquí',
+        secondary: 'o hacé clic para seleccionarlo',
+        hint: 'Archivos {types} · hasta {max} MB',
+        invalidType: 'El archivo no tiene un formato válido.',
+        tooLarge: 'El archivo supera el tamaño máximo permitido.',
+      },
+      fileMeta: { uploadedAt: '{size} · cargado hoy {time}' },
+      removeFile: 'Quitar archivo',
+      tabs: { errors: 'Errores', masters: 'Maestros' },
+      emptyStates: {
+        errors: 'Los errores aparecerán aquí después de importar el archivo.',
+        masters: 'El resumen de los maestros aparecerá aquí después de importar.',
+      },
+      errors: {
+        rowHeader: 'Fila',
+        messageHeader: 'Mensaje',
+        truncated: 'Mostrando {shown} de {total} errores.',
+      },
+      example: {
+        download: 'Descargar ejemplo',
+        downloading: 'Descargando…',
+        error: {
+          title: 'No se pudo descargar el ejemplo',
+          desc: 'Reintentá en unos segundos.',
+        },
+      },
+      submit: 'Importar',
+      submitting: 'Importando…',
+      cancel: 'Cancelar',
+      toasts: {
+        success: {
+          title: 'Importación realizada',
+          desc: 'Los registros se procesaron correctamente.',
+        },
+        error: {
+          title: 'No se pudo importar',
+          desc: 'Revisá el archivo y volvé a intentarlo.',
+        },
       },
     },
   },
@@ -78,12 +158,22 @@ export const es: AppDict = {
   entities: {
     contacto: {
       name: 'Contactos',
+      searchPlaceholder: 'Buscar por nombre…',
+      import: {
+        title: 'Importar contactos',
+        subtitle: 'Subí un Excel con los registros a cargar',
+      },
       columns: {
         id: 'ID',
+        identificacion_abreviatura: 'Tipo',
+        identificacion: 'Nro. identificación',
         nombre: 'Nombre',
-        identificacion: 'Identificación',
         correo: 'Correo',
         telefono: 'Teléfono',
+        celular: 'Celular',
+        cliente: 'CLI',
+        proveedor: 'PRO',
+        empleado: 'EMP',
       },
       form: {
         createTitle: 'Nuevo contacto',
@@ -103,6 +193,7 @@ export const es: AppDict = {
         clasificacion: 'El contacto es',
         fields: {
           tipoPersona: 'Tipo de persona',
+          responsabilidad: 'Responsabilidad',
           regimen: 'Régimen',
           identificacion: 'Tipo de identificación',
           numeroIdentificacion: 'Número de identificación',

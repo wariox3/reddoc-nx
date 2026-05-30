@@ -143,6 +143,19 @@
       }
     }
 
+    // Estado activo del botón "Filtros" (hay filtros aplicados): tinte de marca,
+    // borde e ícono/texto en azul, como en la referencia.
+    &--active {
+      background: rgba(0 158 247 / 0.1);
+      border-color: var(--brand-blue);
+      color: var(--brand-blue);
+
+      &:hover {
+        background: rgba(0 158 247 / 0.16);
+        border-color: var(--brand-blue);
+      }
+    }
+
     &--icon {
       padding: 0;
       width: 32px;
@@ -191,14 +204,39 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 18px;
-    height: 18px;
-    padding: 0 0.3rem;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 4px;
     background: var(--brand-blue);
     color: #fff;
     border-radius: 999px;
-    font-size: 0.65rem;
+    font-size: 0.62rem;
     font-weight: 700;
-    margin-left: 0.15rem;
+    // El dígito se veía descentrado: el `letter-spacing` negativo heredado del
+    // botón añade espacio fantasma; tabular-nums + line-height:1 + letter-spacing
+    // normal lo centran de forma exacta dentro del círculo.
+    line-height: 1;
+    letter-spacing: normal;
+    font-variant-numeric: tabular-nums;
+    margin-left: 0.1rem;
+  }
+}
+
+// El popup de `<p-menu>` se monta con `appendTo="body"`, fuera del host, por lo
+// que su tipografía no la alcanza el scss scopeado. Regla global (vía `::ng-deep`
+// inicial) acotada por el styleClass del menú, para que los ítems usen la misma
+// escala que el toolbar (DM Sans heredado de body, tamaño/peso compactos) y no la
+// default de Aura, que se veía inconsistente con el resto de textos.
+::ng-deep .lib-data-toolbar__menu {
+  font-family: inherit;
+
+  .p-menu-item-link {
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  .p-menu-item-icon {
+    font-size: 0.8rem;
   }
 }

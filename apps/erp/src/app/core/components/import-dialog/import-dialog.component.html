@@ -1,0 +1,253 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="onVisibleChange($event)"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="!importing()"
+  [dismissableMask]="!importing()"
+  [style]="{ width: '560px', maxWidth: '94vw' }"
+  styleClass="cp-import-dialog"
+>
+  <!-- ── Header ───────────────────────────────────────────────────────────── -->
+  <ng-template pTemplate="header">
+    <div class="flex items-center gap-3.5">
+      <span
+        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-sky-50 text-sky-700"
+      >
+        <i class="pi pi-upload text-[1.05rem]"></i>
+      </span>
+      <div class="flex min-w-0 flex-col gap-[0.1rem]">
+        <h2
+          class="m-0 truncate text-[1.05rem] font-extrabold leading-tight tracking-[-0.03em] text-brand-text"
+        >
+          {{ title() }}
+        </h2>
+        @if (subtitle()) {
+          <p class="m-0 truncate text-[0.75rem] tracking-[0.01em] text-brand-muted">
+            {{ subtitle() }}
+          </p>
+        }
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- ── Body ─────────────────────────────────────────────────────────────── -->
+  @if (visible()) {
+    <div class="flex flex-col gap-4">
+      <!-- Hidden input para el click-to-pick -->
+      <input
+        #fileInput
+        type="file"
+        [accept]="accept()"
+        class="hidden"
+        (change)="onFileInputChange($event)"
+      />
+
+      @if (selectedFile(); as file) {
+        <!-- File card (estado: archivo cargado) -->
+        <div
+          class="flex items-center gap-3 rounded-xl border border-[rgba(20,48,73,0.1)] bg-brand-surface px-4 py-3 transition-opacity"
+          [class.opacity-60]="importing()"
+        >
+          <span
+            class="flex h-11 w-11 shrink-0 items-center justify-center rounded-[10px] bg-emerald-50 text-emerald-700"
+          >
+            <i class="pi pi-file-excel text-[1.2rem]"></i>
+          </span>
+          <div class="min-w-0 flex-1">
+            <p class="m-0 truncate text-[0.875rem] font-semibold text-brand-text">
+              {{ file.name }}
+            </p>
+            <p class="m-0 mt-0.5 truncate text-[0.72rem] text-brand-muted">
+              {{ fileMetaText() }}
+            </p>
+          </div>
+          <button
+            type="button"
+            class="cp-import-dialog__remove"
+            [disabled]="importing()"
+            [attr.aria-label]="t().common.import.removeFile"
+            (click)="clearSelectedFile()"
+          >
+            <i class="pi pi-times text-[0.8rem]"></i>
+          </button>
+        </div>
+      } @else {
+        <!-- Dropzone (estado: idle / hover / drag-over / error) -->
+        <div
+          class="cp-import-dialog__dropzone"
+          [class.is-drag-over]="dragOver()"
+          [class.is-error]="errorMessage() !== null"
+          role="button"
+          tabindex="0"
+          [attr.aria-label]="t().common.import.dropzone.primary"
+          (click)="openFilePicker()"
+          (keydown)="onDropzoneKeydown($event)"
+          (dragover)="onDragOver($event)"
+          (dragenter)="onDragOver($event)"
+          (dragleave)="onDragLeave($event)"
+          (drop)="onDrop($event)"
+        >
+          <span class="cp-import-dialog__dropzone-icon">
+            <i class="pi pi-file-excel text-[1.6rem]"></i>
+          </span>
+          <p class="m-0 mt-3 text-[0.9rem] font-semibold text-brand-text">
+            {{ t().common.import.dropzone.primary }}
+          </p>
+          <p class="m-0 mt-1 text-[0.8rem] text-brand-muted">
+            {{ t().common.import.dropzone.secondary }}
+          </p>
+          <p class="m-0 mt-3 text-[0.72rem] text-brand-muted">
+            {{ hintText() }}
+          </p>
+        </div>
+
+        @if (errorMessage(); as msg) {
+          <p class="m-0 text-[0.78rem] font-medium text-red-700">
+            <i class="pi pi-exclamation-circle mr-1 text-[0.78rem]"></i>
+            {{ msg }}
+          </p>
+        }
+      }
+
+      <!-- Tabs (errores / maestros) — siempre visibles -->
+      <p-tabs [value]="activeTab()" (valueChange)="activeTab.set($any($event))">
+        <p-tablist>
+          <p-tab value="errors">
+            {{ t().common.import.tabs.errors }}
+            @if (errors().length > 0) {
+              <span class="ml-1 font-semibold text-red-600">({{ errors().length }})</span>
+            }
+          </p-tab>
+          <p-tab value="masters">
+            {{ t().common.import.tabs.masters }}
+            @if (mastersTouched().length > 0) {
+              <span class="ml-1 font-semibold text-brand-muted">
+                ({{ mastersTouched().length }})
+              </span>
+            }
+          </p-tab>
+        </p-tablist>
+
+        <p-tabpanels>
+          <p-tabpanel value="errors">
+            @if (errors().length === 0 && !errorSummary()) {
+              <div class="cp-import-dialog__empty">
+                <i class="pi pi-info-circle text-[0.95rem] text-brand-muted"></i>
+                <p class="m-0 text-[0.8rem] text-brand-muted">
+                  {{ t().common.import.emptyStates.errors }}
+                </p>
+              </div>
+            } @else {
+              <div class="flex flex-col gap-3">
+                <!-- Banner de resumen (detail del backend) -->
+                @if (errorSummary(); as summary) {
+                  <div class="cp-import-dialog__error-banner">
+                    <i class="pi pi-exclamation-triangle text-[0.85rem]"></i>
+                    <span>{{ summary }}</span>
+                  </div>
+                }
+
+                <!-- Tabla de errores: fila + mensaje -->
+                @if (errors().length > 0) {
+                  <div class="cp-import-dialog__errors">
+                    <table class="cp-import-dialog__errors-table">
+                      <thead>
+                        <tr>
+                          <th class="cp-import-dialog__errors-rowcol">
+                            {{ t().common.import.errors.rowHeader }}
+                          </th>
+                          <th>{{ t().common.import.errors.messageHeader }}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (err of errors(); track $index) {
+                          <tr>
+                            <td class="cp-import-dialog__errors-rowcol">
+                              <span class="cp-import-dialog__row-chip">{{ err.row }}</span>
+                            </td>
+                            <td class="cp-import-dialog__errors-msg">{{ err.message }}</td>
+                          </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+
+                  @if (errorTruncated()) {
+                    <p class="m-0 text-[0.72rem] text-brand-muted">
+                      {{
+                        t()
+                          .common.import.errors.truncated.replace('{shown}', errors().length + '')
+                          .replace('{total}', errorTotal() + '')
+                      }}
+                    </p>
+                  }
+                }
+              </div>
+            }
+          </p-tabpanel>
+
+          <p-tabpanel value="masters">
+            @if (mastersTouched().length === 0) {
+              <div class="cp-import-dialog__empty">
+                <i class="pi pi-info-circle text-[0.95rem] text-brand-muted"></i>
+                <p class="m-0 text-[0.8rem] text-brand-muted">
+                  {{ t().common.import.emptyStates.masters }}
+                </p>
+              </div>
+            }
+            <!-- TODO(import-results): renderizar resumen de maestros tocados cuando el backend lo exponga. -->
+          </p-tabpanel>
+        </p-tabpanels>
+      </p-tabs>
+    </div>
+  }
+
+  <!-- ── Footer ───────────────────────────────────────────────────────────── -->
+  <ng-template pTemplate="footer">
+    <div class="flex items-center justify-between gap-3 border-t border-[rgba(20,48,73,0.08)] pt-4">
+      <!-- Acción auxiliar: descargar ejemplo (3 estados: oculto / habilitado / bloqueado) -->
+      @if (exampleVisible()) {
+        <button
+          type="button"
+          class="cp-import-dialog__example"
+          [disabled]="!exampleEnabled()"
+          [pTooltip]="exampleDisabledReason() ?? ''"
+          tooltipPosition="top"
+          (click)="onDownloadExample()"
+        >
+          @if (exampleDownloading()) {
+            <i class="pi pi-spin pi-spinner text-[0.8rem]"></i>
+            <span>{{ t().common.import.example.downloading }}</span>
+          } @else {
+            <i class="pi pi-download text-[0.8rem]"></i>
+            <span>{{ t().common.import.example.download }}</span>
+          }
+        </button>
+      } @else {
+        <span></span>
+      }
+
+      <!-- Acciones principales -->
+      <div class="flex items-center gap-2">
+        <p-button
+          type="button"
+          [label]="t().common.import.cancel"
+          [outlined]="true"
+          severity="secondary"
+          [disabled]="importing()"
+          (onClick)="onCancel()"
+        />
+        <p-button
+          type="button"
+          [label]="importing() ? t().common.import.submitting : t().common.import.submit"
+          icon="pi pi-check"
+          [loading]="importing()"
+          [disabled]="!canSubmit()"
+          (onClick)="onSubmit()"
+        />
+      </div>
+    </div>
+  </ng-template>
+</p-dialog>

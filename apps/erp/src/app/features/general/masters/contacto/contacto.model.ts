@@ -18,6 +18,7 @@ export interface Contacto {
   readonly barrio: string | null;
   readonly codigo_ciuu: string | null;
   readonly codigo_postal: string | null;
+  readonly identificacion_abreviatura: string | null;
   readonly telefono: string | null;
   readonly celular: string | null;
   readonly correo: string | null;
@@ -35,6 +36,8 @@ export interface Contacto {
   readonly ciudad_nombre: string;
   readonly tipo_persona_id: number;
   readonly tipo_persona_nombre: string;
+  readonly responsabilidad_id: number;
+  readonly responsabilidad_nombre: string;
   readonly regimen_id: number | null;
   readonly asesor_id: number | null;
   readonly precio_id: number | null;
@@ -49,7 +52,7 @@ export interface Contacto {
 /** Payload para crear o actualizar un contacto. */
 export interface ContactoPayload {
   readonly tipo_persona: number | null;
-  readonly regimen: number | null;
+  readonly responsabilidad: number | null;
   readonly identificacion: number | null;
   readonly numero_identificacion: string;
   readonly digito_verificacion: string | null;
@@ -81,4 +84,17 @@ export interface ContactoPayload {
 export interface ContactoListResponse {
   readonly count: number;
   readonly results: readonly Contacto[];
+}
+
+/**
+ * Respuesta del endpoint de importación masiva.
+ * Shape provisional: crece cuando el backend defina su contrato final.
+ */
+export interface ContactoImportResult {
+  readonly imported_count: number;
+  readonly errors?: ReadonlyArray<{
+    readonly row: number;
+    readonly field?: string;
+    readonly message: string;
+  }>;
 }

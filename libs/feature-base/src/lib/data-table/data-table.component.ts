@@ -3,9 +3,10 @@ import { Component, computed, inject, input, output } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { MenuModule } from 'primeng/menu';
 import { TableModule } from 'primeng/table';
-import type { MenuItem } from 'primeng/api';
+import type { MenuItem, SortMeta } from 'primeng/api';
 import { I18nService, type ColumnDef, type SortSpec } from '@reddoc/core';
 import type { PageChangeEvent, RowAction, RowActionInvokedEvent } from './data-table.types';
+import { multiSortMetaToSpecs, sortSpecsEqual } from './sort.util';
 
 /**
  * Componente "tonto" de tabla de datos.
@@ -43,6 +44,11 @@ export class DataTableComponent {
   readonly rowsPerPageOptions = input<readonly number[]>([10, 25, 50, 100]);
   readonly selectionMode = input<'none' | 'multiple'>('none');
   readonly selectedRows = input<readonly unknown[]>([]);
+  /**
+   * Ordenamiento activo (controlado por el host). Refleja el estado en los
+   * iconos de los headers tras recargar o rehidratar desde storage.
+   */
+  readonly sort = input<readonly SortSpec[]>([]);
   readonly rowActions = input<readonly RowAction[]>([]);
   readonly dataKey = input<string>('id');
   readonly emptyTitleKey = input<string>('common.list.empty.title');
@@ -69,6 +75,14 @@ export class DataTableComponent {
   protected readonly mutableItems = computed(() => [...this.items()]);
   protected readonly mutableSelection = computed(() => [...this.selectedRows()]);
   protected readonly mutableRowsPerPage = computed(() => [...this.rowsPerPageOptions()]);
+
+  /**
+   * `sort` (contrato propio) traducido al formato `SortMeta[]` de PrimeNG.
+   * `asc` → `order: 1`, `desc` → `order: -1`.
+   */
+  protected readonly primeSort = computed<SortMeta[]>(() =>
+    this.sort().map((spec) => ({ field: spec.field, order: spec.direction === 'desc' ? -1 : 1 })),
+  );
 
   // ── API protegida (template) ──────────────────────────────────────────────
 
@@ -121,5 +135,18 @@ export class DataTableComponent {
 
   protected onSelectionEvent(rows: unknown[] | unknown): void {
     this.selectionChange.emit(Array.isArray(rows) ? rows : [rows]);
+  }
+
+  /**
+   * Traduce el evento de ordenamiento multi-columna de PrimeNG
+   * (`multiSortMeta`) al contrato `SortSpec[]` y lo emite.
+   *
+   * PrimeNG dispara `onSort` también al inicializar `[multiSortMeta]`; el guard
+   * evita re-emitir (y recargar) cuando el orden no cambió respecto al input.
+   */
+  protected onSortEvent(event: { multiSortMeta?: SortMeta[] | null }): void {
+    const specs = multiSortMetaToSpecs(event.multiSortMeta);
+    if (sortSpecsEqual(this.sort(), specs)) return;
+    this.sortChange.emit(specs);
   }
 }

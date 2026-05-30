@@ -15,3 +15,8 @@ export type {
 
 export { DataToolbarComponent } from './lib/data-toolbar/data-toolbar.component';
 export type { ToolbarAction } from './lib/data-toolbar/data-toolbar.types';
+
+export { DataFilterModalComponent } from './lib/data-filter/data-filter-modal.component';
+
+export { BreadcrumbComponent } from './lib/breadcrumb/breadcrumb.component';
+export type { BreadcrumbItem } from './lib/breadcrumb/breadcrumb.types';

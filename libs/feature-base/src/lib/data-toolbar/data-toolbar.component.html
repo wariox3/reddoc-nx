@@ -8,10 +8,10 @@
           type="text"
           class="lib-data-toolbar__search-input"
           [placeholder]="translate(searchPlaceholderKey())"
-          [value]="searchValue()"
+          [value]="searchTerm()"
           (input)="onSearchInput($event)"
         />
-        @if (searchValue()) {
+        @if (searchTerm()) {
           <button
             type="button"
             class="lib-data-toolbar__search-clear"
@@ -27,7 +27,9 @@
     @if (filtersEnabled()) {
       <button
         type="button"
-        class="lib-data-toolbar__btn lib-data-toolbar__btn--ghost"
+        class="lib-data-toolbar__btn"
+        [class.lib-data-toolbar__btn--ghost]="activeFiltersCount() === 0"
+        [class.lib-data-toolbar__btn--active]="activeFiltersCount() > 0"
         (click)="filtersToggle.emit()"
       >
         <i class="pi pi-filter"></i>
@@ -65,10 +67,10 @@
   }
 
   <!-- Trailing actions (exportar, importar, etc.) -->
-  @if (trailingActions().length > 0) {
+  @if (resolvedTrailingActions().length > 0) {
     <div class="lib-data-toolbar__group">
-      @for (action of trailingActions(); track action.id) {
-        @if (action.children?.length) {
+      @for (action of resolvedTrailingActions(); track action.id) {
+        @if (action.menuItems; as items) {
           <button
             type="button"
             class="lib-data-toolbar__btn lib-data-toolbar__btn--ghost"
@@ -81,8 +83,9 @@
           <p-menu
             #menu
             [popup]="true"
-            [model]="toMenuItems(action.children ?? [])"
+            [model]="items"
             appendTo="body"
+            styleClass="lib-data-toolbar__menu"
           />
         } @else {
           <button

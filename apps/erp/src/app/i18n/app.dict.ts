@@ -5,6 +5,7 @@ export interface AppDict extends AuthTranslationsHost {
     comingSoon: string;
     actions: {
       new: string;
+      actions: string;
       edit: string;
       delete: string;
       deleteSelected: string;
@@ -33,6 +34,72 @@ export interface AppDict extends AuthTranslationsHost {
       loadError: { title: string; desc: string };
       deleteSuccess: { title: string; desc: string };
       deleteError: { title: string; desc: string };
+      exportError: { title: string; desc: string };
+    };
+    boolean: { true: string; false: string };
+    filters: {
+      title: string;
+      subtitle: string;
+      addCondition: string;
+      removeCondition: string;
+      where: string;
+      and: string;
+      apply: string;
+      clear: string;
+      cancel: string;
+      noValue: string;
+      valuePlaceholder: string;
+      empty: { title: string; sub: string };
+      operators: {
+        contiene: string;
+        es: string;
+        noEs: string;
+        comienzaCon: string;
+        terminaCon: string;
+        vacio: string;
+        noVacio: string;
+        mayor: string;
+        mayorIgual: string;
+        menor: string;
+        menorIgual: string;
+        esVerdadero: string;
+        esFalso: string;
+      };
+    };
+    import: {
+      dropzone: {
+        primary: string;
+        secondary: string;
+        /** Soporta los placeholders `{types}` y `{max}`. */
+        hint: string;
+        invalidType: string;
+        tooLarge: string;
+      };
+      fileMeta: {
+        /** Soporta los placeholders `{size}` y `{time}`. */
+        uploadedAt: string;
+      };
+      removeFile: string;
+      tabs: { errors: string; masters: string };
+      emptyStates: { errors: string; masters: string };
+      errors: {
+        rowHeader: string;
+        messageHeader: string;
+        /** Soporta los placeholders `{shown}` y `{total}`. */
+        truncated: string;
+      };
+      example: {
+        download: string;
+        downloading: string;
+        error: { title: string; desc: string };
+      };
+      submit: string;
+      submitting: string;
+      cancel: string;
+      toasts: {
+        success: { title: string; desc: string };
+        error: { title: string; desc: string };
+      };
     };
   };
   layout: {
@@ -64,12 +131,19 @@ export interface AppDict extends AuthTranslationsHost {
   entities: {
     contacto: {
       name: string;
+      searchPlaceholder: string;
+      import: { title: string; subtitle: string };
       columns: {
         id: string;
         nombre: string;
         identificacion: string;
+        identificacion_abreviatura: string;
         correo: string;
         telefono: string;
+        celular: string;
+        cliente: string;
+        proveedor: string;
+        empleado: string;
       };
       form: {
         createTitle: string;
@@ -81,6 +155,7 @@ export interface AppDict extends AuthTranslationsHost {
         clasificacion: string;
         fields: {
           tipoPersona: string;
+          responsabilidad: string;
           regimen: string;
           identificacion: string;
           numeroIdentificacion: string;
