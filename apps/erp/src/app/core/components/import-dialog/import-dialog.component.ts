@@ -92,8 +92,14 @@ export class ImportDialogComponent {
   /** Indicador de upload en curso. El padre lo setea durante la importación. */
   readonly importing = input<boolean>(false);
 
-  /** Errores reportados por el backend; alimentan el tab "Errores". */
+  /** Errores reportados por el backend (ya capados a 100); alimentan el tab "Errores". */
   readonly errors = input<readonly ImportError[]>([]);
+
+  /** Mensaje resumen del error (el `detail` del backend); se muestra como banner. */
+  readonly errorSummary = input<string>('');
+
+  /** Total real de errores; si supera a los mostrados se indica el truncado. */
+  readonly errorTotal = input<number>(0);
 
   /** Resumen por master/catálogo; alimenta el tab "Maestros". */
   readonly mastersTouched = input<readonly MasterTouched[]>([]);
@@ -125,6 +131,9 @@ export class ImportDialogComponent {
 
   /** Botón "Importar" disponible solo con archivo válido y sin upload en curso. */
   protected readonly canSubmit = computed(() => this.selectedFile() !== null && !this.importing());
+
+  /** Hay más errores de los que se muestran (lista capada). */
+  protected readonly errorTruncated = computed(() => this.errorTotal() > this.errors().length);
 
   protected readonly exampleVisible = computed(() => this.exampleConfig() !== null);
 
@@ -165,6 +174,12 @@ export class ImportDialogComponent {
         this.errorMessage.set(null);
         this.activeTab.set('errors');
       }
+    });
+
+    // Al llegar errores, asegurar que el tab "Errores" quede visible (por si el
+    // usuario estaba en "Maestros").
+    effect(() => {
+      if (this.errors().length > 0) this.activeTab.set('errors');
     });
   }
 

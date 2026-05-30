@@ -101,6 +101,11 @@ export const en: AppDict = {
         errors: 'Errors will appear here after importing the file.',
         masters: 'The masters summary will appear here after importing.',
       },
+      errors: {
+        rowHeader: 'Row',
+        messageHeader: 'Message',
+        truncated: 'Showing {shown} of {total} errors.',
+      },
       example: {
         download: 'Download template',
         downloading: 'Downloading…',

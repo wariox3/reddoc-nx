@@ -132,15 +132,60 @@
 
         <p-tabpanels>
           <p-tabpanel value="errors">
-            @if (errors().length === 0) {
+            @if (errors().length === 0 && !errorSummary()) {
               <div class="cp-import-dialog__empty">
                 <i class="pi pi-info-circle text-[0.95rem] text-brand-muted"></i>
                 <p class="m-0 text-[0.8rem] text-brand-muted">
                   {{ t().common.import.emptyStates.errors }}
                 </p>
               </div>
+            } @else {
+              <div class="flex flex-col gap-3">
+                <!-- Banner de resumen (detail del backend) -->
+                @if (errorSummary(); as summary) {
+                  <div class="cp-import-dialog__error-banner">
+                    <i class="pi pi-exclamation-triangle text-[0.85rem]"></i>
+                    <span>{{ summary }}</span>
+                  </div>
+                }
+
+                <!-- Tabla de errores: fila + mensaje -->
+                @if (errors().length > 0) {
+                  <div class="cp-import-dialog__errors">
+                    <table class="cp-import-dialog__errors-table">
+                      <thead>
+                        <tr>
+                          <th class="cp-import-dialog__errors-rowcol">
+                            {{ t().common.import.errors.rowHeader }}
+                          </th>
+                          <th>{{ t().common.import.errors.messageHeader }}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (err of errors(); track $index) {
+                          <tr>
+                            <td class="cp-import-dialog__errors-rowcol">
+                              <span class="cp-import-dialog__row-chip">{{ err.row }}</span>
+                            </td>
+                            <td class="cp-import-dialog__errors-msg">{{ err.message }}</td>
+                          </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+
+                  @if (errorTruncated()) {
+                    <p class="m-0 text-[0.72rem] text-brand-muted">
+                      {{
+                        t()
+                          .common.import.errors.truncated.replace('{shown}', errors().length + '')
+                          .replace('{total}', errorTotal() + '')
+                      }}
+                    </p>
+                  }
+                }
+              </div>
             }
-            <!-- TODO(import-results): renderizar lista de errores cuando el backend devuelva su shape. -->
           </p-tabpanel>
 
           <p-tabpanel value="masters">

@@ -101,6 +101,11 @@ export const es: AppDict = {
         errors: 'Los errores aparecerán aquí después de importar el archivo.',
         masters: 'El resumen de los maestros aparecerá aquí después de importar.',
       },
+      errors: {
+        rowHeader: 'Fila',
+        messageHeader: 'Mensaje',
+        truncated: 'Mostrando {shown} de {total} errores.',
+      },
       example: {
         download: 'Descargar ejemplo',
         downloading: 'Descargando…',

@@ -126,6 +126,92 @@
   padding: 0.85rem 0.25rem;
 }
 
+// ── Errores de importación ────────────────────────────────────────────────
+// Banner de resumen (el `detail` del backend): rojo tenue, una sola línea de
+// contexto antes de la tabla.
+.cp-import-dialog__error-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid rgba(220, 38, 38, 0.18); // red-600/18
+  border-radius: 10px;
+  background: rgba(254, 242, 242, 0.7); // red-50/70
+  color: #b91c1c; // red-700
+  font-size: 0.78rem;
+  font-weight: 500;
+  line-height: 1.35;
+
+  .pi {
+    margin-top: 0.1rem;
+    flex-shrink: 0;
+  }
+}
+
+// Tabla scrolleable (hasta 100 filas) con header pegajoso; borders-only.
+.cp-import-dialog__errors {
+  max-height: 240px;
+  overflow-y: auto;
+  border: 1px solid rgba(20, 48, 73, 0.1);
+  border-radius: 10px;
+}
+
+.cp-import-dialog__errors-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+
+  thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--brand-surface, #fff);
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--brand-muted);
+    border-bottom: 1px solid rgba(20, 48, 73, 0.1);
+  }
+
+  tbody td {
+    padding: 0.5rem 0.75rem;
+    vertical-align: top;
+    border-bottom: 1px solid rgba(20, 48, 73, 0.06);
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+}
+
+// Columna de fila: angosta, números alineados.
+.cp-import-dialog__errors-rowcol {
+  width: 4.5rem;
+  white-space: nowrap;
+}
+
+// Localizador de la fila del Excel — la firma: ancla el error a su fila.
+.cp-import-dialog__row-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.75rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 6px;
+  background: #fef2f2; // red-50
+  color: #b91c1c; // red-700
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.cp-import-dialog__errors-msg {
+  color: var(--brand-text);
+  line-height: 1.4;
+}
+
 // ── Botón "Descargar ejemplo" — auxiliar, ghost; vive a la izquierda del footer.
 .cp-import-dialog__example {
   display: inline-flex;

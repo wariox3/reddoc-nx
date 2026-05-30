@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
@@ -31,6 +32,7 @@ import type {
   ImportError,
   MasterTouched,
 } from '@erp/core/components/import-dialog/import-dialog.types';
+import { parseImportErrors } from '@erp/core/components/import-dialog/import-dialog.utils';
 import type { AppDict } from '@erp/i18n';
 import { ContactoService } from '../../contacto.service';
 import type { Contacto } from '../../contacto.model';
@@ -106,6 +108,8 @@ export class ContactosListComponent {
   protected readonly importVisible = signal(false);
   protected readonly importLoading = signal(false);
   protected readonly importErrors = signal<readonly ImportError[]>([]);
+  protected readonly importErrorSummary = signal('');
+  protected readonly importErrorTotal = signal(0);
   protected readonly importMasters = signal<readonly MasterTouched[]>([]);
 
   // ── Derivados ─────────────────────────────────────────────────────────────
@@ -213,6 +217,8 @@ export class ContactosListComponent {
   protected onImportRequested(file: File): void {
     if (this.importLoading()) return;
     this.importLoading.set(true);
+    // Limpia el resultado del intento anterior (al reintentar tras corregir).
+    this.clearImportErrors();
     this.service
       .importar(file)
       .pipe(
@@ -220,19 +226,57 @@ export class ContactosListComponent {
         finalize(() => this.importLoading.set(false)),
       )
       .subscribe({
-        next: () => {
+        next: (result) => {
+          // [DEBUG-IMPORT] temporal: ver qué llega en un 200.
+          console.debug('[import] next result =', result, '→ parsed =', parseImportErrors(result));
+          // El backend puede reportar los errores de validación en un 200
+          // ("No se procesó ningún registro"); si los trae, los mostramos en vez
+          // de tratarlo como éxito.
+          if (this.applyImportErrors(parseImportErrors(result))) return;
           const toasts = this.t().common.import.toasts;
           this.toast.success(toasts.success.title, toasts.success.desc);
           this.importVisible.set(false);
-          this.importErrors.set([]);
+          this.clearImportErrors();
           this.importMasters.set([]);
           this.loadList();
         },
-        error: () => {
-          const toasts = this.t().common.import.toasts;
-          this.toast.error(toasts.error.title, toasts.error.desc);
+        error: (err: HttpErrorResponse) => {
+          // [DEBUG-IMPORT] temporal: ver status y body del error.
+          console.debug(
+            '[import] error status =',
+            err.status,
+            'err.error =',
+            err.error,
+            '→ parsed =',
+            parseImportErrors(err.error),
+          );
+          // Errores de validación (4xx) con el mismo shape. Si no hay estructura
+          // (red/desconocido) → toast genérico.
+          if (!this.applyImportErrors(parseImportErrors(err.error))) {
+            const toasts = this.t().common.import.toasts;
+            this.toast.error(toasts.error.title, toasts.error.desc);
+          }
         },
       });
+  }
+
+  /**
+   * Vuelca los errores parseados en los signals del diálogo. Devuelve `true` si
+   * había errores/resumen (para que el llamador no siga el camino de éxito).
+   */
+  private applyImportErrors(parsed: ReturnType<typeof parseImportErrors>): boolean {
+    if (parsed.errors.length === 0 && !parsed.summary) return false;
+    this.importErrors.set(parsed.errors);
+    this.importErrorSummary.set(parsed.summary);
+    this.importErrorTotal.set(parsed.total);
+    return true;
+  }
+
+  /** Resetea el resultado de errores de importación (tabla + resumen). */
+  private clearImportErrors(): void {
+    this.importErrors.set([]);
+    this.importErrorSummary.set('');
+    this.importErrorTotal.set(0);
   }
 
   protected onSearchChange(value: string): void {

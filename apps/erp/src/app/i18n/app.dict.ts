@@ -82,6 +82,12 @@ export interface AppDict extends AuthTranslationsHost {
       removeFile: string;
       tabs: { errors: string; masters: string };
       emptyStates: { errors: string; masters: string };
+      errors: {
+        rowHeader: string;
+        messageHeader: string;
+        /** Soporta los placeholders `{shown}` y `{total}`. */
+        truncated: string;
+      };
       example: {
         download: string;
         downloading: string;
