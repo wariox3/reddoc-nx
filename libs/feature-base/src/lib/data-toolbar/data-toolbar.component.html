@@ -8,10 +8,10 @@
           type="text"
           class="lib-data-toolbar__search-input"
           [placeholder]="translate(searchPlaceholderKey())"
-          [value]="searchValue()"
+          [value]="searchTerm()"
           (input)="onSearchInput($event)"
         />
-        @if (searchValue()) {
+        @if (searchTerm()) {
           <button
             type="button"
             class="lib-data-toolbar__search-clear"

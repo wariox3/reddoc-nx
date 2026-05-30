@@ -153,6 +153,7 @@ export const es: AppDict = {
   entities: {
     contacto: {
       name: 'Contactos',
+      searchPlaceholder: 'Buscar por nombre…',
       import: {
         title: 'Importar contactos',
         subtitle: 'Subí un Excel con los registros a cargar',

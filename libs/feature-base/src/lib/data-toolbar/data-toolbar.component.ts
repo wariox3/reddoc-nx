@@ -1,8 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, input, output } from '@angular/core';
+import { Component, computed, inject, input, linkedSignal, output } from '@angular/core';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { TooltipModule } from 'primeng/tooltip';
 import { MenuModule } from 'primeng/menu';
 import type { MenuItem } from 'primeng/api';
+import { debounce, distinctUntilChanged, skip, timer } from 'rxjs';
 import { I18nService } from '@reddoc/core';
 import type { ToolbarAction } from './data-toolbar.types';
 
@@ -54,7 +56,16 @@ export class DataToolbarComponent {
   readonly searchEnabled = input<boolean>(false);
   readonly searchValue = input<string>('');
   readonly searchPlaceholderKey = input<string>('common.search.placeholder');
+  /** Debounce (ms) de la emisión de `searched`. `0` = inmediato. */
+  readonly searchDebounce = input<number>(300);
   readonly searched = output<string>();
+
+  /**
+   * Valor mostrado en el input. Es local para que el tipeo sea responsivo aunque
+   * la emisión de `searched` se retrase por el debounce; sigue a `searchValue`
+   * cuando el consumidor lo cambia (binding controlado) y se sobreescribe al teclear.
+   */
+  protected readonly searchTerm = linkedSignal(() => this.searchValue());
 
   // ── Filtros ───────────────────────────────────────────────────────────────
   readonly filtersEnabled = input<boolean>(false);
@@ -78,6 +89,20 @@ export class DataToolbarComponent {
 
   // ── Colaboradores ─────────────────────────────────────────────────────────
   private readonly i18n = inject<I18nService<unknown>>(I18nService);
+
+  constructor() {
+    // El término se emite ya debounced para no spamear al consumidor (un POST por
+    // tecla). `skip(1)` ignora el valor inicial sembrado; `timer(term ? d : 0)`
+    // hace que limpiar/vaciar salga al instante mientras el tipeo se debounce.
+    toObservable(this.searchTerm)
+      .pipe(
+        skip(1),
+        debounce((term) => timer(term ? this.searchDebounce() : 0)),
+        distinctUntilChanged(),
+        takeUntilDestroyed(),
+      )
+      .subscribe((term) => this.searched.emit(term));
+  }
 
   // ── API protegida (template) ──────────────────────────────────────────────
 
@@ -106,12 +131,13 @@ export class DataToolbarComponent {
   });
 
   protected onSearchInput(event: Event): void {
-    const value = (event.target as HTMLInputElement).value;
-    this.searched.emit(value);
+    // Solo actualiza el display; la emisión la dispara el stream debounced.
+    this.searchTerm.set((event.target as HTMLInputElement).value);
   }
 
   protected clearSearch(): void {
-    this.searched.emit('');
+    // `timer(0)` del stream hace que la emisión de '' sea inmediata.
+    this.searchTerm.set('');
   }
 
   /**

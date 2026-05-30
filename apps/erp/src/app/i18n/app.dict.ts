@@ -125,6 +125,7 @@ export interface AppDict extends AuthTranslationsHost {
   entities: {
     contacto: {
       name: string;
+      searchPlaceholder: string;
       import: { title: string; subtitle: string };
       columns: {
         id: string;

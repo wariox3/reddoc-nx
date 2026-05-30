@@ -12,6 +12,7 @@ import {
   ToastService,
   buildFiltros,
   buildOrdenamientos,
+  quickSearchCondition,
   type FilterCondition,
   type ListQuery,
   type SortSpec,
@@ -37,6 +38,7 @@ import {
   CONTACTOS_COLUMNS,
   CONTACTOS_FILTER_FIELDS,
   CONTACTOS_FILTERS_STORAGE_KEY,
+  CONTACTOS_QUICK_SEARCH_FIELD,
   CONTACTOS_PRIMARY_ACTION,
   CONTACTOS_ROW_ACTIONS,
   CONTACTOS_TRAILING_ACTIONS,
@@ -234,8 +236,10 @@ export class ContactosListComponent {
   }
 
   protected onSearchChange(value: string): void {
+    // El toolbar ya emite el término debounced; aquí solo aplicamos y recargamos.
     this.searchValue.set(value);
-    // TODO: aplicar búsqueda al query del backend cuando se conecte.
+    this.currentPage.set(0);
+    this.loadList();
   }
 
   protected onRefresh(): void {
@@ -276,8 +280,13 @@ export class ContactosListComponent {
   }
 
   private loadList(): void {
+    // La búsqueda rápida se añade como un filtro `contiene` más, combinado (AND)
+    // con los filtros avanzados activos.
+    const search = quickSearchCondition(CONTACTOS_QUICK_SEARCH_FIELD, this.searchValue());
+    const filters = search ? [...this.activeFilters(), search] : this.activeFilters();
+
     const query: ListQuery = {
-      filters: this.activeFilters(),
+      filters,
       sort: this.sort(),
       page: this.currentPage(),
       pageSize: this.pageSize(),

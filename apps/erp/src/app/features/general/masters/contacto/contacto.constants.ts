@@ -3,6 +3,13 @@ import type { RowAction, ToolbarAction } from '@reddoc/feature-base';
 
 export const CONTACTOS_FILTERS_STORAGE_KEY = 'contactos:filters:v1';
 
+/**
+ * Campo sobre el que opera la búsqueda rápida del toolbar (input de texto).
+ * El término escrito se convierte en un filtro `contiene` sobre este campo y
+ * viaja junto a los filtros avanzados (ver `quickSearchCondition`).
+ */
+export const CONTACTOS_QUICK_SEARCH_FIELD = 'nombre_corto';
+
 /** IDs del catálogo `tipo_persona` del backend. */
 export const TIPO_PERSONA = {
   JURIDICA: 1,
