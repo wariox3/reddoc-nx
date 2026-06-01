@@ -67,6 +67,9 @@ export class ContactoFormComponent implements OnInit {
   protected readonly esCliente = signal(true);
   protected readonly esProveedor = signal(false);
 
+  /** Consulta DIAN en vuelo (deshabilita el botón y muestra spinner). */
+  protected readonly isConsultingDian = signal(false);
+
   /** Snapshot del contacto cargado en edición; usado por el async validator. */
   private readonly originalIdentificacion = signal<NumeroIdentificacionSnapshot | null>(null);
 
@@ -97,7 +100,7 @@ export class ContactoFormComponent implements OnInit {
     cliente: [true],
     proveedor: [false],
     empleado: [false],
-    plazo_pago: this.fb.control<ErpSelectOption | null>(null, Validators.required),
+    plazo_pago: this.fb.control<ErpSelectOption | null>(null),
     precio: this.fb.control<ErpSelectOption | null>(null),
     asesor: this.fb.control<ErpSelectOption | null>(null),
     correo_facturacion_electronica: ['', Validators.email],
@@ -117,7 +120,7 @@ export class ContactoFormComponent implements OnInit {
   }
 
   protected onSubmit(): void {
-    if (this.form.invalid || this.isSaving()) return;
+    if (this.form.invalid || this.form.pending || this.isSaving()) return;
     this.isSaving.set(true);
 
     const toasts = this.t().entities.contacto.form.toasts;
@@ -146,6 +149,74 @@ export class ContactoFormComponent implements OnInit {
     this.navigateToList();
   }
 
+  /** Habilita la consulta DIAN cuando hay tipo + número de identificación. */
+  protected canConsultarDian(): boolean {
+    const { identificacion, numero_identificacion } = this.form.controls;
+    return (
+      !this.isConsultingDian() &&
+      identificacion.value?.id != null &&
+      !!numero_identificacion.value?.trim()
+    );
+  }
+
+  /**
+   * Consulta la DIAN por tipo + número de identificación y autocompleta nombre y
+   * correo. El mapeo depende del tipo de persona (Natural usa `nombre1`;
+   * Jurídica usa `nombre_corto`).
+   */
+  protected consultarDian(): void {
+    const { identificacion, numero_identificacion } = this.form.controls;
+    const identificacionId = identificacion.value?.id;
+    const numero = numero_identificacion.value?.trim();
+    if (identificacionId == null || !numero) return;
+
+    const dian = this.t().entities.contacto.form.dian;
+    this.isConsultingDian.set(true);
+
+    this.contactoService
+      .consultarDian({ identificacion_id: identificacionId, numero_identificacion: numero })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res) => {
+          this.isConsultingDian.set(false);
+          if (!res.encontrado) {
+            this.toast.info(dian.notFound.title, dian.notFound.desc);
+            return;
+          }
+          // Solo pisamos un campo si la DIAN devolvió valor: nunca borramos lo
+          // que el usuario ya escribió.
+          const patch: {
+            nombre1?: string;
+            nombre_corto?: string;
+            correo?: string;
+            correo_facturacion_electronica?: string;
+          } = {};
+          if (res.nombre) {
+            // El nombre llega como un único string; en Natural va entero a
+            // nombre1 (no es fiable partirlo en nombre/apellido).
+            if (this.esNatural()) patch.nombre1 = res.nombre;
+            else patch.nombre_corto = res.nombre;
+          }
+          if (res.correo) {
+            patch.correo = res.correo;
+            patch.correo_facturacion_electronica = res.correo;
+          }
+          this.form.patchValue(patch);
+          // Si la DIAN trajo un correo malformado ("NO", etc.), el validador
+          // email ya marcó el control inválido; lo marcamos touched para que el
+          // mensaje de error se muestre bajo el input.
+          if (res.correo) {
+            this.form.controls.correo.markAsTouched();
+            this.form.controls.correo_facturacion_electronica.markAsTouched();
+          }
+        },
+        error: () => {
+          this.isConsultingDian.set(false);
+          this.toast.error(dian.error.title, dian.error.desc);
+        },
+      });
+  }
+
   // ── Internos ────────────────────────────────────────────────────────────────
 
   /** Conecta los `valueChanges` del form a los signals y al async validator. */
@@ -159,9 +230,11 @@ export class ContactoFormComponent implements OnInit {
       controls.identificacion.setValue(null);
     });
 
-    controls.cliente.valueChanges
-      .pipe(takeUntilDestroyed())
-      .subscribe((v) => this.esCliente.set(v ?? false));
+    controls.cliente.valueChanges.pipe(takeUntilDestroyed()).subscribe((v) => {
+      const esCliente = v ?? false;
+      this.esCliente.set(esCliente);
+      this.applyClienteValidators(esCliente);
+    });
 
     controls.proveedor.valueChanges
       .pipe(takeUntilDestroyed())
@@ -186,6 +259,20 @@ export class ContactoFormComponent implements OnInit {
     controls.identificacion.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => {
       controls.numero_identificacion.updateValueAndValidity();
     });
+
+    // Estado inicial del requerido de plazo_pago según el flag cliente.
+    this.applyClienteValidators(controls.cliente.value ?? false);
+  }
+
+  /**
+   * `plazo_pago` solo es obligatorio cuando el contacto es cliente; si no, el
+   * campo se oculta y exigirlo dejaría el form inválido sin campo visible que
+   * corregir.
+   */
+  private applyClienteValidators(esCliente: boolean): void {
+    const { plazo_pago } = this.form.controls;
+    plazo_pago.setValidators(esCliente ? [Validators.required] : []);
+    plazo_pago.updateValueAndValidity();
   }
 
   /**
@@ -213,7 +300,7 @@ export class ContactoFormComponent implements OnInit {
         next: (c) => {
           this.originalIdentificacion.set({
             numero_identificacion: c.numero_identificacion,
-            identificacion_id: c.identificacion_id,
+            identificacion_id: c.identificacion,
           });
           this.form.patchValue(contactoToFormValue(c));
         },

@@ -202,6 +202,11 @@ export interface AppDict extends AuthTranslationsHost {
           editError: { title: string; desc: string };
           loadError: { title: string; desc: string };
         };
+        dian: {
+          button: string;
+          notFound: { title: string; desc: string };
+          error: { title: string; desc: string };
+        };
       };
     };
     facturaVenta: {

@@ -107,24 +107,16 @@
             {{ t().entities.contacto.form.fields.numeroIdentificacion }}
             <span class="ml-px text-red-500">*</span>
           </label>
-          @if (esNatural()) {
+          <div class="flex gap-2">
             <input
               id="numero_identificacion"
               pInputText
               type="text"
               formControlName="numero_identificacion"
+              class="flex-1"
               fluid
             />
-          } @else {
-            <div class="flex gap-2">
-              <input
-                id="numero_identificacion"
-                pInputText
-                type="text"
-                formControlName="numero_identificacion"
-                class="flex-1"
-                fluid
-              />
+            @if (!esNatural()) {
               <input
                 id="digito_verificacion"
                 pInputText
@@ -134,8 +126,19 @@
                 [placeholder]="t().entities.contacto.form.fields.digitoVerificacion"
                 [attr.aria-label]="t().entities.contacto.form.fields.digitoVerificacion"
               />
-            </div>
-          }
+            }
+            @if (!isEditMode()) {
+              <p-button
+                type="button"
+                [label]="t().entities.contacto.form.dian.button"
+                icon="pi pi-search"
+                severity="secondary"
+                [loading]="isConsultingDian()"
+                [disabled]="!canConsultarDian()"
+                (onClick)="consultarDian()"
+              />
+            }
+          </div>
           <lib-field-error
             [control]="form.controls.numero_identificacion"
             [messages]="{
@@ -494,7 +497,7 @@
       "
       icon="pi pi-check"
       [loading]="isSaving()"
-      [disabled]="form.invalid || isSaving()"
+      [disabled]="form.invalid || form.pending || isSaving()"
     />
   </div>
 </form>

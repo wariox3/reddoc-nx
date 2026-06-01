@@ -258,6 +258,17 @@ export const en: AppDict = {
             desc: 'The contact could not be loaded.',
           },
         },
+        dian: {
+          button: 'Look up DIAN',
+          notFound: {
+            title: 'No results',
+            desc: 'No information was found in DIAN for that identification.',
+          },
+          error: {
+            title: 'Lookup failed',
+            desc: 'Could not query DIAN. Please try again.',
+          },
+        },
       },
     },
     facturaVenta: {

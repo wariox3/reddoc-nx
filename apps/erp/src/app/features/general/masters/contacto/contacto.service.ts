@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, forkJoin, map } from 'rxjs';
 import { BaseHttpService, buildListBody, type ListQuery } from '@reddoc/core';
 import type {
+  ConsultaDianResponse,
   Contacto,
   ContactoImportResult,
   ContactoListResponse,
@@ -35,18 +36,30 @@ export class ContactoService extends BaseHttpService {
   }
 
   update(id: number, payload: ContactoPayload): Observable<Contacto> {
-    return this.patch<Contacto>(`${this.resourcePath}${id}/`, payload);
+    return this.put<Contacto>(`${this.resourcePath}${id}/`, payload);
   }
 
   /**
    * Pregunta al backend si la combinación tipo de identificación + número
-   * ya existe en otro contacto. Respuesta: `validacion: true` ⇒ ya existe.
+   * ya existe en otro contacto. Respuesta: `existe: true` ⇒ ya existe.
    */
   validar(data: {
     identificacion_id: number;
     numero_identificacion: string;
-  }): Observable<{ validacion: boolean; codigo: number }> {
-    return this.post<{ validacion: boolean; codigo: number }>(`${this.resourcePath}validar/`, data);
+  }): Observable<{ existe: boolean }> {
+    return this.post<{ existe: boolean }>(`${this.resourcePath}validar/`, data);
+  }
+
+  /**
+   * Consulta el registro de la DIAN por tipo + número de identificación.
+   * Si `encontrado` es `true`, devuelve nombre y correo para autocompletar el
+   * formulario de alta.
+   */
+  consultarDian(params: {
+    identificacion_id: number;
+    numero_identificacion: string;
+  }): Observable<ConsultaDianResponse> {
+    return this.get<ConsultaDianResponse>(`${this.resourcePath}consulta-dian/`, params);
   }
 
   /**

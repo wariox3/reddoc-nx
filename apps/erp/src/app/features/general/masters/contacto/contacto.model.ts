@@ -2,8 +2,10 @@
  * Contacto: cubre clientes, proveedores y empleados sobre el mismo recurso.
  * El backend discrimina internamente por los flags `cliente`, `proveedor`, `empleado`.
  *
- * Shape de lectura: los relacionales viajan como `<campo>_id` + `<campo>_nombre`.
- * En escritura (`ContactoPayload`) los mismos campos se envían sin sufijo.
+ * Shape de lectura: los relacionales viajan con el nombre "pelado" (el id del FK,
+ * p. ej. `identificacion`, `tipo_persona`, `ciudad`) y, para algunos, un
+ * `<campo>_nombre`/`<campo>_abreviatura` acompañante para mostrar. Es el mismo
+ * shape que `ContactoPayload` usa en escritura.
  */
 export interface Contacto {
   readonly id: number;
@@ -30,22 +32,25 @@ export interface Contacto {
   readonly numero_cuenta: string | null;
   readonly numero_licencia: string | null;
   readonly fecha_vence_licencia: string | null;
-  readonly identificacion_id: number;
+  readonly identificacion: number;
   readonly identificacion_nombre: string;
-  readonly ciudad_id: number;
+  readonly ciudad: number;
   readonly ciudad_nombre: string;
-  readonly tipo_persona_id: number;
+  readonly tipo_persona: number;
   readonly tipo_persona_nombre: string;
-  readonly responsabilidad_id: number;
-  readonly responsabilidad_nombre: string;
-  readonly regimen_id: number | null;
-  readonly asesor_id: number | null;
-  readonly precio_id: number | null;
-  readonly plazo_pago_id: number | null;
-  readonly plazo_pago_proveedor_id: number | null;
-  readonly banco_id: number | null;
-  readonly banco_nombre: string | null;
-  readonly cuenta_banco_clase_id: number | null;
+  readonly asesor: number | null;
+  readonly precio: number | null;
+  readonly plazo_pago: number | null;
+  readonly plazo_pago_proveedor: number | null;
+  readonly banco: number | null;
+  readonly banco_nombre?: string | null;
+  readonly cuenta_banco_clase: number | null;
+  /**
+   * El backend de lectura todavía no devuelve `responsabilidad` (ni su nombre);
+   * opcional hasta que lo exponga. Mientras tanto el form no puede precargarlo.
+   */
+  readonly responsabilidad?: number | null;
+  readonly responsabilidad_nombre?: string | null;
   readonly activo?: boolean;
 }
 
@@ -78,6 +83,19 @@ export interface ContactoPayload {
   readonly numero_cuenta: string | null;
   readonly cuenta_banco_clase: number | null;
   readonly plazo_pago_proveedor: number | null;
+}
+
+/**
+ * Respuesta de la consulta a la DIAN (`consulta-dian/`).
+ * `encontrado` indica si la identificación existe en el registro; cuando es
+ * `false`, los demás campos vienen `null`. `nit` es un string (eco del número
+ * consultado) que no usamos para autocompletar.
+ */
+export interface ConsultaDianResponse {
+  readonly encontrado: boolean;
+  readonly nit: string | null;
+  readonly nombre: string | null;
+  readonly correo: string | null;
 }
 
 /** Forma cruda de la respuesta paginada del backend de contactos. */

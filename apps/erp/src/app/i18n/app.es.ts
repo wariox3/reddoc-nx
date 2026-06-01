@@ -258,6 +258,17 @@ export const es: AppDict = {
             desc: 'No se pudo cargar el contacto.',
           },
         },
+        dian: {
+          button: 'Consultar DIAN',
+          notFound: {
+            title: 'Sin resultados',
+            desc: 'No se encontró información en la DIAN para esa identificación.',
+          },
+          error: {
+            title: 'Error de consulta',
+            desc: 'No se pudo consultar la DIAN. Intentá de nuevo.',
+          },
+        },
       },
     },
     facturaVenta: {
