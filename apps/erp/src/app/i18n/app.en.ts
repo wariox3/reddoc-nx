@@ -286,7 +286,7 @@ export const en: AppDict = {
       actions: {
         menuLabel: 'Container options',
         invite: 'Invite user',
-        edit: 'Edit company',
+        edit: 'Edit container',
         delete: 'Delete container',
       },
       view: {
@@ -337,7 +337,7 @@ export const en: AppDict = {
       },
     },
     edit: {
-      title: 'Edit company',
+      title: 'Edit container',
       subtitle: 'Update the container details',
       submit: 'Save changes',
       cancel: 'Cancel',

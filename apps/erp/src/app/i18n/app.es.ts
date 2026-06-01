@@ -286,7 +286,7 @@ export const es: AppDict = {
       actions: {
         menuLabel: 'Opciones del contenedor',
         invite: 'Invitar usuario',
-        edit: 'Editar empresa',
+        edit: 'Editar contenedor',
         delete: 'Eliminar contenedor',
       },
       view: {
@@ -340,7 +340,7 @@ export const es: AppDict = {
       },
     },
     edit: {
-      title: 'Editar empresa',
+      title: 'Editar contenedor',
       subtitle: 'Actualizá los datos del contenedor',
       submit: 'Guardar cambios',
       cancel: 'Cancelar',
