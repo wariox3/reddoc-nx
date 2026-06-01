@@ -64,7 +64,7 @@ export class ContactoFormComponent implements OnInit {
   private readonly tipoPersona = signal<number | null>(null);
   protected readonly esNatural = computed(() => this.tipoPersona() === TIPO_PERSONA.NATURAL);
 
-  protected readonly esCliente = signal(false);
+  protected readonly esCliente = signal(true);
   protected readonly esProveedor = signal(false);
 
   /** Snapshot del contacto cargado en edición; usado por el async validator. */
@@ -94,7 +94,7 @@ export class ContactoFormComponent implements OnInit {
     direccion: ['', Validators.required],
     barrio: [''],
     correo: ['', [Validators.required, Validators.email]],
-    cliente: [false],
+    cliente: [true],
     proveedor: [false],
     empleado: [false],
     plazo_pago: this.fb.control<ErpSelectOption | null>(null, Validators.required),
