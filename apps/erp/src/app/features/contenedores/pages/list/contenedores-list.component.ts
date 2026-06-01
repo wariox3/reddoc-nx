@@ -133,6 +133,11 @@ export class ContenedoresListComponent {
         icon: 'pi pi-pencil',
         command: () => this.editContenedor(item),
       },
+      {
+        label: labels.updateSubscription,
+        icon: 'pi pi-credit-card',
+        command: () => this.renewContenedor(),
+      },
       { separator: true },
       {
         label: labels.delete,

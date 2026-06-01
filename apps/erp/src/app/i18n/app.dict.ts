@@ -231,6 +231,7 @@ export interface AppDict extends AuthTranslationsHost {
         menuLabel: string;
         invite: string;
         edit: string;
+        updateSubscription: string;
         delete: string;
       };
       view: {

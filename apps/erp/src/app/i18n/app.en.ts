@@ -287,6 +287,7 @@ export const en: AppDict = {
         menuLabel: 'Container options',
         invite: 'Invite user',
         edit: 'Edit container',
+        updateSubscription: 'Update subscription',
         delete: 'Delete container',
       },
       view: {
