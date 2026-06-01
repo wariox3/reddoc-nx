@@ -10,14 +10,10 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { ENVIRONMENT, PaginatedResponse } from '@reddoc/core';
 import { SelectModule } from 'primeng/select';
+import { ErpSelectDataService, ErpSelectOption } from '@erp/core/data/erp-select-data.service';
 
-export interface ErpSelectOption {
-  readonly id: number;
-  readonly nombre: string;
-}
+export type { ErpSelectOption };
 
 @Component({
   selector: 'app-api-select',
@@ -50,8 +46,7 @@ export interface ErpSelectOption {
   ],
 })
 export class ErpApiSelectComponent implements ControlValueAccessor {
-  private readonly http = inject(HttpClient);
-  private readonly baseUrl = inject(ENVIRONMENT).apiUrl;
+  private readonly dataService = inject(ErpSelectDataService);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly endpoint = input.required<string>();
@@ -72,23 +67,17 @@ export class ErpApiSelectComponent implements ControlValueAccessor {
 
   constructor() {
     effect(() => {
-      const rawParams = this.params();
+      const params = this.params();
       const endpoint = this.endpoint();
-      let httpParams = new HttpParams();
-      for (const [key, val] of Object.entries(rawParams)) {
-        httpParams = httpParams.set(key, val);
-      }
       this.loading.set(true);
-      this.http
-        .get<PaginatedResponse<ErpSelectOption>>(`${this.baseUrl}${endpoint}`, {
-          params: httpParams,
-        })
+      this.dataService
+        .fetchOptions(endpoint, params)
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
-          next: (res) => {
-            this.options.set(res.results);
+          next: (options) => {
+            this.options.set(options);
             this.loading.set(false);
-            this.applySuggestion(res.results);
+            this.applySuggestion(options);
           },
           error: () => {
             this.options.set([]);
