@@ -59,6 +59,8 @@ export class ErpApiSelectComponent implements ControlValueAccessor {
   readonly inputId = input<string>('');
   readonly placeholder = input<string>('Selecciona…');
   readonly invalid = input<boolean>(false);
+  /** Posición (0-based) a auto-seleccionar cuando cargan las opciones y el control está vacío. `null` lo desactiva. */
+  readonly suggestedIndex = input<number | null>(null);
 
   readonly value = signal<ErpSelectOption | null>(null);
   readonly disabled = signal(false);
@@ -86,6 +88,7 @@ export class ErpApiSelectComponent implements ControlValueAccessor {
           next: (res) => {
             this.options.set(res.results);
             this.loading.set(false);
+            this.applySuggestion(res.results);
           },
           error: () => {
             this.options.set([]);
@@ -114,5 +117,17 @@ export class ErpApiSelectComponent implements ControlValueAccessor {
   onValueChange(next: ErpSelectOption | null): void {
     this.value.set(next);
     this.onChangeFn(next);
+  }
+
+  /**
+   * Sugiere una opción por defecto por posición cuando el control está vacío.
+   * No pisa una selección existente ni un valor cargado en edición. El índice
+   * nulo o fuera de rango no hace nada.
+   */
+  private applySuggestion(options: ErpSelectOption[]): void {
+    const index = this.suggestedIndex();
+    if (index === null || this.value() !== null) return;
+    const option = options[index];
+    if (option) this.onValueChange(option);
   }
 }

@@ -55,6 +55,7 @@
             inputId="tipo_persona"
             formControlName="tipo_persona"
             endpoint="/general/tipo-persona/seleccionar/"
+            [suggestedIndex]="isEditMode() ? null : 0"
             [invalid]="form.controls.tipo_persona.invalid && form.controls.tipo_persona.touched"
           />
           <lib-field-error
@@ -73,6 +74,7 @@
             inputId="responsabilidad"
             formControlName="responsabilidad"
             endpoint="/general/responsabilidad/seleccionar/"
+            [suggestedIndex]="isEditMode() ? null : 0"
             [invalid]="
               form.controls.responsabilidad.invalid && form.controls.responsabilidad.touched
             "
@@ -94,6 +96,7 @@
             formControlName="identificacion"
             endpoint="/general/identificacion/seleccionar/"
             [params]="identificacionParams()"
+            [suggestedIndex]="isEditMode() ? null : 0"
             [invalid]="form.controls.identificacion.invalid && form.controls.identificacion.touched"
           />
         </div>
