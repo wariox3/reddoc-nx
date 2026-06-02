@@ -110,4 +110,19 @@
       color: var(--brand-muted);
     }
   }
+
+  &__paginator-count {
+    font-size: 0.8rem;
+    color: var(--brand-muted);
+  }
+}
+
+:host ::ng-deep .p-paginator {
+  justify-content: center;
+  position: relative;
+
+  .p-paginator-right-content {
+    position: absolute;
+    right: 0;
+  }
 }

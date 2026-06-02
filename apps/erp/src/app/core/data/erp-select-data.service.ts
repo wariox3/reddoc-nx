@@ -19,13 +19,17 @@ export interface ErpSelectOption {
  */
 @Injectable({ providedIn: 'root' })
 export class ErpSelectDataService extends BaseHttpService {
-  /** Trae las opciones de un endpoint paginado `seleccionar`. */
-  fetchOptions(
+  /**
+   * Trae las opciones de un endpoint paginado `seleccionar`.
+   *
+   * Genérico en la forma de la fila: por default devuelve `ErpSelectOption`
+   * (`{ id, nombre }`), pero un consumidor que necesite más campos del endpoint
+   * (p. ej. `codigo` en cuentas) puede tipar la respuesta con `T`.
+   */
+  fetchOptions<T = ErpSelectOption>(
     endpoint: string,
     params?: Record<string, ParamValue>,
-  ): Observable<ErpSelectOption[]> {
-    return this.get<PaginatedResponse<ErpSelectOption>>(endpoint, params).pipe(
-      map((res) => res.results),
-    );
+  ): Observable<T[]> {
+    return this.get<PaginatedResponse<T>>(endpoint, params).pipe(map((res) => res.results));
   }
 }

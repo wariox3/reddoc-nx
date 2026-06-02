@@ -13,6 +13,7 @@ export const es: AppDict = {
       delete: 'Eliminar',
       deleteSelected: 'Eliminar seleccionados',
       cancel: 'Cancelar',
+      save: 'Guardar',
       menuLabel: 'Opciones',
       filters: 'Filtros',
       export: 'Exportar',
@@ -27,6 +28,7 @@ export const es: AppDict = {
     },
     list: {
       records: 'registros',
+      of: 'de',
       empty: {
         title: 'Sin registros',
         sub: 'No hay datos para mostrar todavía.',
@@ -55,6 +57,15 @@ export const es: AppDict = {
       },
     },
     boolean: { true: 'SÍ', false: 'NO' },
+    imageUpload: {
+      change: 'Cambiar imagen',
+      remove: 'Quitar imagen',
+      removeConfirm: '¿Querés quitar la imagen?',
+      tooLarge: 'La imagen es muy grande (máximo 2 MB).',
+      hint: 'PNG o JPG, hasta 2 MB.',
+      dialogTitle: 'Recortar imagen',
+      empty: 'Sin imagen',
+    },
     filters: {
       title: 'Filtrar',
       subtitle: 'Se muestran los registros que cumplan todas las condiciones.',
@@ -288,6 +299,118 @@ export const es: AppDict = {
         notFound: {
           title: 'Contacto no encontrado',
           desc: 'No se pudo cargar la información de este contacto.',
+        },
+      },
+    },
+    item: {
+      name: 'Items',
+      searchPlaceholder: 'Buscar por nombre…',
+      columns: {
+        id: 'ID',
+        codigo: 'Código',
+        nombre: 'Nombre',
+        referencia: 'Referencia',
+        precio: 'Precio',
+        producto: 'PROD',
+        servicio: 'SERV',
+        inventario: 'INV',
+      },
+      form: {
+        createTitle: 'Nuevo item',
+        createSubtitle: 'Registrá un nuevo producto o servicio',
+        editTitle: 'Editar item',
+        editSubtitle: 'Actualizá los datos del item',
+        sections: {
+          principal: 'Información principal',
+          preciosImpuestos: 'Precios e impuestos',
+          cuentas: 'Cuentas contables',
+        },
+        sectionsHint: {
+          principal: 'Identificación y clasificación',
+          preciosImpuestos: 'Precio, costo e impuestos aplicables',
+          cuentas: 'Cuentas para contabilizar el item',
+        },
+        clasificacion: 'Opciones',
+        fields: {
+          codigo: 'Código',
+          nombre: 'Nombre',
+          referencia: 'Referencia',
+          tipo: 'Tipo',
+          precio: 'Precio',
+          costo: 'Costo',
+          inventario: 'Maneja inventario',
+          negativo: 'Permite negativo',
+          venta: 'Venta',
+          favorito: 'Favorito',
+          inactivo: 'Inactivo',
+          impuestosVenta: 'Impuestos de venta',
+          impuestosCompra: 'Impuestos de compra',
+          impuestosPlaceholder: 'Seleccioná impuestos…',
+          cuentaVenta: 'Cuenta de venta',
+          cuentaCompra: 'Cuenta de compra',
+          cuentaCostoVenta: 'Cuenta de costo de venta',
+          cuentaInventario: 'Cuenta de inventario',
+          cuentaPlaceholder: 'Buscar cuenta…',
+        },
+        tipoOptions: {
+          producto: 'Producto',
+          servicio: 'Servicio',
+        },
+        validation: {
+          required: 'Este campo es obligatorio.',
+        },
+        submitCreate: 'Crear item',
+        submitEdit: 'Guardar cambios',
+        cancel: 'Cancelar',
+        toasts: {
+          createSuccess: { title: 'Item creado', desc: 'El item fue creado correctamente.' },
+          createError: {
+            title: 'Error al crear',
+            desc: 'No se pudo crear el item. Intentá de nuevo.',
+          },
+          editSuccess: {
+            title: 'Item actualizado',
+            desc: 'Los cambios se guardaron correctamente.',
+          },
+          editError: {
+            title: 'Error al actualizar',
+            desc: 'No se pudo actualizar el item. Intentá de nuevo.',
+          },
+          loadError: { title: 'Error al cargar', desc: 'No se pudo cargar el item.' },
+        },
+      },
+      detail: {
+        sections: {
+          precios: 'Precios',
+          impuestos: 'Impuestos',
+          cuentas: 'Cuentas contables',
+        },
+        labels: {
+          impuestosVenta: 'Impuestos de venta',
+          impuestosCompra: 'Impuestos de compra',
+          sinImpuestos: 'Sin impuestos',
+        },
+        notFound: {
+          title: 'Item no encontrado',
+          desc: 'No se pudo cargar la información de este item.',
+        },
+        toasts: {
+          imageUploadSuccess: {
+            title: 'Imagen actualizada',
+            desc: 'La imagen del item se guardó correctamente.',
+          },
+          imageUploadError: {
+            title: 'Error al subir',
+            desc: 'No se pudo guardar la imagen. Intentá de nuevo.',
+          },
+          imageRemoveSuccess: {
+            title: 'Imagen eliminada',
+            desc: 'La imagen del item se quitó correctamente.',
+          },
+          imageRemoveError: {
+            title: 'Error al eliminar',
+            desc: 'No se pudo quitar la imagen. Intentá de nuevo.',
+          },
         },
       },
     },
