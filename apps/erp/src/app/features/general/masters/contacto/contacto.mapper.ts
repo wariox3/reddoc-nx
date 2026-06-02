@@ -16,8 +16,8 @@ export function contactoToFormValue(c: Contacto): Partial<ContactoFormRawValue> 
   return {
     tipo_persona: { id: c.tipo_persona, nombre: c.tipo_persona_nombre },
     responsabilidad:
-      c.responsabilidad_id != null
-        ? { id: c.responsabilidad_id, nombre: c.responsabilidad_nombre ?? '' }
+      c.responsabilidad != null
+        ? { id: c.responsabilidad, nombre: c.responsabilidad_nombre ?? '' }
         : null,
     identificacion: { id: c.identificacion, nombre: c.identificacion_nombre },
     numero_identificacion: c.numero_identificacion,

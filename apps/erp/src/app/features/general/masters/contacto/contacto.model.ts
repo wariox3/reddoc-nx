@@ -45,11 +45,7 @@ export interface Contacto {
   readonly banco: number | null;
   readonly banco_nombre?: string | null;
   readonly cuenta_banco_clase: number | null;
-  /**
-   * `responsabilidad` es la excepción: el backend la devuelve con sufijo `_id`
-   * (y su `_nombre`), no pelada como el resto de los relacionales.
-   */
-  readonly responsabilidad_id: number | null;
+  readonly responsabilidad: number | null;
   readonly responsabilidad_nombre: string | null;
   readonly activo?: boolean;
 }
