@@ -6,10 +6,12 @@ export interface AppDict extends AuthTranslationsHost {
     actions: {
       new: string;
       actions: string;
+      view: string;
       edit: string;
       delete: string;
       deleteSelected: string;
       cancel: string;
+      save: string;
       menuLabel: string;
       filters: string;
       clearFilters: string;
@@ -24,6 +26,7 @@ export interface AppDict extends AuthTranslationsHost {
     };
     list: {
       records: string;
+      of: string;
       empty: { title: string; sub: string };
     };
     confirms: {
@@ -37,6 +40,15 @@ export interface AppDict extends AuthTranslationsHost {
       exportError: { title: string; desc: string };
     };
     boolean: { true: string; false: string };
+    imageUpload: {
+      change: string;
+      remove: string;
+      removeConfirm: string;
+      tooLarge: string;
+      hint: string;
+      dialogTitle: string;
+      empty: string;
+    };
     filters: {
       title: string;
       subtitle: string;
@@ -202,6 +214,91 @@ export interface AppDict extends AuthTranslationsHost {
           editError: { title: string; desc: string };
           loadError: { title: string; desc: string };
         };
+        dian: {
+          button: string;
+          notFound: { title: string; desc: string };
+          error: { title: string; desc: string };
+        };
+      };
+      detail: {
+        title: string;
+        subtitle: string;
+        sections: {
+          general: string;
+          contacto: string;
+          ubicacion: string;
+          cliente: string;
+          proveedor: string;
+        };
+        labels: { codigoCiiu: string; codigoPostal: string };
+        notFound: { title: string; desc: string };
+      };
+    };
+    item: {
+      name: string;
+      searchPlaceholder: string;
+      columns: {
+        id: string;
+        codigo: string;
+        nombre: string;
+        referencia: string;
+        precio: string;
+        producto: string;
+        servicio: string;
+        inventario: string;
+      };
+      form: {
+        createTitle: string;
+        createSubtitle: string;
+        editTitle: string;
+        editSubtitle: string;
+        sections: { principal: string; preciosImpuestos: string; cuentas: string };
+        sectionsHint: { principal: string; preciosImpuestos: string; cuentas: string };
+        clasificacion: string;
+        fields: {
+          codigo: string;
+          nombre: string;
+          referencia: string;
+          tipo: string;
+          precio: string;
+          costo: string;
+          inventario: string;
+          negativo: string;
+          venta: string;
+          favorito: string;
+          inactivo: string;
+          impuestosVenta: string;
+          impuestosCompra: string;
+          impuestosPlaceholder: string;
+          cuentaVenta: string;
+          cuentaCompra: string;
+          cuentaCostoVenta: string;
+          cuentaInventario: string;
+          cuentaPlaceholder: string;
+        };
+        tipoOptions: { producto: string; servicio: string };
+        validation: { required: string };
+        submitCreate: string;
+        submitEdit: string;
+        cancel: string;
+        toasts: {
+          createSuccess: { title: string; desc: string };
+          createError: { title: string; desc: string };
+          editSuccess: { title: string; desc: string };
+          editError: { title: string; desc: string };
+          loadError: { title: string; desc: string };
+        };
+      };
+      detail: {
+        sections: { precios: string; impuestos: string; cuentas: string };
+        labels: { impuestosVenta: string; impuestosCompra: string; sinImpuestos: string };
+        notFound: { title: string; desc: string };
+        toasts: {
+          imageUploadSuccess: { title: string; desc: string };
+          imageUploadError: { title: string; desc: string };
+          imageRemoveSuccess: { title: string; desc: string };
+          imageRemoveError: { title: string; desc: string };
+        };
       };
     };
     facturaVenta: {
@@ -231,6 +328,7 @@ export interface AppDict extends AuthTranslationsHost {
         menuLabel: string;
         invite: string;
         edit: string;
+        updateSubscription: string;
         delete: string;
       };
       view: {

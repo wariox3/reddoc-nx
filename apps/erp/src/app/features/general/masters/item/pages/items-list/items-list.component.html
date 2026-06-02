@@ -1,8 +1,8 @@
 <lib-breadcrumb [items]="breadcrumbItems()" />
 
-<header class="contactos-list__header">
-  <div class="contactos-list__title-block">
-    <h1 class="contactos-list__title">{{ t().entities.contacto.name }}</h1>
+<header class="items-list__header">
+  <div class="items-list__title-block">
+    <h1 class="items-list__title">{{ t().entities.item.name }}</h1>
   </div>
 </header>
 
@@ -10,14 +10,11 @@
   <lib-data-toolbar
     [primaryAction]="primaryAction"
     [trailingActions]="trailingActions"
-    [searchEnabled]="false"
-    [searchValue]="searchValue()"
-    [searchPlaceholderKey]="'entities.contacto.searchPlaceholder'"
+    [searchPlaceholderKey]="'entities.item.searchPlaceholder'"
     [filtersEnabled]="true"
     [activeFiltersCount]="activeFilters().length"
     [deleteSelectedEnabled]="hasSelection()"
     [deleteSelectedCount]="selectedRows().length"
-    (searched)="onSearchChange($event)"
     (actionInvoked)="onToolbarAction($event)"
     (filtersToggle)="openFilters()"
     (filtersClear)="clearFilters()"
@@ -53,17 +50,3 @@
 />
 
 <p-confirmDialog />
-
-<app-import-dialog
-  [visible]="importVisible()"
-  (visibleChange)="onImportVisibleChange($event)"
-  [title]="t().entities.contacto.import.title"
-  [subtitle]="t().entities.contacto.import.subtitle"
-  [importing]="importLoading()"
-  [errors]="importErrors()"
-  [errorSummary]="importErrorSummary()"
-  [errorTotal]="importErrorTotal()"
-  [mastersTouched]="importMasters()"
-  (importRequested)="onImportRequested($event)"
-  [exampleConfig]="exampleConfig"
-/>

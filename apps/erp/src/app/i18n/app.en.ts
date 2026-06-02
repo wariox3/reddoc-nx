@@ -8,10 +8,12 @@ export const en: AppDict = {
     actions: {
       new: 'New',
       actions: 'Actions',
+      view: 'View',
       edit: 'Edit',
       delete: 'Delete',
       deleteSelected: 'Delete selected',
       cancel: 'Cancel',
+      save: 'Save',
       menuLabel: 'Options',
       filters: 'Filters',
       clearFilters: 'Clear filters',
@@ -26,6 +28,7 @@ export const en: AppDict = {
     },
     list: {
       records: 'records',
+      of: 'of',
       empty: {
         title: 'No records',
         sub: 'There is no data to show yet.',
@@ -54,6 +57,15 @@ export const en: AppDict = {
       },
     },
     boolean: { true: 'YES', false: 'NO' },
+    imageUpload: {
+      change: 'Change image',
+      remove: 'Remove image',
+      removeConfirm: 'Remove the image?',
+      tooLarge: 'The image is too large (max 2 MB).',
+      hint: 'PNG or JPG, up to 2 MB.',
+      dialogTitle: 'Crop image',
+      empty: 'No image',
+    },
     filters: {
       title: 'Filter',
       subtitle: 'Records matching all conditions are shown.',
@@ -178,7 +190,7 @@ export const en: AppDict = {
       form: {
         createTitle: 'new contact',
         createSubtitle: 'Register a new contact',
-        editTitle: 'edit contact',
+        editTitle: 'Edit contact',
         editSubtitle: 'Update the contact details',
         sections: {
           principal: 'Main information',
@@ -258,6 +270,139 @@ export const en: AppDict = {
             desc: 'The contact could not be loaded.',
           },
         },
+        dian: {
+          button: 'Look up DIAN',
+          notFound: {
+            title: 'No results',
+            desc: 'No information was found in DIAN for that identification.',
+          },
+          error: {
+            title: 'Lookup failed',
+            desc: 'Could not query DIAN. Please try again.',
+          },
+        },
+      },
+      detail: {
+        title: 'Contact detail',
+        subtitle: 'Information and commercial data',
+        sections: {
+          general: 'General information',
+          contacto: 'Contact',
+          ubicacion: 'Location',
+          cliente: 'Customer information',
+          proveedor: 'Supplier information',
+        },
+        labels: {
+          codigoCiiu: 'CIIU code',
+          codigoPostal: 'Postal code',
+        },
+        notFound: {
+          title: 'Contact not found',
+          desc: 'This contact’s information could not be loaded.',
+        },
+      },
+    },
+    item: {
+      name: 'Items',
+      searchPlaceholder: 'Search by name…',
+      columns: {
+        id: 'ID',
+        codigo: 'Code',
+        nombre: 'Name',
+        referencia: 'Reference',
+        precio: 'Price',
+        producto: 'PROD',
+        servicio: 'SERV',
+        inventario: 'INV',
+      },
+      form: {
+        createTitle: 'New item',
+        createSubtitle: 'Register a new product or service',
+        editTitle: 'Edit item',
+        editSubtitle: 'Update the item details',
+        sections: {
+          principal: 'Main information',
+          preciosImpuestos: 'Prices and taxes',
+          cuentas: 'Accounting accounts',
+        },
+        sectionsHint: {
+          principal: 'Identification and classification',
+          preciosImpuestos: 'Price, cost and applicable taxes',
+          cuentas: 'Accounts to post the item',
+        },
+        clasificacion: 'Options',
+        fields: {
+          codigo: 'Code',
+          nombre: 'Name',
+          referencia: 'Reference',
+          tipo: 'Type',
+          precio: 'Price',
+          costo: 'Cost',
+          inventario: 'Tracks inventory',
+          negativo: 'Allows negative',
+          venta: 'Sale',
+          favorito: 'Favorite',
+          inactivo: 'Inactive',
+          impuestosVenta: 'Sales taxes',
+          impuestosCompra: 'Purchase taxes',
+          impuestosPlaceholder: 'Select taxes…',
+          cuentaVenta: 'Sales account',
+          cuentaCompra: 'Purchase account',
+          cuentaCostoVenta: 'Cost of sales account',
+          cuentaInventario: 'Inventory account',
+          cuentaPlaceholder: 'Search account…',
+        },
+        tipoOptions: {
+          producto: 'Product',
+          servicio: 'Service',
+        },
+        validation: {
+          required: 'This field is required.',
+        },
+        submitCreate: 'Create item',
+        submitEdit: 'Save changes',
+        cancel: 'Cancel',
+        toasts: {
+          createSuccess: { title: 'Item created', desc: 'The item was created successfully.' },
+          createError: { title: 'Create failed', desc: 'Could not create the item. Try again.' },
+          editSuccess: { title: 'Item updated', desc: 'Changes were saved successfully.' },
+          editError: { title: 'Update failed', desc: 'Could not update the item. Try again.' },
+          loadError: { title: 'Load failed', desc: 'Could not load the item.' },
+        },
+      },
+      detail: {
+        sections: {
+          precios: 'Prices',
+          impuestos: 'Taxes',
+          cuentas: 'Accounting accounts',
+        },
+        labels: {
+          impuestosVenta: 'Sales taxes',
+          impuestosCompra: 'Purchase taxes',
+          sinImpuestos: 'No taxes',
+        },
+        notFound: {
+          title: 'Item not found',
+          desc: 'Could not load this item information.',
+        },
+        toasts: {
+          imageUploadSuccess: {
+            title: 'Image updated',
+            desc: 'The item image was saved successfully.',
+          },
+          imageUploadError: {
+            title: 'Upload failed',
+            desc: 'Could not save the image. Try again.',
+          },
+          imageRemoveSuccess: {
+            title: 'Image removed',
+            desc: 'The item image was removed successfully.',
+          },
+          imageRemoveError: {
+            title: 'Remove failed',
+            desc: 'Could not remove the image. Try again.',
+          },
+        },
       },
     },
     facturaVenta: {
@@ -286,7 +431,8 @@ export const en: AppDict = {
       actions: {
         menuLabel: 'Container options',
         invite: 'Invite user',
-        edit: 'Edit company',
+        edit: 'Edit container',
+        updateSubscription: 'Update subscription',
         delete: 'Delete container',
       },
       view: {
@@ -337,7 +483,7 @@ export const en: AppDict = {
       },
     },
     edit: {
-      title: 'Edit company',
+      title: 'Edit container',
       subtitle: 'Update the container details',
       submit: 'Save changes',
       cancel: 'Cancel',

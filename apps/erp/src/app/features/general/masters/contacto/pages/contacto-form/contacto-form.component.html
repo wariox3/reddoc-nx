@@ -55,6 +55,7 @@
             inputId="tipo_persona"
             formControlName="tipo_persona"
             endpoint="/general/tipo-persona/seleccionar/"
+            [suggestedIndex]="isEditMode() ? null : 0"
             [invalid]="form.controls.tipo_persona.invalid && form.controls.tipo_persona.touched"
           />
           <lib-field-error
@@ -73,6 +74,7 @@
             inputId="responsabilidad"
             formControlName="responsabilidad"
             endpoint="/general/responsabilidad/seleccionar/"
+            [suggestedIndex]="isEditMode() ? null : 0"
             [invalid]="
               form.controls.responsabilidad.invalid && form.controls.responsabilidad.touched
             "
@@ -94,6 +96,7 @@
             formControlName="identificacion"
             endpoint="/general/identificacion/seleccionar/"
             [params]="identificacionParams()"
+            [suggestedIndex]="isEditMode() ? null : 0"
             [invalid]="form.controls.identificacion.invalid && form.controls.identificacion.touched"
           />
         </div>
@@ -104,24 +107,16 @@
             {{ t().entities.contacto.form.fields.numeroIdentificacion }}
             <span class="ml-px text-red-500">*</span>
           </label>
-          @if (esNatural()) {
+          <div class="flex gap-2">
             <input
               id="numero_identificacion"
               pInputText
               type="text"
               formControlName="numero_identificacion"
+              class="flex-1"
               fluid
             />
-          } @else {
-            <div class="flex gap-2">
-              <input
-                id="numero_identificacion"
-                pInputText
-                type="text"
-                formControlName="numero_identificacion"
-                class="flex-1"
-                fluid
-              />
+            @if (!esNatural()) {
               <input
                 id="digito_verificacion"
                 pInputText
@@ -131,8 +126,19 @@
                 [placeholder]="t().entities.contacto.form.fields.digitoVerificacion"
                 [attr.aria-label]="t().entities.contacto.form.fields.digitoVerificacion"
               />
-            </div>
-          }
+            }
+            @if (!isEditMode()) {
+              <p-button
+                type="button"
+                [label]="t().entities.contacto.form.dian.button"
+                icon="pi pi-search"
+                severity="secondary"
+                [loading]="isConsultingDian()"
+                [disabled]="!canConsultarDian()"
+                (onClick)="consultarDian()"
+              />
+            }
+          </div>
           <lib-field-error
             [control]="form.controls.numero_identificacion"
             [messages]="{
@@ -491,7 +497,7 @@
       "
       icon="pi pi-check"
       [loading]="isSaving()"
-      [disabled]="form.invalid || isSaving()"
+      [disabled]="form.invalid || form.pending || isSaving()"
     />
   </div>
 </form>

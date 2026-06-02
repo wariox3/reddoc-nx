@@ -13,7 +13,10 @@ export const GENERAL_MODULE: ErpModuleDescriptor = {
       iconClass: 'pi pi-folder',
       groups: [
         {
-          items: [{ labelKey: 'entities.contacto.name', path: 'contactos' }],
+          items: [
+            { labelKey: 'entities.contacto.name', path: 'contactos' },
+            { labelKey: 'entities.item.name', path: 'items' },
+          ],
         },
       ],
     },

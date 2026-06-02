@@ -103,6 +103,16 @@
     }
   }
 
+  // ── Conteo de registros ─────────────────────────────────────────────────
+  &__count {
+    font-size: 0.72rem;
+    color: rgba(19 38 60 / 0.45);
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+
   // ── Botones base ────────────────────────────────────────────────────────
   &__btn {
     display: inline-flex;

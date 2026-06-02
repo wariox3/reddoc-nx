@@ -1,10 +1,13 @@
 import {
   ApplicationConfig,
+  LOCALE_ID,
   inject,
   provideBrowserGlobalErrorListeners,
   provideAppInitializer,
   provideZoneChangeDetection,
 } from '@angular/core';
+import { registerLocaleData } from '@angular/common';
+import localeEsCo from '@angular/common/locales/es-CO';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -36,8 +39,13 @@ import {
 } from './core/module-config';
 import { dictionaries } from './i18n';
 
+// Locale colombiano: habilita el formateo de moneda/número/fecha de las tablas
+// y fichas ($ 120.600, punto de miles, sin decimales en moneda).
+registerLocaleData(localeEsCo);
+
 export const appConfig: ApplicationConfig = {
   providers: [
+    { provide: LOCALE_ID, useValue: 'es-CO' },
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(appRoutes, withComponentInputBinding()),

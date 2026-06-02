@@ -1,0 +1,71 @@
+import { Injectable } from '@angular/core';
+import { Observable, forkJoin, map } from 'rxjs';
+import { BaseHttpService, buildListBody, type ListQuery } from '@reddoc/core';
+import type { Item, ItemListResponse, ItemPayload } from './item.model';
+
+/**
+ * Servicio HTTP de items.
+ *
+ * Master administrativo del módulo General. Vive como feature directo
+ * (camino B del enfoque híbrido — ver docs/architecture).
+ *
+ * Reutiliza `buildListBody` de `@reddoc/core` para enviar el body
+ * `{ filtros, ordenamientos, pagina, tamano_pagina }` — la misma convención de
+ * filtros y ordenamiento que esperan todos los endpoints listables del backend.
+ */
+@Injectable({ providedIn: 'root' })
+export class ItemService extends BaseHttpService {
+  private readonly resourcePath = '/general/item/';
+
+  list(query: ListQuery): Observable<ItemListResponse> {
+    return this.post<ItemListResponse>(this.resourcePath + 'lista/', buildListBody(query));
+  }
+
+  getById(id: number): Observable<Item> {
+    return this.get<Item>(`${this.resourcePath}${id}/`);
+  }
+
+  create(payload: ItemPayload): Observable<Item> {
+    return this.post<Item>(this.resourcePath, payload);
+  }
+
+  update(id: number, payload: ItemPayload): Observable<Item> {
+    return this.put<Item>(`${this.resourcePath}${id}/`, payload);
+  }
+
+  /**
+   * Carga (o reemplaza) la imagen del item con un data-URL/base64 ya recortado.
+   * TODO(backend): confirmar endpoint y payload en el API nuevo (reddocapi.uk).
+   * Estimado a partir del legacy (`general/item/cargar-imagen/`).
+   */
+  cargarImagen(id: number, base64: string): Observable<{ mensaje?: string }> {
+    return this.post<{ mensaje?: string }>(`${this.resourcePath}cargar-imagen/`, { id, base64 });
+  }
+
+  /**
+   * Elimina la imagen del item.
+   * TODO(backend): confirmar endpoint y payload en el API nuevo (reddocapi.uk).
+   * Estimado a partir del legacy (`general/item/eliminar-imagen/`).
+   */
+  eliminarImagen(id: number): Observable<{ mensaje?: string }> {
+    return this.post<{ mensaje?: string }>(`${this.resourcePath}eliminar-imagen/`, { id });
+  }
+
+  /**
+   * Elimina uno o varios items.
+   * El backend de masters no expone batch-delete, así que paralelizamos
+   * DELETEs individuales con `forkJoin`.
+   */
+  remove(ids: readonly number[]): Observable<void> {
+    if (ids.length === 0) {
+      // forkJoin con array vacío completa sin emitir; usamos un Observable que
+      // emite inmediatamente para mantener el contrato.
+      return new Observable<void>((subscriber) => {
+        subscriber.next();
+        subscriber.complete();
+      });
+    }
+    const deletions = ids.map((id) => this.delete<void>(`${this.resourcePath}${id}/`));
+    return forkJoin(deletions).pipe(map(() => undefined));
+  }
+}

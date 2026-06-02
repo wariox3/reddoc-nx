@@ -1,4 +1,3 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
@@ -27,37 +26,30 @@ import {
   type PageChangeEvent,
   type RowActionInvokedEvent,
 } from '@reddoc/feature-base';
-import { ImportDialogComponent } from '@erp/core/components/import-dialog/import-dialog.component';
-import type {
-  ImportError,
-  MasterTouched,
-} from '@erp/core/components/import-dialog/import-dialog.types';
-import { parseImportErrors } from '@erp/core/components/import-dialog/import-dialog.utils';
 import type { AppDict } from '@erp/i18n';
-import { ContactoService } from '../../contacto.service';
-import type { Contacto } from '../../contacto.model';
+import { ItemService } from '../../item.service';
+import type { Item } from '../../item.model';
 import {
-  CONTACTOS_COLUMNS,
-  CONTACTOS_FILTER_FIELDS,
-  CONTACTOS_FILTERS_STORAGE_KEY,
-  CONTACTOS_QUICK_SEARCH_FIELD,
-  CONTACTOS_PRIMARY_ACTION,
-  CONTACTOS_ROW_ACTIONS,
-  CONTACTOS_TRAILING_ACTIONS,
-} from '../../contacto.constants';
+  ITEMS_COLUMNS,
+  ITEMS_FILTER_FIELDS,
+  ITEMS_FILTERS_STORAGE_KEY,
+  ITEMS_QUICK_SEARCH_FIELD,
+  ITEMS_PRIMARY_ACTION,
+  ITEMS_ROW_ACTIONS,
+  ITEMS_TRAILING_ACTIONS,
+} from '../../item.constants';
 
 /**
- * Listado de contactos.
+ * Listado de items (productos y servicios).
  *
- * Master administrativo del módulo General (`features/general/`):
- * cubre clientes, proveedores y empleados sobre el mismo recurso.
+ * Master administrativo del módulo General (`features/general/`).
  *
  * Camino B del enfoque híbrido: feature directo que compone los building
  * blocks compartidos (`<lib-data-toolbar>` + `<lib-data-table>`) dentro de
  * un wrapper `.card`. No usa `EntityConfig` del framework configuracional.
  */
 @Component({
-  selector: 'app-contactos-list',
+  selector: 'app-items-list',
   standalone: true,
   imports: [
     BreadcrumbComponent,
@@ -65,15 +57,14 @@ import {
     DataToolbarComponent,
     DataFilterModalComponent,
     ConfirmDialogModule,
-    ImportDialogComponent,
   ],
   providers: [ConfirmationService],
-  templateUrl: './contactos-list.component.html',
-  styleUrl: './contactos-list.component.scss',
+  templateUrl: './items-list.component.html',
+  styleUrl: './items-list.component.scss',
 })
-export class ContactosListComponent {
+export class ItemsListComponent {
   // ── Colaboradores ─────────────────────────────────────────────────────────
-  private readonly service = inject(ContactoService);
+  private readonly service = inject(ItemService);
   private readonly fileDownload = inject(FileDownloadService);
   private readonly filterStorage = inject(FilterStorageService);
   private readonly tenant = inject(TenantService);
@@ -86,38 +77,27 @@ export class ContactosListComponent {
   protected readonly t = this.i18n.t;
 
   // ── Estado ────────────────────────────────────────────────────────────────
-  protected readonly items = signal<readonly Contacto[]>([]);
+  protected readonly items = signal<readonly Item[]>([]);
   protected readonly totalCount = signal(0);
   protected readonly isLoading = signal(false);
   protected readonly currentPage = signal(0);
   protected readonly pageSize = signal(25);
   protected readonly sort = signal<readonly SortSpec[]>([]);
-  protected readonly selectedRows = signal<readonly Contacto[]>([]);
+  protected readonly selectedRows = signal<readonly Item[]>([]);
   protected readonly searchValue = signal('');
   protected readonly activeFilters = signal<readonly FilterCondition[]>(
-    this.filterStorage.read(CONTACTOS_FILTERS_STORAGE_KEY),
+    this.filterStorage.read(ITEMS_FILTERS_STORAGE_KEY),
   );
   protected readonly filtersVisible = signal(false);
 
-  protected readonly exampleConfig = {
-    mode: 'enabled' as const,
-    endpoint: '/general/contacto/importar-ejemplo/',
-  };
-
   protected readonly isExportingExcel = signal(false);
-  protected readonly importVisible = signal(false);
-  protected readonly importLoading = signal(false);
-  protected readonly importErrors = signal<readonly ImportError[]>([]);
-  protected readonly importErrorSummary = signal('');
-  protected readonly importErrorTotal = signal(0);
-  protected readonly importMasters = signal<readonly MasterTouched[]>([]);
 
   // ── Derivados ─────────────────────────────────────────────────────────────
   protected readonly hasSelection = computed(() => this.selectedRows().length > 0);
 
   /**
-   * Migas: módulo (General, navegable a su home) → entidad actual (Contactos).
-   * El contacto es un master del módulo `general`, por eso el segmento es fijo.
+   * Migas: módulo (General, navegable a su home) → entidad actual (Items).
+   * El item es un master del módulo `general`, por eso el segmento es fijo.
    */
   protected readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => {
     const slug = this.tenant.currentSlug();
@@ -126,15 +106,15 @@ export class ContactosListComponent {
         label: this.t().modules.general.name,
         routerLink: slug ? ['/t', slug, 'general'] : undefined,
       },
-      { label: this.t().entities.contacto.name },
+      { label: this.t().entities.item.name },
     ];
   });
 
-  protected readonly columns = CONTACTOS_COLUMNS;
-  protected readonly filterFields = CONTACTOS_FILTER_FIELDS;
-  protected readonly rowActions = CONTACTOS_ROW_ACTIONS;
-  protected readonly primaryAction = CONTACTOS_PRIMARY_ACTION;
-  protected readonly trailingActions = CONTACTOS_TRAILING_ACTIONS;
+  protected readonly columns = ITEMS_COLUMNS;
+  protected readonly filterFields = ITEMS_FILTER_FIELDS;
+  protected readonly rowActions = ITEMS_ROW_ACTIONS;
+  protected readonly primaryAction = ITEMS_PRIMARY_ACTION;
+  protected readonly trailingActions = ITEMS_TRAILING_ACTIONS;
 
   constructor() {
     this.loadList();
@@ -168,39 +148,39 @@ export class ContactosListComponent {
    */
   protected onFiltersApply(filters: readonly FilterCondition[]): void {
     this.activeFilters.set(filters);
-    this.filterStorage.write(CONTACTOS_FILTERS_STORAGE_KEY, filters);
+    this.filterStorage.write(ITEMS_FILTERS_STORAGE_KEY, filters);
     this.currentPage.set(0);
     this.loadList();
   }
 
   protected clearFilters(): void {
     this.activeFilters.set([]);
-    this.filterStorage.clear(CONTACTOS_FILTERS_STORAGE_KEY);
+    this.filterStorage.clear(ITEMS_FILTERS_STORAGE_KEY);
     this.currentPage.set(0);
     this.loadList();
   }
 
   protected onSelectionChange(rows: unknown[]): void {
-    this.selectedRows.set(rows as Contacto[]);
+    this.selectedRows.set(rows as Item[]);
   }
 
   protected onRowAction(event: RowActionInvokedEvent): void {
-    const contacto = event.row as Contacto;
+    const item = event.row as Item;
     switch (event.actionId) {
       case 'view':
-        this.navigateToDetail(contacto.id);
+        this.navigateToDetail(item.id);
         break;
       case 'edit':
-        this.navigateToEdit(contacto.id);
+        this.navigateToEdit(item.id);
         break;
       case 'delete':
-        this.confirmRemove([contacto.id]);
+        this.confirmRemove([item.id]);
         break;
     }
   }
 
   protected onRowClick(row: unknown): void {
-    this.navigateToDetail((row as Contacto).id);
+    this.navigateToDetail((row as Item).id);
   }
 
   protected onToolbarAction(actionId: string): void {
@@ -211,86 +191,7 @@ export class ContactosListComponent {
       case 'export-excel':
         this.exportExcel();
         break;
-      case 'import':
-        this.importVisible.set(true);
-        break;
     }
-  }
-
-  protected onImportVisibleChange(value: boolean): void {
-    this.importVisible.set(value);
-  }
-
-  protected onImportRequested(file: File): void {
-    if (this.importLoading()) return;
-    this.importLoading.set(true);
-    // Limpia el resultado del intento anterior (al reintentar tras corregir).
-    this.clearImportErrors();
-    this.service
-      .importar(file)
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        finalize(() => this.importLoading.set(false)),
-      )
-      .subscribe({
-        next: (result) => {
-          // [DEBUG-IMPORT] temporal: ver qué llega en un 200.
-          console.debug('[import] next result =', result, '→ parsed =', parseImportErrors(result));
-          // El backend puede reportar los errores de validación en un 200
-          // ("No se procesó ningún registro"); si los trae, los mostramos en vez
-          // de tratarlo como éxito.
-          if (this.applyImportErrors(parseImportErrors(result))) return;
-          const toasts = this.t().common.import.toasts;
-          this.toast.success(toasts.success.title, toasts.success.desc);
-          this.importVisible.set(false);
-          this.clearImportErrors();
-          this.importMasters.set([]);
-          this.loadList();
-        },
-        error: (err: HttpErrorResponse) => {
-          // [DEBUG-IMPORT] temporal: ver status y body del error.
-          console.debug(
-            '[import] error status =',
-            err.status,
-            'err.error =',
-            err.error,
-            '→ parsed =',
-            parseImportErrors(err.error),
-          );
-          // Errores de validación (4xx) con el mismo shape. Si no hay estructura
-          // (red/desconocido) → toast genérico.
-          if (!this.applyImportErrors(parseImportErrors(err.error))) {
-            const toasts = this.t().common.import.toasts;
-            this.toast.error(toasts.error.title, toasts.error.desc);
-          }
-        },
-      });
-  }
-
-  /**
-   * Vuelca los errores parseados en los signals del diálogo. Devuelve `true` si
-   * había errores/resumen (para que el llamador no siga el camino de éxito).
-   */
-  private applyImportErrors(parsed: ReturnType<typeof parseImportErrors>): boolean {
-    if (parsed.errors.length === 0 && !parsed.summary) return false;
-    this.importErrors.set(parsed.errors);
-    this.importErrorSummary.set(parsed.summary);
-    this.importErrorTotal.set(parsed.total);
-    return true;
-  }
-
-  /** Resetea el resultado de errores de importación (tabla + resumen). */
-  private clearImportErrors(): void {
-    this.importErrors.set([]);
-    this.importErrorSummary.set('');
-    this.importErrorTotal.set(0);
-  }
-
-  protected onSearchChange(value: string): void {
-    // El toolbar ya emite el término debounced; aquí solo aplicamos y recargamos.
-    this.searchValue.set(value);
-    this.currentPage.set(0);
-    this.loadList();
   }
 
   protected onRefresh(): void {
@@ -309,13 +210,13 @@ export class ContactosListComponent {
     if (this.isExportingExcel()) return;
     this.isExportingExcel.set(true);
     this.fileDownload
-      .download('/general/contacto/excel/', {
+      .download('/general/item/excel/', {
         method: 'POST',
         body: {
           filtros: buildFiltros(this.activeFilters()),
           ordenamientos: buildOrdenamientos(this.sort()),
         },
-        fallbackFilename: 'contactos.xlsx',
+        fallbackFilename: 'items.xlsx',
       })
       .pipe(
         takeUntilDestroyed(this.destroyRef),
@@ -333,7 +234,7 @@ export class ContactosListComponent {
   private loadList(): void {
     // La búsqueda rápida se añade como un filtro `contiene` más, combinado (AND)
     // con los filtros avanzados activos.
-    const search = quickSearchCondition(CONTACTOS_QUICK_SEARCH_FIELD, this.searchValue());
+    const search = quickSearchCondition(ITEMS_QUICK_SEARCH_FIELD, this.searchValue());
     const filters = search ? [...this.activeFilters(), search] : this.activeFilters();
 
     const query: ListQuery = {
@@ -410,11 +311,11 @@ export class ContactosListComponent {
 
   /**
    * Construye los segmentos absolutos para `router.navigate` dentro del feature.
-   * Resulta en `/t/<slug>/general/contactos/<...path>`.
+   * Resulta en `/t/<slug>/general/items/<...path>`.
    */
   private buildRouteCommands(...subPath: (string | number)[]): (string | number)[] {
     const slug = this.tenant.currentSlug();
     if (!slug) throw new Error('Cannot navigate without an active tenant slug.');
-    return ['/t', slug, 'general', 'contactos', ...subPath];
+    return ['/t', slug, 'general', 'items', ...subPath];
   }
 }

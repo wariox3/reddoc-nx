@@ -10,10 +10,8 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { AutoComplete, AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocomplete';
-import { ENVIRONMENT, PaginatedResponse } from '@reddoc/core';
-import { ErpSelectOption } from '@erp/core/components/api-select/erp-api-select.component';
+import { ErpSelectDataService, ErpSelectOption } from '@erp/core/data/erp-select-data.service';
 
 @Component({
   selector: 'app-api-autocomplete',
@@ -53,8 +51,7 @@ import { ErpSelectOption } from '@erp/core/components/api-select/erp-api-select.
   ],
 })
 export class ErpApiAutocompleteComponent implements ControlValueAccessor {
-  private readonly http = inject(HttpClient);
-  private readonly baseUrl = inject(ENVIRONMENT).apiUrl;
+  private readonly dataService = inject(ErpSelectDataService);
   private readonly destroyRef = inject(DestroyRef);
 
   @ViewChild(AutoComplete) private readonly ac?: AutoComplete;
@@ -106,12 +103,12 @@ export class ErpApiAutocompleteComponent implements ControlValueAccessor {
       this.ac?.show();
       return;
     }
-    this.http
-      .get<PaginatedResponse<ErpSelectOption>>(`${this.baseUrl}${this.endpoint()}`)
+    this.dataService
+      .fetchOptions(this.endpoint())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (res) => {
-          this.suggestions.set(res.results);
+        next: (options) => {
+          this.suggestions.set(options);
           setTimeout(() => this.ac?.show());
         },
         error: () => this.suggestions.set([]),
@@ -120,13 +117,11 @@ export class ErpApiAutocompleteComponent implements ControlValueAccessor {
 
   onSearch(event: AutoCompleteCompleteEvent): void {
     const query = event.query?.trim() ?? '';
-    this.http
-      .get<PaginatedResponse<ErpSelectOption>>(`${this.baseUrl}${this.endpoint()}`, {
-        params: { [this.searchParam()]: query },
-      })
+    this.dataService
+      .fetchOptions(this.endpoint(), { [this.searchParam()]: query })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (res) => this.suggestions.set(res.results),
+        next: (options) => this.suggestions.set(options),
         error: () => this.suggestions.set([]),
       });
   }

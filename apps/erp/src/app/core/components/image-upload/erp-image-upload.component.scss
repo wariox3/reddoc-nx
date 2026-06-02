@@ -1,0 +1,10 @@
+:host {
+  display: inline-flex;
+  flex-direction: column;
+}
+
+// Acota la altura del cropper dentro del diálogo para que no desborde en
+// pantallas pequeñas.
+::ng-deep image-cropper {
+  max-height: 60vh;
+}

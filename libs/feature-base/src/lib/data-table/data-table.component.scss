@@ -48,6 +48,14 @@
     }
   }
 
+  &__row--clickable {
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(19 38 60 / 0.025);
+    }
+  }
+
   &__empty {
     display: flex;
     flex-direction: column;
@@ -101,5 +109,20 @@
       background: rgba(20 48 73 / 0.06);
       color: var(--brand-muted);
     }
+  }
+
+  &__paginator-count {
+    font-size: 0.8rem;
+    color: var(--brand-muted);
+  }
+}
+
+:host ::ng-deep .p-paginator {
+  justify-content: center;
+  position: relative;
+
+  .p-paginator-right-content {
+    position: absolute;
+    right: 0;
   }
 }

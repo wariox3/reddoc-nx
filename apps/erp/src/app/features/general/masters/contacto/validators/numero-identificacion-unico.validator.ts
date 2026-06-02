@@ -51,7 +51,7 @@ export function numeroIdentificacionUnicoValidator(
           numero_identificacion: numero,
         }),
       ),
-      map((res) => (res.validacion ? { numeroIdentificacionExistente: true } : null)),
+      map((res) => (res.existe ? { numeroIdentificacionExistente: true } : null)),
       catchError(() => of(null)),
     );
   };

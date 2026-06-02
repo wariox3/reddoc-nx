@@ -1,7 +1,16 @@
-import { CommonModule } from '@angular/common';
-import { Component, computed, inject, input, output } from '@angular/core';
+import { CommonModule, formatCurrency, formatDate, formatNumber } from '@angular/common';
+import {
+  Component,
+  LOCALE_ID,
+  ViewChild,
+  computed,
+  inject,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import { ButtonModule } from 'primeng/button';
-import { MenuModule } from 'primeng/menu';
+import { Menu, MenuModule } from 'primeng/menu';
 import { TableModule } from 'primeng/table';
 import type { MenuItem, SortMeta } from 'primeng/api';
 import { I18nService, type ColumnDef, type SortSpec } from '@reddoc/core';
@@ -50,6 +59,11 @@ export class DataTableComponent {
    */
   readonly sort = input<readonly SortSpec[]>([]);
   readonly rowActions = input<readonly RowAction[]>([]);
+  /**
+   * Habilita el click sobre la fila (cursor + emisión de `rowClick`). Por
+   * defecto `false` para no insinuar interactividad en tablas que no navegan.
+   */
+  readonly rowClickable = input<boolean>(false);
   readonly dataKey = input<string>('id');
   readonly emptyTitleKey = input<string>('common.list.empty.title');
   readonly emptySubKey = input<string>('common.list.empty.sub');
@@ -60,12 +74,30 @@ export class DataTableComponent {
   readonly sortChange = output<readonly SortSpec[]>();
   readonly selectionChange = output<unknown[]>();
   readonly rowActionInvoked = output<RowActionInvokedEvent>();
+  readonly rowClick = output<unknown>();
 
   // ── Colaboradores ─────────────────────────────────────────────────────────
   private readonly i18n = inject<I18nService<unknown>>(I18nService);
+  /** Locale activo (lo registra cada app; el ERP usa `es-CO`). */
+  private readonly locale = inject(LOCALE_ID);
+
+  /**
+   * Menú popup compartido por todas las filas. Una sola instancia evita el
+   * doble-clic que causaba un `<p-menu>` por fila con `[model]` reconstruido en
+   * cada change-detection: el modelo (`rowMenuItems`) ahora solo cambia al abrir.
+   */
+  @ViewChild('rowMenu') private readonly rowMenu?: Menu;
+  protected readonly rowMenuItems = signal<MenuItem[]>([]);
 
   // ── Derivados expuestos al template ───────────────────────────────────────
   protected readonly hasSelection = computed(() => this.selectionMode() !== 'none');
+
+  protected readonly rangeStart = computed(() =>
+    this.totalCount() === 0 ? 0 : this.currentPage() * this.pageSize() + 1,
+  );
+  protected readonly rangeEnd = computed(() =>
+    Math.min((this.currentPage() + 1) * this.pageSize(), this.totalCount()),
+  );
 
   /**
    * PrimeNG requiere arrays mutables en sus inputs `[value]`, `[selection]`
@@ -97,10 +129,53 @@ export class DataTableComponent {
   }
 
   /**
+   * Moneda sin decimales en el locale activo (ERP: `$ 120.600`). El backend
+   * suele mandar el monto como string con cola de ceros (`120600.000000`); se
+   * normaliza a número antes de formatear.
+   */
+  protected currencyCell(value: unknown): string {
+    const n = this.toNumber(value);
+    return n === null ? '' : formatCurrency(n, this.locale, '$', 'COP', '1.0-0');
+  }
+
+  /** Número agrupado con hasta 2 decimales en el locale activo. */
+  protected numberCell(value: unknown): string {
+    const n = this.toNumber(value);
+    return n === null ? '' : formatNumber(n, this.locale, '1.0-2');
+  }
+
+  /** Fecha localizada (acepta ISO string, epoch o `Date`). */
+  protected dateCell(value: unknown): string {
+    if (value === null || value === undefined || value === '') return '';
+    try {
+      return formatDate(value as string | number | Date, 'mediumDate', this.locale);
+    } catch {
+      return String(value);
+    }
+  }
+
+  /** Convierte un valor crudo a número; `null` si está vacío o no es numérico. */
+  private toNumber(value: unknown): number | null {
+    if (value === null || value === undefined || value === '') return null;
+    const n = typeof value === 'number' ? value : Number(value);
+    return Number.isFinite(n) ? n : null;
+  }
+
+  /**
+   * Abre el menú de acciones de una fila. Construye los ítems una sola vez (al
+   * abrir) y los fija en `rowMenuItems`, manteniendo la referencia estable
+   * mientras el menú está abierto.
+   */
+  protected openRowMenu(event: Event, row: unknown): void {
+    this.rowMenuItems.set(this.buildRowMenuItems(row));
+    this.rowMenu?.toggle(event);
+  }
+
+  /**
    * Construye los `MenuItem` de PrimeNG para una fila concreta a partir
    * de las acciones declaradas y su predicado `visibleFor`.
    */
-  protected buildRowMenuItems(row: unknown): MenuItem[] {
+  private buildRowMenuItems(row: unknown): MenuItem[] {
     return this.rowActions()
       .filter((action) => action.visibleFor?.(row) ?? true)
       .map((action) => ({
@@ -135,6 +210,16 @@ export class DataTableComponent {
 
   protected onSelectionEvent(rows: unknown[] | unknown): void {
     this.selectionChange.emit(Array.isArray(rows) ? rows : [rows]);
+  }
+
+  /**
+   * Click sobre una fila. Solo emite si `rowClickable` está activo. Las celdas
+   * de selección y de acciones detienen la propagación en el template, así que
+   * usar el checkbox o el menú no dispara la navegación.
+   */
+  protected onRowClicked(row: unknown): void {
+    if (!this.rowClickable()) return;
+    this.rowClick.emit(row);
   }
 
   /**

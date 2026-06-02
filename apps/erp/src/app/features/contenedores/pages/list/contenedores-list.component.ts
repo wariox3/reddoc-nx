@@ -106,17 +106,18 @@ export class ContenedoresListComponent {
 
   enterContenedor(item: Contenedor): void {
     if (isSuscripcionExpired(item.suscripcion_fecha_fin)) {
-      if (item.rol_id === 1) this.renewContenedor();
+      if (item.rol_id === 1) this.renewContenedor(item.suscripcion_id);
       return;
     }
     this.tenant.setCurrent(item);
     this.router.navigateByUrl(ROUTE_PATHS.tenant.dashboard(item.schema_name));
   }
 
-  renewContenedor(): void {
+  renewContenedor(suscripcionId?: number): void {
     const base = this.env.cuentaUrl;
     if (!base) return;
-    window.open(`${base}/suscripciones`, '_blank', 'noopener');
+    const path = suscripcionId ? `/suscripciones/planes/${suscripcionId}` : '/suscripciones';
+    window.open(`${base}${path}`, '_blank', 'noopener');
   }
 
   openRowMenu(event: Event, item: Contenedor): void {
@@ -132,6 +133,11 @@ export class ContenedoresListComponent {
         label: labels.edit,
         icon: 'pi pi-pencil',
         command: () => this.editContenedor(item),
+      },
+      {
+        label: labels.updateSubscription,
+        icon: 'pi pi-credit-card',
+        command: () => this.renewContenedor(item.suscripcion_id),
       },
       { separator: true },
       {
