@@ -46,11 +46,11 @@ export interface Contacto {
   readonly banco_nombre?: string | null;
   readonly cuenta_banco_clase: number | null;
   /**
-   * El backend de lectura todavía no devuelve `responsabilidad` (ni su nombre);
-   * opcional hasta que lo exponga. Mientras tanto el form no puede precargarlo.
+   * `responsabilidad` es la excepción: el backend la devuelve con sufijo `_id`
+   * (y su `_nombre`), no pelada como el resto de los relacionales.
    */
-  readonly responsabilidad?: number | null;
-  readonly responsabilidad_nombre?: string | null;
+  readonly responsabilidad_id: number | null;
+  readonly responsabilidad_nombre: string | null;
   readonly activo?: boolean;
 }
 
