@@ -28,4 +28,11 @@ export const CONTACTO_ROUTES: Route[] = [
     loadComponent: () =>
       import('./pages/contacto-form/contacto-form.component').then((m) => m.ContactoFormComponent),
   },
+  {
+    path: 'detalle/:id',
+    loadComponent: () =>
+      import('./pages/contacto-detail/contacto-detail.component').then(
+        (m) => m.ContactoDetailComponent,
+      ),
+  },
 ];

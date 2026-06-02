@@ -50,6 +50,11 @@ export class DataTableComponent {
    */
   readonly sort = input<readonly SortSpec[]>([]);
   readonly rowActions = input<readonly RowAction[]>([]);
+  /**
+   * Habilita el click sobre la fila (cursor + emisión de `rowClick`). Por
+   * defecto `false` para no insinuar interactividad en tablas que no navegan.
+   */
+  readonly rowClickable = input<boolean>(false);
   readonly dataKey = input<string>('id');
   readonly emptyTitleKey = input<string>('common.list.empty.title');
   readonly emptySubKey = input<string>('common.list.empty.sub');
@@ -60,6 +65,7 @@ export class DataTableComponent {
   readonly sortChange = output<readonly SortSpec[]>();
   readonly selectionChange = output<unknown[]>();
   readonly rowActionInvoked = output<RowActionInvokedEvent>();
+  readonly rowClick = output<unknown>();
 
   // ── Colaboradores ─────────────────────────────────────────────────────────
   private readonly i18n = inject<I18nService<unknown>>(I18nService);
@@ -135,6 +141,16 @@ export class DataTableComponent {
 
   protected onSelectionEvent(rows: unknown[] | unknown): void {
     this.selectionChange.emit(Array.isArray(rows) ? rows : [rows]);
+  }
+
+  /**
+   * Click sobre una fila. Solo emite si `rowClickable` está activo. Las celdas
+   * de selección y de acciones detienen la propagación en el template, así que
+   * usar el checkbox o el menú no dispara la navegación.
+   */
+  protected onRowClicked(row: unknown): void {
+    if (!this.rowClickable()) return;
+    this.rowClick.emit(row);
   }
 
   /**

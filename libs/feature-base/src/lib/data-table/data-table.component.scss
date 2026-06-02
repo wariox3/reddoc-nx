@@ -48,6 +48,14 @@
     }
   }
 
+  &__row--clickable {
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(19 38 60 / 0.025);
+    }
+  }
+
   &__empty {
     display: flex;
     flex-direction: column;

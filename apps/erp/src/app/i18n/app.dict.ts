@@ -6,6 +6,7 @@ export interface AppDict extends AuthTranslationsHost {
     actions: {
       new: string;
       actions: string;
+      view: string;
       edit: string;
       delete: string;
       deleteSelected: string;
@@ -207,6 +208,19 @@ export interface AppDict extends AuthTranslationsHost {
           notFound: { title: string; desc: string };
           error: { title: string; desc: string };
         };
+      };
+      detail: {
+        title: string;
+        subtitle: string;
+        sections: {
+          general: string;
+          contacto: string;
+          ubicacion: string;
+          cliente: string;
+          proveedor: string;
+        };
+        labels: { codigoCiiu: string; codigoPostal: string };
+        notFound: { title: string; desc: string };
       };
     };
     facturaVenta: {

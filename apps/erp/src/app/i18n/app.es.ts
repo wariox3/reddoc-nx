@@ -8,6 +8,7 @@ export const es: AppDict = {
     actions: {
       new: 'Nuevo',
       actions: 'Acciones',
+      view: 'Ver',
       edit: 'Editar',
       delete: 'Eliminar',
       deleteSelected: 'Eliminar seleccionados',
@@ -178,7 +179,7 @@ export const es: AppDict = {
       form: {
         createTitle: 'Nuevo contacto',
         createSubtitle: 'Registrá un nuevo contacto',
-        editTitle: 'editar contacto',
+        editTitle: 'Editar contacto',
         editSubtitle: 'Actualizá los datos del contacto',
         sections: {
           principal: 'Información principal',
@@ -268,6 +269,25 @@ export const es: AppDict = {
             title: 'Error de consulta',
             desc: 'No se pudo consultar la DIAN. Intentá de nuevo.',
           },
+        },
+      },
+      detail: {
+        title: 'Detalle del contacto',
+        subtitle: 'Información y datos comerciales',
+        sections: {
+          general: 'Información general',
+          contacto: 'Contacto',
+          ubicacion: 'Ubicación',
+          cliente: 'Información de cliente',
+          proveedor: 'Información de proveedor',
+        },
+        labels: {
+          codigoCiiu: 'Código CIIU',
+          codigoPostal: 'Código postal',
+        },
+        notFound: {
+          title: 'Contacto no encontrado',
+          desc: 'No se pudo cargar la información de este contacto.',
         },
       },
     },

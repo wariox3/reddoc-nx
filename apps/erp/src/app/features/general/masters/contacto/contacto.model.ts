@@ -47,6 +47,18 @@ export interface Contacto {
   readonly cuenta_banco_clase: number | null;
   readonly responsabilidad: number | null;
   readonly responsabilidad_nombre: string | null;
+  /**
+   * Nombres de los FK comerciales que el endpoint de detalle (`getById`)
+   * acompaña al id. Opcionales: el shape de lista no los trae. Las claves
+   * siguen la convención `<campo>_nombre`; verificar contra una respuesta real
+   * si alguno llega vacío en la ficha de detalle.
+   */
+  readonly plazo_pago_nombre?: string | null;
+  readonly precio_nombre?: string | null;
+  readonly asesor_nombre?: string | null;
+  readonly cuenta_banco_clase_nombre?: string | null;
+  readonly plazo_pago_proveedor_nombre?: string | null;
+  readonly departamento_nombre?: string | null;
   readonly activo?: boolean;
 }
 

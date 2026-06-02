@@ -42,9 +42,9 @@
   </ng-template>
 
   <ng-template pTemplate="body" let-row>
-    <tr>
+    <tr [class.lib-data-table__row--clickable]="rowClickable()" (click)="onRowClicked(row)">
       @if (hasSelection()) {
-        <td class="lib-data-table__select-col">
+        <td class="lib-data-table__select-col" (click)="$event.stopPropagation()">
           <p-tableCheckbox [value]="row" />
         </td>
       }
@@ -76,7 +76,7 @@
         </td>
       }
       @if (rowActions().length > 0) {
-        <td class="lib-data-table__actions-col">
+        <td class="lib-data-table__actions-col" (click)="$event.stopPropagation()">
           <button
             type="button"
             class="lib-data-table__row-action"

@@ -187,6 +187,9 @@ export class ContactosListComponent {
   protected onRowAction(event: RowActionInvokedEvent): void {
     const contacto = event.row as Contacto;
     switch (event.actionId) {
+      case 'view':
+        this.navigateToDetail(contacto.id);
+        break;
       case 'edit':
         this.navigateToEdit(contacto.id);
         break;
@@ -194,6 +197,10 @@ export class ContactosListComponent {
         this.confirmRemove([contacto.id]);
         break;
     }
+  }
+
+  protected onRowClick(row: unknown): void {
+    this.navigateToDetail((row as Contacto).id);
   }
 
   protected onToolbarAction(actionId: string): void {
@@ -395,6 +402,10 @@ export class ContactosListComponent {
 
   private navigateToEdit(id: number): void {
     this.router.navigate(this.buildRouteCommands('editar', id));
+  }
+
+  private navigateToDetail(id: number): void {
+    this.router.navigate(this.buildRouteCommands('detalle', id));
   }
 
   /**

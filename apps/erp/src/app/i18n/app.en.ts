@@ -8,6 +8,7 @@ export const en: AppDict = {
     actions: {
       new: 'New',
       actions: 'Actions',
+      view: 'View',
       edit: 'Edit',
       delete: 'Delete',
       deleteSelected: 'Delete selected',
@@ -268,6 +269,25 @@ export const en: AppDict = {
             title: 'Lookup failed',
             desc: 'Could not query DIAN. Please try again.',
           },
+        },
+      },
+      detail: {
+        title: 'Contact detail',
+        subtitle: 'Information and commercial data',
+        sections: {
+          general: 'General information',
+          contacto: 'Contact',
+          ubicacion: 'Location',
+          cliente: 'Customer information',
+          proveedor: 'Supplier information',
+        },
+        labels: {
+          codigoCiiu: 'CIIU code',
+          codigoPostal: 'Postal code',
+        },
+        notFound: {
+          title: 'Contact not found',
+          desc: 'This contact’s information could not be loaded.',
         },
       },
     },

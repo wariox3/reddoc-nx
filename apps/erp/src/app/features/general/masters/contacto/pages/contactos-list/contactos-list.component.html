@@ -35,10 +35,12 @@
     selectionMode="multiple"
     [selectedRows]="selectedRows()"
     [rowActions]="rowActions"
+    [rowClickable]="true"
     (pageChange)="onPageChange($event)"
     (sortChange)="onSortChange($event)"
     (selectionChange)="onSelectionChange($event)"
     (rowActionInvoked)="onRowAction($event)"
+    (rowClick)="onRowClick($event)"
   />
 </div>
 
