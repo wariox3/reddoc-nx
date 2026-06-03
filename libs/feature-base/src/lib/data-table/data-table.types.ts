@@ -18,6 +18,14 @@ export interface RowAction {
    */
   readonly severity?: 'default' | 'danger';
   /**
+   * Si `true`, la acción se renderiza como un botón de ícono **siempre visible**
+   * en su propia columna (tras las columnas de la entidad, antes del menú ⋮),
+   * en vez de esconderse en el menú de opciones. Pensado para las acciones más
+   * frecuentes (ver, editar). El orden de las columnas sigue el del array.
+   * Default `false` (la acción va al menú).
+   */
+  readonly inline?: boolean;
+  /**
    * Función opcional que decide si la acción es visible para una fila
    * concreta. Por defecto, todas las acciones se muestran para toda fila.
    */

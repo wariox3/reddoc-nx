@@ -93,8 +93,8 @@ export const CONTACTOS_FILTER_FIELDS: readonly FilterField[] = [
 ];
 
 export const CONTACTOS_ROW_ACTIONS: readonly RowAction[] = [
-  { id: 'view', labelKey: 'common.actions.view', iconClass: 'pi pi-eye' },
-  { id: 'edit', labelKey: 'common.actions.edit', iconClass: 'pi pi-pencil' },
+  { id: 'edit', labelKey: 'common.actions.edit', iconClass: 'pi pi-pencil', inline: true },
+  { id: 'view', labelKey: 'common.actions.view', iconClass: 'pi pi-eye', inline: true },
   { id: 'delete', labelKey: 'common.actions.delete', iconClass: 'pi pi-trash', severity: 'danger' },
 ];
 

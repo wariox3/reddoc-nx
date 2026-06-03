@@ -156,7 +156,12 @@ export class BaseDocumentListComponent {
     const caps = this.capabilities();
     const actions: RowAction[] = [];
     if (caps.canEdit) {
-      actions.push({ id: 'edit', labelKey: 'common.actions.edit', iconClass: 'pi pi-pencil' });
+      actions.push({
+        id: 'edit',
+        labelKey: 'common.actions.edit',
+        iconClass: 'pi pi-pencil',
+        inline: true,
+      });
     }
     if (caps.canDelete) {
       actions.push({

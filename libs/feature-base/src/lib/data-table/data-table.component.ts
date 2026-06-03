@@ -12,6 +12,7 @@ import {
 import { ButtonModule } from 'primeng/button';
 import { Menu, MenuModule } from 'primeng/menu';
 import { TableModule } from 'primeng/table';
+import { TooltipModule } from 'primeng/tooltip';
 import type { MenuItem, SortMeta } from 'primeng/api';
 import { I18nService, type ColumnDef, type SortSpec } from '@reddoc/core';
 import type { PageChangeEvent, RowAction, RowActionInvokedEvent } from './data-table.types';
@@ -36,7 +37,7 @@ import { multiSortMetaToSpecs, sortSpecsEqual } from './sort.util';
 @Component({
   selector: 'lib-data-table',
   standalone: true,
-  imports: [CommonModule, ButtonModule, TableModule, MenuModule],
+  imports: [CommonModule, ButtonModule, TableModule, MenuModule, TooltipModule],
   templateUrl: './data-table.component.html',
   styleUrl: './data-table.component.scss',
 })
@@ -91,6 +92,18 @@ export class DataTableComponent {
 
   // ── Derivados expuestos al template ───────────────────────────────────────
   protected readonly hasSelection = computed(() => this.selectionMode() !== 'none');
+
+  /**
+   * Acciones de fila partidas en dos: las `inline` (botón siempre visible, una
+   * columna propia cada una) y las del menú ⋮ (el resto). El orden de cada
+   * grupo respeta el del array de `rowActions`.
+   */
+  protected readonly inlineActions = computed<readonly RowAction[]>(() =>
+    this.rowActions().filter((a) => a.inline),
+  );
+  protected readonly menuActions = computed<readonly RowAction[]>(() =>
+    this.rowActions().filter((a) => !a.inline),
+  );
 
   protected readonly rangeStart = computed(() =>
     this.totalCount() === 0 ? 0 : this.currentPage() * this.pageSize() + 1,
@@ -171,13 +184,23 @@ export class DataTableComponent {
     this.rowMenu?.toggle(event);
   }
 
+  /** Decide si una acción concreta es visible para una fila. */
+  protected isActionVisible(action: RowAction, row: unknown): boolean {
+    return action.visibleFor?.(row) ?? true;
+  }
+
+  /** Emite la invocación de una acción inline (botón siempre visible). */
+  protected invokeRowAction(action: RowAction, row: unknown): void {
+    this.rowActionInvoked.emit({ actionId: action.id, row });
+  }
+
   /**
    * Construye los `MenuItem` de PrimeNG para una fila concreta a partir
-   * de las acciones declaradas y su predicado `visibleFor`.
+   * de las acciones del menú y su predicado `visibleFor`.
    */
   private buildRowMenuItems(row: unknown): MenuItem[] {
-    return this.rowActions()
-      .filter((action) => action.visibleFor?.(row) ?? true)
+    return this.menuActions()
+      .filter((action) => this.isActionVisible(action, row))
       .map((action) => ({
         label: this.translate(action.labelKey),
         icon: action.iconClass,
