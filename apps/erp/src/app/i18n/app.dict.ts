@@ -328,6 +328,12 @@ export interface AppDict extends AuthTranslationsHost {
         electronico: string;
         contabilizado: string;
       };
+      filters: {
+        aprobado: string;
+        anulado: string;
+        electronico: string;
+        contabilizado: string;
+      };
     };
   };
   contenedores: {

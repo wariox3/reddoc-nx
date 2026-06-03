@@ -441,6 +441,12 @@ export const es: AppDict = {
         electronico: 'Ele',
         contabilizado: 'Con',
       },
+      filters: {
+        aprobado: 'Aprobado',
+        anulado: 'Anulado',
+        electronico: 'Electrónico',
+        contabilizado: 'Contabilizado',
+      },
     },
   },
   contenedores: {

@@ -97,17 +97,45 @@ export const CONTRATO_SERVICIO_COLUMNS: readonly ColumnDef[] = [
 ];
 
 /**
- * Filtros visibles del listado.
+ * Filtros visibles del listado (encienden el botón "Filtros" + el modal).
  *
- * Vacío por ahora: el único filtro que viaja al backend es
- * `documento_tipo_id = CONTRATO_SERVICIO`, y eso lo inyecta el gateway
- * automáticamente desde `documentTypeId` del config. Sumar acá cuando
- * agreguemos un filter panel.
+ * El filtro implícito `documento_tipo_id = CONTRATO_SERVICIO` lo inyecta el
+ * gateway desde `documentTypeId` del config — acá solo van los del usuario.
+ *
+ * Los estados usan labels completos (sub-clave `filters.*`) en vez de las
+ * cabeceras abreviadas (Apr/Anu/Ele/Con), que en el modal serían ambiguas.
  */
 export const CONTRATO_SERVICIO_FILTERS: readonly FilterField[] = [
+  { name: 'numero', displayNameKey: 'entities.contratoServicio.columns.numero', type: 'string' },
+  { name: 'fecha', displayNameKey: 'entities.contratoServicio.columns.fecha', type: 'date' },
   {
-    name: 'numero',
-    displayNameKey: 'entities.contratoServicio.columns.numero',
+    name: 'contacto__numero_identificacion',
+    displayNameKey: 'entities.contratoServicio.columns.identificacion',
     type: 'string',
+  },
+  {
+    name: 'contacto__nombre_corto',
+    displayNameKey: 'entities.contratoServicio.columns.contacto',
+    type: 'string',
+  },
+  {
+    name: 'estado_aprobado',
+    displayNameKey: 'entities.contratoServicio.filters.aprobado',
+    type: 'boolean',
+  },
+  {
+    name: 'estado_anulado',
+    displayNameKey: 'entities.contratoServicio.filters.anulado',
+    type: 'boolean',
+  },
+  {
+    name: 'estado_electronico',
+    displayNameKey: 'entities.contratoServicio.filters.electronico',
+    type: 'boolean',
+  },
+  {
+    name: 'estado_contabilizado',
+    displayNameKey: 'entities.contratoServicio.filters.contabilizado',
+    type: 'boolean',
   },
 ];
