@@ -140,6 +140,7 @@ export interface AppDict extends AuthTranslationsHost {
     compra: { name: string };
     venta: { name: string };
     inventario: { name: string };
+    turno: { name: string };
   };
   entities: {
     contacto: {
@@ -300,6 +301,20 @@ export interface AppDict extends AuthTranslationsHost {
           imageRemoveSuccess: { title: string; desc: string };
           imageRemoveError: { title: string; desc: string };
         };
+      };
+    };
+    puesto: {
+      name: string;
+      searchPlaceholder: string;
+      columns: {
+        id: string;
+        nombre: string;
+        direccion: string;
+        celular: string;
+        latitud: string;
+        longitud: string;
+        comentario: string;
+        estado: string;
       };
     };
     facturaVenta: {

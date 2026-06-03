@@ -60,6 +60,10 @@ export const appRoutes: Route[] = [
         loadChildren: () =>
           import('./features/inventario/inventario.routes').then((m) => m.INVENTARIO_ROUTES),
       },
+      {
+        path: 'turno',
+        loadChildren: () => import('./features/turno/turno.routes').then((m) => m.TURNO_ROUTES),
+      },
     ],
   },
 

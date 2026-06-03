@@ -167,6 +167,7 @@ export const en: AppDict = {
     compra: { name: 'Purchases' },
     venta: { name: 'Sales' },
     inventario: { name: 'Inventory' },
+    turno: { name: 'Shifts' },
   },
   entities: {
     contacto: {
@@ -404,6 +405,20 @@ export const en: AppDict = {
             desc: 'Could not remove the image. Try again.',
           },
         },
+      },
+    },
+    puesto: {
+      name: 'Workplaces',
+      searchPlaceholder: 'Search by name…',
+      columns: {
+        id: 'ID',
+        nombre: 'Name',
+        direccion: 'Address',
+        celular: 'Mobile',
+        latitud: 'Latitude',
+        longitud: 'Longitude',
+        comentario: 'Comment',
+        estado: 'Inactive',
       },
     },
     facturaVenta: {
