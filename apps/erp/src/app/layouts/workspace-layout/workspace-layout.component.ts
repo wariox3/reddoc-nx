@@ -61,13 +61,14 @@ export class WorkspaceLayoutComponent {
   protected readonly drawerVisible = signal(false);
 
   constructor() {
-    // Cada vez que cambia el módulo activo, expandimos todos sus acordeones por defecto.
+    // Cada vez que cambia el módulo activo, sembramos como expandidos solo los
+    // acordeones marcados `defaultExpanded: true`. El resto arranca cerrado.
     effect(() => {
-      const sections = this.sections();
-      const accordionIds = sections
+      const expandedIds = this.sections()
         .filter((s): s is SidebarAccordion => s.kind === 'accordion')
+        .filter((s) => s.defaultExpanded === true)
         .map((s) => s.id);
-      this.expandedAccordionIds.set(new Set(accordionIds));
+      this.expandedAccordionIds.set(new Set(expandedIds));
     });
   }
 

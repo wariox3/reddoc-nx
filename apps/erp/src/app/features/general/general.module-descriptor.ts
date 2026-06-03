@@ -11,6 +11,7 @@ export const GENERAL_MODULE: ErpModuleDescriptor = {
       id: 'general-administracion',
       labelKey: 'layout.nav.sections.master',
       iconClass: 'pi pi-folder',
+      defaultExpanded: true,
       groups: [
         {
           items: [
