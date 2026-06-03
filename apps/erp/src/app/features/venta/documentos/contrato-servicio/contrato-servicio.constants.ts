@@ -21,7 +21,7 @@ export const CONTRATO_SERVICIO_COLUMNS: readonly ColumnDef[] = [
     field: 'numero',
     headerKey: 'entities.contratoServicio.columns.numero',
     type: 'text',
-    width: '110px',
+    width: '130px',
     sortable: true,
   },
   {

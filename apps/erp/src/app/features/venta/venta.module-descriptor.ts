@@ -19,6 +19,17 @@ export const VENTA_MODULE: ErpModuleDescriptor = {
   menu: [
     {
       kind: 'accordion',
+      id: 'venta-movimientos',
+      labelKey: 'layout.nav.sections.movement',
+      iconClass: 'pi pi-arrow-right-arrow-left',
+      groups: [
+        {
+          items: [{ labelKey: 'entities.contratoServicio.name', path: 'contrato-servicio/list' }],
+        },
+      ],
+    },
+    {
+      kind: 'accordion',
       id: 'venta-documentos',
       labelKey: 'layout.nav.sections.document',
       iconClass: 'pi pi-file',
@@ -26,17 +37,6 @@ export const VENTA_MODULE: ErpModuleDescriptor = {
       groups: [
         {
           items: [{ labelKey: 'entities.facturaVenta.name', path: 'factura-venta/list' }],
-        },
-      ],
-    },
-    {
-      kind: 'accordion',
-      id: 'venta-movimientos',
-      labelKey: 'layout.nav.sections.movement',
-      iconClass: 'pi pi-arrow-right-arrow-left',
-      groups: [
-        {
-          items: [{ labelKey: 'entities.contratoServicio.name', path: 'contrato-servicio/list' }],
         },
       ],
     },
