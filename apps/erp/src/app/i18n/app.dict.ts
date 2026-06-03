@@ -124,6 +124,7 @@ export interface AppDict extends AuthTranslationsHost {
       sections: {
         master: string;
         document: string;
+        movement: string;
         utility: string;
       };
     };
@@ -309,6 +310,23 @@ export interface AppDict extends AuthTranslationsHost {
         contacto: string;
         total: string;
         estado: string;
+      };
+    };
+    contratoServicio: {
+      name: string;
+      columns: {
+        id: string;
+        numero: string;
+        fecha: string;
+        identificacion: string;
+        contacto: string;
+        subtotal: string;
+        impuesto: string;
+        total: string;
+        aprobado: string;
+        anulado: string;
+        electronico: string;
+        contabilizado: string;
       };
     };
   };
