@@ -1,4 +1,4 @@
-import { CommonModule, formatCurrency, formatDate, formatNumber } from '@angular/common';
+import { CommonModule, formatDate, formatNumber } from '@angular/common';
 import {
   Component,
   LOCALE_ID,
@@ -14,7 +14,13 @@ import { Menu, MenuModule } from 'primeng/menu';
 import { TableModule } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
 import type { MenuItem, SortMeta } from 'primeng/api';
-import { I18nService, type ColumnDef, type SortSpec } from '@reddoc/core';
+import {
+  I18nService,
+  formatCop,
+  toFiniteNumber,
+  type ColumnDef,
+  type SortSpec,
+} from '@reddoc/core';
 import type { PageChangeEvent, RowAction, RowActionInvokedEvent } from './data-table.types';
 import { multiSortMetaToSpecs, sortSpecsEqual } from './sort.util';
 
@@ -143,17 +149,16 @@ export class DataTableComponent {
 
   /**
    * Moneda sin decimales en el locale activo (ERP: `$ 120.600`). El backend
-   * suele mandar el monto como string con cola de ceros (`120600.000000`); se
-   * normaliza a número antes de formatear.
+   * suele mandar el monto como string con cola de ceros (`120600.000000`);
+   * `formatCop` lo normaliza a número antes de formatear.
    */
   protected currencyCell(value: unknown): string {
-    const n = this.toNumber(value);
-    return n === null ? '' : formatCurrency(n, this.locale, '$', 'COP', '1.0-0');
+    return formatCop(value, this.locale);
   }
 
   /** Número agrupado con hasta 2 decimales en el locale activo. */
   protected numberCell(value: unknown): string {
-    const n = this.toNumber(value);
+    const n = toFiniteNumber(value);
     return n === null ? '' : formatNumber(n, this.locale, '1.0-2');
   }
 
@@ -165,13 +170,6 @@ export class DataTableComponent {
     } catch {
       return String(value);
     }
-  }
-
-  /** Convierte un valor crudo a número; `null` si está vacío o no es numérico. */
-  private toNumber(value: unknown): number | null {
-    if (value === null || value === undefined || value === '') return null;
-    const n = typeof value === 'number' ? value : Number(value);
-    return Number.isFinite(n) ? n : null;
   }
 
   /**

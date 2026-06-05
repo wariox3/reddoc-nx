@@ -1,3 +1,4 @@
+import { formatCop } from '@reddoc/core';
 import { Movimiento, MovimientoTipo } from '../models/movimiento.model';
 
 export interface MovimientoGroup {
@@ -36,21 +37,13 @@ const MESES_CORTOS = [
   'dic',
 ];
 
-const COP_FORMATTER = new Intl.NumberFormat('es-CO', {
-  style: 'currency',
-  currency: 'COP',
-  maximumFractionDigits: 0,
-  minimumFractionDigits: 0,
-});
-
 export function parseLocalDate(yyyymmdd: string): Date {
   const [y, m, d] = yyyymmdd.split('-').map(Number);
   return new Date(y, m - 1, d);
 }
 
 export function formatMonto(valor: string | number): string {
-  const n = typeof valor === 'string' ? Number(valor) : valor;
-  return COP_FORMATTER.format(Number.isFinite(n) ? n : 0);
+  return formatCop(valor);
 }
 
 export function formatDia(fecha: string): string {

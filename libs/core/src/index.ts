@@ -47,6 +47,7 @@ export {
   parseApiError,
 } from './lib/utils/error.utils';
 export { getInitials } from './lib/utils/string.utils';
+export { formatCop, toFiniteNumber } from './lib/utils/currency.utils';
 export type { ApiError, ApiErrorResponse } from './lib/utils/error.utils';
 export { I18nService, provideI18n, SUPPORTED_LANGS, DEFAULT_LANG } from './lib/i18n';
 export type { Lang } from './lib/i18n';

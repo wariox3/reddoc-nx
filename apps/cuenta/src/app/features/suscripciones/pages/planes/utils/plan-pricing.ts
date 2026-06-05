@@ -1,14 +1,6 @@
-const COP = new Intl.NumberFormat('es-CO', {
-  style: 'currency',
-  currency: 'COP',
-  maximumFractionDigits: 0,
-});
+export { formatCop } from '@reddoc/core';
 
 export const ANNUAL_DISCOUNT = 0.1;
-
-export function formatCop(value: number): string {
-  return COP.format(value);
-}
 
 export function parsePrecio(precio: string): number {
   const n = Number(precio);
