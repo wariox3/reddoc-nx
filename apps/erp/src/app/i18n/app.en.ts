@@ -521,6 +521,48 @@ export const en: AppDict = {
         },
       },
     },
+    centroCosto: {
+      name: 'Cost centers',
+      searchPlaceholder: 'Search by name…',
+      columns: {
+        id: 'ID',
+        codigo: 'Code',
+        nombre: 'Name',
+        estado: 'Inactive',
+      },
+      form: {
+        createTitle: 'New cost center',
+        editTitle: 'Edit cost center',
+        createSubtitle: 'Fill in the cost center information',
+        editSubtitle: 'Update the cost center information',
+        cancel: 'Cancel',
+        submitCreate: 'Create cost center',
+        submitEdit: 'Save changes',
+        sections: { principal: 'Main information' },
+        sectionsHint: { principal: 'Basic data of the cost center' },
+        fields: { codigo: 'Code', nombre: 'Name' },
+        validation: { required: 'This field is required' },
+        toasts: {
+          createSuccess: {
+            title: 'Cost center created',
+            desc: 'The cost center was created successfully',
+          },
+          editSuccess: { title: 'Cost center updated', desc: 'Changes were saved successfully' },
+          createError: { title: 'Create error', desc: 'Could not create the cost center' },
+          editError: { title: 'Save error', desc: 'Could not save the changes' },
+          loadError: { title: 'Load error', desc: 'Could not load the cost center' },
+        },
+      },
+      detail: {
+        notFound: {
+          title: 'Cost center not found',
+          desc: 'The cost center you are looking for does not exist or was deleted.',
+        },
+        toasts: {
+          loadError: { title: 'Load error', desc: 'Could not load the cost center' },
+        },
+      },
+    },
     facturaVenta: {
       name: 'Sales invoice',
       columns: {

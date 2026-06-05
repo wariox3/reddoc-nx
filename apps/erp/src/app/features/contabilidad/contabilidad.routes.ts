@@ -5,9 +5,13 @@ export const CONTABILIDAD_ROUTES: Route[] = [
   {
     path: '',
     resolve: { _module: erpModuleResolver('contabilidad') },
-    loadComponent: () =>
-      import('@erp/layouts/module-placeholder/module-placeholder.component').then(
-        (m) => m.ModulePlaceholderComponent,
-      ),
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'centros-costo' },
+      {
+        path: 'centros-costo',
+        loadChildren: () =>
+          import('./masters/centro-costo/centro-costo.routes').then((m) => m.CENTRO_COSTO_ROUTES),
+      },
+    ],
   },
 ];

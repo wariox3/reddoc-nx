@@ -533,6 +533,51 @@ export const es: AppDict = {
         },
       },
     },
+    centroCosto: {
+      name: 'Centros de costo',
+      searchPlaceholder: 'Buscar por nombre…',
+      columns: {
+        id: 'ID',
+        codigo: 'Código',
+        nombre: 'Nombre',
+        estado: 'Inactivo',
+      },
+      form: {
+        createTitle: 'Nuevo centro de costo',
+        editTitle: 'Editar centro de costo',
+        createSubtitle: 'Completá la información del centro de costo',
+        editSubtitle: 'Modificá la información del centro de costo',
+        cancel: 'Cancelar',
+        submitCreate: 'Crear',
+        submitEdit: 'Guardar cambios',
+        sections: { principal: 'Información principal' },
+        sectionsHint: { principal: 'Datos básicos del centro de costo' },
+        fields: { codigo: 'Código', nombre: 'Nombre' },
+        validation: { required: 'Este campo es requerido' },
+        toasts: {
+          createSuccess: {
+            title: 'Centro de costo creado',
+            desc: 'El centro de costo se creó correctamente',
+          },
+          editSuccess: {
+            title: 'Centro de costo actualizado',
+            desc: 'Los cambios se guardaron correctamente',
+          },
+          createError: { title: 'Error al crear', desc: 'No se pudo crear el centro de costo' },
+          editError: { title: 'Error al guardar', desc: 'No se pudieron guardar los cambios' },
+          loadError: { title: 'Error al cargar', desc: 'No se pudo cargar el centro de costo' },
+        },
+      },
+      detail: {
+        notFound: {
+          title: 'Centro de costo no encontrado',
+          desc: 'El centro de costo que buscás no existe o fue eliminado.',
+        },
+        toasts: {
+          loadError: { title: 'Error al cargar', desc: 'No se pudo cargar el centro de costo' },
+        },
+      },
+    },
     facturaVenta: {
       name: 'Factura de venta',
       columns: {
