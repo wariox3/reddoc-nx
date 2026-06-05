@@ -446,6 +446,7 @@ export const en: AppDict = {
           contacto: 'Contact',
           contactoPlaceholder: 'Search a contact…',
           programador: 'Scheduler',
+          programadorPlaceholder: 'Search a scheduler…',
         },
         validation: {
           required: 'This field is required',

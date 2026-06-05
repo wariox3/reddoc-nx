@@ -455,6 +455,7 @@ export const es: AppDict = {
           contacto: 'Contacto',
           contactoPlaceholder: 'Buscá un contacto…',
           programador: 'Programador',
+          programadorPlaceholder: 'Buscá un programador…',
         },
         validation: {
           required: 'Este campo es requerido',

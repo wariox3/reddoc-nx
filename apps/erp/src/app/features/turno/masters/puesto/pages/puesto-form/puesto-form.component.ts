@@ -7,10 +7,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { FieldErrorComponent } from '@reddoc/ui';
 import { FormErrorService, I18nService, TenantService, ToastService } from '@reddoc/core';
-import {
-  ErpApiSelectComponent,
-  type ErpSelectOption,
-} from '@erp/core/components/api-select/erp-api-select.component';
+import { type ErpSelectOption } from '@erp/core/components/api-select/erp-api-select.component';
 import { ErpApiAutocompleteComponent } from '@erp/core/components/api-autocomplete/erp-api-autocomplete.component';
 import { ErpContactoSelectComponent } from '@erp/core/components/contacto-select/erp-contacto-select.component';
 import type { AppDict } from '@erp/i18n';
@@ -33,7 +30,6 @@ import { puestoToFormValue, formValueToPayload } from '../../puesto.mapper';
     InputTextModule,
     TextareaModule,
     FieldErrorComponent,
-    ErpApiSelectComponent,
     ErpApiAutocompleteComponent,
     ErpContactoSelectComponent,
   ],
@@ -67,7 +63,7 @@ export class PuestoFormComponent implements OnInit {
     comentario: [''],
     ciudad: this.fb.control<ErpSelectOption | null>(null),
     contacto: this.fb.control<ErpSelectOption | null>(null),
-    programador: this.fb.control<ErpSelectOption | null>({ value: null, disabled: true }),
+    programador: this.fb.control<ErpSelectOption | null>(null),
   });
 
   ngOnInit(): void {

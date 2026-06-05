@@ -338,6 +338,7 @@ export interface AppDict extends AuthTranslationsHost {
           contacto: string;
           contactoPlaceholder: string;
           programador: string;
+          programadorPlaceholder: string;
         };
         validation: { required: string };
         toasts: {

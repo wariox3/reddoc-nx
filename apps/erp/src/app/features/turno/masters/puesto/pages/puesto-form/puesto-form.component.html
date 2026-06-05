@@ -115,15 +115,16 @@
           <input id="longitud" pInputText type="text" formControlName="longitud" fluid />
         </div>
 
-        <!-- Programador (deshabilitado) -->
+        <!-- Programador -->
         <div class="flex flex-col gap-1.5">
           <label for="programador" class="puesto-form__label">
             {{ t().entities.puesto.form.fields.programador }}
           </label>
-          <app-api-select
+          <app-api-autocomplete
             inputId="programador"
             formControlName="programador"
             endpoint="/turno/programador/seleccionar/"
+            [placeholder]="t().entities.puesto.form.fields.programadorPlaceholder"
           />
         </div>
 
