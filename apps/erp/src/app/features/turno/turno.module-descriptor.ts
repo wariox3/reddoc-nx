@@ -22,7 +22,10 @@ export const TURNO_MODULE: ErpModuleDescriptor = {
       defaultExpanded: true,
       groups: [
         {
-          items: [{ labelKey: 'entities.puesto.name', path: 'puestos' }],
+          items: [
+            { labelKey: 'entities.puesto.name', path: 'puestos' },
+            { labelKey: 'entities.programador.name', path: 'programadores' },
+          ],
         },
       ],
     },

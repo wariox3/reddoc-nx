@@ -22,7 +22,11 @@ export const TURNO_ROUTES: Route[] = [
         path: 'puestos',
         loadChildren: () => import('./masters/puesto/puesto.routes').then((m) => m.PUESTO_ROUTES),
       },
-      // Futuros masters del módulo (programadores, horarios, etc.) delegan aquí.
+      {
+        path: 'programadores',
+        loadChildren: () =>
+          import('./masters/programador/programador.routes').then((m) => m.PROGRAMADOR_ROUTES),
+      },
     ],
   },
 ];

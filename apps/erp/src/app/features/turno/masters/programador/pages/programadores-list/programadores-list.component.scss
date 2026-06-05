@@ -1,0 +1,20 @@
+.programadores-list__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.programadores-list__title-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.programadores-list__title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--brand-text);
+}

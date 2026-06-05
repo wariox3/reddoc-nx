@@ -485,6 +485,50 @@ export const es: AppDict = {
         },
       },
     },
+    programador: {
+      name: 'Programadores',
+      searchPlaceholder: 'Buscar por nombre…',
+      columns: {
+        id: 'ID',
+        nombre: 'Nombre',
+        estado: 'Inactivo',
+      },
+      form: {
+        createTitle: 'Nuevo programador',
+        editTitle: 'Editar programador',
+        createSubtitle: 'Completá la información del programador',
+        editSubtitle: 'Modificá la información del programador',
+        cancel: 'Cancelar',
+        submitCreate: 'Crear programador',
+        submitEdit: 'Guardar cambios',
+        sections: { principal: 'Información principal' },
+        sectionsHint: { principal: 'Datos básicos del programador de turnos' },
+        fields: { nombre: 'Nombre' },
+        validation: { required: 'Este campo es requerido' },
+        toasts: {
+          createSuccess: {
+            title: 'Programador creado',
+            desc: 'El programador se creó correctamente',
+          },
+          editSuccess: {
+            title: 'Programador actualizado',
+            desc: 'Los cambios se guardaron correctamente',
+          },
+          createError: { title: 'Error al crear', desc: 'No se pudo crear el programador' },
+          editError: { title: 'Error al guardar', desc: 'No se pudieron guardar los cambios' },
+          loadError: { title: 'Error al cargar', desc: 'No se pudo cargar el programador' },
+        },
+      },
+      detail: {
+        notFound: {
+          title: 'Programador no encontrado',
+          desc: 'El programador que buscás no existe o fue eliminado.',
+        },
+        toasts: {
+          loadError: { title: 'Error al cargar', desc: 'No se pudo cargar el programador' },
+        },
+      },
+    },
     facturaVenta: {
       name: 'Factura de venta',
       columns: {

@@ -476,6 +476,47 @@ export const en: AppDict = {
         },
       },
     },
+    programador: {
+      name: 'Schedulers',
+      searchPlaceholder: 'Search by name…',
+      columns: {
+        id: 'ID',
+        nombre: 'Name',
+        estado: 'Inactive',
+      },
+      form: {
+        createTitle: 'New scheduler',
+        editTitle: 'Edit scheduler',
+        createSubtitle: 'Fill in the scheduler information',
+        editSubtitle: 'Update the scheduler information',
+        cancel: 'Cancel',
+        submitCreate: 'Create scheduler',
+        submitEdit: 'Save changes',
+        sections: { principal: 'Main information' },
+        sectionsHint: { principal: 'Basic data of the shift scheduler' },
+        fields: { nombre: 'Name' },
+        validation: { required: 'This field is required' },
+        toasts: {
+          createSuccess: {
+            title: 'Scheduler created',
+            desc: 'The scheduler was created successfully',
+          },
+          editSuccess: { title: 'Scheduler updated', desc: 'Changes were saved successfully' },
+          createError: { title: 'Create error', desc: 'Could not create the scheduler' },
+          editError: { title: 'Save error', desc: 'Could not save the changes' },
+          loadError: { title: 'Load error', desc: 'Could not load the scheduler' },
+        },
+      },
+      detail: {
+        notFound: {
+          title: 'Scheduler not found',
+          desc: 'The scheduler you are looking for does not exist or was deleted.',
+        },
+        toasts: {
+          loadError: { title: 'Load error', desc: 'Could not load the scheduler' },
+        },
+      },
+    },
     facturaVenta: {
       name: 'Sales invoice',
       columns: {
