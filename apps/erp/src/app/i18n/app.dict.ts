@@ -424,6 +424,7 @@ export interface AppDict extends AuthTranslationsHost {
         section: string;
         sectionHint: string;
         sectorLockedHint: string;
+        contactoLockedHint: string;
         fields: {
           contacto: string;
           contactoPlaceholder: string;
@@ -483,6 +484,7 @@ export interface AppDict extends AuthTranslationsHost {
             impuestos: string;
             impuestosPlaceholder: string;
           };
+          contactoRequired: string;
           sectorRequired: string;
           summary: {
             title: string;

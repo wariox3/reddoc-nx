@@ -126,10 +126,15 @@
       [label]="d.addLine"
       icon="pi pi-plus"
       [text]="true"
-      [disabled]="!sectorId()"
+      [disabled]="!sectorId() || !contactoId()"
       (onClick)="openCreate()"
     />
-    @if (!sectorId()) {
+    @if (!contactoId()) {
+      <span class="inline-flex items-center gap-1.5 text-[0.76rem] text-brand-muted">
+        <i class="pi pi-info-circle text-[0.72rem]"></i>
+        {{ d.contactoRequired }}
+      </span>
+    } @else if (!sectorId()) {
       <span class="inline-flex items-center gap-1.5 text-[0.76rem] text-brand-muted">
         <i class="pi pi-info-circle text-[0.72rem]"></i>
         {{ d.sectorRequired }}

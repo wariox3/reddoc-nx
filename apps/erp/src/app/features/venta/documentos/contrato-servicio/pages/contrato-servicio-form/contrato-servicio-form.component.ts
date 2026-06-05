@@ -94,19 +94,25 @@ export class ContratoServicioFormComponent implements OnInit {
 
   /** `true` cuando el sector quedó bloqueado por tener líneas agregadas. */
   protected readonly sectorLocked = signal(false);
+  /** `true` cuando el contacto quedó bloqueado por tener líneas agregadas. */
+  protected readonly contactoLocked = signal(false);
 
   constructor() {
-    // Una vez existe ≥1 línea, el sector se bloquea: cambiarlo invalidaría la
-    // tarifa ya calculada de las líneas existentes (la tarifa depende del sector).
+    // Una vez existe ≥1 línea, sector y contacto se bloquean: cambiarlos
+    // invalidaría las tarifas y los puestos ya asignados en las líneas.
     const sector = this.form.controls.sector;
+    const contacto = this.form.controls.contacto;
     const detalles = this.form.controls.detalles;
     detalles.valueChanges
       .pipe(startWith(null), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         const lock = detalles.length > 0;
         this.sectorLocked.set(lock);
+        this.contactoLocked.set(lock);
         if (lock && sector.enabled) sector.disable({ emitEvent: false });
         else if (!lock && sector.disabled) sector.enable({ emitEvent: false });
+        if (lock && contacto.enabled) contacto.disable({ emitEvent: false });
+        else if (!lock && contacto.disabled) contacto.enable({ emitEvent: false });
       });
   }
 

@@ -570,6 +570,7 @@ export const es: AppDict = {
         section: 'Información general',
         sectionHint: 'Datos principales del contrato',
         sectorLockedHint: 'No se puede cambiar el sector con líneas agregadas',
+        contactoLockedHint: 'No se puede cambiar el contacto con líneas agregadas',
         fields: {
           contacto: 'Contacto',
           contactoPlaceholder: 'Buscar contacto…',
@@ -644,6 +645,7 @@ export const es: AppDict = {
             impuestos: 'Impuestos',
             impuestosPlaceholder: 'Selecciona impuestos…',
           },
+          contactoRequired: 'Selecciona el contacto del contrato para agregar líneas',
           sectorRequired: 'Selecciona el sector del contrato para agregar líneas',
           summary: {
             title: 'Resumen',

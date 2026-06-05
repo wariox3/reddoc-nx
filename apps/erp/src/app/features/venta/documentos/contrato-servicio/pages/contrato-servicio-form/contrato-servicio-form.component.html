@@ -57,10 +57,17 @@
             [placeholder]="t().entities.contratoServicio.form.fields.contactoPlaceholder"
             [invalid]="form.controls.contacto.invalid && form.controls.contacto.touched"
           />
-          <lib-field-error
-            [control]="form.controls.contacto"
-            [messages]="{ required: t().entities.contratoServicio.form.validation.required }"
-          />
+          @if (contactoLocked()) {
+            <span class="inline-flex items-center gap-1.5 text-[0.72rem] text-brand-muted">
+              <i class="pi pi-lock text-[0.68rem]"></i>
+              {{ t().entities.contratoServicio.form.contactoLockedHint }}
+            </span>
+          } @else {
+            <lib-field-error
+              [control]="form.controls.contacto"
+              [messages]="{ required: t().entities.contratoServicio.form.validation.required }"
+            />
+          }
         </div>
 
         <!-- Fecha -->

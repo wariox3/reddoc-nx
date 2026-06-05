@@ -558,6 +558,7 @@ export const en: AppDict = {
         section: 'General information',
         sectionHint: 'Main contract data',
         sectorLockedHint: 'Sector can’t be changed once lines are added',
+        contactoLockedHint: 'Contact can’t be changed once lines are added',
         fields: {
           contacto: 'Contact',
           contactoPlaceholder: 'Search contact…',
@@ -632,6 +633,7 @@ export const en: AppDict = {
             impuestos: 'Taxes',
             impuestosPlaceholder: 'Select taxes…',
           },
+          contactoRequired: 'Select the contract contact to add lines',
           sectorRequired: 'Select the contract sector to add lines',
           summary: {
             title: 'Summary',
