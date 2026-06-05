@@ -1,0 +1,19 @@
+import type { ErpSelectOption } from '@erp/core/components/api-select/erp-api-select.component';
+import type { DetalleFormRawValue } from '../../contrato-servicio-detalle.types';
+
+/**
+ * Valores crudos del formulario de Contrato servicio (`form.getRawValue()`).
+ *
+ * `contacto` guarda la opción completa (`{ id, nombre }`) del autocomplete;
+ * `estrato`/`sector`/`salario` son numéricos; `fecha` es un `Date` del
+ * datepicker; `detalles` son las líneas de servicio. El mapper los normaliza
+ * al payload de la API.
+ */
+export interface ContratoServicioFormRawValue {
+  readonly contacto: ErpSelectOption | null;
+  readonly fecha: Date | null;
+  readonly sector: ErpSelectOption | null;
+  readonly estrato: number | null;
+  readonly salario: number | null;
+  readonly detalles: readonly DetalleFormRawValue[];
+}

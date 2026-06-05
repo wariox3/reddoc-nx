@@ -12,6 +12,8 @@
 export const DOCUMENT_TYPE_ID = {
   /** Factura electrónica de venta. */
   FACTURA_VENTA: 1,
+  /** Contrato de servicio (movimiento de venta). */
+  CONTRATO_SERVICIO: 34,
 } as const satisfies Readonly<Record<string, number>>;
 
 /** Nombre semántico (clave) de un tipo de documento registrado. */

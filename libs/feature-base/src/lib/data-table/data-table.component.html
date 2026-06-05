@@ -35,7 +35,15 @@
           }
         </th>
       }
-      @if (rowActions().length > 0) {
+      @for (action of inlineActions(); track action.id) {
+        <th
+          class="lib-data-table__inline-action-col"
+          [attr.aria-label]="translate(action.labelKey)"
+        >
+          <span class="lib-data-table__visually-hidden">{{ translate(action.labelKey) }}</span>
+        </th>
+      }
+      @if (menuActions().length > 0) {
         <th class="lib-data-table__actions-col" aria-hidden="true"></th>
       }
     </tr>
@@ -84,7 +92,24 @@
           }
         </td>
       }
-      @if (rowActions().length > 0) {
+      @for (action of inlineActions(); track action.id) {
+        <td class="lib-data-table__inline-action-col" (click)="$event.stopPropagation()">
+          @if (isActionVisible(action, row)) {
+            <button
+              type="button"
+              class="lib-data-table__row-action"
+              [class.lib-data-table__row-action--danger]="action.severity === 'danger'"
+              [pTooltip]="translate(action.labelKey)"
+              tooltipPosition="bottom"
+              [attr.aria-label]="translate(action.labelKey)"
+              (click)="invokeRowAction(action, row)"
+            >
+              <i [class]="action.iconClass"></i>
+            </button>
+          }
+        </td>
+      }
+      @if (menuActions().length > 0) {
         <td class="lib-data-table__actions-col" (click)="$event.stopPropagation()">
           <button
             type="button"
@@ -112,7 +137,10 @@
     <tr>
       <td
         [attr.colspan]="
-          columns().length + (hasSelection() ? 1 : 0) + (rowActions().length > 0 ? 1 : 0)
+          columns().length +
+          (hasSelection() ? 1 : 0) +
+          inlineActions().length +
+          (menuActions().length > 0 ? 1 : 0)
         "
       >
         <div class="lib-data-table__empty">

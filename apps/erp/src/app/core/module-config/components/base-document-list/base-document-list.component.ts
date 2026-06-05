@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, computed, effect, inject, input, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
-import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { finalize } from 'rxjs';
@@ -15,8 +14,19 @@ import {
   type ListQuery,
   type SortSpec,
 } from '@reddoc/core';
-import { DataTableComponent } from '@reddoc/feature-base';
-import type { PageChangeEvent, RowAction, RowActionInvokedEvent } from '@reddoc/feature-base';
+import {
+  BreadcrumbComponent,
+  DataFilterModalComponent,
+  DataTableComponent,
+  DataToolbarComponent,
+} from '@reddoc/feature-base';
+import type {
+  BreadcrumbItem,
+  PageChangeEvent,
+  RowAction,
+  RowActionInvokedEvent,
+  ToolbarAction,
+} from '@reddoc/feature-base';
 import { ENTITY_DATA_GATEWAY } from '../../data/entity-data-gateway';
 import { MissingModuleContextError } from '../../errors/config.errors';
 import { ModuleNavigationStore } from '../../module-navigation.store';
@@ -25,6 +35,13 @@ import type { DocumentEntityConfig } from '../../types/entity-config.types';
 
 /** Tamaño de página default mientras `DocumentEntityConfig` no exponga `paginationDefaults`. */
 const DEFAULT_PAGE_SIZE = 25;
+
+/** Acción primaria "Nuevo" del toolbar — derivada de `capabilities.canCreate`. */
+const NEW_ACTION: ToolbarAction = {
+  id: 'new',
+  labelKey: 'common.actions.new',
+  iconClass: 'pi pi-plus',
+};
 
 /**
  * Componente base de listado para **documentos transaccionales** del framework
@@ -49,7 +66,14 @@ const DEFAULT_PAGE_SIZE = 25;
 @Component({
   selector: 'app-base-document-list',
   standalone: true,
-  imports: [CommonModule, ButtonModule, ConfirmDialogModule, DataTableComponent],
+  imports: [
+    CommonModule,
+    ConfirmDialogModule,
+    BreadcrumbComponent,
+    DataTableComponent,
+    DataToolbarComponent,
+    DataFilterModalComponent,
+  ],
   providers: [ConfirmationService],
   templateUrl: './base-document-list.component.html',
   styleUrl: './base-document-list.component.scss',
@@ -79,18 +103,65 @@ export class BaseDocumentListComponent {
   protected readonly sort = signal<readonly SortSpec[]>([]);
   protected readonly selectedRows = signal<readonly unknown[]>([]);
   protected readonly activeFilters = signal<readonly FilterCondition[]>([]);
+  protected readonly filtersVisible = signal(false);
 
   // ── Derivados ─────────────────────────────────────────────────────────────
   protected readonly columns = computed(() => this.document().columns);
   protected readonly capabilities = computed(() => this.document().capabilities);
   protected readonly hasSelection = computed(() => this.selectedRows().length > 0);
 
+  /** Campos filtrables declarados por el documento (vacío ⇒ sin filtros). */
+  protected readonly filterFields = computed(() => this.document().filters);
+  protected readonly filtersEnabled = computed(() => this.document().filters.length > 0);
+
+  /** Acción primaria del toolbar; solo si el documento permite crear. */
+  protected readonly primaryAction = computed<ToolbarAction | null>(() =>
+    this.capabilities().canCreate ? NEW_ACTION : null,
+  );
+
+  /**
+   * El toolbar solo se monta si aporta algo: crear, filtrar o eliminar. Un
+   * documento solo-lista (todas las capabilities en `false`, sin filtros) no lo
+   * muestra — queda card + tabla, sin barra vacía.
+   */
+  protected readonly showToolbar = computed(
+    () => this.capabilities().canCreate || this.filtersEnabled() || this.capabilities().canDelete,
+  );
+
+  /** Clave de persistencia de filtros, versionada por `schemaVersion` del documento. */
+  protected readonly storageKey = computed(() =>
+    buildEntityStorageKey(this.activeModuleId(), this.document()),
+  );
+
+  /**
+   * Migas: módulo activo (navegable a su home) → documento actual. El módulo
+   * sale del `ModuleNavigationStore`; el documento, de su `displayNameKey`.
+   */
+  protected readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => {
+    const moduleConfig = this.navigation.activeModule();
+    const slug = this.tenant.currentSlug();
+    const items: BreadcrumbItem[] = [];
+    if (moduleConfig) {
+      items.push({
+        label: this.translate(moduleConfig.displayNameKey),
+        routerLink: slug ? ['/t', slug, moduleConfig.id] : undefined,
+      });
+    }
+    items.push({ label: this.translate(this.document().displayNameKey) });
+    return items;
+  });
+
   /** Acciones disponibles desde el menú de cada fila, derivadas de capabilities. */
   protected readonly rowActions = computed<readonly RowAction[]>(() => {
     const caps = this.capabilities();
     const actions: RowAction[] = [];
     if (caps.canEdit) {
-      actions.push({ id: 'edit', labelKey: 'common.actions.edit', iconClass: 'pi pi-pencil' });
+      actions.push({
+        id: 'edit',
+        labelKey: 'common.actions.edit',
+        iconClass: 'pi pi-pencil',
+        inline: true,
+      });
     }
     if (caps.canDelete) {
       actions.push({
@@ -114,10 +185,7 @@ export class BaseDocumentListComponent {
     // Cuando cambia el documento (navegación entre documentos del mismo módulo),
     // restauramos los filtros guardados y recargamos la lista.
     effect(() => {
-      const currentDocument = this.document();
-      const moduleId = this.activeModuleId();
-      const storageKey = buildEntityStorageKey(moduleId, currentDocument);
-      const storedFilters = this.filterStorage.read(storageKey);
+      const storedFilters = this.filterStorage.read(this.storageKey());
       this.activeFilters.set(storedFilters);
       this.selectedRows.set([]);
       this.currentPage.set(0);
@@ -131,6 +199,42 @@ export class BaseDocumentListComponent {
     this.currentPage.set(event.page);
     this.pageSize.set(event.pageSize);
     this.loadList();
+  }
+
+  /**
+   * Ordenamiento multi-columna emitido por los headers de la tabla. Vuelve a la
+   * primera página porque el orden cambia el conjunto visible.
+   */
+  protected onSortChange(sort: readonly SortSpec[]): void {
+    this.sort.set(sort);
+    this.currentPage.set(0);
+    this.loadList();
+  }
+
+  protected openFilters(): void {
+    this.filtersVisible.set(true);
+  }
+
+  /**
+   * Filtros confirmados desde el modal. Se persisten en localStorage (clave
+   * versionada por documento) para que sobrevivan a recargas.
+   */
+  protected onFiltersApply(filters: readonly FilterCondition[]): void {
+    this.activeFilters.set(filters);
+    this.filterStorage.write(this.storageKey(), filters);
+    this.currentPage.set(0);
+    this.loadList();
+  }
+
+  protected clearFilters(): void {
+    this.activeFilters.set([]);
+    this.filterStorage.clear(this.storageKey());
+    this.currentPage.set(0);
+    this.loadList();
+  }
+
+  protected onToolbarAction(actionId: string): void {
+    if (actionId === 'new') this.navigateToNew();
   }
 
   protected onSelectionChange(rows: unknown[]): void {

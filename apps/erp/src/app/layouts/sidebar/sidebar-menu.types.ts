@@ -58,6 +58,12 @@ export interface SidebarAccordion {
   readonly id: string;
   readonly labelKey: string;
   readonly iconClass: string;
+  /**
+   * Si el acordeón arranca expandido al entrar/cambiar de módulo.
+   * Default `false` (cerrado) — declarar `true` en los que deban abrir.
+   * Solo afecta el estado inicial; el usuario puede abrir/cerrar luego a mano.
+   */
+  readonly defaultExpanded?: boolean;
   readonly groups: readonly SidebarGroup[];
 }
 

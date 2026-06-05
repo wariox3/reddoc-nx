@@ -1,0 +1,215 @@
+<!-- ── Encabezado de página ──────────────────────────────────────────────── -->
+<header>
+  <button
+    type="button"
+    (click)="onCancel()"
+    class="mb-2 inline-flex cursor-pointer items-center gap-1.5 border-0 bg-transparent p-0 text-[0.78rem] font-medium text-brand-muted transition-colors hover:text-brand-text"
+  >
+    <i class="pi pi-arrow-left text-[0.7rem]"></i>
+    {{ t().entities.contratoServicio.name }}
+  </button>
+  <h1 class="m-0 text-2xl font-bold tracking-tight text-brand-text">
+    @if (isEditMode()) {
+      {{ t().entities.contratoServicio.form.editTitle }}
+    } @else {
+      {{ t().entities.contratoServicio.form.createTitle }}
+    }
+  </h1>
+  <p class="m-0 mt-1 text-sm text-brand-muted">
+    @if (isEditMode()) {
+      {{ t().entities.contratoServicio.form.editSubtitle }}
+    } @else {
+      {{ t().entities.contratoServicio.form.createSubtitle }}
+    }
+  </p>
+</header>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()" autocomplete="off" class="flex flex-col gap-5">
+  <!-- ── Sección: Información general ──────────────────────────────────────── -->
+  <section class="overflow-hidden rounded-xl border border-[rgba(20,48,73,0.1)] bg-brand-surface">
+    <div class="flex items-center gap-3 border-b border-[rgba(20,48,73,0.08)] px-5 py-4">
+      <span
+        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-sky-50 text-sky-700"
+      >
+        <i class="pi pi-file-edit text-[1.05rem]"></i>
+      </span>
+      <div class="flex min-w-0 flex-1 flex-col gap-[0.1rem]">
+        <h2 class="m-0 text-[0.95rem] font-bold tracking-tight text-brand-text">
+          {{ t().entities.contratoServicio.form.section }}
+        </h2>
+        <p class="m-0 text-[0.75rem] text-brand-muted">
+          {{ t().entities.contratoServicio.form.sectionHint }}
+        </p>
+      </div>
+    </div>
+
+    <div class="px-5 py-5 max-[576px]:px-4 max-[576px]:py-4">
+      <div class="grid grid-cols-1 gap-x-5 gap-y-4 sm:grid-cols-2">
+        <!-- Contacto -->
+        <div class="flex flex-col gap-1.5 sm:col-span-2">
+          <label for="contacto" class="contrato-servicio-form__label">
+            {{ t().entities.contratoServicio.form.fields.contacto }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <app-contacto-select
+            inputId="contacto"
+            formControlName="contacto"
+            [placeholder]="t().entities.contratoServicio.form.fields.contactoPlaceholder"
+            [invalid]="form.controls.contacto.invalid && form.controls.contacto.touched"
+          />
+          @if (contactoLocked()) {
+            <span class="inline-flex items-center gap-1.5 text-[0.72rem] text-brand-muted">
+              <i class="pi pi-lock text-[0.68rem]"></i>
+              {{ t().entities.contratoServicio.form.contactoLockedHint }}
+            </span>
+          } @else {
+            <lib-field-error
+              [control]="form.controls.contacto"
+              [messages]="{ required: t().entities.contratoServicio.form.validation.required }"
+            />
+          }
+        </div>
+
+        <!-- Fecha -->
+        <div class="flex flex-col gap-1.5">
+          <label for="fecha" class="contrato-servicio-form__label">
+            {{ t().entities.contratoServicio.form.fields.fecha }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <p-datepicker
+            inputId="fecha"
+            formControlName="fecha"
+            dateFormat="yy-mm-dd"
+            [showIcon]="true"
+            appendTo="body"
+            [fluid]="true"
+            [invalid]="form.controls.fecha.invalid && form.controls.fecha.touched"
+          />
+          <lib-field-error
+            [control]="form.controls.fecha"
+            [messages]="{ required: t().entities.contratoServicio.form.validation.required }"
+          />
+        </div>
+
+        <!-- Estrato -->
+        <div class="flex flex-col gap-1.5">
+          <label for="estrato" class="contrato-servicio-form__label">
+            {{ t().entities.contratoServicio.form.fields.estrato }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <p-select
+            inputId="estrato"
+            formControlName="estrato"
+            [options]="estratoOptions"
+            optionLabel="label"
+            optionValue="value"
+            [placeholder]="t().entities.contratoServicio.form.fields.estratoPlaceholder"
+            appendTo="body"
+            [fluid]="true"
+            [invalid]="form.controls.estrato.invalid && form.controls.estrato.touched"
+          />
+          <lib-field-error
+            [control]="form.controls.estrato"
+            [messages]="{ required: t().entities.contratoServicio.form.validation.required }"
+          />
+        </div>
+
+        <!-- Sector -->
+        <div class="flex flex-col gap-1.5">
+          <label for="sector" class="contrato-servicio-form__label">
+            {{ t().entities.contratoServicio.form.fields.sector }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <app-api-select
+            inputId="sector"
+            formControlName="sector"
+            [endpoint]="sectorEndpoint"
+            [placeholder]="t().entities.contratoServicio.form.fields.sectorPlaceholder"
+            [invalid]="form.controls.sector.invalid && form.controls.sector.touched"
+          />
+          @if (sectorLocked()) {
+            <span class="inline-flex items-center gap-1.5 text-[0.72rem] text-brand-muted">
+              <i class="pi pi-lock text-[0.68rem]"></i>
+              {{ t().entities.contratoServicio.form.sectorLockedHint }}
+            </span>
+          } @else {
+            <lib-field-error
+              [control]="form.controls.sector"
+              [messages]="{ required: t().entities.contratoServicio.form.validation.required }"
+            />
+          }
+        </div>
+
+        <!-- Salario -->
+        <div class="flex flex-col gap-1.5">
+          <label for="salario" class="contrato-servicio-form__label">
+            {{ t().entities.contratoServicio.form.fields.salario }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <p-inputnumber
+            inputId="salario"
+            formControlName="salario"
+            mode="decimal"
+            [minFractionDigits]="0"
+            [maxFractionDigits]="2"
+            prefix="$ "
+            [fluid]="true"
+          />
+          <lib-field-error
+            [control]="form.controls.salario"
+            [messages]="{ required: t().entities.contratoServicio.form.validation.required }"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Sección: Detalles (líneas de servicio) ───────────────────────────── -->
+  <section class="overflow-hidden rounded-xl border border-[rgba(20,48,73,0.1)] bg-brand-surface">
+    <div class="flex items-center gap-3 border-b border-[rgba(20,48,73,0.08)] px-5 py-4">
+      <span
+        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-sky-50 text-sky-700"
+      >
+        <i class="pi pi-list text-[1.05rem]"></i>
+      </span>
+      <div class="flex min-w-0 flex-1 flex-col gap-[0.1rem]">
+        <h2 class="m-0 text-[0.95rem] font-bold tracking-tight text-brand-text">
+          {{ t().entities.contratoServicio.form.detalles.title }}
+        </h2>
+        <p class="m-0 text-[0.75rem] text-brand-muted">
+          {{ t().entities.contratoServicio.form.detalles.hint }}
+        </p>
+      </div>
+    </div>
+
+    <div class="px-5 py-5 max-[576px]:px-4 max-[576px]:py-4">
+      <app-contrato-servicio-detalles
+        [detalles]="form.controls.detalles"
+        [sectorId]="form.controls.sector.value?.id ?? null"
+        [contactoId]="form.controls.contacto.value?.id ?? null"
+      />
+    </div>
+  </section>
+
+  <!-- ── Footer ────────────────────────────────────────────────────────────── -->
+  <div class="flex items-center justify-end gap-3 pb-1">
+    <p-button
+      type="button"
+      [label]="t().entities.contratoServicio.form.cancel"
+      [outlined]="true"
+      severity="secondary"
+      (onClick)="onCancel()"
+    />
+    <p-button
+      type="submit"
+      [label]="
+        isEditMode()
+          ? t().entities.contratoServicio.form.submitEdit
+          : t().entities.contratoServicio.form.submitCreate
+      "
+      icon="pi pi-check"
+      [loading]="isSaving()"
+      [disabled]="form.invalid || form.pending || isSaving()"
+    />
+  </div>
+</form>

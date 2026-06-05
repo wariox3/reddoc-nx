@@ -13,6 +13,24 @@
     text-align: center;
   }
 
+  &__inline-action-col {
+    width: 44px;
+    text-align: center;
+  }
+
+  // Texto solo para lectores de pantalla (headers de las columnas de íconos).
+  &__visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
   &__row-action {
     display: inline-flex;
     align-items: center;
@@ -45,6 +63,16 @@
       outline: none;
       border-color: rgba(19 38 60 / 0.35);
       box-shadow: 0 0 0 3px rgba(19 38 60 / 0.08);
+    }
+
+    &--danger {
+      color: #b91c1c;
+
+      &:hover {
+        background: #fef2f2;
+        color: #b91c1c;
+        border-color: rgba(185 28 28 / 0.25);
+      }
     }
   }
 
