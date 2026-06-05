@@ -2,13 +2,14 @@ import type { Route } from '@angular/router';
 import { activeDocumentResolver } from '@erp/core/module-config';
 
 /**
- * Rutas de **Contrato servicio** (movimiento de venta).
+ * Rutas de **Contrato servicio** (documento de venta).
  *
- * Documento **solo lista**: a diferencia de Factura de venta, no expone rutas
- * `nuevo` / `editar` / `detalle` porque es de solo lectura. El
+ * Expone `list`, `nuevo` y `editar/:id`. El
  * `activeDocumentResolver('contrato-servicio')` deja la config en
- * `ModuleNavigationStore` antes de montar la lista — el módulo padre
- * (`venta.routes.ts`) ya cargó `VENTA_CONFIG`.
+ * `ModuleNavigationStore` (y la inyecta como `document` por herencia a los
+ * hijos) antes de montar cualquier página — el módulo padre (`venta.routes.ts`)
+ * ya cargó `VENTA_CONFIG`. La lista usa el `BaseDocumentListComponent`; el alta
+ * y la edición comparten el `ContratoServicioFormComponent` (con/sin `:id`).
  */
 export const CONTRATO_SERVICIO_ROUTES: Route[] = [
   {
@@ -21,6 +22,20 @@ export const CONTRATO_SERVICIO_ROUTES: Route[] = [
         loadComponent: () =>
           import('@erp/core/module-config/components/base-document-list/base-document-list.component').then(
             (m) => m.BaseDocumentListComponent,
+          ),
+      },
+      {
+        path: 'nuevo',
+        loadComponent: () =>
+          import('./pages/contrato-servicio-form/contrato-servicio-form.component').then(
+            (m) => m.ContratoServicioFormComponent,
+          ),
+      },
+      {
+        path: 'editar/:id',
+        loadComponent: () =>
+          import('./pages/contrato-servicio-form/contrato-servicio-form.component').then(
+            (m) => m.ContratoServicioFormComponent,
           ),
       },
     ],

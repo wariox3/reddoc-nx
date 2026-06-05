@@ -1,0 +1,61 @@
+:host {
+  display: block;
+}
+
+.detalle-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+// Cabecera: etiquetas discretas en mayúscula, sin gritar.
+.detalle-table__th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 0.5rem 0.6rem;
+  text-align: left;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--brand-muted, #64748b);
+  background: rgba(20, 48, 73, 0.03);
+  border-bottom: 1px solid rgba(20, 48, 73, 0.1);
+}
+
+.detalle-table__td {
+  padding: 0.45rem 0.6rem;
+  vertical-align: middle;
+}
+
+.detalle-table__row + .detalle-table__row .detalle-table__td {
+  border-top: 1px solid rgba(20, 48, 73, 0.07);
+}
+
+.detalle-table__row:hover .detalle-table__td {
+  background: rgba(20, 48, 73, 0.015);
+}
+
+// Firma: el bloque de "cobertura" (periodo · horario · modalidad · programar)
+// se distingue con un tinte sky tenue, leyéndose como una banda de turno.
+.detalle-table__th--coverage,
+.detalle-table__td--coverage {
+  background: rgba(119, 170, 215, 0.06);
+}
+
+.detalle-table__th--coverage {
+  background: rgba(119, 170, 215, 0.12);
+  color: var(--p-primary-color, #143049);
+}
+
+.detalle-table__row:hover .detalle-table__td--coverage {
+  background: rgba(119, 170, 215, 0.1);
+}
+
+tfoot .detalle-table__td {
+  border-top: 1px solid rgba(20, 48, 73, 0.12);
+  padding-top: 0.6rem;
+  padding-bottom: 0.6rem;
+}

@@ -1,6 +1,34 @@
 import type { ColumnDef, FilterField } from '@reddoc/core';
 
 /**
+ * Segmentos (relativos al tenant) de la lista de Contrato servicio.
+ * El form los usa para volver tras crear/editar:
+ * `/t/<slug>/venta/contrato-servicio/list`.
+ */
+export const CONTRATO_SERVICIO_LIST_PATH = ['venta', 'contrato-servicio', 'list'] as const;
+
+/**
+ * Endpoints de selección sin fuente propia en el front; se asume la convención
+ * `<recurso>/seleccionar/` — ajustar aquí si el backend difiere.
+ */
+export const SECTOR_ENDPOINT = '/general/sector/seleccionar/';
+export const MODALIDAD_ENDPOINT = '/general/modalidad/seleccionar/';
+export const PUESTO_ENDPOINT = '/turno/puesto/seleccionar/';
+
+/**
+ * Opciones fijas de estrato socioeconómico (1 a 6). El backend espera el id
+ * numérico; aquí el id coincide con el número visible.
+ */
+export const ESTRATO_OPTIONS: readonly { readonly label: string; readonly value: number }[] = [
+  { label: '1', value: 1 },
+  { label: '2', value: 2 },
+  { label: '3', value: 3 },
+  { label: '4', value: 4 },
+  { label: '5', value: 5 },
+  { label: '6', value: 6 },
+];
+
+/**
  * Columnas visibles del listado de Contrato servicio.
  *
  * Los `field` mapean el shape real del endpoint `general/documento/lista/`:

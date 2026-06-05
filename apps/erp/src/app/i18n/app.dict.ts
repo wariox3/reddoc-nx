@@ -349,6 +349,93 @@ export interface AppDict extends AuthTranslationsHost {
         electronico: string;
         contabilizado: string;
       };
+      form: {
+        createTitle: string;
+        createSubtitle: string;
+        editTitle: string;
+        editSubtitle: string;
+        section: string;
+        sectionHint: string;
+        sectorLockedHint: string;
+        fields: {
+          contacto: string;
+          contactoPlaceholder: string;
+          fecha: string;
+          sector: string;
+          sectorPlaceholder: string;
+          estrato: string;
+          estratoPlaceholder: string;
+          salario: string;
+        };
+        validation: { required: string };
+        submitCreate: string;
+        submitEdit: string;
+        cancel: string;
+        toasts: {
+          createSuccess: { title: string; desc: string };
+          createError: { title: string; desc: string };
+          editSuccess: { title: string; desc: string };
+          editError: { title: string; desc: string };
+          loadError: { title: string; desc: string };
+        };
+        detalles: {
+          title: string;
+          hint: string;
+          empty: string;
+          addLine: string;
+          editLine: string;
+          removeLine: string;
+          lineLabel: string;
+          coverage: string;
+          subtotalCol: string;
+          contractSubtotal: string;
+          yes: string;
+          no: string;
+          modalCreateTitle: string;
+          modalEditTitle: string;
+          modalSubtitle: string;
+          modalAdd: string;
+          modalSave: string;
+          fields: {
+            item: string;
+            itemPlaceholder: string;
+            puesto: string;
+            puestoPlaceholder: string;
+            cantidad: string;
+            precio: string;
+            periodo: string;
+            desde: string;
+            hasta: string;
+            horario: string;
+            dias: string;
+            diasSemana: string[];
+            modalidad: string;
+            modalidadPlaceholder: string;
+            programar: string;
+            programarHint: string;
+            impuestos: string;
+            impuestosPlaceholder: string;
+          };
+          sectorRequired: string;
+          summary: {
+            title: string;
+            subtotal: string;
+            total: string;
+          };
+          calc: {
+            title: string;
+            dias: string;
+            diurna: string;
+            nocturna: string;
+            horasDia: string;
+            valorHora: string;
+            precioMinimo: string;
+            calculating: string;
+            empty: string;
+          };
+          validation: { required: string };
+        };
+      };
     };
   };
   contenedores: {

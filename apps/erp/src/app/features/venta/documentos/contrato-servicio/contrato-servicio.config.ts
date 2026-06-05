@@ -10,10 +10,11 @@ import {
  * Camino A del enfoque híbrido: vive sobre el endpoint genérico
  * `/api/general/documento` discriminado por `documento_tipo_id`.
  *
- * Es un documento **solo lista**: todas las `capabilities` están en `false`,
- * de modo que el `BaseDocumentListComponent` renderiza únicamente la tabla
- * (sin crear, ver, editar ni eliminar). Las rutas `new` / `edit` / `detail`
- * se declaran porque el tipo `EntityRoutes` las exige, pero nunca se navegan.
+ * Soporta **alta y edición** (`canCreate` / `canEdit`): el
+ * `BaseDocumentListComponent` muestra el botón "Nuevo" y la acción de fila
+ * "Editar", que navegan a las rutas `new` / `edit`
+ * (`ContratoServicioFormComponent`). `canDelete` sigue en `false` hasta que se
+ * habilite la baja. `detail` se declara porque el tipo lo exige pero no se usa.
  *
  * - `documentTypeId` proviene de `DOCUMENT_TYPE_ID.CONTRATO_SERVICIO` (id 34)
  *   para evitar magic numbers; el gateway lo inyecta como filtro implícito.
@@ -36,8 +37,8 @@ export const CONTRATO_SERVICIO_CONFIG: DocumentEntityConfig = {
     detail: 'contrato-servicio/detalle',
   },
   capabilities: {
-    canCreate: false,
-    canEdit: false,
+    canCreate: true,
+    canEdit: true,
     canDelete: false,
     canSelectRows: false,
     canImport: false,
