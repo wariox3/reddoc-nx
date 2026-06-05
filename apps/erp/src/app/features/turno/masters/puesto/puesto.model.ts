@@ -44,5 +44,5 @@ export interface PuestoPayload {
   comentario: string | null;
   ciudad: number | null;
   contacto: number | null;
-  programador_id: number | null;
+  programador: number | null;
 }

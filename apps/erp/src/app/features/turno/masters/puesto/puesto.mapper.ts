@@ -25,6 +25,6 @@ export function formValueToPayload(v: PuestoFormRawValue): PuestoPayload {
     comentario: v.comentario || null,
     ciudad: v.ciudad?.id ?? null,
     contacto: v.contacto?.id ?? null,
-    programador_id: v.programador?.id ?? null,
+    programador: v.programador?.id ?? null,
   };
 }
