@@ -44,6 +44,7 @@ export interface ContratoServicioDetalleRead {
   readonly puesto_nombre?: string | null;
   readonly programar: boolean | null;
   readonly dias_semana?: readonly number[] | null;
+  readonly festivo?: boolean | null;
   readonly impuestos_ids?: readonly number[] | null;
 }
 
@@ -61,6 +62,7 @@ export interface ContratoServicioDetallePayload {
   readonly puesto: number | null;
   readonly programar: boolean;
   readonly dias_semana: readonly number[];
+  readonly festivo: boolean;
   readonly impuestos_ids: readonly number[];
 }
 
@@ -81,6 +83,7 @@ export interface CalcularPrecioSupervigilanciaPayload {
   readonly viernes: boolean;
   readonly sabado: boolean;
   readonly domingo: boolean;
+  readonly festivo: boolean;
 }
 
 /**

@@ -15,6 +15,7 @@ export type DetalleGroup = FormGroup<{
   modalidad: FormControl<ErpSelectOption | null>;
   programar: FormControl<boolean>;
   dias_semana: FormControl<number[]>;
+  festivo: FormControl<boolean>;
   impuestos_ids: FormControl<number[]>;
 }>;
 
@@ -56,6 +57,7 @@ export function createDetalleGroup(value?: Partial<DetalleFormRawValue>): Detall
     }),
     programar: new FormControl<boolean>(value?.programar ?? false, { nonNullable: true }),
     dias_semana: new FormControl<number[]>([...(value?.dias_semana ?? [])], { nonNullable: true }),
+    festivo: new FormControl<boolean>(value?.festivo ?? false, { nonNullable: true }),
     impuestos_ids: new FormControl<number[]>([...(value?.impuestos_ids ?? [])], {
       nonNullable: true,
     }),

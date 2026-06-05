@@ -172,6 +172,18 @@
                     {{ label }}
                   </button>
                 }
+                <button
+                  type="button"
+                  (click)="toggleFestivo()"
+                  class="h-8 rounded-md px-3 text-[0.72rem] font-semibold transition-colors"
+                  [class]="
+                    formValues().festivo
+                      ? 'bg-[#143049] text-white'
+                      : 'border border-[rgba(119,170,215,0.5)] bg-white text-brand-muted hover:border-[rgba(119,170,215,0.9)] hover:text-brand-text'
+                  "
+                >
+                  {{ d.fields.festivo }}
+                </button>
               </div>
             </div>
           </div>

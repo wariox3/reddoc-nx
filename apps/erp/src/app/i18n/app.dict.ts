@@ -509,6 +509,7 @@ export interface AppDict extends AuthTranslationsHost {
             horario: string;
             dias: string;
             diasSemana: string[];
+            festivo: string;
             modalidad: string;
             modalidadPlaceholder: string;
             programar: string;

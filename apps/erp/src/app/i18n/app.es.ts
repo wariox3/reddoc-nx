@@ -686,6 +686,7 @@ export const es: AppDict = {
             horario: 'Horario',
             dias: 'Días',
             diasSemana: ['Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá', 'Do'],
+            festivo: 'Fe',
             modalidad: 'Modalidad',
             modalidadPlaceholder: 'Selecciona…',
             programar: 'Programar',

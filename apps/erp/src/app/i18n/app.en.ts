@@ -671,6 +671,7 @@ export const en: AppDict = {
             horario: 'Schedule',
             dias: 'Days',
             diasSemana: ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'],
+            festivo: 'Ho',
             modalidad: 'Modality',
             modalidadPlaceholder: 'Select…',
             programar: 'Schedule shifts',

@@ -112,6 +112,7 @@ export class ContratoServicioDetalleModalComponent {
         cantidad: v.cantidad ?? 0,
         precio: v.precio ?? 0,
         dias_semana: v.dias_semana ?? [],
+        festivo: v.festivo ?? false,
         hora_desde: v.hora_desde ?? null,
         hora_hasta: v.hora_hasta ?? null,
         modalidad_id: v.modalidad?.id ?? null,
@@ -122,6 +123,7 @@ export class ContratoServicioDetalleModalComponent {
         cantidad: 0,
         precio: 0,
         dias_semana: [] as number[],
+        festivo: false,
         hora_desde: null as Date | null,
         hora_hasta: null as Date | null,
         modalidad_id: null as number | null,
@@ -140,14 +142,14 @@ export class ContratoServicioDetalleModalComponent {
    * al form (`formValues`) como al `sectorId` del padre.
    */
   private readonly calcPayload = computed<CalcularPrecioSupervigilanciaPayload | null>(() => {
-    const { hora_desde, hora_hasta, modalidad_id, dias_semana } = this.formValues();
+    const { hora_desde, hora_hasta, modalidad_id, dias_semana, festivo } = this.formValues();
     const sector_id = this.sectorId();
     if (
       !hora_desde ||
       !hora_hasta ||
       modalidad_id == null ||
       sector_id == null ||
-      dias_semana.length === 0
+      (dias_semana.length === 0 && !festivo)
     ) {
       return null;
     }
@@ -163,6 +165,7 @@ export class ContratoServicioDetalleModalComponent {
       viernes: dias_semana.includes(4),
       sabado: dias_semana.includes(5),
       domingo: dias_semana.includes(6),
+      festivo,
     };
   });
 
@@ -197,6 +200,11 @@ export class ContratoServicioDetalleModalComponent {
       current.sort((a, b) => a - b);
     }
     ctrl.setValue(current);
+  }
+
+  protected toggleFestivo(): void {
+    const ctrl = this.group().controls.festivo;
+    ctrl.setValue(!ctrl.value);
   }
 
   constructor() {

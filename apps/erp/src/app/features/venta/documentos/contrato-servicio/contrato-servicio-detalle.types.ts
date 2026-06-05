@@ -24,5 +24,6 @@ export interface DetalleFormRawValue {
   readonly modalidad: ErpSelectOption | null;
   readonly programar: boolean;
   readonly dias_semana: number[];
+  readonly festivo: boolean;
   readonly impuestos_ids: number[];
 }
