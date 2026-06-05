@@ -1,4 +1,5 @@
 import { COMPRA_MODULE } from '@erp/features/compra/compra.module-descriptor';
+import { CONTABILIDAD_MODULE } from '@erp/features/contabilidad/contabilidad.module-descriptor';
 import { GENERAL_MODULE } from '@erp/features/general/general.module-descriptor';
 import { INVENTARIO_MODULE } from '@erp/features/inventario/inventario.module-descriptor';
 import { TURNO_MODULE } from '@erp/features/turno/turno.module-descriptor';
@@ -18,4 +19,5 @@ export const ERP_MODULES: readonly ErpModuleDescriptor[] = [
   VENTA_MODULE,
   INVENTARIO_MODULE,
   TURNO_MODULE,
+  CONTABILIDAD_MODULE,
 ] as const;

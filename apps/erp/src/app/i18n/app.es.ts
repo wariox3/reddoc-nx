@@ -168,6 +168,7 @@ export const es: AppDict = {
     venta: { name: 'Venta' },
     inventario: { name: 'Inventario' },
     turno: { name: 'Turno' },
+    contabilidad: { name: 'Contabilidad' },
   },
   entities: {
     contacto: {

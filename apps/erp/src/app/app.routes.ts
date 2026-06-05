@@ -64,6 +64,11 @@ export const appRoutes: Route[] = [
         path: 'turno',
         loadChildren: () => import('./features/turno/turno.routes').then((m) => m.TURNO_ROUTES),
       },
+      {
+        path: 'contabilidad',
+        loadChildren: () =>
+          import('./features/contabilidad/contabilidad.routes').then((m) => m.CONTABILIDAD_ROUTES),
+      },
     ],
   },
 
