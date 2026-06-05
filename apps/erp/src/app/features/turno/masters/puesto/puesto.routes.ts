@@ -15,4 +15,19 @@ export const PUESTO_ROUTES: Route[] = [
     loadComponent: () =>
       import('./pages/puestos-list/puestos-list.component').then((m) => m.PuestosListComponent),
   },
+  {
+    path: 'nuevo',
+    loadComponent: () =>
+      import('./pages/puesto-form/puesto-form.component').then((m) => m.PuestoFormComponent),
+  },
+  {
+    path: 'editar/:id',
+    loadComponent: () =>
+      import('./pages/puesto-form/puesto-form.component').then((m) => m.PuestoFormComponent),
+  },
+  {
+    path: 'detalle/:id',
+    loadComponent: () =>
+      import('./pages/puesto-detail/puesto-detail.component').then((m) => m.PuestoDetailComponent),
+  },
 ];

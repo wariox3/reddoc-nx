@@ -429,6 +429,61 @@ export const es: AppDict = {
         comentario: 'Comentario',
         estado: 'Inactivo',
       },
+      form: {
+        createTitle: 'Nuevo puesto',
+        editTitle: 'Editar puesto',
+        createSubtitle: 'Completá la información del puesto de trabajo',
+        editSubtitle: 'Modificá la información del puesto de trabajo',
+        cancel: 'Cancelar',
+        submitCreate: 'Crear puesto',
+        submitEdit: 'Guardar cambios',
+        sections: {
+          principal: 'Información principal',
+        },
+        sectionsHint: {
+          principal: 'Datos de ubicación, contacto y coordenadas del puesto',
+        },
+        fields: {
+          nombre: 'Nombre',
+          direccion: 'Dirección',
+          celular: 'Celular',
+          latitud: 'Latitud',
+          longitud: 'Longitud',
+          comentario: 'Comentario',
+          ciudad: 'Ciudad',
+          ciudadPlaceholder: 'Buscá una ciudad…',
+          contacto: 'Contacto',
+          contactoPlaceholder: 'Buscá un contacto…',
+          programador: 'Programador',
+        },
+        validation: {
+          required: 'Este campo es requerido',
+        },
+        toasts: {
+          createSuccess: { title: 'Puesto creado', desc: 'El puesto se creó correctamente' },
+          editSuccess: {
+            title: 'Puesto actualizado',
+            desc: 'Los cambios se guardaron correctamente',
+          },
+          createError: { title: 'Error al crear', desc: 'No se pudo crear el puesto' },
+          editError: { title: 'Error al guardar', desc: 'No se pudieron guardar los cambios' },
+          loadError: { title: 'Error al cargar', desc: 'No se pudo cargar el puesto' },
+        },
+      },
+      detail: {
+        notFound: {
+          title: 'Puesto no encontrado',
+          desc: 'El puesto que buscás no existe o fue eliminado.',
+        },
+        sections: {
+          ubicacion: 'Ubicación',
+          relaciones: 'Relaciones',
+          comentario: 'Comentario',
+        },
+        toasts: {
+          loadError: { title: 'Error al cargar', desc: 'No se pudo cargar el puesto' },
+        },
+      },
     },
     facturaVenta: {
       name: 'Factura de venta',

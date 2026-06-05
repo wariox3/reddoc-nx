@@ -1,0 +1,166 @@
+<!-- ── Encabezado de página ──────────────────────────────────────────────── -->
+<header>
+  <button
+    type="button"
+    (click)="onCancel()"
+    class="mb-2 inline-flex cursor-pointer items-center gap-1.5 border-0 bg-transparent p-0 text-[0.78rem] font-medium text-brand-muted transition-colors hover:text-brand-text"
+  >
+    <i class="pi pi-arrow-left text-[0.7rem]"></i>
+    {{ t().entities.puesto.name }}
+  </button>
+  <h1 class="m-0 text-2xl font-bold tracking-tight text-brand-text">
+    @if (isEditMode()) {
+      {{ t().entities.puesto.form.editTitle }}
+    } @else {
+      {{ t().entities.puesto.form.createTitle }}
+    }
+  </h1>
+  <p class="m-0 mt-1 text-sm text-brand-muted">
+    @if (isEditMode()) {
+      {{ t().entities.puesto.form.editSubtitle }}
+    } @else {
+      {{ t().entities.puesto.form.createSubtitle }}
+    }
+  </p>
+</header>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()" autocomplete="off" class="flex flex-col gap-5">
+  <!-- ── Sección: Información principal ────────────────────────────────────── -->
+  <section class="overflow-hidden rounded-xl border border-[rgba(20,48,73,0.1)] bg-brand-surface">
+    <div class="flex items-center gap-3 border-b border-[rgba(20,48,73,0.08)] px-5 py-4">
+      <span
+        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-sky-50 text-sky-700"
+      >
+        <i class="pi pi-map-marker text-[1.05rem]"></i>
+      </span>
+      <div class="flex min-w-0 flex-1 flex-col gap-[0.1rem]">
+        <h2 class="m-0 text-[0.95rem] font-bold tracking-tight text-brand-text">
+          {{ t().entities.puesto.form.sections.principal }}
+        </h2>
+        <p class="m-0 text-[0.75rem] text-brand-muted">
+          {{ t().entities.puesto.form.sectionsHint.principal }}
+        </p>
+      </div>
+    </div>
+
+    <div class="px-5 py-5 max-[576px]:px-4 max-[576px]:py-4">
+      <div class="grid grid-cols-1 gap-x-5 gap-y-4 sm:grid-cols-2">
+        <!-- Nombre -->
+        <div class="flex flex-col gap-1.5 sm:col-span-2">
+          <label for="nombre" class="puesto-form__label">
+            {{ t().entities.puesto.form.fields.nombre }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <input id="nombre" pInputText type="text" formControlName="nombre" fluid />
+          <lib-field-error
+            [control]="form.controls.nombre"
+            [messages]="{ required: t().entities.puesto.form.validation.required }"
+          />
+        </div>
+
+        <!-- Dirección -->
+        <div class="flex flex-col gap-1.5">
+          <label for="direccion" class="puesto-form__label">
+            {{ t().entities.puesto.form.fields.direccion }}
+          </label>
+          <input id="direccion" pInputText type="text" formControlName="direccion" fluid />
+        </div>
+
+        <!-- Celular -->
+        <div class="flex flex-col gap-1.5">
+          <label for="celular" class="puesto-form__label">
+            {{ t().entities.puesto.form.fields.celular }}
+          </label>
+          <input id="celular" pInputText type="tel" formControlName="celular" fluid />
+        </div>
+
+        <!-- Ciudad -->
+        <div class="flex flex-col gap-1.5">
+          <label for="ciudad" class="puesto-form__label">
+            {{ t().entities.puesto.form.fields.ciudad }}
+          </label>
+          <app-api-autocomplete
+            inputId="ciudad"
+            formControlName="ciudad"
+            endpoint="/general/ciudad/seleccionar/"
+            [placeholder]="t().entities.puesto.form.fields.ciudadPlaceholder"
+          />
+        </div>
+
+        <!-- Contacto -->
+        <div class="flex flex-col gap-1.5">
+          <label for="contacto" class="puesto-form__label">
+            {{ t().entities.puesto.form.fields.contacto }}
+          </label>
+          <app-contacto-select
+            inputId="contacto"
+            formControlName="contacto"
+            [placeholder]="t().entities.puesto.form.fields.contactoPlaceholder"
+          />
+        </div>
+
+        <!-- Latitud -->
+        <div class="flex flex-col gap-1.5">
+          <label for="latitud" class="puesto-form__label">
+            {{ t().entities.puesto.form.fields.latitud }}
+          </label>
+          <input id="latitud" pInputText type="text" formControlName="latitud" fluid />
+        </div>
+
+        <!-- Longitud -->
+        <div class="flex flex-col gap-1.5">
+          <label for="longitud" class="puesto-form__label">
+            {{ t().entities.puesto.form.fields.longitud }}
+          </label>
+          <input id="longitud" pInputText type="text" formControlName="longitud" fluid />
+        </div>
+
+        <!-- Programador (deshabilitado) -->
+        <div class="flex flex-col gap-1.5">
+          <label for="programador" class="puesto-form__label">
+            {{ t().entities.puesto.form.fields.programador }}
+          </label>
+          <app-api-select
+            inputId="programador"
+            formControlName="programador"
+            endpoint="/turno/programador/seleccionar/"
+          />
+        </div>
+
+        <!-- Comentario -->
+        <div class="flex flex-col gap-1.5 sm:col-span-2">
+          <label for="comentario" class="puesto-form__label">
+            {{ t().entities.puesto.form.fields.comentario }}
+          </label>
+          <textarea
+            id="comentario"
+            pTextarea
+            formControlName="comentario"
+            rows="3"
+            class="w-full"
+          ></textarea>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Footer ────────────────────────────────────────────────────────────── -->
+  <div class="flex items-center justify-end gap-3 pb-1">
+    <p-button
+      type="button"
+      [label]="t().entities.puesto.form.cancel"
+      [outlined]="true"
+      severity="secondary"
+      (onClick)="onCancel()"
+    />
+    <p-button
+      type="submit"
+      [label]="
+        isEditMode() ? t().entities.puesto.form.submitEdit : t().entities.puesto.form.submitCreate
+      "
+      icon="pi pi-check"
+      [loading]="isSaving()"
+      [disabled]="form.invalid || isSaving()"
+    />
+  </div>
+</form>

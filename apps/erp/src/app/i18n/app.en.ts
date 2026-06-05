@@ -420,6 +420,61 @@ export const en: AppDict = {
         comentario: 'Comment',
         estado: 'Inactive',
       },
+      form: {
+        createTitle: 'New workplace',
+        editTitle: 'Edit workplace',
+        createSubtitle: 'Fill in the workplace information',
+        editSubtitle: 'Update the workplace information',
+        cancel: 'Cancel',
+        submitCreate: 'Create workplace',
+        submitEdit: 'Save changes',
+        sections: {
+          principal: 'Main information',
+        },
+        sectionsHint: {
+          principal: 'Location, contact and coordinates of the workplace',
+        },
+        fields: {
+          nombre: 'Name',
+          direccion: 'Address',
+          celular: 'Mobile',
+          latitud: 'Latitude',
+          longitud: 'Longitude',
+          comentario: 'Comment',
+          ciudad: 'City',
+          ciudadPlaceholder: 'Search a city…',
+          contacto: 'Contact',
+          contactoPlaceholder: 'Search a contact…',
+          programador: 'Scheduler',
+        },
+        validation: {
+          required: 'This field is required',
+        },
+        toasts: {
+          createSuccess: {
+            title: 'Workplace created',
+            desc: 'The workplace was created successfully',
+          },
+          editSuccess: { title: 'Workplace updated', desc: 'Changes were saved successfully' },
+          createError: { title: 'Create error', desc: 'Could not create the workplace' },
+          editError: { title: 'Save error', desc: 'Could not save the changes' },
+          loadError: { title: 'Load error', desc: 'Could not load the workplace' },
+        },
+      },
+      detail: {
+        notFound: {
+          title: 'Workplace not found',
+          desc: 'The workplace you are looking for does not exist or was deleted.',
+        },
+        sections: {
+          ubicacion: 'Location',
+          relaciones: 'Relationships',
+          comentario: 'Comment',
+        },
+        toasts: {
+          loadError: { title: 'Load error', desc: 'Could not load the workplace' },
+        },
+      },
     },
     facturaVenta: {
       name: 'Sales invoice',

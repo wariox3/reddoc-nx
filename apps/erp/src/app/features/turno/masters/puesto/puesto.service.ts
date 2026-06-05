@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, forkJoin, map } from 'rxjs';
 import { BaseHttpService, buildListBody, type ListQuery } from '@reddoc/core';
-import type { PuestoListResponse } from './puesto.model';
+import type { Puesto, PuestoListResponse, PuestoPayload } from './puesto.model';
 
 /**
  * Servicio HTTP de puestos.
@@ -19,6 +19,18 @@ export class PuestoService extends BaseHttpService {
 
   list(query: ListQuery): Observable<PuestoListResponse> {
     return this.post<PuestoListResponse>(this.resourcePath + 'lista/', buildListBody(query));
+  }
+
+  getById(id: number): Observable<Puesto> {
+    return this.get<Puesto>(`${this.resourcePath}${id}/`);
+  }
+
+  create(payload: PuestoPayload): Observable<Puesto> {
+    return this.post<Puesto>(this.resourcePath, payload);
+  }
+
+  update(id: number, payload: PuestoPayload): Observable<Puesto> {
+    return this.put<Puesto>(`${this.resourcePath}${id}/`, payload);
   }
 
   /**

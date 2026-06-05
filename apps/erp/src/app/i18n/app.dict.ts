@@ -316,6 +316,43 @@ export interface AppDict extends AuthTranslationsHost {
         comentario: string;
         estado: string;
       };
+      form: {
+        createTitle: string;
+        editTitle: string;
+        createSubtitle: string;
+        editSubtitle: string;
+        cancel: string;
+        submitCreate: string;
+        submitEdit: string;
+        sections: { principal: string };
+        sectionsHint: { principal: string };
+        fields: {
+          nombre: string;
+          direccion: string;
+          celular: string;
+          latitud: string;
+          longitud: string;
+          comentario: string;
+          ciudad: string;
+          ciudadPlaceholder: string;
+          contacto: string;
+          contactoPlaceholder: string;
+          programador: string;
+        };
+        validation: { required: string };
+        toasts: {
+          createSuccess: { title: string; desc: string };
+          editSuccess: { title: string; desc: string };
+          createError: { title: string; desc: string };
+          editError: { title: string; desc: string };
+          loadError: { title: string; desc: string };
+        };
+      };
+      detail: {
+        notFound: { title: string; desc: string };
+        sections: { ubicacion: string; relaciones: string; comentario: string };
+        toasts: { loadError: { title: string; desc: string } };
+      };
     };
     facturaVenta: {
       name: string;

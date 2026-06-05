@@ -20,10 +20,29 @@ export interface Puesto {
   readonly ciudad_id: number | null;
   readonly contacto_id: number | null;
   readonly programador_id: number | null;
+  /** Nombre legible del FK ciudad — presente en la respuesta de getById(). */
+  readonly ciudad_nombre?: string | null;
+  /** Nombre legible del FK contacto — presente en la respuesta de getById(). */
+  readonly contacto_nombre?: string | null;
+  /** Nombre legible del FK programador — presente en la respuesta de getById(). */
+  readonly programador_nombre?: string | null;
 }
 
 /** Forma cruda de la respuesta paginada del backend de puestos. */
 export interface PuestoListResponse {
   readonly count: number;
   readonly results: readonly Puesto[];
+}
+
+/** Write-model para create/update de puesto. */
+export interface PuestoPayload {
+  nombre: string;
+  direccion: string | null;
+  celular: string | null;
+  latitud: string | null;
+  longitud: string | null;
+  comentario: string | null;
+  ciudad: number | null;
+  contacto: number | null;
+  programador_id: number | null;
 }
