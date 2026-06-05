@@ -445,6 +445,8 @@ export const en: AppDict = {
           ciudadPlaceholder: 'Search a city…',
           contacto: 'Contact',
           contactoPlaceholder: 'Search a contact…',
+          centroCosto: 'Cost center',
+          centroCostoPlaceholder: 'Search a cost center…',
           programador: 'Scheduler',
           programadorPlaceholder: 'Search a scheduler…',
         },

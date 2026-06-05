@@ -337,6 +337,8 @@ export interface AppDict extends AuthTranslationsHost {
           ciudadPlaceholder: string;
           contacto: string;
           contactoPlaceholder: string;
+          centroCosto: string;
+          centroCostoPlaceholder: string;
           programador: string;
           programadorPlaceholder: string;
         };

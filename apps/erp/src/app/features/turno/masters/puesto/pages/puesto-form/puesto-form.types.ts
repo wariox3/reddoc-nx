@@ -9,5 +9,6 @@ export interface PuestoFormRawValue {
   comentario: string | null;
   ciudad: ErpSelectOption | null;
   contacto: ErpSelectOption | null;
+  centroCosto: ErpSelectOption | null;
   programador: ErpSelectOption | null;
 }

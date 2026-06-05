@@ -454,6 +454,8 @@ export const es: AppDict = {
           ciudadPlaceholder: 'Buscá una ciudad…',
           contacto: 'Contacto',
           contactoPlaceholder: 'Buscá un contacto…',
+          centroCosto: 'Centro de costo',
+          centroCostoPlaceholder: 'Buscá un centro de costo…',
           programador: 'Programador',
           programadorPlaceholder: 'Buscá un programador…',
         },

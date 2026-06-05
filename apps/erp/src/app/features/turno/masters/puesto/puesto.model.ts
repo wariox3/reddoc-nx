@@ -44,5 +44,6 @@ export interface PuestoPayload {
   comentario: string | null;
   ciudad: number | null;
   contacto: number | null;
+  centro_costo: number | null;
   programador: number | null;
 }

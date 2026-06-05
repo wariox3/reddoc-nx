@@ -56,14 +56,15 @@ export class PuestoFormComponent implements OnInit {
 
   protected readonly form = this.fb.group({
     nombre: ['', Validators.required],
-    direccion: [''],
+    direccion: ['', Validators.required],
     celular: [''],
     latitud: [''],
     longitud: [''],
     comentario: [''],
-    ciudad: this.fb.control<ErpSelectOption | null>(null),
-    contacto: this.fb.control<ErpSelectOption | null>(null),
-    programador: this.fb.control<ErpSelectOption | null>(null),
+    ciudad: this.fb.control<ErpSelectOption | null>(null, Validators.required),
+    contacto: this.fb.control<ErpSelectOption | null>(null, Validators.required),
+    centroCosto: this.fb.control<ErpSelectOption | null>(null, Validators.required),
+    programador: this.fb.control<ErpSelectOption | null>(null, Validators.required),
   });
 
   ngOnInit(): void {
