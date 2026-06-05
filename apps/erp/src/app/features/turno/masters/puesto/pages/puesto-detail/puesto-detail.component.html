@@ -124,7 +124,7 @@
   </section>
 
   <!-- ── Relaciones ──────────────────────────────────────────────────────────── -->
-  @if (p.contacto_id || p.programador_id) {
+  @if (p.contacto || p.programador || p.centro_costo) {
     <section class="overflow-hidden rounded-xl border border-[rgba(20,48,73,0.1)] bg-brand-surface">
       <div class="flex items-center gap-3 border-b border-[rgba(20,48,73,0.08)] px-5 py-3.5">
         <span
@@ -137,19 +137,27 @@
         </h2>
       </div>
       <dl class="grid grid-cols-1 gap-x-6 gap-y-3 px-5 py-4 sm:grid-cols-2">
-        @if (p.contacto_id) {
+        @if (p.contacto) {
           <div class="flex flex-col gap-0.5">
             <dt class="puesto-detail__label">{{ t().entities.puesto.form.fields.contacto }}</dt>
             <dd class="puesto-detail__value">
-              {{ p.contacto_nombre ?? p.contacto_id }}
+              {{ p.contacto_nombre ?? p.contacto }}
             </dd>
           </div>
         }
-        @if (p.programador_id) {
+        @if (p.centro_costo) {
+          <div class="flex flex-col gap-0.5">
+            <dt class="puesto-detail__label">{{ t().entities.puesto.form.fields.centroCosto }}</dt>
+            <dd class="puesto-detail__value">
+              {{ p.centro_costo_nombre ?? p.centro_costo }}
+            </dd>
+          </div>
+        }
+        @if (p.programador) {
           <div class="flex flex-col gap-0.5">
             <dt class="puesto-detail__label">{{ t().entities.puesto.form.fields.programador }}</dt>
             <dd class="puesto-detail__value">
-              {{ p.programador_nombre ?? p.programador_id }}
+              {{ p.programador_nombre ?? p.programador }}
             </dd>
           </div>
         }

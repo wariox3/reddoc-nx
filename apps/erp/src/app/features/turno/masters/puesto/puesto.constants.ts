@@ -14,8 +14,8 @@ export const PUESTO_LIST_PATH = ['turno', 'puestos'] as const;
 
 /**
  * Columnas visibles del listado. Por ahora solo los campos legibles: los FK
- * crudos (`centro_costo_id`, `ciudad_id`, `contacto_id`, `programador_id`) se
- * omiten hasta que el backend acompañe con su `<campo>_nombre`.
+ * crudos (`centro_costo`, `ciudad`, `contacto`, `programador`) se omiten en la
+ * tabla; su `<campo>_nombre` solo llega en el getById (usado en form/detalle).
  */
 export const PUESTOS_COLUMNS: readonly ColumnDef[] = [
   {

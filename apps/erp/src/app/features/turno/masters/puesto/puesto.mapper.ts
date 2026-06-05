@@ -9,10 +9,12 @@ export function puestoToFormValue(p: Puesto): Partial<PuestoFormRawValue> {
     latitud: p.latitud ?? '',
     longitud: p.longitud ?? '',
     comentario: p.comentario ?? '',
-    ciudad: p.ciudad_id != null ? { id: p.ciudad_id, nombre: '' } : null,
-    contacto: p.contacto_id != null ? { id: p.contacto_id, nombre: '' } : null,
-    centroCosto: p.centro_costo_id != null ? { id: p.centro_costo_id, nombre: '' } : null,
-    programador: p.programador_id != null ? { id: p.programador_id, nombre: '' } : null,
+    ciudad: p.ciudad != null ? { id: p.ciudad, nombre: p.ciudad_nombre ?? '' } : null,
+    contacto: p.contacto != null ? { id: p.contacto, nombre: p.contacto_nombre ?? '' } : null,
+    centroCosto:
+      p.centro_costo != null ? { id: p.centro_costo, nombre: p.centro_costo_nombre ?? '' } : null,
+    programador:
+      p.programador != null ? { id: p.programador, nombre: p.programador_nombre ?? '' } : null,
   };
 }
 
