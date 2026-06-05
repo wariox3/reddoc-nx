@@ -16,6 +16,7 @@ export type DetalleGroup = FormGroup<{
   programar: FormControl<boolean>;
   dias_semana: FormControl<number[]>;
   festivo: FormControl<boolean>;
+  cortesia: FormControl<boolean>;
   impuestos_ids: FormControl<number[]>;
 }>;
 
@@ -58,14 +59,35 @@ export function createDetalleGroup(value?: Partial<DetalleFormRawValue>): Detall
     programar: new FormControl<boolean>(value?.programar ?? false, { nonNullable: true }),
     dias_semana: new FormControl<number[]>([...(value?.dias_semana ?? [])], { nonNullable: true }),
     festivo: new FormControl<boolean>(value?.festivo ?? false, { nonNullable: true }),
+    cortesia: new FormControl<boolean>(value?.cortesia ?? false, { nonNullable: true }),
     impuestos_ids: new FormControl<number[]>([...(value?.impuestos_ids ?? [])], {
       nonNullable: true,
     }),
   });
 
+  // Al elegir ítem se autollena el precio, salvo que la cortesía lo tenga en 0.
   group.controls.item.valueChanges.subscribe((opt) => {
-    if (opt) group.controls.precio.setValue(opt.precio);
+    if (opt && !group.controls.cortesia.value) group.controls.precio.setValue(opt.precio);
   });
+
+  // Cortesía: precio en 0 y bloqueado; al desactivar se reactiva (vuelve al del ítem).
+  group.controls.cortesia.valueChanges.subscribe((on) => {
+    const precio = group.controls.precio;
+    if (on) {
+      precio.setValue(0);
+      precio.disable();
+    } else {
+      precio.enable();
+      const item = group.controls.item.value;
+      precio.setValue(item ? item.precio : null);
+    }
+  });
+
+  // Estado inicial (edición con cortesía activa): precio en 0 y bloqueado.
+  if (group.controls.cortesia.value) {
+    group.controls.precio.setValue(0);
+    group.controls.precio.disable();
+  }
 
   return group;
 }

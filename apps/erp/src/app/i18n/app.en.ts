@@ -676,6 +676,8 @@ export const en: AppDict = {
             modalidadPlaceholder: 'Select…',
             programar: 'Schedule shifts',
             programarHint: 'Generates the shift schedule',
+            cortesia: 'Courtesy',
+            cortesiaHint: 'Sets the price to 0 and locks it',
             impuestos: 'Taxes',
             impuestosPlaceholder: 'Select taxes…',
           },

@@ -45,6 +45,7 @@ export interface ContratoServicioDetalleRead {
   readonly programar: boolean | null;
   readonly dias_semana?: readonly number[] | null;
   readonly festivo?: boolean | null;
+  readonly cortesia?: boolean | null;
   readonly impuestos_ids?: readonly number[] | null;
 }
 
@@ -63,6 +64,7 @@ export interface ContratoServicioDetallePayload {
   readonly programar: boolean;
   readonly dias_semana: readonly number[];
   readonly festivo: boolean;
+  readonly cortesia: boolean;
   readonly impuestos_ids: readonly number[];
 }
 

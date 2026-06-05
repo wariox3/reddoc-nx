@@ -514,6 +514,8 @@ export interface AppDict extends AuthTranslationsHost {
             modalidadPlaceholder: string;
             programar: string;
             programarHint: string;
+            cortesia: string;
+            cortesiaHint: string;
             impuestos: string;
             impuestosPlaceholder: string;
           };

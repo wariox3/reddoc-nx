@@ -691,6 +691,8 @@ export const es: AppDict = {
             modalidadPlaceholder: 'Selecciona…',
             programar: 'Programar',
             programarHint: 'Genera la programación de turnos',
+            cortesia: 'Cortesía',
+            cortesiaHint: 'Pone el precio en 0 y lo bloquea',
             impuestos: 'Impuestos',
             impuestosPlaceholder: 'Selecciona impuestos…',
           },

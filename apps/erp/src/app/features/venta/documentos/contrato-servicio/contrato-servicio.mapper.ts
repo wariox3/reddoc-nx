@@ -87,6 +87,7 @@ function detalleToFormValue(read: ContratoServicioDetalleRead): DetalleFormRawVa
     programar: read.programar ?? false,
     dias_semana: [...(read.dias_semana ?? [])],
     festivo: read.festivo ?? false,
+    cortesia: read.cortesia ?? false,
     impuestos_ids: [...(read.impuestos_ids ?? [])],
   };
 }
@@ -126,6 +127,7 @@ function detalleToPayload(raw: DetalleFormRawValue): ContratoServicioDetallePayl
     programar: raw.programar,
     dias_semana: raw.dias_semana,
     festivo: raw.festivo,
+    cortesia: raw.cortesia,
     impuestos_ids: raw.impuestos_ids,
   };
 }

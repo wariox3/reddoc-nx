@@ -25,5 +25,6 @@ export interface DetalleFormRawValue {
   readonly programar: boolean;
   readonly dias_semana: number[];
   readonly festivo: boolean;
+  readonly cortesia: boolean;
   readonly impuestos_ids: number[];
 }
