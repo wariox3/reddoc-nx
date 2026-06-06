@@ -1,7 +1,7 @@
 import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { FormArray } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { I18nService, formatCop } from '@reddoc/core';
+import { I18nService, formatCop, toHora } from '@reddoc/core';
 import type { AppDict } from '@erp/i18n';
 import { ContratoServicioDetalleModalComponent } from '../contrato-servicio-detalle-modal/contrato-servicio-detalle-modal.component';
 import { createDetalleGroup, type DetalleGroup } from '../../contrato-servicio-detalle.form';
@@ -110,10 +110,7 @@ export class ContratoServicioDetallesComponent {
 
   /** Formatea la hora de un `Date` a `HH:mm`. */
   protected formatTime(date: Date | null): string {
-    if (!date) return '—';
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    return `${hours}:${minutes}`;
+    return toHora(date) ?? '—';
   }
 
   private lineAmount(line: DetalleFormRawValue): number {

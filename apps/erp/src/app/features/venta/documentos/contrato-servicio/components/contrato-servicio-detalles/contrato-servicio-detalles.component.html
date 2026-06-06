@@ -1,6 +1,28 @@
 @let d = t().entities.contratoServicio.form.detalles;
 
 <div class="flex flex-col gap-4">
+  <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+    <p-button
+      type="button"
+      [label]="d.addLine"
+      icon="pi pi-plus"
+      [text]="true"
+      [disabled]="!sectorId() || !contactoId()"
+      (onClick)="openCreate()"
+    />
+    @if (!contactoId()) {
+      <span class="inline-flex items-center gap-1.5 text-[0.76rem] text-brand-muted">
+        <i class="pi pi-info-circle text-[0.72rem]"></i>
+        {{ d.contactoRequired }}
+      </span>
+    } @else if (!sectorId()) {
+      <span class="inline-flex items-center gap-1.5 text-[0.76rem] text-brand-muted">
+        <i class="pi pi-info-circle text-[0.72rem]"></i>
+        {{ d.sectorRequired }}
+      </span>
+    }
+  </div>
+
   <div class="overflow-x-auto rounded-xl border border-[rgba(20,48,73,0.12)]">
     <table class="detalle-table">
       <thead>
@@ -118,28 +140,6 @@
         </tfoot>
       }
     </table>
-  </div>
-
-  <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
-    <p-button
-      type="button"
-      [label]="d.addLine"
-      icon="pi pi-plus"
-      [text]="true"
-      [disabled]="!sectorId() || !contactoId()"
-      (onClick)="openCreate()"
-    />
-    @if (!contactoId()) {
-      <span class="inline-flex items-center gap-1.5 text-[0.76rem] text-brand-muted">
-        <i class="pi pi-info-circle text-[0.72rem]"></i>
-        {{ d.contactoRequired }}
-      </span>
-    } @else if (!sectorId()) {
-      <span class="inline-flex items-center gap-1.5 text-[0.76rem] text-brand-muted">
-        <i class="pi pi-info-circle text-[0.72rem]"></i>
-        {{ d.sectorRequired }}
-      </span>
-    }
   </div>
 </div>
 

@@ -13,6 +13,7 @@ export const es: AppDict = {
       delete: 'Eliminar',
       deleteSelected: 'Eliminar seleccionados',
       cancel: 'Cancelar',
+      back: 'Volver',
       save: 'Guardar',
       menuLabel: 'Opciones',
       filters: 'Filtros',

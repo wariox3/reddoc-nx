@@ -1,3 +1,4 @@
+import { fromHora, fromIsoDate, toHora, toIsoDate } from '@reddoc/core';
 import type {
   ContratoServicioRead,
   ContratoServicioPayload,
@@ -6,44 +7,6 @@ import type {
 } from './contrato-servicio.model';
 import type { DetalleFormRawValue } from './contrato-servicio-detalle.types';
 import type { ContratoServicioFormRawValue } from './pages/contrato-servicio-form/contrato-servicio-form.types';
-
-/**
- * Formatea un `Date` a `yyyy-MM-dd` usando las partes **locales** de la fecha.
- * Evita el corrimiento de día que produciría `toISOString()` (que pasa a UTC).
- */
-function toIsoDate(date: Date | null): string | null {
-  if (!date) return null;
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
-/** Parsea `yyyy-MM-dd` a un `Date` local (sin corrimiento de zona horaria). */
-function fromIsoDate(value: string | null | undefined): Date | null {
-  if (!value) return null;
-  const [year, month, day] = value.split('-').map(Number);
-  if (!year || !month || !day) return null;
-  return new Date(year, month - 1, day);
-}
-
-/** Formatea la hora de un `Date` a `HH:mm`. */
-function toHora(date: Date | null): string | null {
-  if (!date) return null;
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  return `${hours}:${minutes}`;
-}
-
-/** Parsea `HH:mm` a un `Date` (la fecha base es irrelevante: solo importa la hora). */
-function fromHora(value: string | null | undefined): Date | null {
-  if (!value) return null;
-  const [hours, minutes] = value.split(':').map(Number);
-  if (Number.isNaN(hours) || Number.isNaN(minutes)) return null;
-  const date = new Date();
-  date.setHours(hours, minutes, 0, 0);
-  return date;
-}
 
 /**
  * Read-model (GET) → valores de cabecera del formulario (edición).

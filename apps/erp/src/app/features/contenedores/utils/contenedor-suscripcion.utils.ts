@@ -1,17 +1,7 @@
-function parseLocalDate(dateStr: string): Date {
-  const [year, month, day] = dateStr.split('-').map(Number);
-  return new Date(year, month - 1, day);
-}
-
-function startOfToday(): Date {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  return d;
-}
+import { daysBetween, fromIsoDate, startOfToday } from '@reddoc/core';
 
 function daysUntilExpiry(fecha: string): number {
-  const ms = parseLocalDate(fecha).getTime() - startOfToday().getTime();
-  return Math.round(ms / (1000 * 60 * 60 * 24));
+  return daysBetween(startOfToday(), fromIsoDate(fecha));
 }
 
 export function isSuscripcionExpired(fecha: string | undefined): boolean {
@@ -31,6 +21,6 @@ export function getSuscripcionExpiryLabel(fecha: string | undefined): string {
   if (days < 0) return 'Vencida';
   if (days === 0) return 'Vence hoy';
   if (days <= 7) return `Vence en ${days}d`;
-  const date = parseLocalDate(fecha);
+  const date = fromIsoDate(fecha);
   return `Vence ${date.toLocaleDateString('es', { day: 'numeric', month: 'short', year: 'numeric' })}`;
 }

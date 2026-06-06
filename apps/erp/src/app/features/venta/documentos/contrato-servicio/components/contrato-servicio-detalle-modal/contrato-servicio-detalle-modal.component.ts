@@ -27,7 +27,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { DialogModule } from 'primeng/dialog';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
-import { I18nService } from '@reddoc/core';
+import { I18nService, toHora } from '@reddoc/core';
 import { FieldErrorComponent } from '@reddoc/ui';
 import {
   ErpApiSelectComponent,
@@ -236,11 +236,4 @@ export class ContratoServicioDetalleModalComponent {
   protected onCancel(): void {
     this.visible.set(false);
   }
-}
-
-/** Formatea la hora de un `Date` a `HH:mm` (lo que espera el tarifador). */
-function toHora(date: Date): string {
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  return `${hours}:${minutes}`;
 }

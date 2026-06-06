@@ -8,7 +8,14 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { SelectModule } from 'primeng/select';
 import { FieldErrorComponent } from '@reddoc/ui';
-import { FormErrorService, I18nService, TenantService, ToastService } from '@reddoc/core';
+import {
+  FormErrorService,
+  I18nService,
+  startOfToday,
+  TenantService,
+  ToastService,
+} from '@reddoc/core';
+import { BreadcrumbComponent, type BreadcrumbItem } from '@reddoc/feature-base';
 import { ErpContactoSelectComponent } from '@erp/core/components/contacto-select/erp-contacto-select.component';
 import {
   ErpApiSelectComponent,
@@ -16,6 +23,7 @@ import {
 } from '@erp/core/components/api-select/erp-api-select.component';
 import { ENTITY_DATA_GATEWAY } from '@erp/core/module-config';
 import type { DocumentEntityConfig } from '@erp/core/module-config';
+import { ConfiguracionService } from '@erp/core/services/configuracion.service';
 import type { AppDict } from '@erp/i18n';
 import {
   CONTRATO_SERVICIO_LIST_PATH,
@@ -47,6 +55,7 @@ import { ContratoServicioDetallesComponent } from '../../components/contrato-ser
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    BreadcrumbComponent,
     ButtonModule,
     DatePickerModule,
     InputNumberModule,
@@ -68,6 +77,7 @@ export class ContratoServicioFormComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly i18n = inject<I18nService<AppDict>>(I18nService);
+  private readonly configuracion = inject(ConfiguracionService);
 
   protected readonly t = this.i18n.t;
   protected readonly sectorEndpoint = SECTOR_ENDPOINT;
@@ -83,9 +93,26 @@ export class ContratoServicioFormComponent implements OnInit {
   protected readonly isEditMode = computed(() => !!this.id());
   protected readonly isSaving = signal(false);
 
+  protected readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => {
+    const slug = this.tenant.currentSlug();
+    return [
+      {
+        label: this.t().modules.venta.name,
+        routerLink: slug ? ['/t', slug, 'venta'] : undefined,
+      },
+      {
+        label: this.t().entities.contratoServicio.name,
+        routerLink: slug ? ['/t', slug, 'venta', 'contrato-servicio', 'list'] : undefined,
+      },
+      {
+        label: this.isEditMode() ? this.t().common.actions.edit : this.t().common.actions.new,
+      },
+    ];
+  });
+
   protected readonly form = this.fb.group({
     contacto: this.fb.control<ErpSelectOption | null>(null, Validators.required),
-    fecha: this.fb.control<Date | null>(null, Validators.required),
+    fecha: this.fb.control<Date | null>(startOfToday(), Validators.required),
     sector: this.fb.control<ErpSelectOption | null>(null, Validators.required),
     estrato: this.fb.control<number | null>(null, Validators.required),
     salario: this.fb.control<number | null>(null, Validators.required),
@@ -118,7 +145,11 @@ export class ContratoServicioFormComponent implements OnInit {
 
   ngOnInit(): void {
     const id = this.id();
-    if (id) this.loadContrato(Number(id));
+    if (id) {
+      this.loadContrato(Number(id));
+    } else {
+      this.prefillSalarioMinimo();
+    }
   }
 
   protected onSubmit(): void {
@@ -166,6 +197,21 @@ export class ContratoServicioFormComponent implements OnInit {
         error: () => {
           const toasts = this.t().entities.contratoServicio.form.toasts;
           this.toast.error(toasts.loadError.title, toasts.loadError.desc);
+        },
+      });
+  }
+
+  private prefillSalarioMinimo(): void {
+    this.configuracion
+      .getCampos(['gen_uvt', 'hum_salario_minimo'])
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (campos) => {
+          const salario = campos['hum_salario_minimo'];
+          if (salario != null) this.form.controls.salario.setValue(salario);
+        },
+        error: () => {
+          // Pre-llenado opcional: si falla, el usuario digita el valor manualmente.
         },
       });
   }

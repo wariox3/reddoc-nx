@@ -1,6 +1,18 @@
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { startOfToday } from '@reddoc/core';
 import type { ErpSelectOption } from '@erp/core/components/api-select/erp-api-select.component';
 import type { DetalleFormRawValue, ItemOption } from './contrato-servicio-detalle.types';
+
+function defaultFechaDesde(value?: Partial<DetalleFormRawValue>): Date | null {
+  if (value !== undefined) return null;
+  return new Date();
+}
+
+function defaultFechaHasta(value?: Partial<DetalleFormRawValue>): Date | null {
+  if (value !== undefined) return null;
+  const hoy = new Date();
+  return new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0);
+}
 
 /** `FormGroup` tipado de una línea de detalle del contrato. */
 export type DetalleGroup = FormGroup<{
@@ -41,24 +53,27 @@ export function createDetalleGroup(value?: Partial<DetalleFormRawValue>): Detall
     precio: new FormControl<number | null>(value?.precio ?? null, {
       validators: [Validators.required, Validators.min(0)],
     }),
-    fecha_desde: new FormControl<Date | null>(value?.fecha_desde ?? null, {
+    fecha_desde: new FormControl<Date | null>(value?.fecha_desde ?? defaultFechaDesde(value), {
       validators: Validators.required,
     }),
-    fecha_hasta: new FormControl<Date | null>(value?.fecha_hasta ?? null, {
+    fecha_hasta: new FormControl<Date | null>(value?.fecha_hasta ?? defaultFechaHasta(value), {
       validators: Validators.required,
     }),
-    hora_desde: new FormControl<Date | null>(value?.hora_desde ?? midnight(), {
+    hora_desde: new FormControl<Date | null>(value?.hora_desde ?? startOfToday(), {
       validators: Validators.required,
     }),
-    hora_hasta: new FormControl<Date | null>(value?.hora_hasta ?? midnight(), {
+    hora_hasta: new FormControl<Date | null>(value?.hora_hasta ?? startOfToday(), {
       validators: Validators.required,
     }),
     modalidad: new FormControl<ErpSelectOption | null>(value?.modalidad ?? null, {
       validators: Validators.required,
     }),
     programar: new FormControl<boolean>(value?.programar ?? false, { nonNullable: true }),
-    dias_semana: new FormControl<number[]>([...(value?.dias_semana ?? [])], { nonNullable: true }),
-    festivo: new FormControl<boolean>(value?.festivo ?? false, { nonNullable: true }),
+    dias_semana: new FormControl<number[]>(
+      value?.dias_semana != null ? [...value.dias_semana] : [0, 1, 2, 3, 4, 5, 6],
+      { nonNullable: true },
+    ),
+    festivo: new FormControl<boolean>(value?.festivo ?? true, { nonNullable: true }),
     cortesia: new FormControl<boolean>(value?.cortesia ?? false, { nonNullable: true }),
     impuestos_ids: new FormControl<number[]>([...(value?.impuestos_ids ?? [])], {
       nonNullable: true,
@@ -90,10 +105,4 @@ export function createDetalleGroup(value?: Partial<DetalleFormRawValue>): Detall
   }
 
   return group;
-}
-
-function midnight(): Date {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  return d;
 }

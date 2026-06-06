@@ -1,25 +1,42 @@
-<nav class="flex items-center gap-1.5 text-[0.8rem]" aria-label="Breadcrumb">
-  @for (item of items(); track $index; let last = $last) {
-    @if (item.routerLink && !last) {
-      <a
-        [routerLink]="item.routerLink"
-        class="text-brand-muted transition-colors hover:text-brand-text"
-        >{{ item.label }}</a
-      >
-    } @else {
-      <span [class]="last ? 'font-medium text-brand-text' : 'text-brand-muted'">{{
-        item.label
-      }}</span>
+<div class="flex items-center gap-2">
+  <nav class="flex items-center gap-1.5 text-[0.8rem]" aria-label="Breadcrumb">
+    @for (item of items(); track $index; let last = $last) {
+      @if (item.routerLink && !last) {
+        <a
+          [routerLink]="item.routerLink"
+          class="text-brand-muted transition-colors hover:text-brand-text"
+          >{{ item.label }}</a
+        >
+      } @else {
+        <span [class]="last ? 'font-medium text-brand-text' : 'text-brand-muted'">{{
+          item.label
+        }}</span>
+      }
+      @if (!last) {
+        <i class="pi pi-angle-right text-[0.6rem] text-brand-muted/60" aria-hidden="true"></i>
+      }
     }
-    @if (!last) {
-      <i class="pi pi-angle-right text-[0.6rem] text-brand-muted/60" aria-hidden="true"></i>
-    }
-  }
 
-  @if (badge()) {
-    <span
-      class="ml-2 rounded-full bg-slate-100 px-2 py-0.5 text-[0.68rem] font-semibold capitalize text-brand-muted"
-      >{{ badge() }}</span
-    >
-  }
-</nav>
+    @if (badge()) {
+      <span
+        class="ml-2 rounded-full bg-slate-100 px-2 py-0.5 text-[0.68rem] font-semibold capitalize text-brand-muted"
+        >{{ badge() }}</span
+      >
+    }
+  </nav>
+
+  <button
+    type="button"
+    (click)="copyLink()"
+    [title]="copyLabel()"
+    [attr.aria-label]="copyLabel()"
+    class="inline-flex h-6 w-6 items-center justify-center rounded-md border-0 bg-transparent text-brand-muted transition-colors hover:bg-slate-100 hover:text-brand-text"
+  >
+    <i
+      class="pi text-[0.75rem]"
+      [class.pi-copy]="!copied()"
+      [class.pi-check]="copied()"
+      [class.text-green-600]="copied()"
+    ></i>
+  </button>
+</div>

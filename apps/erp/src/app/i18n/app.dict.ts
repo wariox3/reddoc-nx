@@ -11,6 +11,7 @@ export interface AppDict extends AuthTranslationsHost {
       delete: string;
       deleteSelected: string;
       cancel: string;
+      back: string;
       save: string;
       menuLabel: string;
       filters: string;

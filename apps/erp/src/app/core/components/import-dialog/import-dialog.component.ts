@@ -16,7 +16,7 @@ import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { TabsModule } from 'primeng/tabs';
 import { TooltipModule } from 'primeng/tooltip';
-import { FileDownloadService, I18nService, ToastService } from '@reddoc/core';
+import { FileDownloadService, I18nService, toHora, ToastService } from '@reddoc/core';
 import type { AppDict } from '@erp/i18n';
 import type { ExampleConfig, ImportError, MasterTouched } from './import-dialog.types';
 
@@ -293,7 +293,7 @@ export class ImportDialogComponent {
 
     this.errorMessage.set(null);
     this.selectedFile.set(file);
-    this.uploadedAt.set(formatTimeNow());
+    this.uploadedAt.set(toHora(new Date()));
   }
 }
 
@@ -305,12 +305,4 @@ function formatBytes(n: number): string {
   const kb = n / 1024;
   if (kb < 1024) return `${kb.toFixed(1)} KB`;
   return `${(kb / 1024).toFixed(2)} MB`;
-}
-
-/** Hora actual en formato HH:mm 24h. */
-function formatTimeNow(): string {
-  const d = new Date();
-  const hh = String(d.getHours()).padStart(2, '0');
-  const mm = String(d.getMinutes()).padStart(2, '0');
-  return `${hh}:${mm}`;
 }
