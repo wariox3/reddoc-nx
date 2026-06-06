@@ -35,6 +35,8 @@ import {
 } from '@erp/core/components/api-select/erp-api-select.component';
 import { ErpImpuestoSelectComponent } from '@erp/core/components/impuesto-select/erp-impuesto-select.component';
 import type { AppDict } from '@erp/i18n';
+import { ItemService } from '@erp/features/general/masters/item/item.service';
+import type { Item } from '@erp/features/general/masters/item/item.model';
 import { ErpItemAutocompleteComponent } from '../item-autocomplete/erp-item-autocomplete.component';
 import { MODALIDAD_ENDPOINT, PUESTO_ENDPOINT } from '../../contrato-servicio.constants';
 import { createDetalleGroup, type DetalleGroup } from '../../contrato-servicio-detalle.form';
@@ -77,6 +79,7 @@ import type {
 export class ContratoServicioDetalleModalComponent {
   private readonly i18n = inject<I18nService<AppDict>>(I18nService);
   private readonly service = inject(ContratoServicioService);
+  private readonly itemService = inject(ItemService);
 
   protected readonly t = this.i18n.t;
   protected readonly modalidadEndpoint = MODALIDAD_ENDPOINT;
@@ -92,6 +95,8 @@ export class ContratoServicioDetalleModalComponent {
   readonly contactoId = input<number | null>(null);
   /** Puesto ya elegido en las líneas existentes; cuando está presente se pre-llena y bloquea. */
   readonly lockedPuesto = input<ErpSelectOption | null>(null);
+  /** Salario del contrato (del form padre); se pre-llena en modo alta. */
+  readonly salario = input<number | null>(null);
   /** Emite el valor crudo validado al confirmar. */
   readonly save = output<DetalleFormRawValue>();
 
@@ -116,6 +121,7 @@ export class ContratoServicioDetalleModalComponent {
         hora_desde: v.hora_desde ?? null,
         hora_hasta: v.hora_hasta ?? null,
         modalidad_id: v.modalidad?.id ?? null,
+        salario: v.salario ?? null,
       })),
     ),
     {
@@ -127,6 +133,7 @@ export class ContratoServicioDetalleModalComponent {
         hora_desde: null as Date | null,
         hora_hasta: null as Date | null,
         modalidad_id: null as number | null,
+        salario: null as number | null,
       },
     },
   );
@@ -136,19 +143,51 @@ export class ContratoServicioDetalleModalComponent {
     return cantidad * precio;
   });
 
+  /** `true` mientras se trae el detalle del ítem seleccionado. */
+  protected readonly itemDetailLoading = signal(false);
+
+  /**
+   * Detalle completo del ítem seleccionado en la línea (`null` si no hay ítem o
+   * la petición falla). Reacciona solo a **selecciones reales** del control
+   * `item` (sin `startWith`): al elegir uno dispara `ItemService.getById(id)`
+   * para traer el shape completo (impuestos, cuentas, etc.) que el autocomplete
+   * no incluye. El `distinctUntilChanged` vive dentro del `switchMap` para
+   * reiniciarse en cada apertura del modal (grupo nuevo). En modo edición no
+   * dispara al abrir, así no pisa los impuestos ya guardados de la línea.
+   */
+  protected readonly itemDetail = toSignal(
+    toObservable(this.group).pipe(
+      switchMap((g) =>
+        g.controls.item.valueChanges.pipe(
+          map((opt) => opt?.id ?? null),
+          distinctUntilChanged(),
+        ),
+      ),
+      tap((id) => this.itemDetailLoading.set(id != null)),
+      switchMap((id) => {
+        if (id == null) return of<Item | null>(null);
+        return this.itemService.getById(id).pipe(catchError(() => of<Item | null>(null)));
+      }),
+      tap(() => this.itemDetailLoading.set(false)),
+    ),
+    { initialValue: null as Item | null },
+  );
+
   /**
    * Payload del tarifador, o `null` mientras la cobertura esté incompleta
    * (faltan horario, modalidad, sector o no hay días activos). Reacciona tanto
    * al form (`formValues`) como al `sectorId` del padre.
    */
   private readonly calcPayload = computed<CalcularPrecioSupervigilanciaPayload | null>(() => {
-    const { hora_desde, hora_hasta, modalidad_id, dias_semana, festivo } = this.formValues();
+    const { hora_desde, hora_hasta, modalidad_id, dias_semana, festivo, salario } =
+      this.formValues();
     const sector_id = this.sectorId();
     if (
       !hora_desde ||
       !hora_hasta ||
       modalidad_id == null ||
       sector_id == null ||
+      salario == null ||
       (dias_semana.length === 0 && !festivo)
     ) {
       return null;
@@ -166,6 +205,7 @@ export class ContratoServicioDetalleModalComponent {
       sabado: dias_semana.includes(5),
       domingo: dias_semana.includes(6),
       festivo,
+      salario,
     };
   });
 
@@ -189,6 +229,17 @@ export class ContratoServicioDetalleModalComponent {
     { initialValue: null as CalcularPrecioSupervigilanciaResult | null },
   );
 
+  /**
+   * Copia el `precio_minimo` de la tarifa supervigilancia al control `precio`.
+   * No hace nada si no hay cálculo o si el precio está bloqueado por cortesía.
+   */
+  protected definirPrecio(): void {
+    const result = this.calcResult();
+    const precio = this.group().controls.precio;
+    if (!result || precio.disabled) return;
+    precio.setValue(result.precio_minimo);
+  }
+
   protected toggleDia(dia: number): void {
     const ctrl = this.group().controls.dias_semana;
     const current = [...ctrl.value];
@@ -210,16 +261,33 @@ export class ContratoServicioDetalleModalComponent {
   constructor() {
     // Al abrir, (re)inicializa la copia desde el valor actual. `untracked` evita
     // re-inicializar si `value` cambia mientras el modal sigue abierto.
-    // Si hay un puesto bloqueado (ya existe ≥1 línea), se pre-llena y deshabilita.
+    // El puesto bloqueado solo aplica en ALTA: las líneas nuevas heredan el
+    // puesto de la primera (consistencia). Al EDITAR queda editable.
     effect(() => {
       if (!this.visible()) return;
+      const isEditMode = untracked(this.isEditMode);
       const locked = untracked(this.lockedPuesto);
       const group = createDetalleGroup(untracked(this.value) ?? undefined);
-      if (locked) {
+      if (locked && !isEditMode) {
         group.controls.puesto.setValue(locked);
         group.controls.puesto.disable();
       }
+      if (!isEditMode) {
+        group.controls.salario.setValue(untracked(this.salario));
+      }
       this.group.set(group);
+    });
+
+    // Al traer el detalle del ítem (selección real), sincroniza los impuestos de
+    // venta del ítem en el multiselector de la línea. Solo corre cuando
+    // `itemDetail` emite, así no pisa la selección guardada al abrir en edición.
+    effect(() => {
+      const detail = this.itemDetail();
+      if (!detail) return;
+      const ventaIds = (detail.impuestos ?? [])
+        .filter((imp) => imp.impuesto_venta)
+        .map((imp) => imp.impuesto);
+      untracked(this.group).controls.impuestos_ids.setValue(ventaIds);
     });
   }
 

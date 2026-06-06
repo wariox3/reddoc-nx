@@ -7,7 +7,7 @@
       [label]="d.addLine"
       icon="pi pi-plus"
       [text]="true"
-      [disabled]="!sectorId() || !contactoId()"
+      [disabled]="!sectorId() || !contactoId() || salario() === null"
       (onClick)="openCreate()"
     />
     @if (!contactoId()) {
@@ -19,6 +19,11 @@
       <span class="inline-flex items-center gap-1.5 text-[0.76rem] text-brand-muted">
         <i class="pi pi-info-circle text-[0.72rem]"></i>
         {{ d.sectorRequired }}
+      </span>
+    } @else if (salario() === null) {
+      <span class="inline-flex items-center gap-1.5 text-[0.76rem] text-brand-muted">
+        <i class="pi pi-info-circle text-[0.72rem]"></i>
+        {{ d.salarioRequired }}
       </span>
     }
   </div>
@@ -149,5 +154,6 @@
   [sectorId]="sectorId()"
   [contactoId]="contactoId()"
   [lockedPuesto]="lockedPuesto()"
+  [salario]="salario()"
   (save)="onModalSave($event)"
 />

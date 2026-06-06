@@ -47,6 +47,7 @@ function detalleToFormValue(read: ContratoServicioDetalleRead): DetalleFormRawVa
     modalidad:
       read.modalidad != null ? { id: read.modalidad, nombre: read.modalidad_nombre ?? '' } : null,
     puesto: read.puesto != null ? { id: read.puesto, nombre: read.puesto_nombre ?? '' } : null,
+    salario: read.salario ?? null,
     programar: read.programar ?? false,
     dias_semana: [...(read.dias_semana ?? [])],
     festivo: read.festivo ?? false,
@@ -87,6 +88,7 @@ function detalleToPayload(raw: DetalleFormRawValue): ContratoServicioDetallePayl
     hora_hasta: toHora(raw.hora_hasta),
     modalidad: raw.modalidad?.id ?? null,
     puesto: raw.puesto?.id ?? null,
+    salario: raw.salario ?? null,
     programar: raw.programar,
     dias_semana: raw.dias_semana,
     festivo: raw.festivo,

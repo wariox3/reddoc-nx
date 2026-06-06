@@ -675,6 +675,7 @@ export const en: AppDict = {
             festivo: 'Ho',
             modalidad: 'Modality',
             modalidadPlaceholder: 'Select…',
+            salario: 'Salary',
             programar: 'Schedule shifts',
             programarHint: 'Generates the shift schedule',
             cortesia: 'Courtesy',
@@ -684,6 +685,7 @@ export const en: AppDict = {
           },
           contactoRequired: 'Select the contract contact to add lines',
           sectorRequired: 'Select the contract sector to add lines',
+          salarioRequired: 'Enter the contract salary to add lines',
           summary: {
             title: 'Summary',
             subtotal: 'Subtotal',
@@ -697,6 +699,7 @@ export const en: AppDict = {
             horasDia: 'h/day',
             valorHora: 'Hourly rate',
             precioMinimo: 'Minimum price',
+            definirPrecio: 'Set price',
             calculating: 'Calculating…',
             empty: 'Fill in the schedule, modality and days to see the minimum rate',
           },

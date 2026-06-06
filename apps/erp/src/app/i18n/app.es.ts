@@ -690,6 +690,7 @@ export const es: AppDict = {
             festivo: 'Fe',
             modalidad: 'Modalidad',
             modalidadPlaceholder: 'Selecciona…',
+            salario: 'Salario',
             programar: 'Programar',
             programarHint: 'Genera la programación de turnos',
             cortesia: 'Cortesía',
@@ -699,6 +700,7 @@ export const es: AppDict = {
           },
           contactoRequired: 'Selecciona el contacto del contrato para agregar líneas',
           sectorRequired: 'Selecciona el sector del contrato para agregar líneas',
+          salarioRequired: 'Ingresa el salario del contrato para agregar líneas',
           summary: {
             title: 'Resumen',
             subtotal: 'Subtotal',
@@ -712,6 +714,7 @@ export const es: AppDict = {
             horasDia: 'h/día',
             valorHora: 'Valor hora',
             precioMinimo: 'Precio mínimo',
+            definirPrecio: 'Definir precio',
             calculating: 'Calculando…',
             empty: 'Completa el horario, la modalidad y los días para ver la tarifa mínima',
           },

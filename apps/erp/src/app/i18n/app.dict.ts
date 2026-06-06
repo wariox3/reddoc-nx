@@ -513,6 +513,7 @@ export interface AppDict extends AuthTranslationsHost {
             festivo: string;
             modalidad: string;
             modalidadPlaceholder: string;
+            salario: string;
             programar: string;
             programarHint: string;
             cortesia: string;
@@ -522,6 +523,7 @@ export interface AppDict extends AuthTranslationsHost {
           };
           contactoRequired: string;
           sectorRequired: string;
+          salarioRequired: string;
           summary: {
             title: string;
             subtotal: string;
@@ -535,6 +537,7 @@ export interface AppDict extends AuthTranslationsHost {
             horasDia: string;
             valorHora: string;
             precioMinimo: string;
+            definirPrecio: string;
             calculating: string;
             empty: string;
           };

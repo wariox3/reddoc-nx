@@ -38,6 +38,9 @@ export class ContratoServicioDetallesComponent {
   /** Id del contacto (del form padre); filtra los puestos disponibles en el modal. */
   readonly contactoId = input<number | null>(null);
 
+  /** Salario del contrato (del form padre); bloquea el botón si es null y se pre-llena en el modal. */
+  readonly salario = input<number | null>(null);
+
   /** Espejo reactivo del valor del array para la tabla y los subtotales. */
   protected readonly lines = signal<readonly DetalleFormRawValue[]>([]);
 

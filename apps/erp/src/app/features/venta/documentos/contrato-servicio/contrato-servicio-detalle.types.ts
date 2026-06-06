@@ -22,6 +22,7 @@ export interface DetalleFormRawValue {
   readonly hora_desde: Date | null;
   readonly hora_hasta: Date | null;
   readonly modalidad: ErpSelectOption | null;
+  readonly salario: number | null;
   readonly programar: boolean;
   readonly dias_semana: number[];
   readonly festivo: boolean;

@@ -8,6 +8,7 @@
   [resizable]="false"
   [closable]="true"
   [dismissableMask]="true"
+  [focusOnShow]="false"
   [style]="{ width: '64rem' }"
   [breakpoints]="{ '768px': '95vw' }"
 >
@@ -154,8 +155,29 @@
               />
             </div>
 
+            <!-- Salario -->
+            <div class="flex flex-col gap-1.5">
+              <label for="m-salario" class="detalle-modal__label">
+                {{ d.fields.salario }}<span class="ml-px text-red-500">*</span>
+              </label>
+              <p-inputnumber
+                inputId="m-salario"
+                formControlName="salario"
+                mode="decimal"
+                [minFractionDigits]="0"
+                [maxFractionDigits]="2"
+                prefix="$ "
+                [fluid]="true"
+                [invalid]="group().controls.salario.invalid && group().controls.salario.touched"
+              />
+              <lib-field-error
+                [control]="group().controls.salario"
+                [messages]="{ required: d.validation.required }"
+              />
+            </div>
+
             <!-- Días de la semana -->
-            <div class="flex flex-col gap-1.5 sm:col-span-2">
+            <div class="flex flex-col gap-1.5">
               <span class="detalle-modal__label">{{ d.fields.dias }}</span>
               <div class="flex flex-wrap gap-1.5">
                 @for (label of d.fields.diasSemana; track $index) {
@@ -282,6 +304,15 @@
                   >
                     {{ r.precio_minimo | currency: 'COP' : 'symbol-narrow' : '1.2-2' }}
                   </span>
+                  <button
+                    type="button"
+                    (click)="definirPrecio()"
+                    [disabled]="group().controls.precio.disabled"
+                    class="mt-2 inline-flex h-8 w-full items-center justify-center gap-1.5 rounded-md border border-[rgba(20,48,73,0.18)] bg-white text-[0.72rem] font-semibold text-[#143049] transition-colors hover:bg-[rgba(20,48,73,0.05)] disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    <i class="pi pi-arrow-down text-[0.7rem]"></i>
+                    {{ d.calc.definirPrecio }}
+                  </button>
                 </div>
               </div>
             } @else if (calcLoading()) {
@@ -303,68 +334,75 @@
         </div>
       </div>
 
-      <!-- Programar (y futuros campos de programación) -->
-      <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
-        <label for="m-programar" class="flex w-fit cursor-pointer items-center gap-2.5">
-          <p-toggleswitch inputId="m-programar" formControlName="programar" />
-          <span class="flex flex-col">
-            <span class="text-[0.85rem] font-medium text-brand-text">{{ d.fields.programar }}</span>
-            <span class="text-[0.72rem] text-brand-muted">{{ d.fields.programarHint }}</span>
-          </span>
-        </label>
-
-        <label for="m-cortesia" class="flex w-fit cursor-pointer items-center gap-2.5">
-          <p-toggleswitch inputId="m-cortesia" formControlName="cortesia" />
-          <span class="flex flex-col">
-            <span class="text-[0.85rem] font-medium text-brand-text">{{ d.fields.cortesia }}</span>
-            <span class="text-[0.72rem] text-brand-muted">{{ d.fields.cortesiaHint }}</span>
-          </span>
-        </label>
-      </div>
-
-      <!-- Comercial (izq) + resumen (der) -->
+      <!-- Programación + comercial (izq) + resumen (der) -->
       <div class="flex flex-col gap-5 lg:flex-row">
-        <!-- Columna izquierda: cantidad · precio · impuestos (misma línea) -->
-        <div class="flex flex-1 flex-col gap-4 sm:flex-row sm:items-start">
-          <div class="flex w-full flex-col gap-1.5 sm:w-28">
-            <label for="m-cantidad" class="detalle-modal__label">
-              {{ d.fields.cantidad }}<span class="ml-px text-red-500">*</span>
+        <!-- Columna izquierda: programación + comercial -->
+        <div class="flex flex-1 flex-col gap-4">
+          <!-- Programar (y futuros campos de programación) -->
+          <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
+            <label for="m-programar" class="flex w-fit cursor-pointer items-center gap-2.5">
+              <p-toggleswitch inputId="m-programar" formControlName="programar" />
+              <span class="flex flex-col">
+                <span class="text-[0.85rem] font-medium text-brand-text">{{
+                  d.fields.programar
+                }}</span>
+                <span class="text-[0.72rem] text-brand-muted">{{ d.fields.programarHint }}</span>
+              </span>
             </label>
-            <p-inputnumber
-              inputId="m-cantidad"
-              formControlName="cantidad"
-              mode="decimal"
-              [useGrouping]="false"
-              [min]="1"
-              [minFractionDigits]="0"
-              [maxFractionDigits]="0"
-              [fluid]="true"
-            />
+
+            <label for="m-cortesia" class="flex w-fit cursor-pointer items-center gap-2.5">
+              <p-toggleswitch inputId="m-cortesia" formControlName="cortesia" />
+              <span class="flex flex-col">
+                <span class="text-[0.85rem] font-medium text-brand-text">{{
+                  d.fields.cortesia
+                }}</span>
+                <span class="text-[0.72rem] text-brand-muted">{{ d.fields.cortesiaHint }}</span>
+              </span>
+            </label>
           </div>
 
-          <div class="flex w-full flex-col gap-1.5 sm:w-44">
-            <label for="m-precio" class="detalle-modal__label">
-              {{ d.fields.precio }}<span class="ml-px text-red-500">*</span>
-            </label>
-            <p-inputnumber
-              inputId="m-precio"
-              formControlName="precio"
-              mode="decimal"
-              [minFractionDigits]="0"
-              [maxFractionDigits]="2"
-              prefix="$ "
-              [fluid]="true"
-            />
-          </div>
+          <!-- Comercial: cantidad · precio · impuestos (misma línea) -->
+          <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
+            <div class="flex w-full flex-col gap-1.5 sm:w-28">
+              <label for="m-cantidad" class="detalle-modal__label">
+                {{ d.fields.cantidad }}<span class="ml-px text-red-500">*</span>
+              </label>
+              <p-inputnumber
+                inputId="m-cantidad"
+                formControlName="cantidad"
+                mode="decimal"
+                [useGrouping]="false"
+                [min]="1"
+                [minFractionDigits]="0"
+                [maxFractionDigits]="0"
+                [fluid]="true"
+              />
+            </div>
 
-          <!-- Impuestos -->
-          <div class="flex flex-1 flex-col gap-1.5">
-            <label for="m-impuestos" class="detalle-modal__label">{{ d.fields.impuestos }}</label>
-            <app-impuesto-select
-              inputId="m-impuestos"
-              formControlName="impuestos_ids"
-              [placeholder]="d.fields.impuestosPlaceholder"
-            />
+            <div class="flex w-full flex-col gap-1.5 sm:w-44">
+              <label for="m-precio" class="detalle-modal__label">
+                {{ d.fields.precio }}<span class="ml-px text-red-500">*</span>
+              </label>
+              <p-inputnumber
+                inputId="m-precio"
+                formControlName="precio"
+                mode="decimal"
+                [minFractionDigits]="0"
+                [maxFractionDigits]="2"
+                prefix="$ "
+                [fluid]="true"
+              />
+            </div>
+
+            <!-- Impuestos -->
+            <div class="flex flex-1 flex-col gap-1.5">
+              <label for="m-impuestos" class="detalle-modal__label">{{ d.fields.impuestos }}</label>
+              <app-impuesto-select
+                inputId="m-impuestos"
+                formControlName="impuestos_ids"
+                [placeholder]="d.fields.impuestosPlaceholder"
+              />
+            </div>
           </div>
         </div>
 
