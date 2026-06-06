@@ -1,6 +1,6 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { DrawerModule } from 'primeng/drawer';
 import { I18nService, TenantService } from '@reddoc/core';
 import { UserMenuComponent } from '../../shared/user-menu/user-menu.component';
@@ -28,7 +28,6 @@ import type {
   imports: [
     RouterOutlet,
     RouterLink,
-    RouterLinkActive,
     NgTemplateOutlet,
     DrawerModule,
     UserMenuComponent,
@@ -41,6 +40,7 @@ export class WorkspaceLayoutComponent {
   private readonly i18n = inject<I18nService<AppDict>>(I18nService);
   private readonly tenant = inject(TenantService);
   private readonly activeModuleStore = inject(ActiveModuleStore);
+  private readonly router = inject(Router);
 
   protected readonly t = this.i18n.t;
 
@@ -111,6 +111,22 @@ export class WorkspaceLayoutComponent {
   /** Path absoluto para un item dentro de un acordeón. */
   protected leafPath(leaf: SidebarLeafItem): string {
     return this.buildPath(leaf.path);
+  }
+
+  /** Indica si un leaf item debe marcarse como activo según la URL actual. */
+  protected isLeafActive(leaf: SidebarLeafItem): boolean {
+    const parentPath = this.buildPath(this.leafParentPath(leaf.path));
+    return this.router.isActive(parentPath, {
+      paths: 'subset',
+      queryParams: 'ignored',
+      matrixParams: 'ignored',
+      fragment: 'ignored',
+    });
+  }
+
+  private leafParentPath(relativePath: string): string {
+    const segments = relativePath.split('/');
+    return segments.length > 1 ? segments.slice(0, -1).join('/') : relativePath;
   }
 
   private buildPath(relativePath: string): string {
