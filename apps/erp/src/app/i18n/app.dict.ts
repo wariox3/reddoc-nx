@@ -542,6 +542,9 @@ export interface AppDict extends AuthTranslationsHost {
             empty: string;
           };
           validation: { required: string };
+          toasts: {
+            lineSaveError: { title: string; desc: string };
+          };
         };
       };
     };

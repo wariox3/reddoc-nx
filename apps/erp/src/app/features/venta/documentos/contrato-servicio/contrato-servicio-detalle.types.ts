@@ -13,6 +13,8 @@ export interface ItemOption extends ErpSelectOption {
  * `FormGroup` del `FormArray`). El mapper los normaliza al payload de la API.
  */
 export interface DetalleFormRawValue {
+  /** Id de la línea persistida (`null` mientras no exista en backend). */
+  readonly id: number | null;
   readonly item: ItemOption | null;
   readonly puesto: ErpSelectOption | null;
   readonly cantidad: number | null;

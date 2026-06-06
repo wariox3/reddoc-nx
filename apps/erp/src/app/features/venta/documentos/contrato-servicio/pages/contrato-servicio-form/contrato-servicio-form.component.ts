@@ -91,6 +91,12 @@ export class ContratoServicioFormComponent implements OnInit {
   readonly id = input<string>();
 
   protected readonly isEditMode = computed(() => !!this.id());
+
+  /** Id del documento como número (`null` en alta); alimenta la transacción por línea. */
+  protected readonly documentId = computed(() => {
+    const id = this.id();
+    return id ? Number(id) : null;
+  });
   protected readonly isSaving = signal(false);
 
   protected readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => {
@@ -158,7 +164,12 @@ export class ContratoServicioFormComponent implements OnInit {
 
     const toasts = this.t().entities.contratoServicio.form.toasts;
     const id = this.id();
-    const payload = formValueToPayload(this.form.getRawValue(), this.document().documentTypeId);
+    // En edición se omiten los detalles del payload: ya transaccionaron en vivo.
+    const payload = formValueToPayload(
+      this.form.getRawValue(),
+      this.document().documentTypeId,
+      !id,
+    );
     const operation = id
       ? this.gateway.update(this.document(), Number(id), payload)
       : this.gateway.create(this.document(), payload);

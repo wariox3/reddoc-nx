@@ -16,6 +16,7 @@ function defaultFechaHasta(value?: Partial<DetalleFormRawValue>): Date | null {
 
 /** `FormGroup` tipado de una línea de detalle del contrato. */
 export type DetalleGroup = FormGroup<{
+  id: FormControl<number | null>;
   item: FormControl<ItemOption | null>;
   puesto: FormControl<ErpSelectOption | null>;
   cantidad: FormControl<number | null>;
@@ -42,6 +43,8 @@ export type DetalleGroup = FormGroup<{
  */
 export function createDetalleGroup(value?: Partial<DetalleFormRawValue>): DetalleGroup {
   const group: DetalleGroup = new FormGroup({
+    // Id de la línea persistida; no editable, solo viaja para distinguir alta vs edición.
+    id: new FormControl<number | null>(value?.id ?? null),
     item: new FormControl<ItemOption | null>(value?.item ?? null, {
       validators: Validators.required,
     }),
@@ -84,21 +87,26 @@ export function createDetalleGroup(value?: Partial<DetalleFormRawValue>): Detall
     }),
   });
 
+  // Recuerda el último precio antes de que cortesía lo ponga en 0, para restaurarlo
+  // al desactivar (no volver al precio del ítem). Se inicializa con el precio cargado.
+  let precioPreCortesia: number | null = group.controls.precio.value;
+
   // Al elegir ítem se autollena el precio, salvo que la cortesía lo tenga en 0.
   group.controls.item.valueChanges.subscribe((opt) => {
     if (opt && !group.controls.cortesia.value) group.controls.precio.setValue(opt.precio);
   });
 
-  // Cortesía: precio en 0 y bloqueado; al desactivar se reactiva (vuelve al del ítem).
+  // Cortesía: guarda el precio actual, lo pone en 0 y lo bloquea; al desactivar
+  // restaura ese último precio (definido por el usuario o por la tarifa).
   group.controls.cortesia.valueChanges.subscribe((on) => {
     const precio = group.controls.precio;
     if (on) {
+      precioPreCortesia = precio.value;
       precio.setValue(0);
       precio.disable();
     } else {
       precio.enable();
-      const item = group.controls.item.value;
-      precio.setValue(item ? item.precio : null);
+      precio.setValue(precioPreCortesia ?? group.controls.item.value?.precio ?? null);
     }
   });
 

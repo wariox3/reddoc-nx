@@ -704,6 +704,12 @@ export const en: AppDict = {
             empty: 'Fill in the schedule, modality and days to see the minimum rate',
           },
           validation: { required: 'This field is required' },
+          toasts: {
+            lineSaveError: {
+              title: "Couldn't save the line",
+              desc: 'An error occurred while saving the contract line',
+            },
+          },
         },
       },
     },

@@ -719,6 +719,12 @@ export const es: AppDict = {
             empty: 'Completa el horario, la modalidad y los días para ver la tarifa mínima',
           },
           validation: { required: 'Este campo es requerido' },
+          toasts: {
+            lineSaveError: {
+              title: 'No se pudo guardar la línea',
+              desc: 'Ocurrió un error al guardar la línea del contrato',
+            },
+          },
         },
       },
     },

@@ -12,12 +12,13 @@ export interface ContratoServicioRead {
   readonly id: number;
   readonly contacto: number | null;
   /** Nombre del contacto para etiquetar el autocomplete al cargar en edición. */
-  readonly contacto_nombre_corto?: string | null;
+  readonly contacto_nombre?: string | null;
   readonly sector: number | null;
   /** Nombre del sector para etiquetar el selector al cargar en edición. */
   readonly sector_nombre?: string | null;
   readonly estrato: number | null;
-  readonly salario: number | null;
+  /** El backend lo devuelve como string con cola de ceros (`"1423500.000000"`). */
+  readonly salario: string | number | null;
   /** Fecha en formato `yyyy-MM-dd`. */
   readonly fecha: string | null;
   readonly detalles?: readonly ContratoServicioDetalleRead[] | null;
@@ -29,25 +30,41 @@ export interface ContratoServicioRead {
  * ajuste al contrastar contra `GET /api/general/documento/:id/`.
  */
 export interface ContratoServicioDetalleRead {
+  /** Id de la línea (para distinguir existente vs nueva al editar). */
+  readonly id?: number | null;
   readonly item: number | null;
   readonly item_nombre?: string | null;
-  readonly cantidad: number | null;
+  readonly cantidad: string | number | null;
   readonly precio: string | number | null;
   readonly fecha_desde: string | null;
   readonly fecha_hasta: string | null;
-  /** Hora en formato `HH:mm`. */
+  /** Hora en formato `HH:mm:ss` (se ignoran los segundos). */
   readonly hora_desde: string | null;
   readonly hora_hasta: string | null;
   readonly modalidad: number | null;
   readonly modalidad_nombre?: string | null;
   readonly puesto: number | null;
   readonly puesto_nombre?: string | null;
-  readonly salario?: number | null;
+  readonly salario?: string | number | null;
   readonly programar: boolean | null;
-  readonly dias_semana?: readonly number[] | null;
+  /** Los días viajan como flags individuales (no como array). */
+  readonly lunes?: boolean | null;
+  readonly martes?: boolean | null;
+  readonly miercoles?: boolean | null;
+  readonly jueves?: boolean | null;
+  readonly viernes?: boolean | null;
+  readonly sabado?: boolean | null;
+  readonly domingo?: boolean | null;
   readonly festivo?: boolean | null;
   readonly cortesia?: boolean | null;
-  readonly impuestos_ids?: readonly number[] | null;
+  readonly impuestos?: readonly ContratoServicioDetalleImpuestoRead[] | null;
+}
+
+/** Impuesto de una línea tal como lo devuelve el read-model. */
+export interface ContratoServicioDetalleImpuestoRead {
+  /** Id del impuesto (FK), p.ej. 1 = IVA 19%. Es lo que espera el multiselector. */
+  readonly impuesto: number;
+  readonly impuesto_nombre?: string | null;
 }
 
 /** Cuerpo de una línea de detalle enviada en `POST`/`PATCH`. */
@@ -64,7 +81,14 @@ export interface ContratoServicioDetallePayload {
   readonly puesto: number | null;
   readonly salario: number | null;
   readonly programar: boolean;
-  readonly dias_semana: readonly number[];
+  /** Días como flags individuales (igual que el payload de supervigilancia). */
+  readonly lunes: boolean;
+  readonly martes: boolean;
+  readonly miercoles: boolean;
+  readonly jueves: boolean;
+  readonly viernes: boolean;
+  readonly sabado: boolean;
+  readonly domingo: boolean;
   readonly festivo: boolean;
   readonly cortesia: boolean;
   readonly impuestos_ids: readonly number[];
@@ -124,5 +148,6 @@ export interface ContratoServicioPayload {
   readonly estrato: number | null;
   readonly salario: number | null;
   readonly fecha: string | null;
-  readonly detalles: readonly ContratoServicioDetallePayload[];
+  /** Opcional: en edición se omite (los detalles transaccionan contra documento-detalle). */
+  readonly detalles?: readonly ContratoServicioDetallePayload[];
 }

@@ -1,10 +1,13 @@
-import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import { Component, DestroyRef, computed, effect, inject, input, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormArray } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { I18nService, formatCop, toHora } from '@reddoc/core';
+import { I18nService, ToastService, formatCop, toHora } from '@reddoc/core';
 import type { AppDict } from '@erp/i18n';
 import { ContratoServicioDetalleModalComponent } from '../contrato-servicio-detalle-modal/contrato-servicio-detalle-modal.component';
 import { createDetalleGroup, type DetalleGroup } from '../../contrato-servicio-detalle.form';
+import { detalleToPayload } from '../../contrato-servicio.mapper';
+import { ContratoServicioService } from '../../contrato-servicio.service';
 import type { DetalleFormRawValue } from '../../contrato-servicio-detalle.types';
 import type { ErpSelectOption } from '@erp/core/components/api-select/erp-api-select.component';
 
@@ -26,6 +29,9 @@ import type { ErpSelectOption } from '@erp/core/components/api-select/erp-api-se
 })
 export class ContratoServicioDetallesComponent {
   private readonly i18n = inject<I18nService<AppDict>>(I18nService);
+  private readonly service = inject(ContratoServicioService);
+  private readonly toast = inject(ToastService);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly t = this.i18n.t;
 
@@ -40,6 +46,13 @@ export class ContratoServicioDetallesComponent {
 
   /** Salario del contrato (del form padre); bloquea el botón si es null y se pre-llena en el modal. */
   readonly salario = input<number | null>(null);
+
+  /**
+   * Id del documento en edición (`null` en alta). Cuando existe, las líneas
+   * transaccionan al instante contra `/documento-detalle` en lugar de vivir
+   * solo en el `FormArray`.
+   */
+  readonly documentId = input<number | null>(null);
 
   /** Espejo reactivo del valor del array para la tabla y los subtotales. */
   protected readonly lines = signal<readonly DetalleFormRawValue[]>([]);
@@ -85,11 +98,50 @@ export class ContratoServicioDetallesComponent {
     this.detalles().removeAt(index);
   }
 
-  /** Aplica el guardado del modal: agrega (alta) o reemplaza (edición) la línea. */
+  /**
+   * Aplica el guardado del modal.
+   *
+   * En **alta** (sin documento aún) la línea solo vive en el `FormArray`; se
+   * persiste al crear el documento. En **edición** transacciona al instante
+   * contra `/documento-detalle`: PATCH si ya tiene `id`, POST con `documento_id`
+   * si es nueva (guardando el `id` devuelto). El `FormArray` se actualiza al éxito.
+   */
   protected onModalSave(value: DetalleFormRawValue): void {
     const index = this.editingIndex();
-    if (index === null) this.detalles().push(createDetalleGroup(value));
-    else this.detalles().setControl(index, createDetalleGroup(value));
+    const docId = this.documentId();
+
+    if (docId == null) {
+      if (index === null) this.detalles().push(createDetalleGroup(value));
+      else this.detalles().setControl(index, createDetalleGroup(value));
+      return;
+    }
+
+    const payload = detalleToPayload(value);
+    if (value.id != null) {
+      this.service
+        .actualizarDetalle(value.id, payload)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: () => {
+            if (index !== null) this.detalles().setControl(index, createDetalleGroup(value));
+          },
+          error: () => this.notifyLineError(),
+        });
+    } else {
+      this.service
+        .crearDetalle({ ...payload, documento: docId })
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (creado) =>
+            this.detalles().push(createDetalleGroup({ ...value, id: creado.id ?? null })),
+          error: () => this.notifyLineError(),
+        });
+    }
+  }
+
+  private notifyLineError(): void {
+    const toast = this.t().entities.contratoServicio.form.detalles.toasts.lineSaveError;
+    this.toast.error(toast.title, toast.desc);
   }
 
   /** Subtotal de una línea por índice. */
