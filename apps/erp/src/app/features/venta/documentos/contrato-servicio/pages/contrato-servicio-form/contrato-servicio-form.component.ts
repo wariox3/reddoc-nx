@@ -16,6 +16,7 @@ import {
   ToastService,
 } from '@reddoc/core';
 import { BreadcrumbComponent, type BreadcrumbItem } from '@reddoc/feature-base';
+import { ventaDocumentoBreadcrumb } from '../../../../shared/venta-breadcrumb';
 import { ErpContactoSelectComponent } from '@erp/core/components/contacto-select/erp-contacto-select.component';
 import {
   ErpApiSelectComponent,
@@ -99,22 +100,15 @@ export class ContratoServicioFormComponent implements OnInit {
   });
   protected readonly isSaving = signal(false);
 
-  protected readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => {
-    const slug = this.tenant.currentSlug();
-    return [
-      {
-        label: this.t().modules.venta.name,
-        routerLink: slug ? ['/t', slug, 'venta'] : undefined,
-      },
-      {
-        label: this.t().entities.contratoServicio.name,
-        routerLink: slug ? ['/t', slug, 'venta', 'contrato-servicio', 'list'] : undefined,
-      },
-      {
-        label: this.isEditMode() ? this.t().common.actions.edit : this.t().common.actions.new,
-      },
-    ];
-  });
+  protected readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() =>
+    ventaDocumentoBreadcrumb(
+      this.t(),
+      this.tenant.currentSlug(),
+      this.t().entities.contratoServicio.name,
+      'contrato-servicio',
+      this.isEditMode() ? this.t().common.actions.edit : this.t().common.actions.new,
+    ),
+  );
 
   protected readonly form = this.fb.group({
     contacto: this.fb.control<ErpSelectOption | null>(null, Validators.required),

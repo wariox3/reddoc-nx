@@ -222,7 +222,7 @@ export class ContratoServicioDetalleModalComponent {
     toObservable(this.calcPayload).pipe(
       distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
       tap((payload) => this.calcLoading.set(payload !== null)),
-      debounceTime(600),
+      debounceTime(800),
       switchMap((payload) => {
         if (!payload) return of<CalcularPrecioSupervigilanciaResult | null>(null);
         return this.service
