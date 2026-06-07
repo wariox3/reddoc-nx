@@ -705,6 +705,10 @@ export const en: AppDict = {
           },
           validation: { required: 'This field is required' },
           toasts: {
+            lineSaveSuccess: {
+              title: 'Line saved',
+              desc: 'The contract line was saved successfully',
+            },
             lineSaveError: {
               title: "Couldn't save the line",
               desc: 'An error occurred while saving the contract line',

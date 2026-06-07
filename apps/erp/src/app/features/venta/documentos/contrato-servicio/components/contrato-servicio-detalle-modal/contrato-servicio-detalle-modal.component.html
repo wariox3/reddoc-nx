@@ -6,8 +6,8 @@
   [modal]="true"
   [draggable]="false"
   [resizable]="false"
-  [closable]="true"
-  [dismissableMask]="true"
+  [closable]="!saving()"
+  [dismissableMask]="!saving()"
   [focusOnShow]="false"
   [style]="{ width: '64rem' }"
   [breakpoints]="{ '768px': '95vw' }"
@@ -467,12 +467,15 @@
         [label]="t().entities.contratoServicio.form.cancel"
         [outlined]="true"
         severity="secondary"
+        [disabled]="saving()"
         (onClick)="onCancel()"
       />
       <p-button
         type="button"
         [label]="isEditMode() ? d.modalSave : d.modalAdd"
         icon="pi pi-check"
+        [loading]="saving()"
+        [disabled]="saving()"
         (onClick)="onSave()"
       />
     </div>

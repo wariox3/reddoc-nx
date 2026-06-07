@@ -720,6 +720,10 @@ export const es: AppDict = {
           },
           validation: { required: 'Este campo es requerido' },
           toasts: {
+            lineSaveSuccess: {
+              title: 'Línea guardada',
+              desc: 'La línea del contrato se guardó correctamente',
+            },
             lineSaveError: {
               title: 'No se pudo guardar la línea',
               desc: 'Ocurrió un error al guardar la línea del contrato',

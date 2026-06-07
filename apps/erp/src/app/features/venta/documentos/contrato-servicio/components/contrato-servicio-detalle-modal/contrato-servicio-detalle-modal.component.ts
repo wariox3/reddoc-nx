@@ -97,6 +97,11 @@ export class ContratoServicioDetalleModalComponent {
   readonly lockedPuesto = input<ErpSelectOption | null>(null);
   /** Salario del contrato (del form padre); se pre-llena en modo alta. */
   readonly salario = input<number | null>(null);
+  /**
+   * `true` mientras el padre persiste la línea en vivo (edición). Bloquea los
+   * botones y el descarte del diálogo; el padre cierra el modal solo al éxito.
+   */
+  readonly saving = input<boolean>(false);
   /** Emite el valor crudo validado al confirmar. */
   readonly save = output<DetalleFormRawValue>();
 
@@ -297,8 +302,9 @@ export class ContratoServicioDetalleModalComponent {
       group.markAllAsTouched();
       return;
     }
+    // El padre cierra el modal al confirmarse el guardado: en edición espera el
+    // HTTP (cierra solo al éxito, queda abierto en error); en alta cierra al instante.
     this.save.emit(group.getRawValue());
-    this.visible.set(false);
   }
 
   protected onCancel(): void {

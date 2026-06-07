@@ -72,6 +72,8 @@ export class ContratoServicioDetallesComponent {
   /** Índice en edición; `null` ⇒ alta. */
   private readonly editingIndex = signal<number | null>(null);
   protected readonly modalValue = signal<DetalleFormRawValue | null>(null);
+  /** `true` mientras una línea se persiste en vivo (edición); bloquea el modal. */
+  protected readonly savingLine = signal(false);
 
   constructor() {
     effect((onCleanup) => {
@@ -102,9 +104,11 @@ export class ContratoServicioDetallesComponent {
    * Aplica el guardado del modal.
    *
    * En **alta** (sin documento aún) la línea solo vive en el `FormArray`; se
-   * persiste al crear el documento. En **edición** transacciona al instante
-   * contra `/documento-detalle`: PATCH si ya tiene `id`, POST con `documento_id`
-   * si es nueva (guardando el `id` devuelto). El `FormArray` se actualiza al éxito.
+   * persiste al crear el documento y el modal se cierra al instante. En
+   * **edición** transacciona contra `/documento-detalle`: PATCH si ya tiene `id`,
+   * POST con `documento_id` si es nueva (guardando el `id` devuelto). El
+   * `FormArray` se actualiza, se notifica el éxito y el modal se cierra **solo al
+   * éxito**; si falla, el modal queda abierto (no se pierde lo digitado).
    */
   protected onModalSave(value: DetalleFormRawValue): void {
     const index = this.editingIndex();
@@ -113,9 +117,11 @@ export class ContratoServicioDetallesComponent {
     if (docId == null) {
       if (index === null) this.detalles().push(createDetalleGroup(value));
       else this.detalles().setControl(index, createDetalleGroup(value));
+      this.modalVisible.set(false);
       return;
     }
 
+    this.savingLine.set(true);
     const payload = detalleToPayload(value);
     if (value.id != null) {
       this.service
@@ -124,19 +130,37 @@ export class ContratoServicioDetallesComponent {
         .subscribe({
           next: () => {
             if (index !== null) this.detalles().setControl(index, createDetalleGroup(value));
+            this.savingLine.set(false);
+            this.modalVisible.set(false);
+            this.notifyLineSuccess();
           },
-          error: () => this.notifyLineError(),
+          error: () => {
+            this.savingLine.set(false);
+            this.notifyLineError();
+          },
         });
     } else {
       this.service
         .crearDetalle({ ...payload, documento: docId })
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
-          next: (creado) =>
-            this.detalles().push(createDetalleGroup({ ...value, id: creado.id ?? null })),
-          error: () => this.notifyLineError(),
+          next: (creado) => {
+            this.detalles().push(createDetalleGroup({ ...value, id: creado.id ?? null }));
+            this.savingLine.set(false);
+            this.modalVisible.set(false);
+            this.notifyLineSuccess();
+          },
+          error: () => {
+            this.savingLine.set(false);
+            this.notifyLineError();
+          },
         });
     }
+  }
+
+  private notifyLineSuccess(): void {
+    const toast = this.t().entities.contratoServicio.form.detalles.toasts.lineSaveSuccess;
+    this.toast.success(toast.title, toast.desc);
   }
 
   private notifyLineError(): void {
