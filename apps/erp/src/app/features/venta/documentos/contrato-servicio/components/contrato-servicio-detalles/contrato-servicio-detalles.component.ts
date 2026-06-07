@@ -3,11 +3,12 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormArray } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { I18nService, ToastService, formatCop, toHora } from '@reddoc/core';
+import { DocumentoDetalleService } from '@erp/core/module-config';
 import type { AppDict } from '@erp/i18n';
 import { ContratoServicioDetalleModalComponent } from '../contrato-servicio-detalle-modal/contrato-servicio-detalle-modal.component';
 import { createDetalleGroup, type DetalleGroup } from '../../contrato-servicio-detalle.form';
 import { detalleToPayload } from '../../contrato-servicio.mapper';
-import { ContratoServicioService } from '../../contrato-servicio.service';
+import type { ContratoServicioDetalleRead } from '../../contrato-servicio.model';
 import type { DetalleFormRawValue } from '../../contrato-servicio-detalle.types';
 import type { ErpSelectOption } from '@erp/core/components/api-select/erp-api-select.component';
 
@@ -29,7 +30,7 @@ import type { ErpSelectOption } from '@erp/core/components/api-select/erp-api-se
 })
 export class ContratoServicioDetallesComponent {
   private readonly i18n = inject<I18nService<AppDict>>(I18nService);
-  private readonly service = inject(ContratoServicioService);
+  private readonly detalle = inject(DocumentoDetalleService);
   private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -124,8 +125,8 @@ export class ContratoServicioDetallesComponent {
     this.savingLine.set(true);
     const payload = detalleToPayload(value);
     if (value.id != null) {
-      this.service
-        .actualizarDetalle(value.id, payload)
+      this.detalle
+        .actualizar(value.id, payload)
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
@@ -140,8 +141,8 @@ export class ContratoServicioDetallesComponent {
           },
         });
     } else {
-      this.service
-        .crearDetalle({ ...payload, documento: docId })
+      this.detalle
+        .crear<ContratoServicioDetalleRead>(docId, payload)
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: (creado) => {

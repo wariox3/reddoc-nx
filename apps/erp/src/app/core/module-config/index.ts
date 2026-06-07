@@ -53,6 +53,7 @@ export {
 export { ENTITY_DATA_GATEWAY } from './data/entity-data-gateway';
 export type { EntityDataGateway } from './data/entity-data-gateway';
 export { HttpEntityDataGateway } from './data/http-entity-data-gateway.service';
+export { DocumentoDetalleService } from './data/documento-detalle.service';
 
 // Storage helper
 export { buildEntityStorageKey } from './storage/build-entity-storage-key';
