@@ -49,77 +49,89 @@
       </thead>
 
       <tbody>
-        @for (line of lines(); track $index) {
-          <tr class="detalle-table__row">
-            <td class="detalle-table__td text-center text-brand-muted tabular-nums">
-              {{ $index + 1 }}
-            </td>
-            <td class="detalle-table__td font-medium text-brand-text">
-              {{ line.item?.nombre || '—' }}
-            </td>
-            <td class="detalle-table__td text-right tabular-nums">{{ line.cantidad }}</td>
-            <td class="detalle-table__td text-right tabular-nums">
-              {{ formatMoney(line.precio ?? 0) }}
-            </td>
-
-            <td class="detalle-table__td detalle-table__td--coverage whitespace-nowrap">
-              {{ formatDate(line.fecha_desde) }}
-              <i class="pi pi-arrow-right mx-1 text-[0.6rem] text-brand-muted"></i>
-              {{ formatDate(line.fecha_hasta) }}
-            </td>
-            <td
-              class="detalle-table__td detalle-table__td--coverage whitespace-nowrap tabular-nums"
-            >
-              {{ formatTime(line.hora_desde) }} – {{ formatTime(line.hora_hasta) }}
-            </td>
-            <td class="detalle-table__td detalle-table__td--coverage">
-              {{ line.modalidad?.nombre || '—' }}
-            </td>
-            <td class="detalle-table__td detalle-table__td--coverage text-center">
-              @if (line.programar) {
-                <i class="pi pi-check-circle text-emerald-600" [attr.aria-label]="d.yes"></i>
-              } @else {
-                <i class="pi pi-minus text-brand-muted/60" [attr.aria-label]="d.no"></i>
-              }
-            </td>
-
-            <td class="detalle-table__td text-center">
-              @if (line.impuestos_ids.length > 0) {
-                <span
-                  class="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-sky-50 px-1.5 text-[0.7rem] font-semibold text-sky-700"
-                >
-                  {{ line.impuestos_ids.length }}
+        @for (group of groupedLines(); track (group.puesto?.id ?? '__null__') + '_' + $index) {
+          <tr class="detalle-table__group-row">
+            <td colspan="11" class="px-4 pt-4 pb-0">
+              <div class="flex items-center gap-2.5">
+                <span class="detalle-table__group-label">
+                  {{ group.puesto?.nombre ?? '—' }}
                 </span>
-              } @else {
-                <span class="text-brand-muted/60">—</span>
-              }
-            </td>
-
-            <td class="detalle-table__td text-right font-semibold tabular-nums text-brand-text">
-              {{ formatMoney(lineSubtotal($index)) }}
-            </td>
-
-            <td class="detalle-table__td">
-              <div class="flex items-center justify-end gap-0.5">
-                <button
-                  type="button"
-                  (click)="openEdit($index)"
-                  [attr.aria-label]="d.editLine"
-                  class="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent text-brand-muted transition-colors hover:bg-sky-50 hover:text-sky-700"
-                >
-                  <i class="pi pi-pencil text-[0.78rem]"></i>
-                </button>
-                <button
-                  type="button"
-                  (click)="removeLinea($index)"
-                  [attr.aria-label]="d.removeLine"
-                  class="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent text-brand-muted transition-colors hover:bg-red-50 hover:text-red-600"
-                >
-                  <i class="pi pi-trash text-[0.78rem]"></i>
-                </button>
+                <div class="h-px flex-1 bg-[rgba(20,48,73,0.08)]"></div>
               </div>
             </td>
           </tr>
+          @for (line of group.items; track line.id ?? $index) {
+            <tr class="detalle-table__row">
+              <td class="detalle-table__td text-center text-brand-muted tabular-nums">
+                {{ group.startIndex + $index + 1 }}
+              </td>
+              <td class="detalle-table__td font-medium text-brand-text">
+                {{ line.item?.nombre || '—' }}
+              </td>
+              <td class="detalle-table__td text-right tabular-nums">{{ line.cantidad }}</td>
+              <td class="detalle-table__td text-right tabular-nums">
+                {{ formatMoney(line.precio ?? 0) }}
+              </td>
+
+              <td class="detalle-table__td detalle-table__td--coverage whitespace-nowrap">
+                {{ formatDate(line.fecha_desde) }}
+                <i class="pi pi-arrow-right mx-1 text-[0.6rem] text-brand-muted"></i>
+                {{ formatDate(line.fecha_hasta) }}
+              </td>
+              <td
+                class="detalle-table__td detalle-table__td--coverage whitespace-nowrap tabular-nums"
+              >
+                {{ formatTime(line.hora_desde) }} – {{ formatTime(line.hora_hasta) }}
+              </td>
+              <td class="detalle-table__td detalle-table__td--coverage">
+                {{ line.modalidad?.nombre || '—' }}
+              </td>
+              <td class="detalle-table__td detalle-table__td--coverage text-center">
+                @if (line.programar) {
+                  <i class="pi pi-check-circle text-emerald-600" [attr.aria-label]="d.yes"></i>
+                } @else {
+                  <i class="pi pi-minus text-brand-muted/60" [attr.aria-label]="d.no"></i>
+                }
+              </td>
+
+              <td class="detalle-table__td text-center">
+                @if (line.impuestos_ids.length > 0) {
+                  <span
+                    class="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-sky-50 px-1.5 text-[0.7rem] font-semibold text-sky-700"
+                  >
+                    {{ line.impuestos_ids.length }}
+                  </span>
+                } @else {
+                  <span class="text-brand-muted/60">—</span>
+                }
+              </td>
+
+              <td class="detalle-table__td text-right font-semibold tabular-nums text-brand-text">
+                {{ formatMoney(lineSubtotal(group.startIndex + $index)) }}
+              </td>
+
+              <td class="detalle-table__td">
+                <div class="flex items-center justify-end gap-0.5">
+                  <button
+                    type="button"
+                    (click)="openEdit(group.startIndex + $index)"
+                    [attr.aria-label]="d.editLine"
+                    class="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent text-brand-muted transition-colors hover:bg-sky-50 hover:text-sky-700"
+                  >
+                    <i class="pi pi-pencil text-[0.78rem]"></i>
+                  </button>
+                  <button
+                    type="button"
+                    (click)="removeLinea(group.startIndex + $index)"
+                    [attr.aria-label]="d.removeLine"
+                    class="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent text-brand-muted transition-colors hover:bg-red-50 hover:text-red-600"
+                  >
+                    <i class="pi pi-trash text-[0.78rem]"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
         } @empty {
           <tr>
             <td colspan="11" class="px-5 py-8 text-center text-sm text-brand-muted">

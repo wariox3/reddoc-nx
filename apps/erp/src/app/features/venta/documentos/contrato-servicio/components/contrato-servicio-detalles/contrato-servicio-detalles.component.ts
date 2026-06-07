@@ -62,15 +62,34 @@ export class ContratoServicioDetallesComponent {
   /** Espejo reactivo del valor del array para la tabla y los subtotales. */
   protected readonly lines = signal<readonly DetalleFormRawValue[]>([]);
 
-  /** Puesto de la primera línea; cuando existe lo bloquea en el modal para líneas subsiguientes. */
-  protected readonly lockedPuesto = computed<ErpSelectOption | null>(
-    () => this.lines()[0]?.puesto ?? null,
-  );
+  /** Multi-puesto habilitado: cada línea nueva elige su puesto libremente. */
+  protected readonly lockedPuesto = computed<ErpSelectOption | null>(() => null);
 
   /** Subtotal del contrato (Σ cantidad × precio). Impuestos los calcula el backend. */
   protected readonly subtotal = computed(() =>
     this.lines().reduce((acc, line) => acc + this.lineAmount(line), 0),
   );
+
+  /** Líneas agrupadas por puesto para renderizar separadores en la tabla. */
+  protected readonly groupedLines = computed(() => {
+    const result: Array<{
+      puesto: ErpSelectOption | null;
+      items: DetalleFormRawValue[];
+      startIndex: number;
+    }> = [];
+    let cursor = 0;
+    for (const line of this.lines()) {
+      const last = result[result.length - 1];
+      const sameGroup = last && (last.puesto?.id ?? null) === (line.puesto?.id ?? null);
+      if (sameGroup) {
+        last.items.push(line);
+      } else {
+        result.push({ puesto: line.puesto, items: [line], startIndex: cursor });
+      }
+      cursor++;
+    }
+    return result;
+  });
 
   // ── Estado del modal ────────────────────────────────────────────────────────
   protected readonly modalVisible = signal(false);
