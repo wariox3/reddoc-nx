@@ -659,6 +659,7 @@ export const en: AppDict = {
           modalSubtitle: 'Service, coverage and taxes of the line',
           modalAdd: 'Add line',
           modalSave: 'Save line',
+          confirmDeleteLine: 'Delete this contract line?',
           fields: {
             item: 'Item',
             itemPlaceholder: 'Search item…',

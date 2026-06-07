@@ -497,6 +497,7 @@ export interface AppDict extends AuthTranslationsHost {
           modalSubtitle: string;
           modalAdd: string;
           modalSave: string;
+          confirmDeleteLine: string;
           fields: {
             item: string;
             itemPlaceholder: string;

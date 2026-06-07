@@ -674,6 +674,7 @@ export const es: AppDict = {
           modalSubtitle: 'Servicio, cobertura e impuestos de la línea',
           modalAdd: 'Agregar línea',
           modalSave: 'Guardar línea',
+          confirmDeleteLine: '¿Eliminar esta línea del contrato?',
           fields: {
             item: 'Ítem',
             itemPlaceholder: 'Buscar ítem…',

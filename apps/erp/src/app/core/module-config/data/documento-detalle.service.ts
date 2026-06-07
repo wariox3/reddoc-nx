@@ -28,4 +28,9 @@ export class DocumentoDetalleService extends BaseHttpService {
   actualizar<TRead = unknown>(id: number, payload: object): Observable<TRead> {
     return this.patch<TRead>(`${DOCUMENTO_DETALLE_ENDPOINT}${id}/`, payload);
   }
+
+  /** Elimina una línea existente por su `id`. */
+  eliminar(id: number): Observable<void> {
+    return this.delete(`${DOCUMENTO_DETALLE_ENDPOINT}${id}/`);
+  }
 }

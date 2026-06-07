@@ -2,6 +2,8 @@ import { Component, DestroyRef, computed, effect, inject, input, signal } from '
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormArray } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationService } from 'primeng/api';
 import { I18nService, ToastService, formatCop, toHora } from '@reddoc/core';
 import { DocumentoDetalleService } from '@erp/core/module-config';
 import type { AppDict } from '@erp/i18n';
@@ -24,13 +26,15 @@ import type { ErpSelectOption } from '@erp/core/components/api-select/erp-api-se
 @Component({
   selector: 'app-contrato-servicio-detalles',
   standalone: true,
-  imports: [ButtonModule, ContratoServicioDetalleModalComponent],
+  imports: [ButtonModule, ConfirmDialogModule, ContratoServicioDetalleModalComponent],
+  providers: [ConfirmationService],
   templateUrl: './contrato-servicio-detalles.component.html',
   styleUrl: './contrato-servicio-detalles.component.scss',
 })
 export class ContratoServicioDetallesComponent {
   private readonly i18n = inject<I18nService<AppDict>>(I18nService);
   private readonly detalle = inject(DocumentoDetalleService);
+  private readonly confirmation = inject(ConfirmationService);
   private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -97,8 +101,54 @@ export class ContratoServicioDetallesComponent {
     this.modalVisible.set(true);
   }
 
+  /** Pide confirmación y, al aceptar, elimina la línea (persiste en edición). */
   protected removeLinea(index: number): void {
-    this.detalles().removeAt(index);
+    const group = this.detalles().at(index);
+    const { id } = group.getRawValue();
+    this.confirmation.confirm({
+      message: this.t().entities.contratoServicio.form.detalles.confirmDeleteLine,
+      header: this.t().common.confirms.deleteHeader,
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: this.t().common.actions.delete,
+      rejectLabel: this.t().common.actions.cancel,
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: () => this.deleteLinea(group, id),
+    });
+  }
+
+  /**
+   * Ejecuta la baja. En **alta** (o línea aún no persistida) solo se quita del
+   * `FormArray`. En **edición** se elimina contra `/documento-detalle` y la fila
+   * se quita al éxito (toast de error si falla, conservando la línea).
+   */
+  private deleteLinea(group: DetalleGroup, id: number | null): void {
+    if (this.documentId() == null || id == null) {
+      this.removeGroup(group);
+      return;
+    }
+    this.detalle
+      .eliminar(id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.removeGroup(group);
+          this.toast.success(
+            this.t().common.toasts.deleteSuccess.title,
+            this.t().common.toasts.deleteSuccess.desc,
+          );
+        },
+        error: () =>
+          this.toast.error(
+            this.t().common.toasts.deleteError.title,
+            this.t().common.toasts.deleteError.desc,
+          ),
+      });
+  }
+
+  /** Quita un grupo del `FormArray` por su referencia (robusto ante reordenamientos). */
+  private removeGroup(group: DetalleGroup): void {
+    const i = this.detalles().controls.indexOf(group);
+    if (i >= 0) this.detalles().removeAt(i);
   }
 
   /**
