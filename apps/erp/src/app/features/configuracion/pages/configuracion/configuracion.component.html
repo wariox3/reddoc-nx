@@ -1,0 +1,22 @@
+<header>
+  <h1 class="m-0 text-2xl font-bold tracking-tight text-brand-text">
+    {{ t().configuracion.title }}
+  </h1>
+  <p class="m-0 mt-1 text-sm text-brand-muted">{{ t().configuracion.subtitle }}</p>
+</header>
+
+<p-tabs [value]="activeSeccion()" (valueChange)="onTabChange($any($event))">
+  <p-tablist>
+    <p-tab value="general">{{ t().configuracion.tabs.general }}</p-tab>
+    <p-tab value="humano">{{ t().configuracion.tabs.humano }}</p-tab>
+  </p-tablist>
+
+  <p-tabpanels>
+    <p-tabpanel value="general">
+      <app-general-config />
+    </p-tabpanel>
+    <p-tabpanel value="humano">
+      <app-humano-config />
+    </p-tabpanel>
+  </p-tabpanels>
+</p-tabs>

@@ -133,6 +133,7 @@ export interface AppDict extends AuthTranslationsHost {
       label: string;
       myContainers: string;
       manageAccount: string;
+      settings: string;
       logout: string;
     };
   };
@@ -679,6 +680,45 @@ export interface AppDict extends AuthTranslationsHost {
         removeError: { title: string; desc: string };
         loadError: { title: string; desc: string };
       };
+    };
+  };
+  configuracion: {
+    title: string;
+    subtitle: string;
+    tabs: { general: string; humano: string };
+    unsavedChanges: string;
+    actions: { save: string };
+    general: {
+      uvt: { title: string; hint: string; label: string };
+      validation: { required: string };
+    };
+    humano: {
+      section: { title: string; hint: string };
+      fields: { salarioMinimo: string; factor: string; auxilioTransporte: string };
+      validation: { required: string };
+    };
+    empresa: {
+      sections: {
+        identidad: { title: string; hint: string };
+        contacto: { title: string; hint: string };
+      };
+      fields: {
+        nombreCorto: string;
+        tipoPersona: string;
+        identificacion: string;
+        numeroIdentificacion: string;
+        digitoVerificacion: string;
+        direccion: string;
+        ciudad: string;
+        telefono: string;
+        correo: string;
+      };
+      validation: { required: string; emailInvalid: string };
+    };
+    toasts: {
+      saveSuccess: { title: string; desc: string };
+      saveError: { title: string; desc: string };
+      loadError: { title: string; desc: string };
     };
   };
 }

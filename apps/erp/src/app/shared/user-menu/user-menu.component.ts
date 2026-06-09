@@ -51,6 +51,12 @@ export class UserMenuComponent {
       const labels = this.t().layout.userMenu;
       const onContainers = this.currentUrl().startsWith('/contenedores');
       this.items = [
+        {
+          label: labels.manageAccount,
+          icon: 'pi pi-user',
+          url: this.env.cuentaUrl,
+          target: '_blank',
+        },
         ...(!onContainers
           ? [
               {
@@ -60,12 +66,16 @@ export class UserMenuComponent {
               },
             ]
           : []),
+        { separator: true },
         {
-          label: labels.manageAccount,
-          icon: 'pi pi-user',
-          url: this.env.cuentaUrl,
-          target: '_blank',
+          label: labels.settings,
+          icon: 'pi pi-cog',
+          command: () => {
+            const slug = this.tenant.currentSlug();
+            if (slug) this.router.navigate(['/t', slug, 'configuracion']);
+          },
         },
+        { separator: true },
         {
           label: labels.logout,
           icon: 'pi pi-sign-out',

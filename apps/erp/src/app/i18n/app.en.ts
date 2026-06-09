@@ -160,6 +160,7 @@ export const en: AppDict = {
       label: 'User menu',
       myContainers: 'My containers',
       manageAccount: 'Manage account',
+      settings: 'Settings',
       logout: 'Sign out',
     },
   },
@@ -879,6 +880,74 @@ export const en: AppDict = {
           title: 'Failed to load members',
           desc: 'We could not fetch the member list.',
         },
+      },
+    },
+  },
+  configuracion: {
+    title: 'Settings',
+    subtitle: 'Company parameters',
+    tabs: { general: 'General', humano: 'Payroll' },
+    unsavedChanges: 'Unsaved changes',
+    actions: { save: 'Save' },
+    general: {
+      uvt: {
+        title: 'UVT',
+        hint: 'Current tax value unit; the basis for fiscal calculations.',
+        label: 'UVT value',
+      },
+      validation: { required: 'This field is required' },
+    },
+    humano: {
+      section: {
+        title: 'Payroll',
+        hint: 'Payroll parameters used to compute benefits.',
+      },
+      fields: {
+        salarioMinimo: 'Minimum wage',
+        factor: 'Benefits factor',
+        auxilioTransporte: 'Transport allowance',
+      },
+      validation: { required: 'This field is required' },
+    },
+    empresa: {
+      sections: {
+        identidad: {
+          title: 'Company identity',
+          hint: 'Legal data that identifies your company on documents.',
+        },
+        contacto: {
+          title: 'Contact and location',
+          hint: 'How people reach you and where the company is located.',
+        },
+      },
+      fields: {
+        nombreCorto: 'Trade name',
+        tipoPersona: 'Person type',
+        identificacion: 'ID type',
+        numeroIdentificacion: 'ID number',
+        digitoVerificacion: 'Check digit',
+        direccion: 'Address',
+        ciudad: 'City',
+        telefono: 'Phone',
+        correo: 'Email',
+      },
+      validation: {
+        required: 'This field is required',
+        emailInvalid: 'Enter a valid email',
+      },
+    },
+    toasts: {
+      saveSuccess: {
+        title: 'Settings saved',
+        desc: 'Your changes were saved successfully.',
+      },
+      saveError: {
+        title: 'Save failed',
+        desc: 'We could not save your changes.',
+      },
+      loadError: {
+        title: 'Load failed',
+        desc: 'We could not fetch the company settings.',
       },
     },
   },

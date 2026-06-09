@@ -160,6 +160,7 @@ export const es: AppDict = {
       label: 'Menú de usuario',
       myContainers: 'Mis contenedores',
       manageAccount: 'Gestionar cuenta',
+      settings: 'Configuración',
       logout: 'Cerrar sesión',
     },
   },
@@ -906,6 +907,74 @@ export const es: AppDict = {
           title: 'Error al cargar miembros',
           desc: 'No pudimos traer la lista de miembros.',
         },
+      },
+    },
+  },
+  configuracion: {
+    title: 'Configuración',
+    subtitle: 'Parámetros de la empresa',
+    tabs: { general: 'General', humano: 'Humano' },
+    unsavedChanges: 'Cambios sin guardar',
+    actions: { save: 'Guardar' },
+    general: {
+      uvt: {
+        title: 'UVT',
+        hint: 'Unidad de valor tributario vigente; base de los cálculos fiscales.',
+        label: 'Valor de la UVT',
+      },
+      validation: { required: 'Este campo es obligatorio' },
+    },
+    humano: {
+      section: {
+        title: 'Humano',
+        hint: 'Parámetros de nómina usados para calcular prestaciones.',
+      },
+      fields: {
+        salarioMinimo: 'Salario mínimo',
+        factor: 'Factor prestacional',
+        auxilioTransporte: 'Auxilio de transporte',
+      },
+      validation: { required: 'Este campo es obligatorio' },
+    },
+    empresa: {
+      sections: {
+        identidad: {
+          title: 'Identidad de la empresa',
+          hint: 'Datos legales que identifican a tu empresa en los documentos.',
+        },
+        contacto: {
+          title: 'Contacto y ubicación',
+          hint: 'Cómo te contactan y dónde está ubicada la empresa.',
+        },
+      },
+      fields: {
+        nombreCorto: 'Nombre comercial',
+        tipoPersona: 'Tipo de persona',
+        identificacion: 'Tipo de identificación',
+        numeroIdentificacion: 'Número de identificación',
+        digitoVerificacion: 'Dígito de verificación',
+        direccion: 'Dirección',
+        ciudad: 'Ciudad',
+        telefono: 'Teléfono',
+        correo: 'Correo electrónico',
+      },
+      validation: {
+        required: 'Este campo es obligatorio',
+        emailInvalid: 'Ingresa un correo válido',
+      },
+    },
+    toasts: {
+      saveSuccess: {
+        title: 'Configuración guardada',
+        desc: 'Los cambios se guardaron correctamente.',
+      },
+      saveError: {
+        title: 'Error al guardar',
+        desc: 'No pudimos guardar los cambios.',
+      },
+      loadError: {
+        title: 'Error al cargar',
+        desc: 'No pudimos traer la configuración de la empresa.',
       },
     },
   },
