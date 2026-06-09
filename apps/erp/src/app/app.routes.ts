@@ -2,6 +2,7 @@ import { Route } from '@angular/router';
 import { authGuard, tenantGuard } from '@reddoc/core';
 import { AUTH_ROUTES } from './features/auth/auth.routes';
 import { rootRedirectGuard } from './core/guards/root-redirect.guard';
+import { erpModuleResolver } from '@erp/core/erp-modules';
 
 export const appRoutes: Route[] = [
   { path: '', pathMatch: 'full', canActivate: [rootRedirectGuard], children: [] },
@@ -39,11 +40,15 @@ export const appRoutes: Route[] = [
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
       {
         path: 'dashboard',
+        // Ruta global (no-módulo): limpia el módulo activo para ocultar el sidebar.
+        resolve: { _module: erpModuleResolver(null) },
         loadComponent: () =>
           import('./features/dashboard/dashboard.component').then((m) => m.DashboardComponent),
       },
       {
         path: 'configuracion',
+        // Ruta global (no-módulo): limpia el módulo activo para ocultar el sidebar.
+        resolve: { _module: erpModuleResolver(null) },
         loadChildren: () =>
           import('./features/configuracion/configuracion.routes').then(
             (m) => m.CONFIGURACION_ROUTES,

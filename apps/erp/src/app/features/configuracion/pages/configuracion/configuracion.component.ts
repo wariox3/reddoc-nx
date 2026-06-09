@@ -18,7 +18,7 @@ import { HumanoConfigComponent } from '../../components/humano-config/humano-con
   standalone: true,
   imports: [TabsModule, GeneralConfigComponent, HumanoConfigComponent],
   templateUrl: './configuracion.component.html',
-  host: { class: 'mx-auto flex w-full max-w-[960px] flex-col gap-6' },
+  host: { class: 'mx-auto flex w-full max-w-[1200px] flex-col gap-6' },
 })
 export class ConfiguracionComponent {
   private readonly router = inject(Router);
