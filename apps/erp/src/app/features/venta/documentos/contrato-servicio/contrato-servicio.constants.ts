@@ -60,13 +60,13 @@ export const CONTRATO_SERVICIO_COLUMNS: readonly ColumnDef[] = [
     sortable: true,
   },
   {
-    field: 'contacto__numero_identificacion',
+    field: 'tercero_numero_identificacion',
     headerKey: 'entities.contratoServicio.columns.identificacion',
     type: 'text',
     width: '140px',
   },
   {
-    field: 'contacto__nombre_corto',
+    field: 'contacto_nombre',
     headerKey: 'entities.contratoServicio.columns.contacto',
     type: 'text',
     sortable: true,
