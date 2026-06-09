@@ -436,6 +436,9 @@ export interface AppDict extends AuthTranslationsHost {
         fecha: string;
         identificacion: string;
         contacto: string;
+        horas: string;
+        horasDiurnas: string;
+        horasNocturnas: string;
         subtotal: string;
         impuesto: string;
         total: string;

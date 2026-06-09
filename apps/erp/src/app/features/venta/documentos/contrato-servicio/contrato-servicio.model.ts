@@ -25,6 +25,62 @@ export interface ContratoServicioRead {
 }
 
 /**
+ * Fila del listado `general/documento/lista/` (documento_tipo 34).
+ *
+ * Es plana y distinta del read de edición (`ContratoServicioRead`): no trae
+ * `detalles` y sí los acumulados que calcula el backend (`horas`, montos). Los
+ * montos y horas viajan como string con cola de decimales (`"48.00"`,
+ * `"18817299.435000"`); el formateo de columnas los normaliza al renderizar.
+ *
+ * El framework de listas accede a los campos por `row[field]` (tipados como
+ * `unknown`), así que esta interface documenta el contrato del endpoint; no es
+ * un genérico que el framework instancie.
+ */
+export interface ContratoServicioListRow {
+  readonly id: number;
+  readonly numero: string | null;
+  readonly fecha: string | null;
+  readonly fecha_contable: string | null;
+  readonly fecha_vence: string | null;
+  readonly fecha_desde: string | null;
+  readonly fecha_hasta: string | null;
+  readonly soporte: string | null;
+  readonly orden_compra: string | null;
+  readonly remision: string | null;
+  readonly comentario: string | null;
+  readonly documento_tipo: number;
+  readonly documento_tipo_nombre: string | null;
+  readonly contacto: number | null;
+  readonly contacto_nombre: string | null;
+  readonly tercero_numero_identificacion: string | null;
+  readonly resolucion: number | null;
+  readonly plazo_pago: number | null;
+  readonly asesor: number | null;
+  readonly cuenta_banco: number | null;
+  readonly comprobante: number | null;
+  readonly cuenta: number | null;
+  readonly sector: number | null;
+  readonly sector_nombre: string | null;
+  readonly estrato: number | null;
+  readonly documento_referencia: number | null;
+  readonly subtotal: string | null;
+  readonly descuento: string | null;
+  readonly total_bruto: string | null;
+  readonly base_impuesto: string | null;
+  readonly impuesto: string | null;
+  readonly impuesto_retencion: string | null;
+  readonly total: string | null;
+  readonly salario: string | null;
+  /** Horas totales de cobertura del contrato (e.g. `"720.00"`). */
+  readonly horas: string | null;
+  readonly horas_diurnas: string | null;
+  readonly horas_nocturnas: string | null;
+  readonly estado_aprobado: boolean;
+  readonly estado_anulado: boolean;
+  readonly estado_contabilizado: boolean;
+}
+
+/**
  * Shape (best-effort) de una línea de detalle leída desde la API en edición.
  * Los nombres `*_nombre` etiquetan los selectores al cargar; pueden requerir
  * ajuste al contrastar contra `GET /api/general/documento/:id/`.
