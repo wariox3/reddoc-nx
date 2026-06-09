@@ -7,6 +7,8 @@
   [first]="currentPage() * pageSize()"
   [loading]="loading()"
   [rowsPerPageOptions]="mutableRowsPerPage()"
+  [scrollable]="true"
+  [scrollHeight]="scrollHeight()"
   [selectionMode]="selectionMode() === 'none' ? null : 'multiple'"
   [selection]="mutableSelection()"
   (selectionChange)="onSelectionEvent($event)"

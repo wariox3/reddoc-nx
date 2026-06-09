@@ -1,5 +1,10 @@
 :host {
-  display: block;
+  // Llena el alto disponible: el cuerpo de la tabla scrollea, el header queda
+  // fijo y el paginador anclado (modo scrollable de PrimeNG, scrollHeight=flex).
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
 }
 
 .lib-data-table {
@@ -148,9 +153,91 @@
 :host ::ng-deep .p-paginator {
   justify-content: center;
   position: relative;
+  // Pie del panel: divisor superior y respiro vertical para cerrar la caja.
+  border-top: 1px solid rgba(19 38 60 / 0.08);
+  padding-top: 0.6rem;
+  padding-bottom: 0.6rem;
 
   .p-paginator-right-content {
     position: absolute;
     right: 0;
+  }
+}
+
+// ─── Flex-fill + header sticky + pulido ───────────────────────────────────────
+// Encadena el flex para que `scrollHeight="flex"` resuelva un alto real y solo
+// el cuerpo de la tabla scrollee. Estética alineada con la tabla de detalles:
+// header opaco en mayúsculas discretas, números tabulares, filas tranquilas.
+:host ::ng-deep {
+  p-table,
+  .p-datatable {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    // El marco lo pone la card; la tabla no dibuja borde ni fondo propio.
+    background: transparent;
+    border: 0;
+  }
+
+  // Contenedor scrollable (el que recibe el alto y hace el scroll vertical).
+  .p-datatable-table-container {
+    flex: 1;
+    min-height: 0;
+
+    // Scrollbar fina y discreta.
+    scrollbar-width: thin;
+    scrollbar-color: rgba(19 38 60 / 0.22) transparent;
+
+    &::-webkit-scrollbar {
+      width: 9px;
+      height: 9px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(19 38 60 / 0.18);
+      border-radius: 999px;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background: rgba(19 38 60 / 0.3);
+      background-clip: padding-box;
+    }
+  }
+
+  // Densidad compacta (igual que la tabla de detalle) + dígitos alineados.
+  .p-datatable-table {
+    font-size: 0.82rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  // Header fijo: etiquetas discretas en mayúscula, fondo opaco para que las
+  // filas no se transparenten al pasar por debajo, borde inferior robusto.
+  .p-datatable-thead > tr > th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: #f8f9fa;
+    box-shadow: inset 0 -1px 0 rgba(19 38 60 / 0.1);
+    border-bottom: 0;
+    padding: 0.6rem 0.75rem;
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--brand-muted, #64748b);
+    white-space: nowrap;
+  }
+
+  // Cuerpo: separadores sutiles + hover whisper-quiet.
+  .p-datatable-tbody > tr > td {
+    padding: 0.55rem 0.75rem;
+    border-bottom: 1px solid rgba(19 38 60 / 0.06);
+  }
+
+  .p-datatable-tbody > tr:hover > td {
+    background: rgba(19 38 60 / 0.02);
   }
 }

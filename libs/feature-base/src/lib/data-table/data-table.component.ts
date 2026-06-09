@@ -58,6 +58,13 @@ export class DataTableComponent {
   readonly pageSize = input<number>(25);
   readonly currentPage = input<number>(0);
   readonly rowsPerPageOptions = input<readonly number[]>([10, 25, 50, 100]);
+  /**
+   * Alto del cuerpo scrollable (modo `scrollable` de PrimeNG). Default `'flex'`:
+   * la tabla llena el alto disponible de su contenedor flex (header sticky,
+   * paginador anclado, solo el cuerpo scrollea). Un consumidor embebido puede
+   * pasar un valor fijo (`'60vh'`, `'420px'`).
+   */
+  readonly scrollHeight = input<string>('flex');
   readonly selectionMode = input<'none' | 'multiple'>('none');
   readonly selectedRows = input<readonly unknown[]>([]);
   /**
