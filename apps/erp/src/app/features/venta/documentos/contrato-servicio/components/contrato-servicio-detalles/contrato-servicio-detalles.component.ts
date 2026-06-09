@@ -286,8 +286,11 @@ export class ContratoServicioDetallesComponent {
     return toHora(date) ?? '—';
   }
 
-  /** "LMX-V--" — 7 posiciones fijas, X = Miércoles, guión = inactivo. */
-  protected formatDias(dias: readonly number[]): string {
-    return ['L', 'M', 'X', 'J', 'V', 'S', 'D'].map((l, i) => (dias.includes(i) ? l : '-')).join('');
+  /** "LMX-V--F" — 7 posiciones fijas + F al final si festivo. */
+  protected formatDias(dias: readonly number[], festivo = false): string {
+    const base = ['L', 'M', 'X', 'J', 'V', 'S', 'D']
+      .map((l, i) => (dias.includes(i) ? l : '-'))
+      .join('');
+    return festivo ? `${base}F` : base;
   }
 }

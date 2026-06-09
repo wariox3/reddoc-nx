@@ -86,11 +86,8 @@
               <td class="detalle-table__td detalle-table__td--coverage">
                 <div class="flex items-center gap-1.5">
                   <span class="font-mono text-[0.72rem] tracking-widest text-brand-text">
-                    {{ formatDias(line.dias_semana) }}
+                    {{ formatDias(line.dias_semana, line.festivo) }}
                   </span>
-                  @if (line.festivo) {
-                    <span class="font-mono text-[0.72rem] tracking-widest text-brand-text">F</span>
-                  }
                 </div>
               </td>
 
