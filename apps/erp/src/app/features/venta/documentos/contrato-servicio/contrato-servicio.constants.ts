@@ -109,13 +109,6 @@ export const CONTRATO_SERVICIO_COLUMNS: readonly ColumnDef[] = [
     align: 'center',
   },
   {
-    field: 'estado_electronico',
-    headerKey: 'entities.contratoServicio.columns.electronico',
-    type: 'boolean',
-    width: '70px',
-    align: 'center',
-  },
-  {
     field: 'estado_contabilizado',
     headerKey: 'entities.contratoServicio.columns.contabilizado',
     type: 'boolean',
