@@ -16,7 +16,7 @@ import {
   ToastService,
 } from '@reddoc/core';
 import { BreadcrumbComponent, type BreadcrumbItem } from '@reddoc/feature-base';
-import { ventaDocumentoBreadcrumb } from '../../../../shared/venta-breadcrumb';
+import { ventaDocumentoBreadcrumb } from '@erp/features/venta/shared/venta-breadcrumb';
 import { ErpContactoSelectComponent } from '@erp/core/components/contacto-select/erp-contacto-select.component';
 import {
   ErpApiSelectComponent,
@@ -26,33 +26,33 @@ import { ENTITY_DATA_GATEWAY } from '@erp/core/module-config';
 import type { DocumentEntityConfig } from '@erp/core/module-config';
 import { ConfiguracionService } from '@erp/core/services/configuracion.service';
 import type { AppDict } from '@erp/i18n';
+import { ESTRATO_OPTIONS, SECTOR_ENDPOINT } from '../../servicio-documento.constants';
 import {
-  CONTRATO_SERVICIO_LIST_PATH,
-  ESTRATO_OPTIONS,
-  SECTOR_ENDPOINT,
-} from '../../contrato-servicio.constants';
-import {
-  contratoServicioToFormValue,
+  servicioDocumentoToFormValue,
   detallesToFormValue,
   formValueToPayload,
-} from '../../contrato-servicio.mapper';
-import type { ContratoServicioRead } from '../../contrato-servicio.model';
-import { createDetalleGroup, type DetalleGroup } from '../../contrato-servicio-detalle.form';
-import { ContratoServicioDetallesComponent } from '../../components/contrato-servicio-detalles/contrato-servicio-detalles.component';
+} from '../../servicio-documento.mapper';
+import type { ServicioDocumentoRead } from '../../servicio-documento.model';
+import { createDetalleGroup, type DetalleGroup } from '../../servicio-documento-detalle.form';
+import { ServicioDocumentoDetallesComponent } from '../../components/servicio-documento-detalles/servicio-documento-detalles.component';
 
 /**
- * Formulario de alta/edición de **Contrato servicio** (documento de venta).
+ * Formulario de alta/edición de un **documento de servicio** (vigilancia):
+ * contrato servicio, pedido servicio y futuros de la misma familia.
  *
  * Camino A del enfoque híbrido: el documento vive sobre el endpoint genérico
  * `/api/general/documento`. El form recibe el `DocumentEntityConfig` por input
- * binding (resuelto por `activeDocumentResolver` en la ruta padre) y delega el
- * HTTP en `ENTITY_DATA_GATEWAY` — no hay servicio propio.
+ * binding (resuelto por `activeDocumentResolver` en la ruta padre) y deriva de
+ * él el `documentTypeId`, las claves i18n (`displayNameKey`) y la ruta de la
+ * lista (`routes.list`). El HTTP se delega en `ENTITY_DATA_GATEWAY` — no hay
+ * servicio propio. Así un mismo componente sirve a cualquier documento de la
+ * familia sin duplicarse.
  *
  * La misma página cubre crear y editar: sin `:id` → alta; con `:id` → edición.
- * Las líneas de servicio (detalles) se editan en `app-contrato-servicio-detalles`.
+ * Las líneas de servicio (detalles) se editan en `app-servicio-documento-detalles`.
  */
 @Component({
-  selector: 'app-contrato-servicio-form',
+  selector: 'app-servicio-documento-form',
   standalone: true,
   imports: [
     ReactiveFormsModule,
@@ -64,12 +64,12 @@ import { ContratoServicioDetallesComponent } from '../../components/contrato-ser
     FieldErrorComponent,
     ErpContactoSelectComponent,
     ErpApiSelectComponent,
-    ContratoServicioDetallesComponent,
+    ServicioDocumentoDetallesComponent,
   ],
-  templateUrl: './contrato-servicio-form.component.html',
-  styleUrl: './contrato-servicio-form.component.scss',
+  templateUrl: './servicio-documento-form.component.html',
+  styleUrl: './servicio-documento-form.component.scss',
 })
-export class ContratoServicioFormComponent implements OnInit {
+export class ServicioDocumentoFormComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly gateway = inject(ENTITY_DATA_GATEWAY);
   private readonly toast = inject(ToastService);
@@ -88,7 +88,7 @@ export class ContratoServicioFormComponent implements OnInit {
   /** Documento activo inyectado por `activeDocumentResolver` vía router binding. */
   readonly document = input.required<DocumentEntityConfig>();
 
-  /** Id del contrato a editar (route param `:id`). Ausente en modo alta. */
+  /** Id del documento a editar (route param `:id`). Ausente en modo alta. */
   readonly id = input<string>();
 
   protected readonly isEditMode = computed(() => !!this.id());
@@ -104,8 +104,8 @@ export class ContratoServicioFormComponent implements OnInit {
     ventaDocumentoBreadcrumb(
       this.t(),
       this.tenant.currentSlug(),
-      this.t().entities.contratoServicio.name,
-      'contrato-servicio',
+      this.translateKey(this.document().displayNameKey),
+      this.document().id,
       this.isEditMode() ? this.t().common.actions.edit : this.t().common.actions.new,
     ),
   );
@@ -146,7 +146,7 @@ export class ContratoServicioFormComponent implements OnInit {
   ngOnInit(): void {
     const id = this.id();
     if (id) {
-      this.loadContrato(Number(id));
+      this.loadDocumento(Number(id));
     } else {
       this.prefillSalarioMinimo();
     }
@@ -156,7 +156,7 @@ export class ContratoServicioFormComponent implements OnInit {
     if (this.form.invalid || this.form.pending || this.isSaving()) return;
     this.isSaving.set(true);
 
-    const toasts = this.t().entities.contratoServicio.form.toasts;
+    const toasts = this.t().entities.servicioDocumento.form.toasts;
     const id = this.id();
     // En edición se omiten los detalles del payload: ya transaccionaron en vivo.
     const payload = formValueToPayload(
@@ -187,20 +187,20 @@ export class ContratoServicioFormComponent implements OnInit {
     this.navigateToList();
   }
 
-  private loadContrato(id: number): void {
+  private loadDocumento(id: number): void {
     this.gateway
       .getById(this.document(), id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (raw) => {
-          const read = raw as ContratoServicioRead;
-          this.form.patchValue(contratoServicioToFormValue(read));
+          const read = raw as ServicioDocumentoRead;
+          this.form.patchValue(servicioDocumentoToFormValue(read));
           const detalles = this.form.controls.detalles;
           detalles.clear();
           for (const line of detallesToFormValue(read)) detalles.push(createDetalleGroup(line));
         },
         error: () => {
-          const toasts = this.t().entities.contratoServicio.form.toasts;
+          const toasts = this.t().entities.servicioDocumento.form.toasts;
           this.toast.error(toasts.loadError.title, toasts.loadError.desc);
         },
       });
@@ -221,9 +221,21 @@ export class ContratoServicioFormComponent implements OnInit {
       });
   }
 
+  /** Vuelve a la lista del documento activo, derivando la ruta de `routes.list`. */
   private navigateToList(): void {
     const slug = this.tenant.currentSlug();
     if (!slug) return;
-    void this.router.navigate(['/t', slug, ...CONTRATO_SERVICIO_LIST_PATH]);
+    const segments = this.document().routes.list.split('/').filter(Boolean);
+    void this.router.navigate(['/t', slug, 'venta', ...segments]);
+  }
+
+  /** Resuelve una clave i18n con notación de punto (p. ej. `displayNameKey`). */
+  private translateKey(key: string): string {
+    let current: unknown = this.t();
+    for (const part of key.split('.')) {
+      if (current === null || typeof current !== 'object') return key;
+      current = (current as Record<string, unknown>)[part];
+    }
+    return typeof current === 'string' ? current : key;
   }
 }

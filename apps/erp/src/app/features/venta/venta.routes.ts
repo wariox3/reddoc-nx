@@ -41,6 +41,13 @@ export const VENTA_ROUTES: Route[] = [
             (m) => m.CONTRATO_SERVICIO_ROUTES,
           ),
       },
+      {
+        path: 'pedido-servicio',
+        loadChildren: () =>
+          import('./documentos/pedido-servicio/pedido-servicio.routes').then(
+            (m) => m.PEDIDO_SERVICIO_ROUTES,
+          ),
+      },
     ],
   },
 ];

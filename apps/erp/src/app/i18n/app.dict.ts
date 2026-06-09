@@ -453,6 +453,34 @@ export interface AppDict extends AuthTranslationsHost {
         electronico: string;
         contabilizado: string;
       };
+    };
+    pedidoServicio: {
+      name: string;
+      columns: {
+        id: string;
+        numero: string;
+        fecha: string;
+        identificacion: string;
+        contacto: string;
+        horas: string;
+        horasDiurnas: string;
+        horasNocturnas: string;
+        subtotal: string;
+        impuesto: string;
+        total: string;
+        aprobado: string;
+        anulado: string;
+        electronico: string;
+        contabilizado: string;
+      };
+      filters: {
+        aprobado: string;
+        anulado: string;
+        electronico: string;
+        contabilizado: string;
+      };
+    };
+    servicioDocumento: {
       form: {
         createTitle: string;
         createSubtitle: string;

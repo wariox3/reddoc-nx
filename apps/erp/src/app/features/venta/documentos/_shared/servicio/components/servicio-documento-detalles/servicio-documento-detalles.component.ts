@@ -15,47 +15,47 @@ import {
 } from '@reddoc/core';
 import { DocumentoDetalleService } from '@erp/core/module-config';
 import type { AppDict } from '@erp/i18n';
-import { ContratoServicioDetalleModalComponent } from '../contrato-servicio-detalle-modal/contrato-servicio-detalle-modal.component';
-import { ContratoServicioResumenComponent } from '../contrato-servicio-resumen/contrato-servicio-resumen.component';
-import { createDetalleGroup, type DetalleGroup } from '../../contrato-servicio-detalle.form';
-import { detalleToPayload } from '../../contrato-servicio.mapper';
-import type { ContratoServicioDetalleRead } from '../../contrato-servicio.model';
-import type { DetalleFormRawValue } from '../../contrato-servicio-detalle.types';
+import { ServicioDocumentoDetalleModalComponent } from '../servicio-documento-detalle-modal/servicio-documento-detalle-modal.component';
+import { ServicioDocumentoResumenComponent } from '../servicio-documento-resumen/servicio-documento-resumen.component';
+import { createDetalleGroup, type DetalleGroup } from '../../servicio-documento-detalle.form';
+import { detalleToPayload } from '../../servicio-documento.mapper';
+import type { ServicioDocumentoDetalleRead } from '../../servicio-documento.model';
+import type { DetalleFormRawValue } from '../../servicio-documento-detalle.types';
 import type { ErpSelectOption } from '@erp/core/components/api-select/erp-api-select.component';
 
-/** Base gravable de una línea del contrato: `cantidad × precio`. */
+/** Base gravable de una línea del documento: `cantidad × precio`. */
 function lineAmount(line: Pick<DetalleFormRawValue, 'cantidad' | 'precio'>): number {
   return (line.cantidad ?? 0) * (line.precio ?? 0);
 }
 
-/** Adapta una línea del contrato al contrato mínimo del kernel de cálculo. */
+/** Adapta una línea del documento al contrato mínimo del kernel de cálculo. */
 function toLineaCalculo(line: DetalleFormRawValue): LineaCalculo {
   return { base: lineAmount(line), impuestos: line.impuestos_totales };
 }
 
 /**
- * Listado de las líneas de servicio (detalles) del contrato.
+ * Listado de las líneas de servicio (detalles) del documento.
  *
  * La tabla es **solo lectura**: el alta y la edición ocurren en
- * `app-contrato-servicio-detalle-modal`, así la tabla queda slim y el form de
+ * `app-servicio-documento-detalle-modal`, así la tabla queda slim y el form de
  * línea tiene espacio. El padre es dueño del `FormArray`; aquí se agregan,
- * reemplazan y eliminan grupos. El subtotal por línea y el del contrato se
+ * reemplazan y eliminan grupos. El subtotal por línea y el del documento se
  * derivan del valor del array.
  */
 @Component({
-  selector: 'app-contrato-servicio-detalles',
+  selector: 'app-servicio-documento-detalles',
   standalone: true,
   imports: [
     ButtonModule,
     ConfirmDialogModule,
-    ContratoServicioDetalleModalComponent,
-    ContratoServicioResumenComponent,
+    ServicioDocumentoDetalleModalComponent,
+    ServicioDocumentoResumenComponent,
   ],
   providers: [ConfirmationService],
-  templateUrl: './contrato-servicio-detalles.component.html',
-  styleUrl: './contrato-servicio-detalles.component.scss',
+  templateUrl: './servicio-documento-detalles.component.html',
+  styleUrl: './servicio-documento-detalles.component.scss',
 })
-export class ContratoServicioDetallesComponent {
+export class ServicioDocumentoDetallesComponent {
   private readonly i18n = inject<I18nService<AppDict>>(I18nService);
   private readonly detalle = inject(DocumentoDetalleService);
   private readonly confirmation = inject(ConfirmationService);
@@ -67,13 +67,13 @@ export class ContratoServicioDetallesComponent {
   /** FormArray de líneas, propiedad del form padre. */
   readonly detalles = input.required<FormArray<DetalleGroup>>();
 
-  /** Sector del contrato (del form padre); se reenvía al modal para tarifar. */
+  /** Sector del documento (del form padre); se reenvía al modal para tarifar. */
   readonly sectorId = input<number | null>(null);
 
   /** Id del contacto (del form padre); filtra los puestos disponibles en el modal. */
   readonly contactoId = input<number | null>(null);
 
-  /** Salario del contrato (del form padre); bloquea el botón si es null y se pre-llena en el modal. */
+  /** Salario del documento (del form padre); bloquea el botón si es null y se pre-llena en el modal. */
   readonly salario = input<number | null>(null);
 
   /**
@@ -89,7 +89,7 @@ export class ContratoServicioDetallesComponent {
   /** Multi-puesto habilitado: cada línea nueva elige su puesto libremente. */
   protected readonly lockedPuesto = computed<ErpSelectOption | null>(() => null);
 
-  /** Resumen financiero del contrato: subtotal, desglose por impuesto y total. */
+  /** Resumen financiero del documento: subtotal, desglose por impuesto y total. */
   protected readonly resumen = computed<ResumenDocumento>(() =>
     calcularResumen(this.lines().map(toLineaCalculo)),
   );
@@ -149,7 +149,7 @@ export class ContratoServicioDetallesComponent {
     const group = this.detalles().at(index);
     const { id } = group.getRawValue();
     this.confirmation.confirm({
-      message: this.t().entities.contratoServicio.form.detalles.confirmDeleteLine,
+      message: this.t().entities.servicioDocumento.form.detalles.confirmDeleteLine,
       header: this.t().common.confirms.deleteHeader,
       icon: 'pi pi-exclamation-triangle',
       acceptLabel: this.t().common.actions.delete,
@@ -235,7 +235,7 @@ export class ContratoServicioDetallesComponent {
         });
     } else {
       this.detalle
-        .crear<ContratoServicioDetalleRead>(docId, payload)
+        .crear<ServicioDocumentoDetalleRead>(docId, payload)
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: (creado) => {
@@ -253,12 +253,12 @@ export class ContratoServicioDetallesComponent {
   }
 
   private notifyLineSuccess(): void {
-    const toast = this.t().entities.contratoServicio.form.detalles.toasts.lineSaveSuccess;
+    const toast = this.t().entities.servicioDocumento.form.detalles.toasts.lineSaveSuccess;
     this.toast.success(toast.title, toast.desc);
   }
 
   private notifyLineError(): void {
-    const toast = this.t().entities.contratoServicio.form.detalles.toasts.lineSaveError;
+    const toast = this.t().entities.servicioDocumento.form.detalles.toasts.lineSaveError;
     this.toast.error(toast.title, toast.desc);
   }
 

@@ -4,21 +4,21 @@ import { BaseHttpService } from '@reddoc/core';
 import type {
   CalcularPrecioSupervigilanciaPayload,
   CalcularPrecioSupervigilanciaResult,
-} from './contrato-servicio.model';
+} from './servicio-documento.model';
 
 /** Endpoint del tarifador de supervigilancia (vive sobre documento-detalle). */
 const DOCUMENTO_DETALLE_ENDPOINT = '/general/documento-detalle/';
 
 /**
- * Servicio HTTP **específico** de Contrato servicio.
+ * Servicio HTTP **específico** de los documentos de servicio (vigilancia).
  *
  * El documento se persiste vía `ENTITY_DATA_GATEWAY` (cabecera) y las líneas vía
- * `DocumentoDetalleService` (CRUD genérico del framework). Lo único propio del
- * contrato es el **tarifador de supervigilancia**: un cálculo puntual sobre la
+ * `DocumentoDetalleService` (CRUD genérico del framework). Lo único propio de la
+ * familia es el **tarifador de supervigilancia**: un cálculo puntual sobre la
  * cobertura de una línea, así que vive aquí.
  */
 @Injectable({ providedIn: 'root' })
-export class ContratoServicioService extends BaseHttpService {
+export class ServicioDocumentoService extends BaseHttpService {
   /** Tarifa una línea según su cobertura (horario · modalidad · sector · días). */
   calcularPrecioSupervigilancia(
     payload: CalcularPrecioSupervigilanciaPayload,

@@ -38,17 +38,17 @@ import type { AppDict } from '@erp/i18n';
 import { ItemService } from '@erp/features/general/masters/item/item.service';
 import type { Item } from '@erp/features/general/masters/item/item.model';
 import { ErpItemAutocompleteComponent } from '../item-autocomplete/erp-item-autocomplete.component';
-import { MODALIDAD_ENDPOINT, PUESTO_ENDPOINT } from '../../contrato-servicio.constants';
-import { createDetalleGroup, type DetalleGroup } from '../../contrato-servicio-detalle.form';
-import type { DetalleFormRawValue } from '../../contrato-servicio-detalle.types';
-import { ContratoServicioService } from '../../contrato-servicio.service';
+import { MODALIDAD_ENDPOINT, PUESTO_ENDPOINT } from '../../servicio-documento.constants';
+import { createDetalleGroup, type DetalleGroup } from '../../servicio-documento-detalle.form';
+import type { DetalleFormRawValue } from '../../servicio-documento-detalle.types';
+import { ServicioDocumentoService } from '../../servicio-documento.service';
 import type {
   CalcularPrecioSupervigilanciaPayload,
   CalcularPrecioSupervigilanciaResult,
-} from '../../contrato-servicio.model';
+} from '../../servicio-documento.model';
 
 /**
- * Modal de alta/edición de una **línea de detalle** del contrato.
+ * Modal de alta/edición de una **línea de detalle** de un documento de servicio.
  *
  * Trabaja sobre una **copia** (`DetalleGroup` propio) que se reinicializa cada
  * vez que el modal se abre: así "Cancelar" descarta los cambios sin tocar el
@@ -57,7 +57,7 @@ import type {
  * en comercial / cobertura / impuestos) porque el modal sí tiene espacio.
  */
 @Component({
-  selector: 'app-contrato-servicio-detalle-modal',
+  selector: 'app-servicio-documento-detalle-modal',
   standalone: true,
   imports: [
     CurrencyPipe,
@@ -73,12 +73,12 @@ import type {
     ErpImpuestoSelectComponent,
     ErpItemAutocompleteComponent,
   ],
-  templateUrl: './contrato-servicio-detalle-modal.component.html',
-  styleUrl: './contrato-servicio-detalle-modal.component.scss',
+  templateUrl: './servicio-documento-detalle-modal.component.html',
+  styleUrl: './servicio-documento-detalle-modal.component.scss',
 })
-export class ContratoServicioDetalleModalComponent {
+export class ServicioDocumentoDetalleModalComponent {
   private readonly i18n = inject<I18nService<AppDict>>(I18nService);
-  private readonly service = inject(ContratoServicioService);
+  private readonly service = inject(ServicioDocumentoService);
   private readonly itemService = inject(ItemService);
 
   protected readonly t = this.i18n.t;
@@ -89,13 +89,13 @@ export class ContratoServicioDetalleModalComponent {
   readonly visible = model<boolean>(false);
   /** Línea a editar; `null` ⇒ modo alta. */
   readonly value = input<DetalleFormRawValue | null>(null);
-  /** Sector del contrato (vive en el form padre); alimenta el tarifador. */
+  /** Sector del documento (vive en el form padre); alimenta el tarifador. */
   readonly sectorId = input<number | null>(null);
-  /** Id del contacto del contrato; filtra las opciones de puesto. */
+  /** Id del contacto del documento; filtra las opciones de puesto. */
   readonly contactoId = input<number | null>(null);
   /** Puesto ya elegido en las líneas existentes; cuando está presente se pre-llena y bloquea. */
   readonly lockedPuesto = input<ErpSelectOption | null>(null);
-  /** Salario del contrato (del form padre); se pre-llena en modo alta. */
+  /** Salario del documento (del form padre); se pre-llena en modo alta. */
   readonly salario = input<number | null>(null);
   /**
    * `true` mientras el padre persiste la línea en vivo (edición). Bloquea los

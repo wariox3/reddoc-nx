@@ -1,14 +1,15 @@
 /**
- * Modelos de lectura y escritura de **Contrato servicio**.
+ * Modelos de lectura y escritura de los **documentos de servicio** (vigilancia):
+ * contrato servicio, pedido servicio y futuros documentos de la misma familia.
  *
- * El documento vive sobre el endpoint genérico `/api/general/documento`
- * discriminado por `documento_tipo` (34). El read-model refleja, best-effort,
- * lo que devuelve `GET /api/general/documento/:id/`; sus nombres de campo
- * pueden requerir ajuste al contrastar contra la API real.
+ * Todos viven sobre el endpoint genérico `/api/general/documento` discriminado
+ * por `documento_tipo`. El read-model refleja, best-effort, lo que devuelve
+ * `GET /api/general/documento/:id/`; sus nombres de campo pueden requerir ajuste
+ * al contrastar contra la API real.
  */
 
-/** Shape (parcial) de un contrato servicio leído desde la API en edición. */
-export interface ContratoServicioRead {
+/** Shape (parcial) de un documento de servicio leído desde la API en edición. */
+export interface ServicioDocumentoRead {
   readonly id: number;
   readonly contacto: number | null;
   /** Nombre del contacto para etiquetar el autocomplete al cargar en edición. */
@@ -21,13 +22,13 @@ export interface ContratoServicioRead {
   readonly salario: string | number | null;
   /** Fecha en formato `yyyy-MM-dd`. */
   readonly fecha: string | null;
-  readonly detalles?: readonly ContratoServicioDetalleRead[] | null;
+  readonly detalles?: readonly ServicioDocumentoDetalleRead[] | null;
 }
 
 /**
- * Fila del listado `general/documento/lista/` (documento_tipo 34).
+ * Fila del listado `general/documento/lista/` de un documento de servicio.
  *
- * Es plana y distinta del read de edición (`ContratoServicioRead`): no trae
+ * Es plana y distinta del read de edición (`ServicioDocumentoRead`): no trae
  * `detalles` y sí los acumulados que calcula el backend (`horas`, montos). Los
  * montos y horas viajan como string con cola de decimales (`"48.00"`,
  * `"18817299.435000"`); el formateo de columnas los normaliza al renderizar.
@@ -36,7 +37,7 @@ export interface ContratoServicioRead {
  * `unknown`), así que esta interface documenta el contrato del endpoint; no es
  * un genérico que el framework instancie.
  */
-export interface ContratoServicioListRow {
+export interface ServicioDocumentoListRow {
   readonly id: number;
   readonly numero: string | null;
   readonly fecha: string | null;
@@ -71,7 +72,7 @@ export interface ContratoServicioListRow {
   readonly impuesto_retencion: string | null;
   readonly total: string | null;
   readonly salario: string | null;
-  /** Horas totales de cobertura del contrato (e.g. `"720.00"`). */
+  /** Horas totales de cobertura del documento (e.g. `"720.00"`). */
   readonly horas: string | null;
   readonly horas_diurnas: string | null;
   readonly horas_nocturnas: string | null;
@@ -85,7 +86,7 @@ export interface ContratoServicioListRow {
  * Los nombres `*_nombre` etiquetan los selectores al cargar; pueden requerir
  * ajuste al contrastar contra `GET /api/general/documento/:id/`.
  */
-export interface ContratoServicioDetalleRead {
+export interface ServicioDocumentoDetalleRead {
   /** Id de la línea (para distinguir existente vs nueva al editar). */
   readonly id?: number | null;
   readonly item: number | null;
@@ -118,11 +119,11 @@ export interface ContratoServicioDetalleRead {
    * no de esta línea. El backend lo resuelve; el front solo lo muestra.
    */
   readonly compuesto?: boolean | null;
-  readonly impuestos?: readonly ContratoServicioDetalleImpuestoRead[] | null;
+  readonly impuestos?: readonly ServicioDocumentoDetalleImpuestoRead[] | null;
 }
 
 /** Impuesto de una línea tal como lo devuelve el read-model. */
-export interface ContratoServicioDetalleImpuestoRead {
+export interface ServicioDocumentoDetalleImpuestoRead {
   /** Id del impuesto (FK), p.ej. 1 = IVA 19%. Es lo que espera el multiselector. */
   readonly impuesto: number;
   readonly impuesto_nombre?: string | null;
@@ -135,7 +136,7 @@ export interface ContratoServicioDetalleImpuestoRead {
 }
 
 /** Cuerpo de una línea de detalle enviada en `POST`/`PATCH`. */
-export interface ContratoServicioDetallePayload {
+export interface ServicioDocumentoDetallePayload {
   readonly item: number | null;
   readonly cantidad: number | null;
   /** Precio como string con 2 decimales (`"1000000.00"`). */
@@ -209,8 +210,8 @@ export interface CalcularPrecioSupervigilanciaResult {
   readonly precio_minimo: number;
 }
 
-/** Cuerpo enviado en `POST`/`PATCH` de un contrato servicio. */
-export interface ContratoServicioPayload {
+/** Cuerpo enviado en `POST`/`PATCH` de un documento de servicio. */
+export interface ServicioDocumentoPayload {
   readonly documento_tipo: number;
   readonly contacto: number | null;
   readonly sector: number | null;
@@ -218,5 +219,5 @@ export interface ContratoServicioPayload {
   readonly salario: number | null;
   readonly fecha: string | null;
   /** Opcional: en edición se omite (los detalles transaccionan contra documento-detalle). */
-  readonly detalles?: readonly ContratoServicioDetallePayload[];
+  readonly detalles?: readonly ServicioDocumentoDetallePayload[];
 }

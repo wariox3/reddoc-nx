@@ -33,12 +33,12 @@
         <h2 class="m-0 text-[0.95rem] font-bold tracking-tight text-brand-text">
           {{
             isEditMode()
-              ? t().entities.contratoServicio.form.editTitle
-              : t().entities.contratoServicio.form.createTitle
+              ? t().entities.servicioDocumento.form.editTitle
+              : t().entities.servicioDocumento.form.createTitle
           }}
         </h2>
         <p class="m-0 text-[0.75rem] text-brand-muted">
-          {{ t().entities.contratoServicio.form.sectionHint }}
+          {{ t().entities.servicioDocumento.form.sectionHint }}
         </p>
       </div>
     </div>
@@ -47,33 +47,33 @@
       <div class="grid grid-cols-1 gap-x-5 gap-y-4 sm:grid-cols-2">
         <!-- Contacto -->
         <div class="flex flex-col gap-1.5 sm:col-span-2">
-          <label for="contacto" class="contrato-servicio-form__label">
-            {{ t().entities.contratoServicio.form.fields.contacto }}
+          <label for="contacto" class="servicio-documento-form__label">
+            {{ t().entities.servicioDocumento.form.fields.contacto }}
             <span class="ml-px text-red-500">*</span>
           </label>
           <app-contacto-select
             inputId="contacto"
             formControlName="contacto"
-            [placeholder]="t().entities.contratoServicio.form.fields.contactoPlaceholder"
+            [placeholder]="t().entities.servicioDocumento.form.fields.contactoPlaceholder"
             [invalid]="form.controls.contacto.invalid && form.controls.contacto.touched"
           />
           @if (contactoLocked()) {
             <span class="inline-flex items-center gap-1.5 text-[0.72rem] text-brand-muted">
               <i class="pi pi-lock text-[0.68rem]"></i>
-              {{ t().entities.contratoServicio.form.contactoLockedHint }}
+              {{ t().entities.servicioDocumento.form.contactoLockedHint }}
             </span>
           } @else {
             <lib-field-error
               [control]="form.controls.contacto"
-              [messages]="{ required: t().entities.contratoServicio.form.validation.required }"
+              [messages]="{ required: t().entities.servicioDocumento.form.validation.required }"
             />
           }
         </div>
 
         <!-- Fecha -->
         <div class="flex flex-col gap-1.5">
-          <label for="fecha" class="contrato-servicio-form__label">
-            {{ t().entities.contratoServicio.form.fields.fecha }}
+          <label for="fecha" class="servicio-documento-form__label">
+            {{ t().entities.servicioDocumento.form.fields.fecha }}
             <span class="ml-px text-red-500">*</span>
           </label>
           <p-datepicker
@@ -87,14 +87,14 @@
           />
           <lib-field-error
             [control]="form.controls.fecha"
-            [messages]="{ required: t().entities.contratoServicio.form.validation.required }"
+            [messages]="{ required: t().entities.servicioDocumento.form.validation.required }"
           />
         </div>
 
         <!-- Estrato -->
         <div class="flex flex-col gap-1.5">
-          <label for="estrato" class="contrato-servicio-form__label">
-            {{ t().entities.contratoServicio.form.fields.estrato }}
+          <label for="estrato" class="servicio-documento-form__label">
+            {{ t().entities.servicioDocumento.form.fields.estrato }}
             <span class="ml-px text-red-500">*</span>
           </label>
           <p-select
@@ -103,47 +103,47 @@
             [options]="estratoOptions"
             optionLabel="label"
             optionValue="value"
-            [placeholder]="t().entities.contratoServicio.form.fields.estratoPlaceholder"
+            [placeholder]="t().entities.servicioDocumento.form.fields.estratoPlaceholder"
             appendTo="body"
             [fluid]="true"
             [invalid]="form.controls.estrato.invalid && form.controls.estrato.touched"
           />
           <lib-field-error
             [control]="form.controls.estrato"
-            [messages]="{ required: t().entities.contratoServicio.form.validation.required }"
+            [messages]="{ required: t().entities.servicioDocumento.form.validation.required }"
           />
         </div>
 
         <!-- Sector -->
         <div class="flex flex-col gap-1.5">
-          <label for="sector" class="contrato-servicio-form__label">
-            {{ t().entities.contratoServicio.form.fields.sector }}
+          <label for="sector" class="servicio-documento-form__label">
+            {{ t().entities.servicioDocumento.form.fields.sector }}
             <span class="ml-px text-red-500">*</span>
           </label>
           <app-api-select
             inputId="sector"
             formControlName="sector"
             [endpoint]="sectorEndpoint"
-            [placeholder]="t().entities.contratoServicio.form.fields.sectorPlaceholder"
+            [placeholder]="t().entities.servicioDocumento.form.fields.sectorPlaceholder"
             [invalid]="form.controls.sector.invalid && form.controls.sector.touched"
           />
           @if (sectorLocked()) {
             <span class="inline-flex items-center gap-1.5 text-[0.72rem] text-brand-muted">
               <i class="pi pi-lock text-[0.68rem]"></i>
-              {{ t().entities.contratoServicio.form.sectorLockedHint }}
+              {{ t().entities.servicioDocumento.form.sectorLockedHint }}
             </span>
           } @else {
             <lib-field-error
               [control]="form.controls.sector"
-              [messages]="{ required: t().entities.contratoServicio.form.validation.required }"
+              [messages]="{ required: t().entities.servicioDocumento.form.validation.required }"
             />
           }
         </div>
 
         <!-- Salario -->
         <div class="flex flex-col gap-1.5">
-          <label for="salario" class="contrato-servicio-form__label">
-            {{ t().entities.contratoServicio.form.fields.salario }}
+          <label for="salario" class="servicio-documento-form__label">
+            {{ t().entities.servicioDocumento.form.fields.salario }}
             <span class="ml-px text-red-500">*</span>
           </label>
           <p-inputnumber
@@ -157,7 +157,7 @@
           />
           <lib-field-error
             [control]="form.controls.salario"
-            [messages]="{ required: t().entities.contratoServicio.form.validation.required }"
+            [messages]="{ required: t().entities.servicioDocumento.form.validation.required }"
           />
         </div>
       </div>
@@ -174,16 +174,16 @@
       </span>
       <div class="flex min-w-0 flex-1 flex-col gap-[0.1rem]">
         <h2 class="m-0 text-[0.95rem] font-bold tracking-tight text-brand-text">
-          {{ t().entities.contratoServicio.form.detalles.title }}
+          {{ t().entities.servicioDocumento.form.detalles.title }}
         </h2>
         <p class="m-0 text-[0.75rem] text-brand-muted">
-          {{ t().entities.contratoServicio.form.detalles.hint }}
+          {{ t().entities.servicioDocumento.form.detalles.hint }}
         </p>
       </div>
     </div>
 
     <div class="px-5 py-5 max-[576px]:px-4 max-[576px]:py-4">
-      <app-contrato-servicio-detalles
+      <app-servicio-documento-detalles
         [detalles]="form.controls.detalles"
         [sectorId]="form.controls.sector.value?.id ?? null"
         [contactoId]="form.controls.contacto.value?.id ?? null"

@@ -14,7 +14,7 @@ import { AutoComplete, AutoCompleteCompleteEvent, AutoCompleteModule } from 'pri
 import { map } from 'rxjs/operators';
 import { toFiniteNumber } from '@reddoc/core';
 import { ErpSelectDataService } from '@erp/core/data/erp-select-data.service';
-import type { ItemOption } from '../../contrato-servicio-detalle.types';
+import type { ItemOption } from '../../servicio-documento-detalle.types';
 
 /**
  * Fila cruda del endpoint `general/item/seleccionar/`. `precio` llega como
@@ -37,9 +37,9 @@ function toOption(row: ItemApiRow): ItemOption {
 }
 
 /**
- * Autocomplete de ítems para las líneas de detalle del contrato.
+ * Autocomplete de ítems para las líneas de detalle de un documento de servicio.
  *
- * Local al feature (no cross-app): a diferencia de los selectores de `core`,
+ * Local a la familia (no cross-app): a diferencia de los selectores de `core`,
  * emite un `ItemOption` que **incluye `precio`**, para que la línea de detalle
  * autollene el precio al seleccionar. Busca con `?search=<query>` sobre
  * `general/item/seleccionar/` y muestra `código - nombre`.

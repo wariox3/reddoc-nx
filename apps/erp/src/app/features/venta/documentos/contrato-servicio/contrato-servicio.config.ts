@@ -12,9 +12,9 @@ import {
  *
  * Soporta **alta y edición** (`canCreate` / `canEdit`): el
  * `BaseDocumentListComponent` muestra el botón "Nuevo" y la acción de fila
- * "Editar", que navegan a las rutas `new` / `edit`
- * (`ContratoServicioFormComponent`). `canDelete` sigue en `false` hasta que se
- * habilite la baja. `detail` se declara porque el tipo lo exige pero no se usa.
+ * "Editar", que navegan a las rutas `new` / `edit` (el
+ * `ServicioDocumentoFormComponent` compartido, parametrizado por esta config).
+ * `detail` se declara porque el tipo lo exige pero no se usa.
  *
  * - `documentTypeId` proviene de `DOCUMENT_TYPE_ID.CONTRATO_SERVICIO` (id 34)
  *   para evitar magic numbers; el gateway lo inyecta como filtro implícito.

@@ -1,20 +1,20 @@
 import { fromHora, fromIsoDate, toFiniteNumber, toHora, toIsoDate } from '@reddoc/core';
 import type {
-  ContratoServicioRead,
-  ContratoServicioPayload,
-  ContratoServicioDetalleRead,
-  ContratoServicioDetallePayload,
-} from './contrato-servicio.model';
-import type { DetalleFormRawValue } from './contrato-servicio-detalle.types';
-import type { ContratoServicioFormRawValue } from './pages/contrato-servicio-form/contrato-servicio-form.types';
+  ServicioDocumentoRead,
+  ServicioDocumentoPayload,
+  ServicioDocumentoDetalleRead,
+  ServicioDocumentoDetallePayload,
+} from './servicio-documento.model';
+import type { DetalleFormRawValue } from './servicio-documento-detalle.types';
+import type { ServicioDocumentoFormRawValue } from './servicio-documento-form.types';
 
 /**
  * Read-model (GET) → valores de cabecera del formulario (edición).
  * No incluye `detalles` (se poblan aparte en el `FormArray`).
  */
-export function contratoServicioToFormValue(
-  read: ContratoServicioRead,
-): Partial<Omit<ContratoServicioFormRawValue, 'detalles'>> {
+export function servicioDocumentoToFormValue(
+  read: ServicioDocumentoRead,
+): Partial<Omit<ServicioDocumentoFormRawValue, 'detalles'>> {
   return {
     contacto:
       read.contacto != null ? { id: read.contacto, nombre: read.contacto_nombre ?? '' } : null,
@@ -26,7 +26,7 @@ export function contratoServicioToFormValue(
 }
 
 /** Líneas de detalle del read-model → valores de formulario (para el FormArray). */
-export function detallesToFormValue(read: ContratoServicioRead): DetalleFormRawValue[] {
+export function detallesToFormValue(read: ServicioDocumentoRead): DetalleFormRawValue[] {
   // El salario viaja a nivel documento; cada línea lo hereda.
   const salarioDoc = toFiniteNumber(read.salario);
   return (read.detalles ?? []).map((detalle) => detalleToFormValue(detalle, salarioDoc));
@@ -43,12 +43,12 @@ const DIA_FLAGS = [
   'domingo',
 ] as const;
 
-function diasSemanaFromFlags(read: ContratoServicioDetalleRead): number[] {
+function diasSemanaFromFlags(read: ServicioDocumentoDetalleRead): number[] {
   return DIA_FLAGS.flatMap((flag, idx) => (read[flag] ? [idx] : []));
 }
 
 function detalleToFormValue(
-  read: ContratoServicioDetalleRead,
+  read: ServicioDocumentoDetalleRead,
   salarioDoc: number | null,
 ): DetalleFormRawValue {
   const precio = toFiniteNumber(read.precio);
@@ -85,14 +85,14 @@ function detalleToFormValue(
 /**
  * Valores del formulario → payload de la API.
  *
- * `documento_tipo` proviene del `documentTypeId` del `DocumentEntityConfig`
- * (34). Las líneas del FormArray se traducen a `detalles`.
+ * `documento_tipo` proviene del `documentTypeId` del `DocumentEntityConfig`.
+ * Las líneas del FormArray se traducen a `detalles`.
  */
 export function formValueToPayload(
-  raw: ContratoServicioFormRawValue,
+  raw: ServicioDocumentoFormRawValue,
   documentTypeId: number,
   includeDetalles = true,
-): ContratoServicioPayload {
+): ServicioDocumentoPayload {
   return {
     documento_tipo: documentTypeId,
     contacto: raw.contacto?.id ?? null,
@@ -106,7 +106,7 @@ export function formValueToPayload(
 }
 
 /** Una línea del form → body de documento-detalle (POST/PATCH) o detalle embebido. */
-export function detalleToPayload(raw: DetalleFormRawValue): ContratoServicioDetallePayload {
+export function detalleToPayload(raw: DetalleFormRawValue): ServicioDocumentoDetallePayload {
   const dias = new Set(raw.dias_semana);
   return {
     item: raw.item?.id ?? null,

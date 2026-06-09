@@ -1,7 +1,7 @@
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { startOfToday, type ImpuestoLinea } from '@reddoc/core';
 import type { ErpSelectOption } from '@erp/core/components/api-select/erp-api-select.component';
-import type { DetalleFormRawValue, ItemOption } from './contrato-servicio-detalle.types';
+import type { DetalleFormRawValue, ItemOption } from './servicio-documento-detalle.types';
 
 function defaultFechaDesde(value?: Partial<DetalleFormRawValue>): Date | null {
   if (value !== undefined) return null;
@@ -14,7 +14,7 @@ function defaultFechaHasta(value?: Partial<DetalleFormRawValue>): Date | null {
   return new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0);
 }
 
-/** `FormGroup` tipado de una línea de detalle del contrato. */
+/** `FormGroup` tipado de una línea de detalle del documento de servicio. */
 export type DetalleGroup = FormGroup<{
   id: FormControl<number | null>;
   item: FormControl<ItemOption | null>;
