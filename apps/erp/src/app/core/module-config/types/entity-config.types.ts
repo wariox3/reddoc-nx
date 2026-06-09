@@ -1,4 +1,4 @@
-import type { ColumnDef, FilterField } from '@reddoc/core';
+import type { ColumnDef, FilterCondition, FilterField, SortSpec } from '@reddoc/core';
 
 /**
  * Tipo discriminador de entidades del framework.
@@ -88,6 +88,19 @@ export interface DocumentEntityConfig {
   readonly schemaVersion: number;
   readonly columns: readonly ColumnDef[];
   readonly filters: readonly FilterField[];
+  /**
+   * Orden por defecto que el gateway aplica cuando el usuario no ha ordenado.
+   * Invisible en la UI (no marca columna); el orden del usuario lo reemplaza.
+   * Ej: `[{ field: 'id', direction: 'desc' }]`.
+   */
+  readonly defaultSort?: readonly SortSpec[];
+  /**
+   * Filtros implícitos que el gateway inyecta siempre, invisibles al usuario y
+   * no editables desde la UI (se combinan con AND junto a los del usuario).
+   * Mismo rol que `documento_tipo_id`, pero declarado por el documento.
+   * Ej: `[{ field: 'venta', operator: 'eq', value: true }]`.
+   */
+  readonly defaultFilters?: readonly FilterCondition[];
   readonly routes: EntityRoutes;
   readonly capabilities: DocumentCapabilities;
   /**

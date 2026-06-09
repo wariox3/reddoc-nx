@@ -123,9 +123,13 @@ export class HttpEntityDataGateway implements EntityDataGateway {
       valor: entity.documentTypeId,
     };
     const userFilters = query.filters.map(toBackendFilter);
+    // Filtros implícitos del documento: siempre activos, junto al baseFilter.
+    const implicitFilters = (entity.defaultFilters ?? []).map(toBackendFilter);
+    // Sin orden del usuario, cae al orden por defecto del documento (si lo declara).
+    const sort = query.sort.length > 0 ? query.sort : (entity.defaultSort ?? []);
     return {
-      filtros: [baseFilter, ...userFilters],
-      ordenamientos: query.sort.map(encodeSort),
+      filtros: [baseFilter, ...implicitFilters, ...userFilters],
+      ordenamientos: sort.map(encodeSort),
       pagina: query.page + 1,
       tamano_pagina: query.pageSize,
     };
