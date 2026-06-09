@@ -72,6 +72,7 @@ function detalleToFormValue(
     dias_semana: diasSemanaFromFlags(read),
     festivo: read.festivo ?? false,
     cortesia: read.cortesia ?? false,
+    compuesto: read.compuesto ?? false,
     impuestos_ids: (read.impuestos ?? []).map((imp) => imp.impuesto),
     impuestos_totales: (read.impuestos ?? []).map((imp) => ({
       id: imp.impuesto,
@@ -129,6 +130,7 @@ export function detalleToPayload(raw: DetalleFormRawValue): ContratoServicioDeta
     domingo: dias.has(6),
     festivo: raw.festivo,
     cortesia: raw.cortesia,
+    compuesto: raw.compuesto,
     impuestos_ids: raw.impuestos_ids,
   };
 }

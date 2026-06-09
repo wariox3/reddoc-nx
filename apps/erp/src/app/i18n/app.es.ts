@@ -699,6 +699,7 @@ export const es: AppDict = {
             programarHint: 'Genera la programación de turnos',
             cortesia: 'Cortesía',
             cortesiaHint: 'Pone el precio en 0 y lo bloquea',
+            compuesto: 'Compuesto',
             impuestos: 'Impuestos',
             impuestosPlaceholder: 'Selecciona impuestos…',
           },

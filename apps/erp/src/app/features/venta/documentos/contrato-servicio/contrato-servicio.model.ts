@@ -57,6 +57,11 @@ export interface ContratoServicioDetalleRead {
   readonly domingo?: boolean | null;
   readonly festivo?: boolean | null;
   readonly cortesia?: boolean | null;
+  /**
+   * Línea compuesta: su horario/días/modalidad se derivan de sus componentes,
+   * no de esta línea. El backend lo resuelve; el front solo lo muestra.
+   */
+  readonly compuesto?: boolean | null;
   readonly impuestos?: readonly ContratoServicioDetalleImpuestoRead[] | null;
 }
 
@@ -97,6 +102,8 @@ export interface ContratoServicioDetallePayload {
   readonly domingo: boolean;
   readonly festivo: boolean;
   readonly cortesia: boolean;
+  /** Se reenvía tal cual para no perderlo en el round-trip (no hay UI que lo edite). */
+  readonly compuesto: boolean;
   readonly impuestos_ids: readonly number[];
 }
 

@@ -2,14 +2,6 @@
 
 <div class="flex flex-col gap-4">
   <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
-    <p-button
-      type="button"
-      [label]="d.addLine"
-      icon="pi pi-plus"
-      [text]="true"
-      [disabled]="!sectorId() || !contactoId() || salario() === null"
-      (onClick)="openCreate()"
-    />
     @if (!contactoId()) {
       <span class="inline-flex items-center gap-1.5 text-[0.76rem] text-brand-muted">
         <i class="pi pi-info-circle text-[0.72rem]"></i>
@@ -26,6 +18,16 @@
         {{ d.salarioRequired }}
       </span>
     }
+    <p-button
+      type="button"
+      class="ml-auto"
+      [label]="d.addLine"
+      icon="pi pi-plus"
+      [outlined]="true"
+      size="small"
+      [disabled]="!sectorId() || !contactoId() || salario() === null"
+      (onClick)="openCreate()"
+    />
   </div>
 
   <div class="max-h-[28rem] overflow-auto rounded-xl border border-[rgba(20,48,73,0.12)]">
@@ -80,24 +82,34 @@
                 <i class="pi pi-arrow-right mx-1 text-[0.6rem] text-brand-muted"></i>
                 {{ formatDate(line.fecha_hasta) }}
               </td>
-              <td
-                class="detalle-table__td detalle-table__td--coverage whitespace-nowrap tabular-nums"
-              >
-                {{ formatTime(line.hora_desde) }} – {{ formatTime(line.hora_hasta) }}
-              </td>
-
-              <!-- Días + festivo — monospace fixed -->
-              <td class="detalle-table__td detalle-table__td--coverage">
-                <div class="flex items-center gap-1.5">
-                  <span class="font-mono text-[0.72rem] tracking-widest text-brand-text">
-                    {{ formatDias(line.dias_semana, line.festivo) }}
+              @if (line.compuesto) {
+                <!-- Línea compuesta: horario/días/modalidad se derivan de sus componentes. -->
+                <td class="detalle-table__td detalle-table__td--coverage text-center" colspan="3">
+                  <span class="detalle-table__compuesto-badge">
+                    <i class="pi pi-sitemap text-[0.7rem]"></i>
+                    {{ d.fields.compuesto }}
                   </span>
-                </div>
-              </td>
+                </td>
+              } @else {
+                <td
+                  class="detalle-table__td detalle-table__td--coverage whitespace-nowrap tabular-nums"
+                >
+                  {{ formatTime(line.hora_desde) }} – {{ formatTime(line.hora_hasta) }}
+                </td>
 
-              <td class="detalle-table__td detalle-table__td--coverage">
-                {{ line.modalidad?.nombre || '—' }}
-              </td>
+                <!-- Días + festivo — monospace fixed -->
+                <td class="detalle-table__td detalle-table__td--coverage">
+                  <div class="flex items-center gap-1.5">
+                    <span class="font-mono text-[0.72rem] tracking-widest text-brand-text">
+                      {{ formatDias(line.dias_semana, line.festivo) }}
+                    </span>
+                  </div>
+                </td>
+
+                <td class="detalle-table__td detalle-table__td--coverage">
+                  {{ line.modalidad?.nombre || '—' }}
+                </td>
+              }
               <td class="detalle-table__td detalle-table__td--coverage w-10 text-center">
                 @if (line.programar) {
                   <i class="pi pi-check-circle text-emerald-600" [attr.aria-label]="d.yes"></i>

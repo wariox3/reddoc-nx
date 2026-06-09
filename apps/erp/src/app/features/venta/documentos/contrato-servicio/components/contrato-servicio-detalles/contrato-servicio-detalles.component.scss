@@ -64,6 +64,23 @@ tfoot .detalle-table__td {
   padding-bottom: 0.6rem;
 }
 
+// Línea compuesta: badge único que reemplaza horario · días · modalidad.
+// Pill sky discreto, en la misma banda de cobertura, sin gritar.
+.detalle-table__compuesto-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(119, 170, 215, 0.18);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--p-primary-color, #143049);
+  white-space: nowrap;
+}
+
 // Fila separadora de grupo por puesto
 .detalle-table__group-row {
   pointer-events: none;

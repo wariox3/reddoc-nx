@@ -30,6 +30,8 @@ export interface DetalleFormRawValue {
   readonly dias_semana: number[];
   readonly festivo: boolean;
   readonly cortesia: boolean;
+  /** Línea compuesta (derivada del backend): muestra "COMPUESTO" en lugar de horario/días/modalidad. */
+  readonly compuesto: boolean;
   readonly impuestos_ids: number[];
   /** Montos por tipo de impuesto para el desglose en el tfoot. Calculados en el frontend. */
   readonly impuestos_totales: readonly ImpuestoLinea[];

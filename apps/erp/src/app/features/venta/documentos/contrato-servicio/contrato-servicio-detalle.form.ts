@@ -31,6 +31,7 @@ export type DetalleGroup = FormGroup<{
   dias_semana: FormControl<number[]>;
   festivo: FormControl<boolean>;
   cortesia: FormControl<boolean>;
+  compuesto: FormControl<boolean>;
   impuestos_ids: FormControl<number[]>;
   impuestos_totales: FormControl<readonly ImpuestoLinea[]>;
 }>;
@@ -83,6 +84,8 @@ export function createDetalleGroup(value?: Partial<DetalleFormRawValue>): Detall
     ),
     festivo: new FormControl<boolean>(value?.festivo ?? true, { nonNullable: true }),
     cortesia: new FormControl<boolean>(value?.cortesia ?? false, { nonNullable: true }),
+    // Derivado del backend; no editable por UI, solo viaja para mostrarse y reenviarse.
+    compuesto: new FormControl<boolean>(value?.compuesto ?? false, { nonNullable: true }),
     impuestos_ids: new FormControl<number[]>([...(value?.impuestos_ids ?? [])], {
       nonNullable: true,
     }),
