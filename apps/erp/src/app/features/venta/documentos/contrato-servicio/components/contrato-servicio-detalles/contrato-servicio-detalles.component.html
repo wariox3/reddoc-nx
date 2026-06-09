@@ -43,7 +43,7 @@
           <th class="detalle-table__th detalle-table__th--coverage w-10 text-center">
             {{ d.fields.programar }}
           </th>
-          <th class="detalle-table__th w-12 text-center">{{ d.fields.impuestos }}</th>
+          <th class="detalle-table__th">{{ d.fields.impuestos }}</th>
           <th class="detalle-table__th text-right">{{ d.subtotalCol }}</th>
           <th class="detalle-table__th"></th>
         </tr>
@@ -54,7 +54,11 @@
           <tr class="detalle-table__group-row">
             <td colspan="12" class="px-4 pt-4 pb-0">
               <span class="detalle-table__group-label">
-                {{ group.puesto?.nombre ?? '—' }}
+                @if (group.puesto) {
+                  {{ group.puesto.id }} | {{ group.puesto.nombre }}
+                } @else {
+                  —
+                }
               </span>
             </td>
           </tr>
@@ -102,13 +106,17 @@
                 }
               </td>
 
-              <td class="detalle-table__td w-12 text-center">
-                @if (line.impuestos_ids.length > 0) {
-                  <span
-                    class="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-sky-50 px-1.5 text-[0.7rem] font-semibold text-sky-700"
-                  >
-                    {{ line.impuestos_ids.length }}
-                  </span>
+              <td class="detalle-table__td">
+                @if (line.impuestos_totales.length > 0) {
+                  <div class="flex flex-wrap gap-1">
+                    @for (imp of line.impuestos_totales; track imp.id) {
+                      <span
+                        class="inline-flex items-center rounded-md bg-brand-surface-2 px-1.5 py-0.5 text-[0.68rem] font-medium text-brand-text"
+                      >
+                        {{ imp.nombre || '#' + imp.id }}
+                      </span>
+                    }
+                  </div>
                 } @else {
                   <span class="text-brand-muted/60">—</span>
                 }
