@@ -10,6 +10,13 @@ import { ConfiguracionService } from '../../configuracion.service';
 import { HUMANO_CAMPOS } from '../../configuracion.constants';
 import { configuracionToHumanoForm, humanoFormToPayload } from '../../configuracion.mapper';
 
+/** Campos del backend (prefijados) → controles del form (sin prefijo). */
+const HUMANO_FIELD_MAP = {
+  hum_salario_minimo: 'salario_minimo',
+  hum_factor: 'factor',
+  hum_auxilio_transporte: 'auxilio_transporte',
+};
+
 /**
  * Área "Humano" de la configuración: parámetros de nómina
  * (`hum_salario_minimo`, `hum_factor`, `hum_auxilio_transporte`).
@@ -92,7 +99,7 @@ export class HumanoConfigComponent {
         },
         error: (err: unknown) => {
           this.isSaving.set(false);
-          this.formErrors.handle(this.form, err, toasts.saveError.title);
+          this.formErrors.handle(this.form, err, toasts.saveError.title, HUMANO_FIELD_MAP);
         },
       });
   }

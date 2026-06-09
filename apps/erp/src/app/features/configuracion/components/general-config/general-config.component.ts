@@ -10,6 +10,9 @@ import { ConfiguracionService } from '../../configuracion.service';
 import { GENERAL_CAMPOS } from '../../configuracion.constants';
 import { configuracionToGeneralForm, generalFormToPayload } from '../../configuracion.mapper';
 
+/** Campos del backend (prefijados) → controles del form (sin prefijo). */
+const GENERAL_FIELD_MAP = { gen_uvt: 'uvt' };
+
 /**
  * Área "General" de la configuración: la UVT (`gen_uvt`).
  *
@@ -86,7 +89,7 @@ export class GeneralConfigComponent {
         },
         error: (err: unknown) => {
           this.isSaving.set(false);
-          this.formErrors.handle(this.form, err, toasts.saveError.title);
+          this.formErrors.handle(this.form, err, toasts.saveError.title, GENERAL_FIELD_MAP);
         },
       });
   }
