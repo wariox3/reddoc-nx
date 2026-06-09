@@ -53,12 +53,9 @@
         @for (group of groupedLines(); track (group.puesto?.id ?? '__null__') + '_' + $index) {
           <tr class="detalle-table__group-row">
             <td colspan="12" class="px-4 pt-4 pb-0">
-              <div class="flex items-center gap-2.5">
-                <span class="detalle-table__group-label">
-                  {{ group.puesto?.nombre ?? '—' }}
-                </span>
-                <div class="h-px flex-1 bg-[rgba(20,48,73,0.08)]"></div>
-              </div>
+              <span class="detalle-table__group-label">
+                {{ group.puesto?.nombre ?? '—' }}
+              </span>
             </td>
           </tr>
           @for (line of group.items; track line.id ?? $index) {
@@ -92,7 +89,7 @@
                     {{ formatDias(line.dias_semana) }}
                   </span>
                   @if (line.festivo) {
-                    <span class="text-[0.65rem] font-bold text-amber-500">F</span>
+                    <span class="font-mono text-[0.72rem] tracking-widest text-brand-text">F</span>
                   }
                 </div>
               </td>
