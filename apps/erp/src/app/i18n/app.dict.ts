@@ -489,7 +489,9 @@ export interface AppDict extends AuthTranslationsHost {
           lineLabel: string;
           coverage: string;
           subtotalCol: string;
+          contractSummaryTitle: string;
           contractSubtotal: string;
+          contractTotal: string;
           yes: string;
           no: string;
           modalCreateTitle: string;

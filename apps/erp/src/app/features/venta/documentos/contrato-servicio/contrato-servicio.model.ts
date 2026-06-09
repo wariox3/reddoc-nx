@@ -65,6 +65,12 @@ export interface ContratoServicioDetalleImpuestoRead {
   /** Id del impuesto (FK), p.ej. 1 = IVA 19%. Es lo que espera el multiselector. */
   readonly impuesto: number;
   readonly impuesto_nombre?: string | null;
+  /** Porcentaje del impuesto, e.g. `"19.000000"`. */
+  readonly porcentaje?: string | null;
+  /** Porcentaje de la base sobre la que aplica el impuesto, e.g. `"100.000000"` o `"10.000000"` para AIU. */
+  readonly porcentaje_base?: string | null;
+  /** Monto ya calculado por el backend, e.g. `"796537.456000"`. */
+  readonly total?: string | null;
 }
 
 /** Cuerpo de una línea de detalle enviada en `POST`/`PATCH`. */

@@ -4,15 +4,34 @@ import { FormArray } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
-import { I18nService, ToastService, formatCop, toHora } from '@reddoc/core';
+import {
+  I18nService,
+  ToastService,
+  calcularResumen,
+  formatCop,
+  toHora,
+  type LineaCalculo,
+  type ResumenDocumento,
+} from '@reddoc/core';
 import { DocumentoDetalleService } from '@erp/core/module-config';
 import type { AppDict } from '@erp/i18n';
 import { ContratoServicioDetalleModalComponent } from '../contrato-servicio-detalle-modal/contrato-servicio-detalle-modal.component';
+import { ContratoServicioResumenComponent } from '../contrato-servicio-resumen/contrato-servicio-resumen.component';
 import { createDetalleGroup, type DetalleGroup } from '../../contrato-servicio-detalle.form';
 import { detalleToPayload } from '../../contrato-servicio.mapper';
 import type { ContratoServicioDetalleRead } from '../../contrato-servicio.model';
 import type { DetalleFormRawValue } from '../../contrato-servicio-detalle.types';
 import type { ErpSelectOption } from '@erp/core/components/api-select/erp-api-select.component';
+
+/** Base gravable de una línea del contrato: `cantidad × precio`. */
+function lineAmount(line: Pick<DetalleFormRawValue, 'cantidad' | 'precio'>): number {
+  return (line.cantidad ?? 0) * (line.precio ?? 0);
+}
+
+/** Adapta una línea del contrato al contrato mínimo del kernel de cálculo. */
+function toLineaCalculo(line: DetalleFormRawValue): LineaCalculo {
+  return { base: lineAmount(line), impuestos: line.impuestos_totales };
+}
 
 /**
  * Listado de las líneas de servicio (detalles) del contrato.
@@ -26,7 +45,12 @@ import type { ErpSelectOption } from '@erp/core/components/api-select/erp-api-se
 @Component({
   selector: 'app-contrato-servicio-detalles',
   standalone: true,
-  imports: [ButtonModule, ConfirmDialogModule, ContratoServicioDetalleModalComponent],
+  imports: [
+    ButtonModule,
+    ConfirmDialogModule,
+    ContratoServicioDetalleModalComponent,
+    ContratoServicioResumenComponent,
+  ],
   providers: [ConfirmationService],
   templateUrl: './contrato-servicio-detalles.component.html',
   styleUrl: './contrato-servicio-detalles.component.scss',
@@ -65,9 +89,9 @@ export class ContratoServicioDetallesComponent {
   /** Multi-puesto habilitado: cada línea nueva elige su puesto libremente. */
   protected readonly lockedPuesto = computed<ErpSelectOption | null>(() => null);
 
-  /** Subtotal del contrato (Σ cantidad × precio). Impuestos los calcula el backend. */
-  protected readonly subtotal = computed(() =>
-    this.lines().reduce((acc, line) => acc + this.lineAmount(line), 0),
+  /** Resumen financiero del contrato: subtotal, desglose por impuesto y total. */
+  protected readonly resumen = computed<ResumenDocumento>(() =>
+    calcularResumen(this.lines().map(toLineaCalculo)),
   );
 
   /** Líneas agrupadas por puesto para renderizar separadores en la tabla. */
@@ -241,7 +265,7 @@ export class ContratoServicioDetallesComponent {
   /** Subtotal de una línea por índice. */
   protected lineSubtotal(index: number): number {
     const line = this.lines()[index];
-    return line ? this.lineAmount(line) : 0;
+    return line ? lineAmount(line) : 0;
   }
 
   /**
@@ -262,7 +286,8 @@ export class ContratoServicioDetallesComponent {
     return toHora(date) ?? '—';
   }
 
-  private lineAmount(line: DetalleFormRawValue): number {
-    return (line.cantidad ?? 0) * (line.precio ?? 0);
+  /** "LMX-V--" — 7 posiciones fijas, X = Miércoles, guión = inactivo. */
+  protected formatDias(dias: readonly number[]): string {
+    return ['L', 'M', 'X', 'J', 'V', 'S', 'D'].map((l, i) => (dias.includes(i) ? l : '-')).join('');
   }
 }

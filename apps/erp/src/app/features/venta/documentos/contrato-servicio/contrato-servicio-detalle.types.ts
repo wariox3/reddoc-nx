@@ -1,3 +1,4 @@
+import type { ImpuestoLinea } from '@reddoc/core';
 import type { ErpSelectOption } from '@erp/core/components/api-select/erp-api-select.component';
 
 /**
@@ -30,4 +31,6 @@ export interface DetalleFormRawValue {
   readonly festivo: boolean;
   readonly cortesia: boolean;
   readonly impuestos_ids: number[];
+  /** Montos por tipo de impuesto para el desglose en el tfoot. Calculados en el frontend. */
+  readonly impuestos_totales: readonly ImpuestoLinea[];
 }

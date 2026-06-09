@@ -1,5 +1,5 @@
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { startOfToday } from '@reddoc/core';
+import { startOfToday, type ImpuestoLinea } from '@reddoc/core';
 import type { ErpSelectOption } from '@erp/core/components/api-select/erp-api-select.component';
 import type { DetalleFormRawValue, ItemOption } from './contrato-servicio-detalle.types';
 
@@ -32,6 +32,7 @@ export type DetalleGroup = FormGroup<{
   festivo: FormControl<boolean>;
   cortesia: FormControl<boolean>;
   impuestos_ids: FormControl<number[]>;
+  impuestos_totales: FormControl<readonly ImpuestoLinea[]>;
 }>;
 
 /**
@@ -83,6 +84,9 @@ export function createDetalleGroup(value?: Partial<DetalleFormRawValue>): Detall
     festivo: new FormControl<boolean>(value?.festivo ?? true, { nonNullable: true }),
     cortesia: new FormControl<boolean>(value?.cortesia ?? false, { nonNullable: true }),
     impuestos_ids: new FormControl<number[]>([...(value?.impuestos_ids ?? [])], {
+      nonNullable: true,
+    }),
+    impuestos_totales: new FormControl<readonly ImpuestoLinea[]>(value?.impuestos_totales ?? [], {
       nonNullable: true,
     }),
   });

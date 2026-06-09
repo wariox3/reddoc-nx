@@ -56,6 +56,8 @@ export {
   daysBetween,
 } from './lib/utils/date.utils';
 export { formatCop, toFiniteNumber } from './lib/utils/currency.utils';
+export { redondearMoneda, calcularImpuestosLinea, calcularResumen } from './lib/calculo';
+export type { TasaImpuesto, ImpuestoLinea, LineaCalculo, ResumenDocumento } from './lib/calculo';
 export type { ApiError, ApiErrorResponse } from './lib/utils/error.utils';
 export { I18nService, provideI18n, SUPPORTED_LANGS, DEFAULT_LANG } from './lib/i18n';
 export type { Lang } from './lib/i18n';

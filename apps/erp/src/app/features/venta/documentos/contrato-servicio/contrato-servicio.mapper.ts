@@ -73,6 +73,11 @@ function detalleToFormValue(
     festivo: read.festivo ?? false,
     cortesia: read.cortesia ?? false,
     impuestos_ids: (read.impuestos ?? []).map((imp) => imp.impuesto),
+    impuestos_totales: (read.impuestos ?? []).map((imp) => ({
+      id: imp.impuesto,
+      nombre: imp.impuesto_nombre ?? '',
+      total: Math.round(parseFloat(imp.total ?? '0')),
+    })),
   };
 }
 

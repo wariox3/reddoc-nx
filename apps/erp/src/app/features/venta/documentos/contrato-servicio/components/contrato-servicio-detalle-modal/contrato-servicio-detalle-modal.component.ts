@@ -27,7 +27,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { DialogModule } from 'primeng/dialog';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
-import { I18nService, toHora } from '@reddoc/core';
+import { I18nService, calcularImpuestosLinea, toHora, type TasaImpuesto } from '@reddoc/core';
 import { FieldErrorComponent } from '@reddoc/ui';
 import {
   ErpApiSelectComponent,
@@ -302,6 +302,20 @@ export class ContratoServicioDetalleModalComponent {
       group.markAllAsTouched();
       return;
     }
+    const raw = group.getRawValue();
+    const detail = this.itemDetail();
+    const subtotal = (raw.cantidad ?? 0) * (raw.precio ?? 0);
+    // Borde de adaptación: parsea las tasas del ítem (strings del backend) a
+    // números y delega la fórmula fiscal al kernel compartido.
+    const tasas: TasaImpuesto[] = (detail?.impuestos ?? [])
+      .filter((imp) => imp.impuesto_venta && raw.impuestos_ids.includes(imp.impuesto))
+      .map((imp) => ({
+        id: imp.impuesto,
+        nombre: imp.impuesto_nombre ?? '',
+        porcentaje: parseFloat(imp.impuesto_porcentaje ?? '0'),
+        porcentajeBase: parseFloat(imp.impuesto_porcentaje_base ?? '100'),
+      }));
+    group.controls.impuestos_totales.setValue(calcularImpuestosLinea(subtotal, tasas));
     // El padre cierra el modal al confirmarse el guardado: en edición espera el
     // HTTP (cierra solo al éxito, queda abierto en error); en alta cierra al instante.
     this.save.emit(group.getRawValue());
