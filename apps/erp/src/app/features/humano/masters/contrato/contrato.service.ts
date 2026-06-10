@@ -7,7 +7,7 @@ import {
   type ListQuery,
   type PaginatedResponse,
 } from '@reddoc/core';
-import type { Contrato } from './contrato.model';
+import type { Contrato, ContratoPayload } from './contrato.model';
 
 @Injectable({ providedIn: 'root' })
 export class ContratoService extends BaseHttpService {
@@ -19,6 +19,18 @@ export class ContratoService extends BaseHttpService {
       buildListBody(query),
       buildListParams(query),
     );
+  }
+
+  getById(id: number): Observable<Contrato> {
+    return this.get<Contrato>(`${this.resourcePath}${id}/`);
+  }
+
+  create(payload: ContratoPayload): Observable<Contrato> {
+    return this.post<Contrato>(this.resourcePath, payload);
+  }
+
+  update(id: number, payload: ContratoPayload): Observable<Contrato> {
+    return this.put<Contrato>(`${this.resourcePath}${id}/`, payload);
   }
 
   remove(ids: readonly number[]): Observable<void> {

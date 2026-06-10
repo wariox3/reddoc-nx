@@ -445,6 +445,68 @@ export interface AppDict extends AuthTranslationsHost {
         salario: string;
         terminado: string;
       };
+      form: {
+        createTitle: string;
+        createSubtitle: string;
+        editTitle: string;
+        editSubtitle: string;
+        cancel: string;
+        submitCreate: string;
+        submitEdit: string;
+        sections: {
+          datos: string;
+          remuneracion: string;
+          seguridadSocial: string;
+          terminacion: string;
+        };
+        sectionsHint: {
+          datos: string;
+          remuneracion: string;
+          seguridadSocial: string;
+          terminacion: string;
+        };
+        fields: {
+          contacto: string;
+          contratoTipo: string;
+          cargo: string;
+          grupo: string;
+          sucursal: string;
+          tiempo: string;
+          fechaDesde: string;
+          fechaHasta: string;
+          salario: string;
+          auxilioTransporte: string;
+          salarioIntegral: string;
+          tipoCosto: string;
+          grupoContabilidad: string;
+          salud: string;
+          entidadSalud: string;
+          pension: string;
+          entidadPension: string;
+          entidadCesantias: string;
+          entidadCaja: string;
+          riesgo: string;
+          tipoCotizante: string;
+          subtipoCotizante: string;
+          ciudadContrato: string;
+          ciudadLabora: string;
+          estadoTerminado: string;
+          motivoTerminacion: string;
+          fechaUltimoPago: string;
+          fechaUltimoPagoPrima: string;
+          fechaUltimoPagoCesantia: string;
+          fechaUltimoPagoVacacion: string;
+          comentario: string;
+        };
+        validation: { required: string };
+        toasts: {
+          createSuccess: { title: string; desc: string };
+          editSuccess: { title: string; desc: string };
+          createError: { title: string; desc: string };
+          editError: { title: string; desc: string };
+          loadError: { title: string; desc: string };
+        };
+      };
     };
     facturaVenta: {
       name: string;

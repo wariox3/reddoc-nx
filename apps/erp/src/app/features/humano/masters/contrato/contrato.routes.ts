@@ -8,4 +8,14 @@ export const CONTRATO_ROUTES: Route[] = [
         (m) => m.ContratosListComponent,
       ),
   },
+  {
+    path: 'nuevo',
+    loadComponent: () =>
+      import('./pages/contrato-form/contrato-form.component').then((m) => m.ContratoFormComponent),
+  },
+  {
+    path: 'editar/:id',
+    loadComponent: () =>
+      import('./pages/contrato-form/contrato-form.component').then((m) => m.ContratoFormComponent),
+  },
 ];

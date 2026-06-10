@@ -1,0 +1,592 @@
+<!-- ── Encabezado de página ──────────────────────────────────────────────── -->
+<header>
+  <button
+    type="button"
+    (click)="onCancel()"
+    class="mb-2 inline-flex cursor-pointer items-center gap-1.5 border-0 bg-transparent p-0 text-[0.78rem] font-medium text-brand-muted transition-colors hover:text-brand-text"
+  >
+    <i class="pi pi-arrow-left text-[0.7rem]"></i>
+    {{ t().entities.contrato.name }}
+  </button>
+  <h1 class="m-0 text-2xl font-bold tracking-tight text-brand-text">
+    @if (isEditMode()) {
+      {{ t().entities.contrato.form.editTitle }}
+    } @else {
+      {{ t().entities.contrato.form.createTitle }}
+    }
+  </h1>
+  <p class="m-0 mt-1 text-sm text-brand-muted">
+    @if (isEditMode()) {
+      {{ t().entities.contrato.form.editSubtitle }}
+    } @else {
+      {{ t().entities.contrato.form.createSubtitle }}
+    }
+  </p>
+</header>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()" autocomplete="off" class="flex flex-col gap-5">
+  <!-- ── Sección 1: Datos del contrato ─────────────────────────────────────── -->
+  <section class="overflow-hidden rounded-xl border border-[rgba(20,48,73,0.1)] bg-brand-surface">
+    <div class="flex items-center gap-3 border-b border-[rgba(20,48,73,0.08)] px-5 py-4">
+      <span
+        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-sky-50 text-sky-700"
+      >
+        <i class="pi pi-file text-[1.05rem]"></i>
+      </span>
+      <div class="flex min-w-0 flex-1 flex-col gap-[0.1rem]">
+        <h2 class="m-0 text-[0.95rem] font-bold tracking-tight text-brand-text">
+          {{ t().entities.contrato.form.sections.datos }}
+        </h2>
+        <p class="m-0 text-[0.75rem] text-brand-muted">
+          {{ t().entities.contrato.form.sectionsHint.datos }}
+        </p>
+      </div>
+    </div>
+
+    <div class="px-5 py-5 max-[576px]:px-4 max-[576px]:py-4">
+      <div class="grid grid-cols-1 gap-x-5 gap-y-4 sm:grid-cols-2">
+        <!-- TODO(endpoint): reemplazar <p-select> deshabilitados por <app-api-select endpoint="…"> + habilitar control -->
+        <div class="flex flex-col gap-1.5">
+          <label for="contacto" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.contacto }}
+          </label>
+          <p-select
+            inputId="contacto"
+            formControlName="contacto"
+            [placeholder]="t().common.comingSoon"
+            optionLabel="nombre"
+            dataKey="id"
+            appendTo="body"
+            [fluid]="true"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="contrato_tipo" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.contratoTipo }}
+          </label>
+          <p-select
+            inputId="contrato_tipo"
+            formControlName="contrato_tipo"
+            [placeholder]="t().common.comingSoon"
+            optionLabel="nombre"
+            dataKey="id"
+            appendTo="body"
+            [fluid]="true"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="cargo" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.cargo }}
+          </label>
+          <p-select
+            inputId="cargo"
+            formControlName="cargo"
+            [placeholder]="t().common.comingSoon"
+            optionLabel="nombre"
+            dataKey="id"
+            appendTo="body"
+            [fluid]="true"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="grupo" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.grupo }}
+          </label>
+          <p-select
+            inputId="grupo"
+            formControlName="grupo"
+            [placeholder]="t().common.comingSoon"
+            optionLabel="nombre"
+            dataKey="id"
+            appendTo="body"
+            [fluid]="true"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="sucursal" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.sucursal }}
+          </label>
+          <p-select
+            inputId="sucursal"
+            formControlName="sucursal"
+            [placeholder]="t().common.comingSoon"
+            optionLabel="nombre"
+            dataKey="id"
+            appendTo="body"
+            [fluid]="true"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="tiempo" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.tiempo }}
+          </label>
+          <p-select
+            inputId="tiempo"
+            formControlName="tiempo"
+            [placeholder]="t().common.comingSoon"
+            optionLabel="nombre"
+            dataKey="id"
+            appendTo="body"
+            [fluid]="true"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="fecha_desde" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.fechaDesde }}
+          </label>
+          <p-datepicker
+            inputId="fecha_desde"
+            formControlName="fecha_desde"
+            dateFormat="yy-mm-dd"
+            [showIcon]="true"
+            appendTo="body"
+            [fluid]="true"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="fecha_hasta" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.fechaHasta }}
+          </label>
+          <p-datepicker
+            inputId="fecha_hasta"
+            formControlName="fecha_hasta"
+            dateFormat="yy-mm-dd"
+            [showIcon]="true"
+            appendTo="body"
+            [fluid]="true"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Sección 2: Remuneración ───────────────────────────────────────────── -->
+  <section class="overflow-hidden rounded-xl border border-[rgba(20,48,73,0.1)] bg-brand-surface">
+    <div class="flex items-center gap-3 border-b border-[rgba(20,48,73,0.08)] px-5 py-4">
+      <span
+        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-sky-50 text-sky-700"
+      >
+        <i class="pi pi-dollar text-[1.05rem]"></i>
+      </span>
+      <div class="flex min-w-0 flex-1 flex-col gap-[0.1rem]">
+        <h2 class="m-0 text-[0.95rem] font-bold tracking-tight text-brand-text">
+          {{ t().entities.contrato.form.sections.remuneracion }}
+        </h2>
+        <p class="m-0 text-[0.75rem] text-brand-muted">
+          {{ t().entities.contrato.form.sectionsHint.remuneracion }}
+        </p>
+      </div>
+    </div>
+
+    <div class="px-5 py-5 max-[576px]:px-4 max-[576px]:py-4">
+      <div class="grid grid-cols-1 gap-x-5 gap-y-4 sm:grid-cols-2">
+        <div class="flex flex-col gap-1.5">
+          <label for="salario" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.salario }}
+          </label>
+          <p-inputnumber
+            inputId="salario"
+            formControlName="salario"
+            mode="decimal"
+            [minFractionDigits]="0"
+            [maxFractionDigits]="2"
+            prefix="$ "
+            [fluid]="true"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="auxilio_transporte" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.auxilioTransporte }}
+          </label>
+          <p-inputnumber
+            inputId="auxilio_transporte"
+            formControlName="auxilio_transporte"
+            mode="decimal"
+            [minFractionDigits]="0"
+            [maxFractionDigits]="2"
+            prefix="$ "
+            [fluid]="true"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="tipo_costo" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.tipoCosto }}
+          </label>
+          <p-select
+            inputId="tipo_costo"
+            formControlName="tipo_costo"
+            [placeholder]="t().common.comingSoon"
+            optionLabel="nombre"
+            dataKey="id"
+            appendTo="body"
+            [fluid]="true"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="grupo_contabilidad" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.grupoContabilidad }}
+          </label>
+          <p-select
+            inputId="grupo_contabilidad"
+            formControlName="grupo_contabilidad"
+            [placeholder]="t().common.comingSoon"
+            optionLabel="nombre"
+            dataKey="id"
+            appendTo="body"
+            [fluid]="true"
+          />
+        </div>
+
+        <label for="salario_integral" class="flex cursor-pointer items-center gap-2 self-end pb-2">
+          <p-checkbox
+            inputId="salario_integral"
+            formControlName="salario_integral"
+            [binary]="true"
+          />
+          <span class="text-[0.85rem] text-brand-text">
+            {{ t().entities.contrato.form.fields.salarioIntegral }}
+          </span>
+        </label>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Sección 3: Seguridad social ───────────────────────────────────────── -->
+  <section class="overflow-hidden rounded-xl border border-[rgba(20,48,73,0.1)] bg-brand-surface">
+    <div class="flex items-center gap-3 border-b border-[rgba(20,48,73,0.08)] px-5 py-4">
+      <span
+        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-sky-50 text-sky-700"
+      >
+        <i class="pi pi-shield text-[1.05rem]"></i>
+      </span>
+      <div class="flex min-w-0 flex-1 flex-col gap-[0.1rem]">
+        <h2 class="m-0 text-[0.95rem] font-bold tracking-tight text-brand-text">
+          {{ t().entities.contrato.form.sections.seguridadSocial }}
+        </h2>
+        <p class="m-0 text-[0.75rem] text-brand-muted">
+          {{ t().entities.contrato.form.sectionsHint.seguridadSocial }}
+        </p>
+      </div>
+    </div>
+
+    <div class="px-5 py-5 max-[576px]:px-4 max-[576px]:py-4">
+      <!-- TODO(endpoint): todos los dropdowns de esta sección quedan a la espera de su endpoint seleccionar/ -->
+      <div class="grid grid-cols-1 gap-x-5 gap-y-4 sm:grid-cols-2">
+        <div class="flex flex-col gap-1.5">
+          <label for="salud" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.salud }}
+          </label>
+          <p-select
+            inputId="salud"
+            formControlName="salud"
+            [placeholder]="t().common.comingSoon"
+            optionLabel="nombre"
+            dataKey="id"
+            appendTo="body"
+            [fluid]="true"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="entidad_salud" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.entidadSalud }}
+          </label>
+          <p-select
+            inputId="entidad_salud"
+            formControlName="entidad_salud"
+            [placeholder]="t().common.comingSoon"
+            optionLabel="nombre"
+            dataKey="id"
+            appendTo="body"
+            [fluid]="true"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="pension" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.pension }}
+          </label>
+          <p-select
+            inputId="pension"
+            formControlName="pension"
+            [placeholder]="t().common.comingSoon"
+            optionLabel="nombre"
+            dataKey="id"
+            appendTo="body"
+            [fluid]="true"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="entidad_pension" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.entidadPension }}
+          </label>
+          <p-select
+            inputId="entidad_pension"
+            formControlName="entidad_pension"
+            [placeholder]="t().common.comingSoon"
+            optionLabel="nombre"
+            dataKey="id"
+            appendTo="body"
+            [fluid]="true"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="entidad_cesantias" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.entidadCesantias }}
+          </label>
+          <p-select
+            inputId="entidad_cesantias"
+            formControlName="entidad_cesantias"
+            [placeholder]="t().common.comingSoon"
+            optionLabel="nombre"
+            dataKey="id"
+            appendTo="body"
+            [fluid]="true"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="entidad_caja" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.entidadCaja }}
+          </label>
+          <p-select
+            inputId="entidad_caja"
+            formControlName="entidad_caja"
+            [placeholder]="t().common.comingSoon"
+            optionLabel="nombre"
+            dataKey="id"
+            appendTo="body"
+            [fluid]="true"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="riesgo" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.riesgo }}
+          </label>
+          <p-select
+            inputId="riesgo"
+            formControlName="riesgo"
+            [placeholder]="t().common.comingSoon"
+            optionLabel="nombre"
+            dataKey="id"
+            appendTo="body"
+            [fluid]="true"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="tipo_cotizante" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.tipoCotizante }}
+          </label>
+          <p-select
+            inputId="tipo_cotizante"
+            formControlName="tipo_cotizante"
+            [placeholder]="t().common.comingSoon"
+            optionLabel="nombre"
+            dataKey="id"
+            appendTo="body"
+            [fluid]="true"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="subtipo_cotizante" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.subtipoCotizante }}
+          </label>
+          <p-select
+            inputId="subtipo_cotizante"
+            formControlName="subtipo_cotizante"
+            [placeholder]="t().common.comingSoon"
+            optionLabel="nombre"
+            dataKey="id"
+            appendTo="body"
+            [fluid]="true"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="ciudad_contrato" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.ciudadContrato }}
+          </label>
+          <p-select
+            inputId="ciudad_contrato"
+            formControlName="ciudad_contrato"
+            [placeholder]="t().common.comingSoon"
+            optionLabel="nombre"
+            dataKey="id"
+            appendTo="body"
+            [fluid]="true"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="ciudad_labora" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.ciudadLabora }}
+          </label>
+          <p-select
+            inputId="ciudad_labora"
+            formControlName="ciudad_labora"
+            [placeholder]="t().common.comingSoon"
+            optionLabel="nombre"
+            dataKey="id"
+            appendTo="body"
+            [fluid]="true"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Sección 4: Terminación y pagos ────────────────────────────────────── -->
+  <section class="overflow-hidden rounded-xl border border-[rgba(20,48,73,0.1)] bg-brand-surface">
+    <div class="flex items-center gap-3 border-b border-[rgba(20,48,73,0.08)] px-5 py-4">
+      <span
+        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-sky-50 text-sky-700"
+      >
+        <i class="pi pi-flag text-[1.05rem]"></i>
+      </span>
+      <div class="flex min-w-0 flex-1 flex-col gap-[0.1rem]">
+        <h2 class="m-0 text-[0.95rem] font-bold tracking-tight text-brand-text">
+          {{ t().entities.contrato.form.sections.terminacion }}
+        </h2>
+        <p class="m-0 text-[0.75rem] text-brand-muted">
+          {{ t().entities.contrato.form.sectionsHint.terminacion }}
+        </p>
+      </div>
+    </div>
+
+    <div class="px-5 py-5 max-[576px]:px-4 max-[576px]:py-4">
+      <div class="grid grid-cols-1 gap-x-5 gap-y-4 sm:grid-cols-2">
+        <label for="estado_terminado" class="flex cursor-pointer items-center gap-2 self-end pb-2">
+          <p-checkbox
+            inputId="estado_terminado"
+            formControlName="estado_terminado"
+            [binary]="true"
+          />
+          <span class="text-[0.85rem] text-brand-text">
+            {{ t().entities.contrato.form.fields.estadoTerminado }}
+          </span>
+        </label>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="motivo_terminacion" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.motivoTerminacion }}
+          </label>
+          <p-select
+            inputId="motivo_terminacion"
+            formControlName="motivo_terminacion"
+            [placeholder]="t().common.comingSoon"
+            optionLabel="nombre"
+            dataKey="id"
+            appendTo="body"
+            [fluid]="true"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="fecha_ultimo_pago" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.fechaUltimoPago }}
+          </label>
+          <p-datepicker
+            inputId="fecha_ultimo_pago"
+            formControlName="fecha_ultimo_pago"
+            dateFormat="yy-mm-dd"
+            [showIcon]="true"
+            appendTo="body"
+            [fluid]="true"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="fecha_ultimo_pago_prima" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.fechaUltimoPagoPrima }}
+          </label>
+          <p-datepicker
+            inputId="fecha_ultimo_pago_prima"
+            formControlName="fecha_ultimo_pago_prima"
+            dateFormat="yy-mm-dd"
+            [showIcon]="true"
+            appendTo="body"
+            [fluid]="true"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="fecha_ultimo_pago_cesantia" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.fechaUltimoPagoCesantia }}
+          </label>
+          <p-datepicker
+            inputId="fecha_ultimo_pago_cesantia"
+            formControlName="fecha_ultimo_pago_cesantia"
+            dateFormat="yy-mm-dd"
+            [showIcon]="true"
+            appendTo="body"
+            [fluid]="true"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="fecha_ultimo_pago_vacacion" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.fechaUltimoPagoVacacion }}
+          </label>
+          <p-datepicker
+            inputId="fecha_ultimo_pago_vacacion"
+            formControlName="fecha_ultimo_pago_vacacion"
+            dateFormat="yy-mm-dd"
+            [showIcon]="true"
+            appendTo="body"
+            [fluid]="true"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5 sm:col-span-2">
+          <label for="comentario" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.comentario }}
+          </label>
+          <textarea
+            id="comentario"
+            pTextarea
+            formControlName="comentario"
+            rows="3"
+            class="w-full"
+          ></textarea>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Footer ────────────────────────────────────────────────────────────── -->
+  <div class="flex items-center justify-end gap-3 pb-1">
+    <p-button
+      type="button"
+      [label]="t().entities.contrato.form.cancel"
+      [outlined]="true"
+      severity="secondary"
+      (onClick)="onCancel()"
+    />
+    <p-button
+      type="submit"
+      [label]="
+        isEditMode()
+          ? t().entities.contrato.form.submitEdit
+          : t().entities.contrato.form.submitCreate
+      "
+      icon="pi pi-check"
+      [loading]="isSaving()"
+      [disabled]="form.invalid || form.pending || isSaving()"
+    />
+  </div>
+</form>
