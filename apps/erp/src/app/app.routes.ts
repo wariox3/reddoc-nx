@@ -81,6 +81,10 @@ export const appRoutes: Route[] = [
         loadChildren: () =>
           import('./features/contabilidad/contabilidad.routes').then((m) => m.CONTABILIDAD_ROUTES),
       },
+      {
+        path: 'humano',
+        loadChildren: () => import('./features/humano/humano.routes').then((m) => m.HUMANO_ROUTES),
+      },
     ],
   },
 
