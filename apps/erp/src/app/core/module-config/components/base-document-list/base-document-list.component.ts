@@ -1,5 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, computed, effect, inject, input, signal } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  computed,
+  effect,
+  inject,
+  input,
+  signal,
+  untracked,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -184,12 +193,20 @@ export class BaseDocumentListComponent {
   constructor() {
     // Cuando cambia el documento (navegación entre documentos del mismo módulo),
     // restauramos los filtros guardados y recargamos la lista.
+    //
+    // El `effect` debe reaccionar SOLO al cambio de documento/módulo (`storageKey`).
+    // El cuerpo va en `untracked` porque `loadList()` lee `currentPage`/`pageSize`/
+    // `sort`/`activeFilters`: sin `untracked`, esas señales se volverían
+    // dependencias y cada cambio de página re-dispararía el effect, que resetea
+    // `currentPage` a 0 → la paginación rebotaría siempre a la primera página.
     effect(() => {
-      const storedFilters = this.filterStorage.read(this.storageKey());
-      this.activeFilters.set(storedFilters);
-      this.selectedRows.set([]);
-      this.currentPage.set(0);
-      this.loadList();
+      const key = this.storageKey();
+      untracked(() => {
+        this.activeFilters.set(this.filterStorage.read(key));
+        this.selectedRows.set([]);
+        this.currentPage.set(0);
+        this.loadList();
+      });
     });
   }
 
