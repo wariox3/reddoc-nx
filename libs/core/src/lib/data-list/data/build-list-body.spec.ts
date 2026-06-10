@@ -1,7 +1,9 @@
 import {
   BACKEND_OPERATOR,
+  LIST_PAGINATION_PARAMS,
   buildFiltros,
   buildListBody,
+  buildListParams,
   buildOrdenamientos,
 } from './build-list-body';
 import type { FilterCondition, ListQuery, SortSpec } from './list-query.types';
@@ -84,12 +86,10 @@ describe('buildListBody', () => {
     pageSize: 25,
   };
 
-  it('arma el body completo y convierte la página a 1-based', () => {
+  it('arma el body solo con filtros y ordenamientos (paginación va en query params)', () => {
     expect(buildListBody(baseQuery)).toEqual({
       filtros: [{ propiedad: 'nombre_corto', operador: 'contiene', valor: 'm' }],
       ordenamientos: ['-nombre_corto'],
-      pagina: 1,
-      tamano_pagina: 25,
     });
   });
 
@@ -101,5 +101,26 @@ describe('buildListBody', () => {
       { propiedad: 'documento_tipo_id', operador: '=', valor: 7 },
       { propiedad: 'nombre_corto', operador: 'contiene', valor: 'm' },
     ]);
+  });
+});
+
+describe('buildListParams', () => {
+  const baseQuery: ListQuery = {
+    filters: [],
+    sort: [],
+    page: 0,
+    pageSize: 25,
+  };
+
+  it('convierte la página 0-based a 1-based bajo la key "page"', () => {
+    expect(buildListParams({ ...baseQuery, page: 2 })[LIST_PAGINATION_PARAMS.page]).toBe(3);
+  });
+
+  it('expone el tamaño de página bajo la key de tamaño ("limit")', () => {
+    expect(buildListParams({ ...baseQuery, pageSize: 50 })[LIST_PAGINATION_PARAMS.size]).toBe(50);
+  });
+
+  it('arma el set completo de params de paginación', () => {
+    expect(buildListParams(baseQuery)).toEqual({ page: 1, limit: 25 });
   });
 });

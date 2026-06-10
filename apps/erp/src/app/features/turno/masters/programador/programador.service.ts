@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, forkJoin, map } from 'rxjs';
-import { BaseHttpService, buildListBody, type ListQuery } from '@reddoc/core';
+import { BaseHttpService, buildListBody, buildListParams, type ListQuery } from '@reddoc/core';
 import type { Programador, ProgramadorListResponse, ProgramadorPayload } from './programador.model';
 
 @Injectable({ providedIn: 'root' })
@@ -8,7 +8,11 @@ export class ProgramadorService extends BaseHttpService {
   private readonly resourcePath = '/turno/programador/';
 
   list(query: ListQuery): Observable<ProgramadorListResponse> {
-    return this.post<ProgramadorListResponse>(this.resourcePath + 'lista/', buildListBody(query));
+    return this.post<ProgramadorListResponse>(
+      this.resourcePath + 'lista/',
+      buildListBody(query),
+      buildListParams(query),
+    );
   }
 
   getById(id: number): Observable<Programador> {

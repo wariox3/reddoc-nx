@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, forkJoin, map } from 'rxjs';
-import { BaseHttpService, buildListBody, type ListQuery } from '@reddoc/core';
+import { BaseHttpService, buildListBody, buildListParams, type ListQuery } from '@reddoc/core';
 import type {
   CentroCosto,
   CentroCostoListResponse,
@@ -12,7 +12,11 @@ export class CentroCostoService extends BaseHttpService {
   private readonly resourcePath = '/contabilidad/centro-costo/';
 
   list(query: ListQuery): Observable<CentroCostoListResponse> {
-    return this.post<CentroCostoListResponse>(this.resourcePath + 'lista/', buildListBody(query));
+    return this.post<CentroCostoListResponse>(
+      this.resourcePath + 'lista/',
+      buildListBody(query),
+      buildListParams(query),
+    );
   }
 
   getById(id: number): Observable<CentroCosto> {

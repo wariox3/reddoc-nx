@@ -1,12 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
-import type {
-  FilterCondition,
-  FilterOperator,
-  ListQuery,
-  ListResponse,
-  SortSpec,
+import {
+  buildHttpParams,
+  buildListParams,
+  type FilterCondition,
+  type FilterOperator,
+  type ListQuery,
+  type ListResponse,
+  type SortSpec,
 } from '@reddoc/core';
 import type { EntityConfig } from '../types/entity-config.types';
 import type { EntityDataGateway } from './entity-data-gateway';
@@ -32,12 +34,13 @@ interface BackendDocumentFilter {
   readonly valor: string | number | boolean;
 }
 
-/** Body del endpoint `POST <endpoint>/lista/`. */
+/**
+ * Body del endpoint `POST <endpoint>/lista/`. La paginación viaja como query
+ * params (`buildListParams`), no en el body.
+ */
 interface DocumentListBody {
   readonly filtros: readonly BackendDocumentFilter[];
   readonly ordenamientos: readonly string[];
-  readonly pagina: number;
-  readonly tamano_pagina: number;
 }
 
 /**
@@ -65,8 +68,8 @@ const BACKEND_OPERATOR: Readonly<Record<FilterOperator, string>> = {
  * transaccionales del framework configuracional.
  *
  * Convenciones del backend de documentos (`/api/general/documento`):
- *  - **Listado**: POST `<endpoint>/lista/` con body
- *    `{ filtros, ordenamientos, pagina, tamano_pagina }`. El filtro por
+ *  - **Listado**: POST `<endpoint>/lista/` con body `{ filtros, ordenamientos }`
+ *    y la paginación como query params (`?page=…&limit=…`). El filtro por
  *    `documento_tipo_id` se inyecta automáticamente desde
  *    `DocumentEntityConfig.documentTypeId` — el componente nunca lo declara.
  *  - **Batch delete**: POST `<endpoint>/eliminar/` con `{ ids: [...] }`.
@@ -82,12 +85,16 @@ export class HttpEntityDataGateway implements EntityDataGateway {
 
   list(entity: EntityConfig, query: ListQuery): Observable<ListResponse> {
     const body = this.buildListBody(entity, query);
-    return this.http.post<PaginatedApiResponse>(`${entity.endpoint}/lista/`, body).pipe(
-      map((response) => ({
-        results: response.results,
-        totalCount: response.count,
-      })),
-    );
+    return this.http
+      .post<PaginatedApiResponse>(`${entity.endpoint}/lista/`, body, {
+        params: buildHttpParams(buildListParams(query)),
+      })
+      .pipe(
+        map((response) => ({
+          results: response.results,
+          totalCount: response.count,
+        })),
+      );
   }
 
   getById(entity: EntityConfig, id: string | number): Observable<unknown> {
@@ -130,8 +137,6 @@ export class HttpEntityDataGateway implements EntityDataGateway {
     return {
       filtros: [baseFilter, ...implicitFilters, ...userFilters],
       ordenamientos: sort.map(encodeSort),
-      pagina: query.page + 1,
-      tamano_pagina: query.pageSize,
     };
   }
 }

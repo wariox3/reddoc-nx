@@ -34,9 +34,11 @@ export { quickSearchCondition } from './filters/quick-search';
 export { serializeListQuery } from './data/serialize-list-query';
 export {
   BACKEND_OPERATOR,
+  LIST_PAGINATION_PARAMS,
   buildFiltros,
   buildOrdenamientos,
   buildListBody,
+  buildListParams,
 } from './data/build-list-body';
 export type { AdvancedListBody, BackendFilter } from './data/build-list-body';
 
