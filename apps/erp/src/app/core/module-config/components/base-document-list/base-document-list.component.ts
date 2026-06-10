@@ -302,7 +302,11 @@ export class BaseDocumentListComponent {
     // Acciones extra: delega en su strategy sin conocer su modal ni su endpoint.
     const strategy = this.availableStrategies().find((s) => s.id === actionId);
     strategy
-      ?.execute({ document: this.document(), reload: () => this.loadList() })
+      ?.execute({
+        document: this.document(),
+        query: this.currentQuery(),
+        reload: () => this.loadList(),
+      })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe();
   }
@@ -350,17 +354,20 @@ export class BaseDocumentListComponent {
 
   // ── Internos ──────────────────────────────────────────────────────────────
 
-  private loadList(): void {
-    const query: ListQuery = {
+  /** Query activo (filtros/orden/paginación) que comparten `loadList` y las acciones. */
+  private currentQuery(): ListQuery {
+    return {
       filters: this.activeFilters(),
       sort: this.sort(),
       page: this.currentPage(),
       pageSize: this.pageSize(),
     };
+  }
 
+  private loadList(): void {
     this.isLoading.set(true);
     this.gateway
-      .list(this.document(), query)
+      .list(this.document(), this.currentQuery())
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         finalize(() => this.isLoading.set(false)),

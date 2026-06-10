@@ -4,6 +4,8 @@ import { Observable, map } from 'rxjs';
 import {
   buildHttpParams,
   buildListParams,
+  parseFilename,
+  triggerBrowserDownload,
   type FilterCondition,
   type FilterOperator,
   type ListQuery,
@@ -116,6 +118,31 @@ export class HttpEntityDataGateway implements EntityDataGateway {
    */
   remove(entity: EntityConfig, ids: readonly (string | number)[]): Observable<void> {
     return this.http.post<void>(`${entity.endpoint}/eliminar/`, { ids }).pipe(map(() => undefined));
+  }
+
+  /**
+   * Exporta a Excel vía `POST <endpoint>/excel/`. Reusa el mismo `buildListBody`
+   * que el listado: el Excel respeta el filtro implícito `documento_tipo_id`, los
+   * `defaultFilters` y los filtros/orden activos del usuario (sin paginar). El
+   * blob se consume disparando la descarga del navegador.
+   */
+  exportExcel(entity: EntityConfig, query: ListQuery): Observable<void> {
+    const body = this.buildListBody(entity, query);
+    return this.http
+      .post(`${entity.endpoint}/excel/`, body, { observe: 'response', responseType: 'blob' })
+      .pipe(
+        map((response) => {
+          const blob = response.body;
+          if (!blob || blob.size === 0) {
+            throw new Error('Respuesta vacía del servidor');
+          }
+          const filename = parseFilename(
+            response.headers.get('content-disposition'),
+            `${entity.id}.xlsx`,
+          );
+          triggerBrowserDownload(blob, filename);
+        }),
+      );
   }
 
   /**

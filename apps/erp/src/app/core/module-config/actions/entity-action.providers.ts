@@ -1,5 +1,6 @@
 import type { Provider } from '@angular/core';
 import { ENTITY_ACTION_STRATEGY } from './entity-action.token';
+import { ExportarExcelActionStrategy } from './exportar-excel/exportar-excel-action.strategy';
 import { GenerarDocumentoActionStrategy } from './generar/generar-documento-action.strategy';
 
 /**
@@ -11,4 +12,5 @@ import { GenerarDocumentoActionStrategy } from './generar/generar-documento-acti
  */
 export const ENTITY_ACTION_PROVIDERS: readonly Provider[] = [
   { provide: ENTITY_ACTION_STRATEGY, useClass: GenerarDocumentoActionStrategy, multi: true },
+  { provide: ENTITY_ACTION_STRATEGY, useClass: ExportarExcelActionStrategy, multi: true },
 ];

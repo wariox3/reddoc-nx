@@ -1,4 +1,5 @@
 import type { Observable } from 'rxjs';
+import type { ListQuery } from '@reddoc/core';
 import type { ToolbarAction } from '@reddoc/feature-base';
 import type { DocumentEntityConfig } from '../types/entity-config.types';
 
@@ -13,6 +14,11 @@ import type { DocumentEntityConfig } from '../types/entity-config.types';
 export interface EntityActionContext {
   /** Config del documento activo (de aquí salen `documentTypeId`, `endpoint`, etc.). */
   readonly document: DocumentEntityConfig;
+  /**
+   * Query activo del listado (filtros, orden y paginación actuales). Útil para
+   * acciones que operan sobre lo que el usuario está viendo (ej. exportar).
+   */
+  readonly query: ListQuery;
   /** Recarga la lista. El strategy lo llama tras una operación exitosa. */
   readonly reload: () => void;
 }

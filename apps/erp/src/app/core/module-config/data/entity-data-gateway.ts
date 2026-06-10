@@ -35,6 +35,13 @@ export interface EntityDataGateway {
    * paralelizar DELETEs individuales. El componente base no necesita saber.
    */
   remove(entity: EntityConfig, ids: readonly (string | number)[]): Observable<void>;
+
+  /**
+   * Exporta a Excel los registros que cumplen `query` (mismos filtros y orden
+   * que la lista, sin paginar) y dispara la descarga en el navegador.
+   * Devuelve `Observable<void>`: el caller solo necesita saber cuándo terminó.
+   */
+  exportExcel(entity: EntityConfig, query: ListQuery): Observable<void>;
 }
 
 /**

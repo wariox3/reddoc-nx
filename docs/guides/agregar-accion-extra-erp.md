@@ -52,6 +52,7 @@ Ejemplo canónico vivo: `core/module-config/actions/generar/`.
 ```ts
 export interface EntityActionContext {
   readonly document: DocumentEntityConfig; // documentTypeId, endpoint, etc.
+  readonly query: ListQuery; // filtros/orden/paginación activos del listado
   readonly reload: () => void; // recarga la lista tras éxito
 }
 
@@ -59,14 +60,23 @@ export interface EntityActionStrategy {
   readonly id: string; // === un string de document.extraActionIds
   readonly toolbarAction: ToolbarAction; // label/icono; su id debe ser === this.id
   isAvailable?(document: DocumentEntityConfig): boolean; // filtro fino opcional (default: true)
-  execute(ctx: EntityActionContext): Observable<void>; // abre modal + HTTP + toast + reload
+  execute(ctx: EntityActionContext): Observable<void>; // hace todo el flujo de la acción
 }
 ```
 
 - `execute` devuelve `Observable<void>`: el componente base solo se suscribe con
-  `takeUntilDestroyed`. **El strategy es dueño de todo el flujo** (abrir el modal,
-  esperar su resultado, pegarle al backend, mostrar toast y llamar `ctx.reload()`).
+  `takeUntilDestroyed`. **El strategy es dueño de todo el flujo** (abrir su modal si lo
+  tiene, pegarle al backend, mostrar toast y llamar `ctx.reload()` si corresponde).
 - `id` debe ser **único** y **distinto** de los reservados `new`/`edit`/`delete`.
+- `ctx.query` da los **filtros/orden activos** del listado — útil para acciones que operan
+  sobre lo que el usuario está viendo (ej. exportar).
+
+> **Variante sin modal (descarga directa)**: una acción no está obligada a abrir un modal.
+> Ejemplo vivo: **"Exportar excel"** (`actions/exportar-excel/`) — su `execute` llama
+> directo a `gateway.exportExcel(ctx.document, ctx.query)` y no abre nada. Para descargas,
+> el acceso a datos vive en el **gateway** (`EntityDataGateway.exportExcel`), que reusa el
+> mismo armado de filtros que la lista (`documento_tipo_id` + `defaultFilters` + filtros del
+> usuario) — no repliques esa serialización en el strategy.
 
 ---
 
