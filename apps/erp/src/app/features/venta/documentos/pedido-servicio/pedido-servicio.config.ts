@@ -39,6 +39,10 @@ export const PEDIDO_SERVICIO_CONFIG: DocumentEntityConfig = {
     canImport: false,
     canExportExcel: false,
     canExportZip: false,
-    canGenerate: false,
+    canGenerate: true,
   },
+  // Acción extra "generar": botón de toolbar que abre un modal de fecha y genera
+  // pedidos servicio a partir de los contratos servicio de esa fecha. La lógica
+  // vive en `GenerarDocumentoActionStrategy` (registrada en ENTITY_ACTION_PROVIDERS).
+  extraActionIds: ['generar'],
 };

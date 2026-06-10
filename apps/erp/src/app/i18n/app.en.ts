@@ -164,6 +164,24 @@ export const en: AppDict = {
       logout: 'Sign out',
     },
   },
+  documentActions: {
+    generar: {
+      buttonLabel: 'Generate',
+      modalHeader: 'Generate document',
+      modalSubtitle: 'Generates orders from the contracts of the selected date',
+      fechaLabel: 'Date',
+      submit: 'Generate',
+      cancel: 'Cancel',
+      success: {
+        title: 'Document generated',
+        desc: 'The generation completed successfully.',
+      },
+      error: {
+        title: 'Generation failed',
+        desc: 'Could not generate the document. Please try again.',
+      },
+    },
+  },
   modules: {
     general: { name: 'General' },
     compra: { name: 'Purchases' },

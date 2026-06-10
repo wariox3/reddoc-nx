@@ -10,6 +10,7 @@
   @if (showToolbar()) {
     <lib-data-toolbar
       [primaryAction]="primaryAction()"
+      [trailingActions]="trailingActions()"
       [filtersEnabled]="filtersEnabled()"
       [activeFiltersCount]="activeFilters().length"
       [deleteSelectedEnabled]="capabilities().canDelete && hasSelection()"

@@ -67,6 +67,23 @@ body {
   }
 }
 
+// ─── Frame compartido de modales de acciones extra (DynamicDialog) ────────────
+// El dialog se teletransporta al body (fuera del alcance de estilos scoped), así
+// que su frame vive aquí. Replica el chrome de los modales inline del ERP
+// (radio 16px, sombra suave en capas). El header/footer los dibuja el componente.
+.erp-action-dialog.p-dialog {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow:
+    0 4px 6px rgba(20 48 73 / 0.04),
+    0 20px 60px rgba(20 48 73 / 0.14);
+
+  .p-dialog-content {
+    padding: 1.5rem;
+    border-radius: 16px;
+  }
+}
+
 // ─── Auth shared: logo + back link ───────────────────────────────────────────
 .form-panel__back {
   display: inline-flex;

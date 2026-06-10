@@ -137,6 +137,18 @@ export interface AppDict extends AuthTranslationsHost {
       logout: string;
     };
   };
+  documentActions: {
+    generar: {
+      buttonLabel: string;
+      modalHeader: string;
+      modalSubtitle: string;
+      fechaLabel: string;
+      submit: string;
+      cancel: string;
+      success: { title: string; desc: string };
+      error: { title: string; desc: string };
+    };
+  };
   modules: {
     general: { name: string };
     compra: { name: string };

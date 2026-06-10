@@ -36,6 +36,8 @@ import type {
   RowActionInvokedEvent,
   ToolbarAction,
 } from '@reddoc/feature-base';
+import { ENTITY_ACTION_STRATEGY } from '../../actions/entity-action.token';
+import type { EntityActionStrategy } from '../../actions/entity-action-strategy';
 import { ENTITY_DATA_GATEWAY } from '../../data/entity-data-gateway';
 import { MissingModuleContextError } from '../../errors/config.errors';
 import { ModuleNavigationStore } from '../../module-navigation.store';
@@ -99,6 +101,12 @@ export class BaseDocumentListComponent {
   private readonly destroyRef = inject(DestroyRef);
   private readonly i18n = inject<I18nService<unknown>>(I18nService);
 
+  /**
+   * Strategies de acciones extra registrados en `ENTITY_ACTION_STRATEGY`.
+   * `optional` para no romper contextos sin acciones registradas (tests, otras apps).
+   */
+  private readonly actionStrategies = inject(ENTITY_ACTION_STRATEGY, { optional: true }) ?? [];
+
   // ── Inputs ────────────────────────────────────────────────────────────────
   /** Documento activo inyectado por `activeDocumentResolver` vía router binding. */
   readonly document = input.required<DocumentEntityConfig>();
@@ -129,12 +137,48 @@ export class BaseDocumentListComponent {
   );
 
   /**
-   * El toolbar solo se monta si aporta algo: crear, filtrar o eliminar. Un
-   * documento solo-lista (todas las capabilities en `false`, sin filtros) no lo
-   * muestra — queda card + tabla, sin barra vacía.
+   * Strategies de acción extra que este documento expone, en el orden de
+   * `extraActionIds`, filtrados por su `isAvailable`. Open/Closed: el componente
+   * no conoce ninguna acción concreta, solo el contrato `EntityActionStrategy`.
+   */
+  private readonly availableStrategies = computed<readonly EntityActionStrategy[]>(() => {
+    const doc = this.document();
+    return (doc.extraActionIds ?? [])
+      .map((id) => this.actionStrategies.find((s) => s.id === id))
+      .filter((s): s is EntityActionStrategy => s !== undefined)
+      .filter((s) => s.isAvailable?.(doc) ?? true);
+  });
+
+  /**
+   * Acciones extra del toolbar, agrupadas en un único dropdown "Acciones" (el
+   * toolbar lo renderiza como menú cuando el `ToolbarAction` trae `children`).
+   * Al elegir un hijo, el toolbar emite su `id` → lo resuelve `onToolbarAction`.
+   * Vacío ⇒ sin dropdown.
+   */
+  protected readonly trailingActions = computed<readonly ToolbarAction[]>(() => {
+    const children = this.availableStrategies().map((s) => s.toolbarAction);
+    if (children.length === 0) return [];
+    return [
+      {
+        id: 'actions',
+        labelKey: 'common.actions.actions',
+        iconClass: '',
+        children,
+      },
+    ];
+  });
+
+  /**
+   * El toolbar solo se monta si aporta algo: crear, filtrar, eliminar o alguna
+   * acción extra. Un documento solo-lista (todas las capabilities en `false`, sin
+   * filtros ni acciones) no lo muestra — queda card + tabla, sin barra vacía.
    */
   protected readonly showToolbar = computed(
-    () => this.capabilities().canCreate || this.filtersEnabled() || this.capabilities().canDelete,
+    () =>
+      this.capabilities().canCreate ||
+      this.filtersEnabled() ||
+      this.capabilities().canDelete ||
+      this.trailingActions().length > 0,
   );
 
   /** Clave de persistencia de filtros, versionada por `schemaVersion` del documento. */
@@ -251,7 +295,16 @@ export class BaseDocumentListComponent {
   }
 
   protected onToolbarAction(actionId: string): void {
-    if (actionId === 'new') this.navigateToNew();
+    if (actionId === 'new') {
+      this.navigateToNew();
+      return;
+    }
+    // Acciones extra: delega en su strategy sin conocer su modal ni su endpoint.
+    const strategy = this.availableStrategies().find((s) => s.id === actionId);
+    strategy
+      ?.execute({ document: this.document(), reload: () => this.loadList() })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe();
   }
 
   protected onSelectionChange(rows: unknown[]): void {
