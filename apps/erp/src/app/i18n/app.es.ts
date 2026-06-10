@@ -599,6 +599,21 @@ export const es: AppDict = {
         },
       },
     },
+    contrato: {
+      name: 'Contratos',
+      searchPlaceholder: 'Buscar por nombre…',
+      columns: {
+        contratoTipo: 'Tipo contrato',
+        codigo: 'Cód.',
+        identificacion: 'Identificación',
+        nombre: 'Nombre',
+        fechaDesde: 'Fecha desde',
+        fechaHasta: 'Fecha hasta',
+        grupo: 'Grupo',
+        salario: 'Salario',
+        terminado: 'Ter',
+      },
+    },
     facturaVenta: {
       name: 'Factura de venta',
       columns: {

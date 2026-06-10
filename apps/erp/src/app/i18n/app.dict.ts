@@ -431,6 +431,21 @@ export interface AppDict extends AuthTranslationsHost {
         toasts: { loadError: { title: string; desc: string } };
       };
     };
+    contrato: {
+      name: string;
+      searchPlaceholder: string;
+      columns: {
+        contratoTipo: string;
+        codigo: string;
+        identificacion: string;
+        nombre: string;
+        fechaDesde: string;
+        fechaHasta: string;
+        grupo: string;
+        salario: string;
+        terminado: string;
+      };
+    };
     facturaVenta: {
       name: string;
       columns: {

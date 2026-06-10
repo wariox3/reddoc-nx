@@ -14,7 +14,7 @@ export class IdentificacionService extends BaseHttpService {
   private readonly list$ = this.get<PaginatedResponse<Identificacion>>(
     '/contenedor/identificacion/seleccionar/',
   ).pipe(
-    map((res) => res.results),
+    map((res) => [...res.results]),
     shareReplay({ bufferSize: 1, refCount: false }),
   );
 

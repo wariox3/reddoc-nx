@@ -1,18 +1,20 @@
 import { Injectable } from '@angular/core';
 import { Observable, forkJoin, map } from 'rxjs';
-import { BaseHttpService, buildListBody, buildListParams, type ListQuery } from '@reddoc/core';
-import type {
-  CentroCosto,
-  CentroCostoListResponse,
-  CentroCostoPayload,
-} from './centro-costo.model';
+import {
+  BaseHttpService,
+  buildListBody,
+  buildListParams,
+  type ListQuery,
+  type PaginatedResponse,
+} from '@reddoc/core';
+import type { CentroCosto, CentroCostoPayload } from './centro-costo.model';
 
 @Injectable({ providedIn: 'root' })
 export class CentroCostoService extends BaseHttpService {
   private readonly resourcePath = '/contabilidad/centro-costo/';
 
-  list(query: ListQuery): Observable<CentroCostoListResponse> {
-    return this.post<CentroCostoListResponse>(
+  list(query: ListQuery): Observable<PaginatedResponse<CentroCosto>> {
+    return this.post<PaginatedResponse<CentroCosto>>(
       this.resourcePath + 'lista/',
       buildListBody(query),
       buildListParams(query),

@@ -1,7 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Observable, forkJoin, map } from 'rxjs';
-import { BaseHttpService, buildListBody, buildListParams, type ListQuery } from '@reddoc/core';
-import type { Puesto, PuestoListResponse, PuestoPayload } from './puesto.model';
+import {
+  BaseHttpService,
+  buildListBody,
+  buildListParams,
+  type ListQuery,
+  type PaginatedResponse,
+} from '@reddoc/core';
+import type { Puesto, PuestoPayload } from './puesto.model';
 
 /**
  * Servicio HTTP de puestos.
@@ -17,8 +23,8 @@ import type { Puesto, PuestoListResponse, PuestoPayload } from './puesto.model';
 export class PuestoService extends BaseHttpService {
   private readonly resourcePath = '/turno/puesto/';
 
-  list(query: ListQuery): Observable<PuestoListResponse> {
-    return this.post<PuestoListResponse>(
+  list(query: ListQuery): Observable<PaginatedResponse<Puesto>> {
+    return this.post<PaginatedResponse<Puesto>>(
       this.resourcePath + 'lista/',
       buildListBody(query),
       buildListParams(query),

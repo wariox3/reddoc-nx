@@ -1,11 +1,16 @@
 import { Injectable } from '@angular/core';
 import { Observable, forkJoin, map } from 'rxjs';
-import { BaseHttpService, buildListBody, buildListParams, type ListQuery } from '@reddoc/core';
+import {
+  BaseHttpService,
+  buildListBody,
+  buildListParams,
+  type ListQuery,
+  type PaginatedResponse,
+} from '@reddoc/core';
 import type {
   ConsultaDianResponse,
   Contacto,
   ContactoImportResult,
-  ContactoListResponse,
   ContactoPayload,
 } from './contacto.model';
 
@@ -23,8 +28,8 @@ import type {
 export class ContactoService extends BaseHttpService {
   private readonly resourcePath = '/general/contacto/';
 
-  list(query: ListQuery): Observable<ContactoListResponse> {
-    return this.post<ContactoListResponse>(
+  list(query: ListQuery): Observable<PaginatedResponse<Contacto>> {
+    return this.post<PaginatedResponse<Contacto>>(
       this.resourcePath + 'lista/',
       buildListBody(query),
       buildListParams(query),

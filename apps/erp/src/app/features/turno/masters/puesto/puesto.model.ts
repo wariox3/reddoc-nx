@@ -31,12 +31,6 @@ export interface Puesto {
   readonly programador_nombre?: string | null;
 }
 
-/** Forma cruda de la respuesta paginada del backend de puestos. */
-export interface PuestoListResponse {
-  readonly count: number;
-  readonly results: readonly Puesto[];
-}
-
 /** Write-model para create/update de puesto. */
 export interface PuestoPayload {
   nombre: string;

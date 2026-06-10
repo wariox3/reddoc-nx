@@ -1,7 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Observable, forkJoin, map } from 'rxjs';
-import { BaseHttpService, buildListBody, buildListParams, type ListQuery } from '@reddoc/core';
-import type { Item, ItemListResponse, ItemPayload } from './item.model';
+import {
+  BaseHttpService,
+  buildListBody,
+  buildListParams,
+  type ListQuery,
+  type PaginatedResponse,
+} from '@reddoc/core';
+import type { Item, ItemPayload } from './item.model';
 
 /**
  * Servicio HTTP de items.
@@ -17,8 +23,8 @@ import type { Item, ItemListResponse, ItemPayload } from './item.model';
 export class ItemService extends BaseHttpService {
   private readonly resourcePath = '/general/item/';
 
-  list(query: ListQuery): Observable<ItemListResponse> {
-    return this.post<ItemListResponse>(
+  list(query: ListQuery): Observable<PaginatedResponse<Item>> {
+    return this.post<PaginatedResponse<Item>>(
       this.resourcePath + 'lista/',
       buildListBody(query),
       buildListParams(query),

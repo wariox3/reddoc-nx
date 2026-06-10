@@ -79,8 +79,3 @@ export interface ItemPayload {
   /** Ids de impuesto (unión deduplicada de venta + compra). */
   readonly impuestos_ids: readonly number[];
 }
-
-export interface ItemListResponse {
-  readonly count: number;
-  readonly results: readonly Item[];
-}

@@ -7,30 +7,18 @@ import {
   type ListQuery,
   type PaginatedResponse,
 } from '@reddoc/core';
-import type { Programador, ProgramadorPayload } from './programador.model';
+import type { Contrato } from './contrato.model';
 
 @Injectable({ providedIn: 'root' })
-export class ProgramadorService extends BaseHttpService {
-  private readonly resourcePath = '/turno/programador/';
+export class ContratoService extends BaseHttpService {
+  private readonly resourcePath = '/humano/contrato/';
 
-  list(query: ListQuery): Observable<PaginatedResponse<Programador>> {
-    return this.post<PaginatedResponse<Programador>>(
+  list(query: ListQuery): Observable<PaginatedResponse<Contrato>> {
+    return this.post<PaginatedResponse<Contrato>>(
       this.resourcePath + 'lista/',
       buildListBody(query),
       buildListParams(query),
     );
-  }
-
-  getById(id: number): Observable<Programador> {
-    return this.get<Programador>(`${this.resourcePath}${id}/`);
-  }
-
-  create(payload: ProgramadorPayload): Observable<Programador> {
-    return this.post<Programador>(this.resourcePath, payload);
-  }
-
-  update(id: number, payload: ProgramadorPayload): Observable<Programador> {
-    return this.put<Programador>(`${this.resourcePath}${id}/`, payload);
   }
 
   remove(ids: readonly number[]): Observable<void> {

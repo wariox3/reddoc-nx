@@ -106,12 +106,6 @@ export interface ConsultaDianResponse {
   readonly correo: string | null;
 }
 
-/** Forma cruda de la respuesta paginada del backend de contactos. */
-export interface ContactoListResponse {
-  readonly count: number;
-  readonly results: readonly Contacto[];
-}
-
 /**
  * Respuesta del endpoint de importación masiva.
  * Shape provisional: crece cuando el backend defina su contrato final.

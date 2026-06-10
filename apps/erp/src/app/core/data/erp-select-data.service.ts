@@ -30,6 +30,6 @@ export class ErpSelectDataService extends BaseHttpService {
     endpoint: string,
     params?: Record<string, ParamValue>,
   ): Observable<T[]> {
-    return this.get<PaginatedResponse<T>>(endpoint, params).pipe(map((res) => res.results));
+    return this.get<PaginatedResponse<T>>(endpoint, params).pipe(map((res) => [...res.results]));
   }
 }

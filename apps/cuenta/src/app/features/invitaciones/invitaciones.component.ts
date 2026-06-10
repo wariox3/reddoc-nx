@@ -88,7 +88,7 @@ export class InvitacionesComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (res) => {
-          this.invitaciones.set(res.results ?? []);
+          this.invitaciones.set([...(res.results ?? [])]);
           this.isLoading.set(false);
         },
         error: () => {
