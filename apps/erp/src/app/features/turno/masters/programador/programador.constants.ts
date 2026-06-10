@@ -14,13 +14,11 @@ export const PROGRAMADORES_COLUMNS: readonly ColumnDef[] = [
     type: 'number',
     width: '70px',
     align: 'right',
-    sortable: true,
   },
   {
     field: 'nombre',
     headerKey: 'entities.programador.columns.nombre',
     type: 'text',
-    sortable: true,
   },
   {
     field: 'estado_inactivo',

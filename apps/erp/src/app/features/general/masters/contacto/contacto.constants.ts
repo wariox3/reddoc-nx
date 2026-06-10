@@ -26,7 +26,6 @@ export const CONTACTOS_COLUMNS: readonly ColumnDef[] = [
     type: 'number',
     width: '70px',
     align: 'right',
-    sortable: true,
   },
   {
     field: 'identificacion_abreviatura',
@@ -38,13 +37,11 @@ export const CONTACTOS_COLUMNS: readonly ColumnDef[] = [
     field: 'numero_identificacion',
     headerKey: 'entities.contacto.columns.identificacion',
     type: 'text',
-    sortable: true,
   },
   {
     field: 'nombre_corto',
     headerKey: 'entities.contacto.columns.nombre',
     type: 'text',
-    sortable: true,
   },
   { field: 'correo', headerKey: 'entities.contacto.columns.correo', type: 'text' },
   { field: 'celular', headerKey: 'entities.contacto.columns.celular', type: 'text' },

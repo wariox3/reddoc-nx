@@ -43,21 +43,18 @@ export function buildServicioColumns(i18nNamespace: string): readonly ColumnDef[
       type: 'number',
       width: '80px',
       align: 'right',
-      sortable: true,
     },
     {
       field: 'numero',
       headerKey: `${ns}.numero`,
       type: 'text',
       width: '130px',
-      sortable: true,
     },
     {
       field: 'fecha',
       headerKey: `${ns}.fecha`,
       type: 'date',
       width: '110px',
-      sortable: true,
     },
     {
       field: 'tercero_numero_identificacion',
@@ -69,7 +66,6 @@ export function buildServicioColumns(i18nNamespace: string): readonly ColumnDef[
       field: 'contacto_nombre',
       headerKey: `${ns}.contacto`,
       type: 'text',
-      sortable: true,
     },
     {
       field: 'horas',
@@ -77,7 +73,6 @@ export function buildServicioColumns(i18nNamespace: string): readonly ColumnDef[
       type: 'number',
       width: '100px',
       align: 'right',
-      sortable: true,
     },
     {
       field: 'horas_diurnas',
@@ -85,7 +80,6 @@ export function buildServicioColumns(i18nNamespace: string): readonly ColumnDef[
       type: 'number',
       width: '110px',
       align: 'right',
-      sortable: true,
     },
     {
       field: 'horas_nocturnas',
@@ -93,7 +87,6 @@ export function buildServicioColumns(i18nNamespace: string): readonly ColumnDef[
       type: 'number',
       width: '110px',
       align: 'right',
-      sortable: true,
     },
     {
       field: 'subtotal',
@@ -101,7 +94,6 @@ export function buildServicioColumns(i18nNamespace: string): readonly ColumnDef[
       type: 'currency',
       width: '130px',
       align: 'right',
-      sortable: true,
     },
     {
       field: 'impuesto',
@@ -116,7 +108,6 @@ export function buildServicioColumns(i18nNamespace: string): readonly ColumnDef[
       type: 'currency',
       width: '140px',
       align: 'right',
-      sortable: true,
     },
     {
       field: 'estado_aprobado',
