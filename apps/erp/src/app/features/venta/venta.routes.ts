@@ -26,7 +26,7 @@ export const VENTA_ROUTES: Route[] = [
       _docModule: activeModuleResolver('venta'),
     },
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'factura-venta' },
+      { path: '', pathMatch: 'full', redirectTo: 'contrato-servicio' },
       {
         path: 'factura-venta',
         loadChildren: () =>
