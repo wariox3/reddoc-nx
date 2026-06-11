@@ -1,22 +1,17 @@
-<lib-breadcrumb [items]="breadcrumbItems()" />
-
-<header class="puestos-list__header">
-  <div class="puestos-list__title-block">
-    <h1 class="puestos-list__title">{{ t().entities.puesto.name }}</h1>
-  </div>
-</header>
-
-<div class="card">
+<lib-list-shell
+  [breadcrumb]="breadcrumbItems()"
+  [title]="t().entities.puesto.name"
+  [count]="totalCount()"
+>
   <lib-data-toolbar
+    toolbar
     [primaryAction]="primaryAction"
-    [searchEnabled]="true"
     [searchPlaceholderKey]="'entities.puesto.searchPlaceholder'"
     [searchValue]="searchValue()"
     [filtersEnabled]="true"
     [activeFiltersCount]="activeFilters().length"
     [deleteSelectedEnabled]="hasSelection()"
     [deleteSelectedCount]="selectedRows().length"
-    (searched)="onSearchChange($event)"
     (actionInvoked)="onToolbarAction($event)"
     (filtersToggle)="openFilters()"
     (filtersClear)="clearFilters()"
@@ -24,6 +19,7 @@
   />
 
   <lib-data-table
+    table
     [columns]="columns"
     [items]="items()"
     [totalCount]="totalCount()"
@@ -41,7 +37,7 @@
     (rowActionInvoked)="onRowAction($event)"
     (rowClick)="onRowClick($event)"
   />
-</div>
+</lib-list-shell>
 
 <lib-data-filter-modal
   [fields]="filterFields"

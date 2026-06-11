@@ -15,10 +15,10 @@ import {
   type SortSpec,
 } from '@reddoc/core';
 import {
-  BreadcrumbComponent,
   DataFilterModalComponent,
   DataTableComponent,
   DataToolbarComponent,
+  ListShellComponent,
   type BreadcrumbItem,
   type PageChangeEvent,
   type RowActionInvokedEvent,
@@ -48,7 +48,7 @@ import {
   selector: 'app-puestos-list',
   standalone: true,
   imports: [
-    BreadcrumbComponent,
+    ListShellComponent,
     DataTableComponent,
     DataToolbarComponent,
     DataFilterModalComponent,
@@ -181,13 +181,6 @@ export class PuestosListComponent {
         this.router.navigate(this.buildRouteCommands('nuevo'));
         break;
     }
-  }
-
-  protected onSearchChange(value: string): void {
-    // El toolbar ya emite el término debounced; aquí solo aplicamos y recargamos.
-    this.searchValue.set(value);
-    this.currentPage.set(0);
-    this.loadList();
   }
 
   protected onRefresh(): void {

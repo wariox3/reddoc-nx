@@ -1,0 +1,20 @@
+<lib-breadcrumb [items]="breadcrumb()" />
+
+<section class="list-shell__card">
+  <!-- Cabecera compacta: título + contador de registros -->
+  <header class="list-shell__head">
+    <h1 class="list-shell__title">{{ title() }}</h1>
+    @if (count() !== null) {
+      <p class="list-shell__summary">{{ count() }} {{ translate(recordsLabelKey()) }}</p>
+    }
+  </header>
+
+  <!-- Cuerpo: botonera (proyectada) encima de la tabla embebida en un recuadro -->
+  <div class="list-shell__body">
+    <ng-content select="[toolbar]" />
+
+    <div class="list-shell__table">
+      <ng-content select="[table]" />
+    </div>
+  </div>
+</section>

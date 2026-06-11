@@ -1,13 +1,10 @@
-<lib-breadcrumb [items]="breadcrumbItems()" />
-
-<header class="centros-costo-list__header">
-  <div class="centros-costo-list__title-block">
-    <h1 class="centros-costo-list__title">{{ t().entities.centroCosto.name }}</h1>
-  </div>
-</header>
-
-<div class="card">
+<lib-list-shell
+  [breadcrumb]="breadcrumbItems()"
+  [title]="t().entities.centroCosto.name"
+  [count]="totalCount()"
+>
   <lib-data-toolbar
+    toolbar
     [primaryAction]="primaryAction"
     [searchPlaceholderKey]="'entities.centroCosto.searchPlaceholder'"
     [filtersEnabled]="true"
@@ -21,6 +18,7 @@
   />
 
   <lib-data-table
+    table
     [columns]="columns"
     [items]="items()"
     [totalCount]="totalCount()"
@@ -38,7 +36,7 @@
     (rowActionInvoked)="onRowAction($event)"
     (rowClick)="onRowClick($event)"
   />
-</div>
+</lib-list-shell>
 
 <lib-data-filter-modal
   [fields]="filterFields"

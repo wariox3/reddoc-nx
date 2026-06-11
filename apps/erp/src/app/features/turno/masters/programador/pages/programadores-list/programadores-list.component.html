@@ -1,13 +1,10 @@
-<lib-breadcrumb [items]="breadcrumbItems()" />
-
-<header class="programadores-list__header">
-  <div class="programadores-list__title-block">
-    <h1 class="programadores-list__title">{{ t().entities.programador.name }}</h1>
-  </div>
-</header>
-
-<div class="card">
+<lib-list-shell
+  [breadcrumb]="breadcrumbItems()"
+  [title]="t().entities.programador.name"
+  [count]="totalCount()"
+>
   <lib-data-toolbar
+    toolbar
     [primaryAction]="primaryAction"
     [searchEnabled]="true"
     [searchPlaceholderKey]="'entities.programador.searchPlaceholder'"
@@ -24,6 +21,7 @@
   />
 
   <lib-data-table
+    table
     [columns]="columns"
     [items]="items()"
     [totalCount]="totalCount()"
@@ -41,7 +39,7 @@
     (rowActionInvoked)="onRowAction($event)"
     (rowClick)="onRowClick($event)"
   />
-</div>
+</lib-list-shell>
 
 <lib-data-filter-modal
   [fields]="filterFields"

@@ -20,3 +20,5 @@ export { DataFilterModalComponent } from './lib/data-filter/data-filter-modal.co
 
 export { BreadcrumbComponent } from './lib/breadcrumb/breadcrumb.component';
 export type { BreadcrumbItem } from './lib/breadcrumb/breadcrumb.types';
+
+export { ListShellComponent } from './lib/list-shell/list-shell.component';
