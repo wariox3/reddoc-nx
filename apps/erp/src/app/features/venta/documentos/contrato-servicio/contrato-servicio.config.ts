@@ -45,6 +45,11 @@ export const CONTRATO_SERVICIO_CONFIG: DocumentEntityConfig = {
     canImport: false,
     canExportExcel: false,
     canExportZip: false,
-    canGenerate: false,
+    canGenerate: true,
   },
+  // Acciones extra del dropdown "Acciones" (cada id ↔ un EntityActionStrategy
+  // registrado en ENTITY_ACTION_PROVIDERS):
+  //  - 'generar': modal de fecha → genera pedidos servicio desde los contratos
+  //    servicio de esa fecha.
+  extraActionIds: ['generar'],
 };
