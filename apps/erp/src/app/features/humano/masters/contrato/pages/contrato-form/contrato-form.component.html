@@ -45,19 +45,15 @@
 
     <div class="px-5 py-5 max-[576px]:px-4 max-[576px]:py-4">
       <div class="grid grid-cols-1 gap-x-5 gap-y-4 sm:grid-cols-2">
-        <!-- TODO(endpoint): reemplazar <p-select> deshabilitados por <app-api-select endpoint="…"> + habilitar control -->
         <div class="flex flex-col gap-1.5">
           <label for="contacto" class="contrato-form__label">
             {{ t().entities.contrato.form.fields.contacto }}
           </label>
-          <p-select
+          <app-empleado-autocomplete
             inputId="contacto"
             formControlName="contacto"
-            [placeholder]="t().common.comingSoon"
-            optionLabel="nombre"
-            dataKey="id"
-            appendTo="body"
-            [fluid]="true"
+            [placeholder]="t().entities.contrato.form.fields.contactoPlaceholder"
+            [invalid]="form.controls.contacto.invalid && form.controls.contacto.touched"
           />
         </div>
 
@@ -65,14 +61,11 @@
           <label for="contrato_tipo" class="contrato-form__label">
             {{ t().entities.contrato.form.fields.contratoTipo }}
           </label>
-          <p-select
+          <app-api-select
             inputId="contrato_tipo"
             formControlName="contrato_tipo"
-            [placeholder]="t().common.comingSoon"
-            optionLabel="nombre"
-            dataKey="id"
-            appendTo="body"
-            [fluid]="true"
+            endpoint="/humano/contrato-tipo/seleccionar/"
+            [invalid]="form.controls.contrato_tipo.invalid && form.controls.contrato_tipo.touched"
           />
         </div>
 
@@ -80,14 +73,11 @@
           <label for="cargo" class="contrato-form__label">
             {{ t().entities.contrato.form.fields.cargo }}
           </label>
-          <p-select
+          <app-api-select
             inputId="cargo"
             formControlName="cargo"
-            [placeholder]="t().common.comingSoon"
-            optionLabel="nombre"
-            dataKey="id"
-            appendTo="body"
-            [fluid]="true"
+            endpoint="/humano/cargo/seleccionar/"
+            [invalid]="form.controls.cargo.invalid && form.controls.cargo.touched"
           />
         </div>
 
@@ -95,14 +85,11 @@
           <label for="grupo" class="contrato-form__label">
             {{ t().entities.contrato.form.fields.grupo }}
           </label>
-          <p-select
+          <app-api-select
             inputId="grupo"
             formControlName="grupo"
-            [placeholder]="t().common.comingSoon"
-            optionLabel="nombre"
-            dataKey="id"
-            appendTo="body"
-            [fluid]="true"
+            endpoint="/humano/grupo/seleccionar/"
+            [invalid]="form.controls.grupo.invalid && form.controls.grupo.touched"
           />
         </div>
 
@@ -110,14 +97,11 @@
           <label for="sucursal" class="contrato-form__label">
             {{ t().entities.contrato.form.fields.sucursal }}
           </label>
-          <p-select
+          <app-api-select
             inputId="sucursal"
             formControlName="sucursal"
-            [placeholder]="t().common.comingSoon"
-            optionLabel="nombre"
-            dataKey="id"
-            appendTo="body"
-            [fluid]="true"
+            endpoint="/humano/sucursal/seleccionar/"
+            [invalid]="form.controls.sucursal.invalid && form.controls.sucursal.touched"
           />
         </div>
 
@@ -125,14 +109,11 @@
           <label for="tiempo" class="contrato-form__label">
             {{ t().entities.contrato.form.fields.tiempo }}
           </label>
-          <p-select
+          <app-api-select
             inputId="tiempo"
             formControlName="tiempo"
-            [placeholder]="t().common.comingSoon"
-            optionLabel="nombre"
-            dataKey="id"
-            appendTo="body"
-            [fluid]="true"
+            endpoint="/humano/tiempo/seleccionar/"
+            [invalid]="form.controls.tiempo.invalid && form.controls.tiempo.touched"
           />
         </div>
 

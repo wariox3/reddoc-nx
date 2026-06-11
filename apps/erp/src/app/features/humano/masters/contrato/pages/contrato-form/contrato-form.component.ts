@@ -1,6 +1,6 @@
 import { Component, DestroyRef, type OnInit, computed, inject, input, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
@@ -9,8 +9,12 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { CheckboxModule } from 'primeng/checkbox';
 import { TextareaModule } from 'primeng/textarea';
 import { FormErrorService, I18nService, TenantService, ToastService } from '@reddoc/core';
+import { ErpApiSelectComponent } from '@erp/core/components/api-select/erp-api-select.component';
+import { EmpleadoAutocompleteComponent } from '@erp/core/components/empleado-autocomplete/empleado-autocomplete.component';
+import type { EmpleadoOption } from '@erp/core/components/empleado-autocomplete/empleado-autocomplete.component';
 import type { ErpSelectOption } from '@erp/core/components/api-select/erp-api-select.component';
 import type { AppDict } from '@erp/i18n';
+import { ConfiguracionService } from '@erp/core/services/configuracion.service';
 import { ContratoService } from '../../contrato.service';
 import { CONTRATO_LIST_PATH } from '../../contrato.constants';
 import { contratoToFormValue, formValueToPayload } from '../../contrato.mapper';
@@ -21,10 +25,11 @@ import { contratoToFormValue, formValueToPayload } from '../../contrato.mapper';
  * Master del módulo Humano (camino B). La misma página cubre crear y editar:
  * sin `:id` → alta; con `:id` → edición (el id llega por `withComponentInputBinding`).
  *
- * Los dropdowns de relaciones (FK) se renderizan deshabilitados como `<p-select>`
- * plano (sin endpoint, sin opciones) porque aún no hay endpoints `seleccionar/`.
- * TODO(endpoint): reemplazar cada uno por `<app-api-select endpoint="...">` y
- * habilitar su control cuando se definan los endpoints.
+ * Sección 1 (Datos del contrato): los FK ya están cableados a sus endpoints
+ * `/humano/<slug>/seleccionar/` vía `<app-api-select>` (`contacto` con
+ * `<app-empleado-autocomplete>`, que pinta la identificación al lado).
+ * TODO(endpoint): las secciones 2–4 (remuneración, seguridad social, terminación)
+ * siguen como `<p-select>` deshabilitados hasta definir sus endpoints.
  */
 @Component({
   selector: 'app-contrato-form',
@@ -37,6 +42,8 @@ import { contratoToFormValue, formValueToPayload } from '../../contrato.mapper';
     InputNumberModule,
     CheckboxModule,
     TextareaModule,
+    ErpApiSelectComponent,
+    EmpleadoAutocompleteComponent,
   ],
   templateUrl: './contrato-form.component.html',
   styleUrl: './contrato-form.component.scss',
@@ -49,6 +56,7 @@ export class ContratoFormComponent implements OnInit {
   private readonly tenant = inject(TenantService);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly configuracion = inject(ConfiguracionService);
   private readonly i18n = inject<I18nService<AppDict>>(I18nService);
 
   protected readonly t = this.i18n.t;
@@ -59,15 +67,15 @@ export class ContratoFormComponent implements OnInit {
 
   protected readonly isSaving = signal(false);
 
-  // Las FK arrancan deshabilitadas (pendientes de endpoint). Ver TODO de la clase.
+  // Las FK de secciones 2–4 arrancan deshabilitadas (pendientes de endpoint). Ver TODO de la clase.
   protected readonly form = this.fb.group({
-    // Datos del contrato
-    contacto: this.fb.control<ErpSelectOption | null>({ value: null, disabled: true }),
-    contrato_tipo: this.fb.control<ErpSelectOption | null>({ value: null, disabled: true }),
-    cargo: this.fb.control<ErpSelectOption | null>({ value: null, disabled: true }),
-    grupo: this.fb.control<ErpSelectOption | null>({ value: null, disabled: true }),
-    sucursal: this.fb.control<ErpSelectOption | null>({ value: null, disabled: true }),
-    tiempo: this.fb.control<ErpSelectOption | null>({ value: null, disabled: true }),
+    // Datos del contrato — selectores cableados a /humano/<slug>/seleccionar/, todos obligatorios
+    contacto: this.fb.control<EmpleadoOption | null>(null, Validators.required),
+    contrato_tipo: this.fb.control<ErpSelectOption | null>(null, Validators.required),
+    cargo: this.fb.control<ErpSelectOption | null>(null, Validators.required),
+    grupo: this.fb.control<ErpSelectOption | null>(null, Validators.required),
+    sucursal: this.fb.control<ErpSelectOption | null>(null, Validators.required),
+    tiempo: this.fb.control<ErpSelectOption | null>(null, Validators.required),
     fecha_desde: this.fb.control<Date | null>(null),
     fecha_hasta: this.fb.control<Date | null>(null),
     // Remuneración
@@ -101,6 +109,7 @@ export class ContratoFormComponent implements OnInit {
   ngOnInit(): void {
     const id = this.id();
     if (id) this.loadContrato(Number(id));
+    else this.prefillRemuneracion();
   }
 
   protected onSubmit(): void {
@@ -140,6 +149,28 @@ export class ContratoFormComponent implements OnInit {
         error: () => {
           const toasts = this.t().entities.contrato.form.toasts;
           this.toast.error(toasts.loadError.title, toasts.loadError.desc);
+        },
+      });
+  }
+
+  /**
+   * Pre-llena salario y auxilio de transporte (solo en alta) con los valores de
+   * configuración del sistema. Mismo patrón que `servicio-documento-form`:
+   * consume el `ConfiguracionService` genérico, sin duplicar.
+   */
+  private prefillRemuneracion(): void {
+    this.configuracion
+      .getCampos(['hum_salario_minimo', 'hum_auxilio_transporte'])
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (campos) => {
+          const salario = campos['hum_salario_minimo'];
+          const auxilio = campos['hum_auxilio_transporte'];
+          if (salario != null) this.form.controls.salario.setValue(salario);
+          if (auxilio != null) this.form.controls.auxilio_transporte.setValue(auxilio);
+        },
+        error: () => {
+          // Pre-llenado opcional: si falla, el usuario digita los valores manualmente.
         },
       });
   }

@@ -21,12 +21,30 @@ function toIsoDate(value: Date | null): string | null {
 /**
  * Adapta el read-model (`Contrato`) a los valores del reactive form.
  *
- * Por ahora solo se mapean los escalares (fechas, montos, booleanos, comentario).
- * TODO(endpoint): cuando los dropdowns FK se cableen con `app-api-select`,
- * reagrupar cada FK + su `*_nombre` en `{ id, nombre }` como hace contacto.mapper.
+ * Sección 1 (Datos del contrato): las FK se reagrupan en `{ id, nombre }`.
+ * `contacto` (empleado) necesita además la identificación (`c.identificacion`)
+ * para pintar el addon; los selects resuelven la etiqueta por `id` al cargar
+ * opciones, así que basta `nombre: ''` cuando no hay companion (`cargo`, `sucursal`, `tiempo`).
+ * TODO(endpoint): las FK de secciones 2–4 se mapearán al cablear sus endpoints.
  */
 export function contratoToFormValue(c: Contrato): Partial<ContratoFormRawValue> {
   return {
+    contacto:
+      c.contacto_id != null
+        ? {
+            id: c.contacto_id,
+            nombre: c.nombre ?? '',
+            numero_identificacion: c.identificacion ?? '',
+          }
+        : null,
+    contrato_tipo:
+      c.contrato_tipo_id != null
+        ? { id: c.contrato_tipo_id, nombre: c.contrato_tipo_nombre ?? '' }
+        : null,
+    cargo: c.cargo_id != null ? { id: c.cargo_id, nombre: '' } : null,
+    grupo: c.grupo_id != null ? { id: c.grupo_id, nombre: c.grupo_nombre ?? '' } : null,
+    sucursal: c.sucursal_id != null ? { id: c.sucursal_id, nombre: '' } : null,
+    tiempo: c.tiempo_id != null ? { id: c.tiempo_id, nombre: '' } : null,
     fecha_desde: parseIsoDate(c.fecha_desde),
     fecha_hasta: parseIsoDate(c.fecha_hasta),
     salario: c.salario,

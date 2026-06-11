@@ -1,13 +1,15 @@
 import type { ErpSelectOption } from '@erp/core/components/api-select/erp-api-select.component';
+import type { EmpleadoOption } from '@erp/core/components/empleado-autocomplete/empleado-autocomplete.component';
 
 /**
  * Forma cruda del FormGroup del contrato (lo que devuelve `form.getRawValue()`).
  * Las FK guardan el `ErpSelectOption` seleccionado (hoy deshabilitadas → null);
+ * `contacto` guarda un `EmpleadoOption` (lleva la identificación para el addon);
  * las fechas se manejan como `Date` (p-datepicker); los montos como `number`.
  */
 export interface ContratoFormRawValue {
   // Datos del contrato
-  readonly contacto: ErpSelectOption | null;
+  readonly contacto: EmpleadoOption | null;
   readonly contrato_tipo: ErpSelectOption | null;
   readonly cargo: ErpSelectOption | null;
   readonly grupo: ErpSelectOption | null;

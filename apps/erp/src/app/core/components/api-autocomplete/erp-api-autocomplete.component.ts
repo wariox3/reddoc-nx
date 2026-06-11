@@ -58,6 +58,8 @@ export class ErpApiAutocompleteComponent implements ControlValueAccessor {
 
   readonly endpoint = input.required<string>();
   readonly searchParam = input<string>('search');
+  /** Params fijos extra que se envían en cada fetch (focus y búsqueda). Ej. `{ empleado: 'True' }`. */
+  readonly params = input<Record<string, string>>({});
   readonly inputId = input<string>('');
   readonly placeholder = input<string>('Buscar…');
   readonly invalid = input<boolean>(false);
@@ -104,7 +106,7 @@ export class ErpApiAutocompleteComponent implements ControlValueAccessor {
       return;
     }
     this.dataService
-      .fetchOptions(this.endpoint())
+      .fetchOptions(this.endpoint(), this.params())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (options) => {
@@ -118,7 +120,7 @@ export class ErpApiAutocompleteComponent implements ControlValueAccessor {
   onSearch(event: AutoCompleteCompleteEvent): void {
     const query = event.query?.trim() ?? '';
     this.dataService
-      .fetchOptions(this.endpoint(), { [this.searchParam()]: query })
+      .fetchOptions(this.endpoint(), { ...this.params(), [this.searchParam()]: query })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (options) => this.suggestions.set(options),
