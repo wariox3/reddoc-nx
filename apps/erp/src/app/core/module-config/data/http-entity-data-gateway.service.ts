@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, map } from 'rxjs';
+import { Observable, forkJoin, map, of } from 'rxjs';
 import {
   buildHttpParams,
   buildListParams,
@@ -112,12 +112,17 @@ export class HttpEntityDataGateway implements EntityDataGateway {
   }
 
   /**
-   * Elimina uno o varios documentos en batch.
-   * El backend acepta un solo POST con la lista de ids — más eficiente que
-   * paralelizar DELETEs y consistente con la convención de documentos.
+   * Elimina uno o varios documentos vía `DELETE <endpoint>/<id>/` (REST estándar).
+   * Cuando hay varios ids se paralelizan los DELETEs y se espera a que todos
+   * terminen; con la lista vacía no se hace ninguna petición.
    */
   remove(entity: EntityConfig, ids: readonly (string | number)[]): Observable<void> {
-    return this.http.post<void>(`${entity.endpoint}/eliminar/`, { ids }).pipe(map(() => undefined));
+    if (ids.length === 0) {
+      return of(undefined);
+    }
+    return forkJoin(ids.map((id) => this.http.delete(`${entity.endpoint}/${id}/`))).pipe(
+      map(() => undefined),
+    );
   }
 
   /**
