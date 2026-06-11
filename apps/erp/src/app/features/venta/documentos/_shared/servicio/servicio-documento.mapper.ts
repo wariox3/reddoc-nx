@@ -47,7 +47,7 @@ function diasSemanaFromFlags(read: ServicioDocumentoDetalleRead): number[] {
   return DIA_FLAGS.flatMap((flag, idx) => (read[flag] ? [idx] : []));
 }
 
-function detalleToFormValue(
+export function detalleToFormValue(
   read: ServicioDocumentoDetalleRead,
   salarioDoc: number | null,
 ): DetalleFormRawValue {

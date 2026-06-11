@@ -18,7 +18,7 @@ import type { AppDict } from '@erp/i18n';
 import { ServicioDocumentoDetalleModalComponent } from '../servicio-documento-detalle-modal/servicio-documento-detalle-modal.component';
 import { ServicioDocumentoResumenComponent } from '../servicio-documento-resumen/servicio-documento-resumen.component';
 import { createDetalleGroup, type DetalleGroup } from '../../servicio-documento-detalle.form';
-import { detalleToPayload } from '../../servicio-documento.mapper';
+import { detalleToFormValue, detalleToPayload } from '../../servicio-documento.mapper';
 import type { ServicioDocumentoDetalleRead } from '../../servicio-documento.model';
 import type { DetalleFormRawValue } from '../../servicio-documento-detalle.types';
 import type { ErpSelectOption } from '@erp/core/components/api-select/erp-api-select.component';
@@ -219,11 +219,16 @@ export class ServicioDocumentoDetallesComponent {
     const payload = detalleToPayload(value);
     if (value.id != null) {
       this.detalle
-        .actualizar(value.id, payload)
+        .actualizar<ServicioDocumentoDetalleRead>(value.id, payload)
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
-          next: () => {
-            if (index !== null) this.detalles().setControl(index, createDetalleGroup(value));
+          next: (actualizado) => {
+            // Reconstruye la fila desde la respuesta autoritativa del backend
+            // (impuestos, horas, precio_minimo y precio ya recalculados).
+            if (index !== null) {
+              const group = createDetalleGroup(detalleToFormValue(actualizado, this.salario()));
+              this.detalles().setControl(index, group);
+            }
             this.savingLine.set(false);
             this.modalVisible.set(false);
             this.notifyLineSuccess();
@@ -239,7 +244,8 @@ export class ServicioDocumentoDetallesComponent {
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: (creado) => {
-            this.detalles().push(createDetalleGroup({ ...value, id: creado.id ?? null }));
+            // Igual que en PATCH: la respuesta del POST es la fuente de verdad.
+            this.detalles().push(createDetalleGroup(detalleToFormValue(creado, this.salario())));
             this.savingLine.set(false);
             this.modalVisible.set(false);
             this.notifyLineSuccess();

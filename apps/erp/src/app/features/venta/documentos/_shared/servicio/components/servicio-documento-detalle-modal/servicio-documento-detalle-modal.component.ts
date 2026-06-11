@@ -304,18 +304,24 @@ export class ServicioDocumentoDetalleModalComponent {
     }
     const raw = group.getRawValue();
     const detail = this.itemDetail();
-    const subtotal = (raw.cantidad ?? 0) * (raw.precio ?? 0);
-    // Borde de adaptación: parsea las tasas del ítem (strings del backend) a
-    // números y delega la fórmula fiscal al kernel compartido.
-    const tasas: TasaImpuesto[] = (detail?.impuestos ?? [])
-      .filter((imp) => imp.impuesto_venta && raw.impuestos_ids.includes(imp.impuesto))
-      .map((imp) => ({
-        id: imp.impuesto,
-        nombre: imp.impuesto_nombre ?? '',
-        porcentaje: parseFloat(imp.impuesto_porcentaje ?? '0'),
-        porcentajeBase: parseFloat(imp.impuesto_porcentaje_base ?? '100'),
-      }));
-    group.controls.impuestos_totales.setValue(calcularImpuestosLinea(subtotal, tasas));
+    // Solo recalcular los montos de impuesto cuando tenemos las tasas del ítem
+    // (selección real). Al editar sin re-seleccionar el ítem, `itemDetail()` es null:
+    // se conservan los montos cargados en vez de vaciarlos (en la ruta persistida el
+    // padre igual los sobreescribe con la respuesta autoritativa del backend).
+    if (detail) {
+      const subtotal = (raw.cantidad ?? 0) * (raw.precio ?? 0);
+      // Borde de adaptación: parsea las tasas del ítem (strings del backend) a
+      // números y delega la fórmula fiscal al kernel compartido.
+      const tasas: TasaImpuesto[] = (detail.impuestos ?? [])
+        .filter((imp) => imp.impuesto_venta && raw.impuestos_ids.includes(imp.impuesto))
+        .map((imp) => ({
+          id: imp.impuesto,
+          nombre: imp.impuesto_nombre ?? '',
+          porcentaje: parseFloat(imp.impuesto_porcentaje ?? '0'),
+          porcentajeBase: parseFloat(imp.impuesto_porcentaje_base ?? '100'),
+        }));
+      group.controls.impuestos_totales.setValue(calcularImpuestosLinea(subtotal, tasas));
+    }
     // Horas y precio mínimo del tarifador. Solo si hay cálculo vigente; si no, se
     // conservan los que traía la línea (autoritativos del backend en edición).
     const calc = this.calcResult();
