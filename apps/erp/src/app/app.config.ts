@@ -25,6 +25,7 @@ import {
   AUTH_SERVICE,
   AUTH_SKIP_URLS,
   ReddocPreset,
+  REDDOC_PRIMENG_ES,
   authInterceptor,
   errorInterceptor,
   tenantInterceptor,
@@ -61,6 +62,7 @@ export const appConfig: ApplicationConfig = {
           cssLayer: { name: 'primeng', order: 'theme, base, primeng, utilities' },
         },
       },
+      translation: REDDOC_PRIMENG_ES,
     }),
     MessageService,
     // Singleton root del servicio de diálogos dinámicos de PrimeNG (no es
