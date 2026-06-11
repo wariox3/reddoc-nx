@@ -73,6 +73,9 @@ export class ServicioDocumentoDetallesComponent {
   /** Id del contacto (del form padre); filtra los puestos disponibles en el modal. */
   readonly contactoId = input<number | null>(null);
 
+  /** Estrato del documento (del form padre); bloquea el botón si es null. */
+  readonly estrato = input<number | null>(null);
+
   /** Salario del documento (del form padre); bloquea el botón si es null y se pre-llena en el modal. */
   readonly salario = input<number | null>(null);
 

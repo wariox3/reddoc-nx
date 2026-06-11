@@ -467,6 +467,7 @@ export interface AppDict extends AuthTranslationsHost {
         };
         fields: {
           contacto: string;
+          contactoPlaceholder: string;
           contratoTipo: string;
           cargo: string;
           grupo: string;
@@ -655,6 +656,7 @@ export interface AppDict extends AuthTranslationsHost {
           };
           contactoRequired: string;
           sectorRequired: string;
+          estratoRequired: string;
           salarioRequired: string;
           summary: {
             title: string;

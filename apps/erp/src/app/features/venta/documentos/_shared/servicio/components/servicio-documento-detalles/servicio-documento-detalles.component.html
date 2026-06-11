@@ -12,6 +12,11 @@
         <i class="pi pi-info-circle text-[0.72rem]"></i>
         {{ d.sectorRequired }}
       </span>
+    } @else if (estrato() === null) {
+      <span class="inline-flex items-center gap-1.5 text-[0.76rem] text-brand-muted">
+        <i class="pi pi-info-circle text-[0.72rem]"></i>
+        {{ d.estratoRequired }}
+      </span>
     } @else if (salario() === null) {
       <span class="inline-flex items-center gap-1.5 text-[0.76rem] text-brand-muted">
         <i class="pi pi-info-circle text-[0.72rem]"></i>
@@ -25,7 +30,7 @@
       icon="pi pi-plus"
       [outlined]="true"
       size="small"
-      [disabled]="!sectorId() || !contactoId() || salario() === null"
+      [disabled]="!sectorId() || !contactoId() || estrato() === null || salario() === null"
       (onClick)="openCreate()"
     />
   </div>

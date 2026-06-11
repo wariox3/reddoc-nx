@@ -635,6 +635,7 @@ export const es: AppDict = {
         },
         fields: {
           contacto: 'Empleado',
+          contactoPlaceholder: 'Buscar empleado…',
           contratoTipo: 'Tipo de contrato',
           cargo: 'Cargo',
           grupo: 'Grupo',
@@ -841,6 +842,7 @@ export const es: AppDict = {
           },
           contactoRequired: 'Selecciona el contacto del documento para agregar líneas',
           sectorRequired: 'Selecciona el sector del documento para agregar líneas',
+          estratoRequired: 'Selecciona el estrato del documento para agregar líneas',
           salarioRequired: 'Ingresa el salario del documento para agregar líneas',
           summary: {
             title: 'Resumen',
