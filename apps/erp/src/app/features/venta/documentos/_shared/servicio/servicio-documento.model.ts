@@ -88,6 +88,15 @@ export interface ServicioDocumentoDetalleRead extends DocumentoDetalleReadBase {
    * no de esta línea. El backend lo resuelve; el front solo lo muestra.
    */
   readonly compuesto?: boolean | null;
+  /**
+   * Horas de cobertura de la línea, calculadas por el backend (string con cola
+   * de ceros: `"48.00"`). `horas = horas_diurnas + horas_nocturnas`.
+   */
+  readonly horas?: string | null;
+  readonly horas_diurnas?: string | null;
+  readonly horas_nocturnas?: string | null;
+  /** Precio mínimo regulado de la cobertura (string con cola de ceros). */
+  readonly precio_minimo?: string | null;
   // `impuestos?` se hereda de `DocumentoDetalleReadBase`.
 }
 
@@ -113,6 +122,14 @@ export interface ServicioDocumentoDetallePayload extends DocumentoDetallePayload
   readonly cortesia: boolean;
   /** Se reenvía tal cual para no perderlo en el round-trip (no hay UI que lo edite). */
   readonly compuesto: boolean;
+  /**
+   * Horas y precio mínimo de la cobertura (del tarifador). Strings con 2 decimales,
+   * igual que `precio`. Se persisten porque el backend no los recalcula al guardar.
+   */
+  readonly horas: string;
+  readonly horas_diurnas: string;
+  readonly horas_nocturnas: string;
+  readonly precio_minimo: string;
   // `item`, `cantidad`, `precio` e `impuestos_ids` se heredan de `DocumentoDetallePayloadBase`.
 }
 

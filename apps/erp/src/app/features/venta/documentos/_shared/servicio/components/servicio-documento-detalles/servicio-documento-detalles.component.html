@@ -42,6 +42,24 @@
           <th class="detalle-table__th detalle-table__th--coverage">{{ d.fields.horario }}</th>
           <th class="detalle-table__th detalle-table__th--coverage">{{ d.fields.dias }}</th>
           <th class="detalle-table__th detalle-table__th--coverage">{{ d.fields.modalidad }}</th>
+          <th
+            class="detalle-table__th detalle-table__th--coverage w-10 text-center"
+            [title]="d.fields.horasFull"
+          >
+            {{ d.fields.horas }}
+          </th>
+          <th
+            class="detalle-table__th detalle-table__th--coverage w-10 text-center"
+            [title]="d.fields.horasDiurnasFull"
+          >
+            {{ d.fields.horasDiurnas }}
+          </th>
+          <th
+            class="detalle-table__th detalle-table__th--coverage w-10 text-center"
+            [title]="d.fields.horasNocturnasFull"
+          >
+            {{ d.fields.horasNocturnas }}
+          </th>
           <th class="detalle-table__th detalle-table__th--coverage w-10 text-center">
             {{ d.fields.programar }}
           </th>
@@ -54,7 +72,7 @@
       <tbody>
         @for (group of groupedLines(); track (group.puesto?.id ?? '__null__') + '_' + $index) {
           <tr class="detalle-table__group-row">
-            <td colspan="12" class="px-4 pt-4 pb-0">
+            <td colspan="15" class="px-4 pt-4 pb-0">
               <span class="detalle-table__group-label">
                 @if (group.puesto) {
                   {{ group.puesto.id }} | {{ group.puesto.nombre }}
@@ -110,6 +128,29 @@
                   {{ line.modalidad?.nombre || '—' }}
                 </td>
               }
+
+              <!-- Horas (calculadas): total · diurnas · nocturnas. HN resaltada con recargo. -->
+              <td
+                class="detalle-table__td detalle-table__td--coverage w-10 text-center tabular-nums"
+                [class.text-brand-muted]="!line.horas"
+              >
+                {{ line.horas ?? '—' }}
+              </td>
+              <td
+                class="detalle-table__td detalle-table__td--coverage w-10 text-center tabular-nums"
+                [class.text-brand-muted]="!line.horas_diurnas"
+              >
+                {{ line.horas_diurnas ?? '—' }}
+              </td>
+              <td
+                class="detalle-table__td detalle-table__td--coverage w-10 text-center tabular-nums"
+                [class.font-medium]="(line.horas_nocturnas ?? 0) > 0"
+                [class.text-indigo-600]="(line.horas_nocturnas ?? 0) > 0"
+                [class.text-brand-muted]="!line.horas_nocturnas"
+              >
+                {{ line.horas_nocturnas ?? '—' }}
+              </td>
+
               <td class="detalle-table__td detalle-table__td--coverage w-10 text-center">
                 @if (line.programar) {
                   <i class="pi pi-check-circle text-emerald-600" [attr.aria-label]="d.yes"></i>
@@ -162,7 +203,7 @@
           }
         } @empty {
           <tr>
-            <td colspan="12" class="px-5 py-8 text-center text-sm text-brand-muted">
+            <td colspan="15" class="px-5 py-8 text-center text-sm text-brand-muted">
               <i class="pi pi-inbox mr-2"></i>{{ d.empty }}
             </td>
           </tr>

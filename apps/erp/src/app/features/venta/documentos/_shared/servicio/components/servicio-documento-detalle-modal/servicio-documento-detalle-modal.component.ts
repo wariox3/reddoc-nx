@@ -316,6 +316,15 @@ export class ServicioDocumentoDetalleModalComponent {
         porcentajeBase: parseFloat(imp.impuesto_porcentaje_base ?? '100'),
       }));
     group.controls.impuestos_totales.setValue(calcularImpuestosLinea(subtotal, tasas));
+    // Horas y precio mínimo del tarifador. Solo si hay cálculo vigente; si no, se
+    // conservan los que traía la línea (autoritativos del backend en edición).
+    const calc = this.calcResult();
+    if (calc) {
+      group.controls.horas_diurnas.setValue(calc.horas_diurnas);
+      group.controls.horas_nocturnas.setValue(calc.horas_nocturnas);
+      group.controls.horas.setValue(calc.horas_diurnas + calc.horas_nocturnas);
+      group.controls.precio_minimo.setValue(calc.precio_minimo);
+    }
     // El padre cierra el modal al confirmarse el guardado: en edición espera el
     // HTTP (cierra solo al éxito, queda abierto en error); en alta cierra al instante.
     this.save.emit(group.getRawValue());

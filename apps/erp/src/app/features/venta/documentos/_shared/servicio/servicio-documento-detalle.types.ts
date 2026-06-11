@@ -35,4 +35,13 @@ export interface DetalleFormRawValue {
   readonly impuestos_ids: number[];
   /** Montos por tipo de impuesto para el desglose en el tfoot. Calculados en el frontend. */
   readonly impuestos_totales: readonly ImpuestoLinea[];
+  /**
+   * Horas de cobertura de la línea (derivadas del backend o del tarifador).
+   * `horas = horas_diurnas + horas_nocturnas`. No editables por UI.
+   */
+  readonly horas: number | null;
+  readonly horas_diurnas: number | null;
+  readonly horas_nocturnas: number | null;
+  /** Precio mínimo regulado de la cobertura (del tarifador). No editable por UI. */
+  readonly precio_minimo: number | null;
 }

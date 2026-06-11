@@ -79,6 +79,10 @@ function detalleToFormValue(
       nombre: imp.impuesto_nombre ?? '',
       total: Math.round(parseFloat(imp.total ?? '0')),
     })),
+    horas: toFiniteNumber(read.horas),
+    horas_diurnas: toFiniteNumber(read.horas_diurnas),
+    horas_nocturnas: toFiniteNumber(read.horas_nocturnas),
+    precio_minimo: toFiniteNumber(read.precio_minimo),
   };
 }
 
@@ -131,6 +135,12 @@ export function detalleToPayload(raw: DetalleFormRawValue): ServicioDocumentoDet
     festivo: raw.festivo,
     cortesia: raw.cortesia,
     compuesto: raw.compuesto,
+    // Horas y precio mínimo del tarifador (string con 2 decimales, como `precio`).
+    // En edición sin recálculo, round-trip de lo cargado; si faltan, 0.
+    horas: (raw.horas ?? 0).toFixed(2),
+    horas_diurnas: (raw.horas_diurnas ?? 0).toFixed(2),
+    horas_nocturnas: (raw.horas_nocturnas ?? 0).toFixed(2),
+    precio_minimo: (raw.precio_minimo ?? 0).toFixed(2),
     impuestos_ids: raw.impuestos_ids,
   };
 }

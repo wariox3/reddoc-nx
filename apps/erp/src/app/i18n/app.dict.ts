@@ -644,6 +644,12 @@ export interface AppDict extends AuthTranslationsHost {
             cortesia: string;
             cortesiaHint: string;
             compuesto: string;
+            horas: string;
+            horasFull: string;
+            horasDiurnas: string;
+            horasDiurnasFull: string;
+            horasNocturnas: string;
+            horasNocturnasFull: string;
             impuestos: string;
             impuestosPlaceholder: string;
           };
