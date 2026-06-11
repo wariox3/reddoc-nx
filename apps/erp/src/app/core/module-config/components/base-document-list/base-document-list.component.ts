@@ -24,10 +24,10 @@ import {
   type SortSpec,
 } from '@reddoc/core';
 import {
-  BreadcrumbComponent,
   DataFilterModalComponent,
   DataTableComponent,
   DataToolbarComponent,
+  ListShellComponent,
 } from '@reddoc/feature-base';
 import type {
   BreadcrumbItem,
@@ -80,7 +80,7 @@ const NEW_ACTION: ToolbarAction = {
   imports: [
     CommonModule,
     ConfirmDialogModule,
-    BreadcrumbComponent,
+    ListShellComponent,
     DataTableComponent,
     DataToolbarComponent,
     DataFilterModalComponent,
