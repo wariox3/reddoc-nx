@@ -23,13 +23,9 @@
     overflow: hidden;
   }
 
-  // Cabecera compacta: título + contador en una línea, separada del cuerpo por un
-  // borde inferior. Liviana — la botonera vive en el cuerpo, no aquí.
+  // Cabecera compacta: solo el título, separada del cuerpo por un borde inferior.
+  // Liviana — la botonera vive en el cuerpo, no aquí.
   &__head {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 1rem;
     padding: 0.85rem 1rem;
     border-bottom: 1px solid rgba(19 38 60 / 0.08);
     min-width: 0;
@@ -41,14 +37,6 @@
     font-weight: 700;
     letter-spacing: -0.02em;
     color: var(--brand-navy);
-  }
-
-  &__summary {
-    margin: 0;
-    font-size: 0.75rem;
-    color: var(--brand-muted);
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
   }
 
   // Cuerpo: botonera sobre la tabla. El gutter de 1rem genera el efecto "embebido"

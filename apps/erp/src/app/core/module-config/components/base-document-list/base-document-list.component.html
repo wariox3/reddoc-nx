@@ -1,8 +1,4 @@
-<lib-list-shell
-  [breadcrumb]="breadcrumbItems()"
-  [title]="translate(document().displayNameKey)"
-  [count]="totalCount()"
->
+<lib-list-shell [breadcrumb]="breadcrumbItems()" [title]="translate(document().displayNameKey)">
   @if (showToolbar()) {
     <lib-data-toolbar
       toolbar
