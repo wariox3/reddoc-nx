@@ -1,7 +1,8 @@
 import { Route } from '@angular/router';
-import { authGuard, tenantGuard } from '@reddoc/core';
+import { authGuard } from '@reddoc/core';
 import { AUTH_ROUTES } from './features/auth/auth.routes';
 import { rootRedirectGuard } from './core/guards/root-redirect.guard';
+import { tenantAccessGuard } from './core/guards/tenant-access.guard';
 import { erpModuleResolver } from '@erp/core/erp-modules';
 
 export const appRoutes: Route[] = [
@@ -31,7 +32,7 @@ export const appRoutes: Route[] = [
   // Workspace layout (sidebar + main) — anidado bajo el tenant slug
   {
     path: 't/:tenantSlug',
-    canActivate: [authGuard, tenantGuard],
+    canActivate: [authGuard, tenantAccessGuard],
     loadComponent: () =>
       import('./layouts/workspace-layout/workspace-layout.component').then(
         (m) => m.WorkspaceLayoutComponent,
