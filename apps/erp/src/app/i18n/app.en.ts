@@ -168,8 +168,8 @@ export const en: AppDict = {
     generar: {
       buttonLabel: 'Generate',
       modalHeader: 'Generate document',
-      modalSubtitle: 'Generates orders from the contracts of the selected date',
-      fechaLabel: 'Date',
+      modalSubtitle: 'Generates orders from the contracts of the selected month',
+      periodoLabel: 'Period',
       submit: 'Generate',
       cancel: 'Cancel',
       success: {

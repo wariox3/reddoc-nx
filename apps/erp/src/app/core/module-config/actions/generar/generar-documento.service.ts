@@ -8,12 +8,13 @@ const GENERAR_ENDPOINT = '/general/documento/generar/';
 /**
  * Payload de `POST /general/documento/generar/`.
  * Genera un documento de `documento_tipo_id_destino` a partir de los documentos
- * de `documento_tipo_id` con fecha `fecha` (formato `yyyy-MM-dd`).
+ * de `documento_tipo_id` del período `mes` (1-12) / `anio`.
  */
 export interface GenerarDocumentoPayload {
   readonly documento_tipo_id: number;
   readonly documento_tipo_id_destino: number;
-  readonly fecha: string;
+  readonly mes: number;
+  readonly anio: number;
 }
 
 /**

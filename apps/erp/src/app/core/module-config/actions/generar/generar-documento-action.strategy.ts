@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { EMPTY, from, type Observable } from 'rxjs';
 import { catchError, filter, map, switchMap, tap } from 'rxjs/operators';
-import { extractErrorMessage, I18nService, ToastService, toIsoDate } from '@reddoc/core';
+import { extractErrorMessage, I18nService, ToastService } from '@reddoc/core';
 import type { ToolbarAction } from '@reddoc/feature-base';
 import type { AppDict } from '@erp/i18n';
 import { DialogService } from 'primeng/dynamicdialog';
@@ -11,9 +11,9 @@ import type { EntityActionContext, EntityActionStrategy } from '../entity-action
 import { GenerarDocumentoService } from './generar-documento.service';
 
 /**
- * Acción "generar": abre un modal con un input de fecha y genera un documento de
- * **pedido servicio** (destino) a partir de los **contratos servicio** (origen)
- * de la fecha elegida.
+ * Acción "generar": abre un modal con un selector de mes/año y genera un documento
+ * de **pedido servicio** (destino) a partir de los **contratos servicio** (origen)
+ * del mes/año elegido.
  *
  * Origen y destino son constantes del requerimiento de negocio (no se derivan del
  * documento anfitrión): origen `CONTRATO_SERVICIO` (34) → destino
@@ -50,14 +50,15 @@ export class GenerarDocumentoActionStrategy implements EntityActionStrategy {
         });
         return ref ? ref.onClose : EMPTY;
       }),
-      // El modal cierra con `null` al cancelar: solo seguimos con una fecha real.
-      filter((fecha: unknown): fecha is Date => fecha instanceof Date),
-      switchMap((fecha) =>
+      // El modal cierra con `null` al cancelar: solo seguimos con un período real.
+      filter((periodo: unknown): periodo is Date => periodo instanceof Date),
+      switchMap((periodo) =>
         this.api
           .generar({
             documento_tipo_id: DOCUMENT_TYPE_ID.CONTRATO_SERVICIO,
             documento_tipo_id_destino: DOCUMENT_TYPE_ID.PEDIDO_SERVICIO,
-            fecha: toIsoDate(fecha),
+            mes: periodo.getMonth() + 1,
+            anio: periodo.getFullYear(),
           })
           .pipe(
             tap(() => {

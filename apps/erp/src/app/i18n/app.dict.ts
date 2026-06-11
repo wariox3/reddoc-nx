@@ -142,7 +142,7 @@ export interface AppDict extends AuthTranslationsHost {
       buttonLabel: string;
       modalHeader: string;
       modalSubtitle: string;
-      fechaLabel: string;
+      periodoLabel: string;
       submit: string;
       cancel: string;
       success: { title: string; desc: string };

@@ -7,12 +7,12 @@ import { I18nService, startOfToday } from '@reddoc/core';
 import type { AppDict } from '@erp/i18n';
 
 /**
- * Modal de la acción "generar": un único input de fecha.
+ * Modal de la acción "generar": un único selector de mes/año.
  *
  * Se abre con `DialogService.open(...)` desde `GenerarDocumentoActionStrategy`.
  * No conoce el endpoint ni el payload: al confirmar cierra el dialog emitiendo
  * el `Date` elegido por `ref.onClose`; al cancelar emite `null`. El strategy es
- * quien decide qué hacer con la fecha.
+ * quien deriva el mes y el año a partir de ese `Date`.
  */
 @Component({
   selector: 'app-generar-documento-modal',
@@ -27,13 +27,13 @@ export class GenerarDocumentoModalComponent {
 
   protected readonly t = this.i18n.t;
 
-  /** Fecha seleccionada; arranca en hoy a medianoche local. */
-  protected readonly fecha = signal<Date | null>(startOfToday());
+  /** Período seleccionado (ancla mes/año); arranca en el mes actual. */
+  protected readonly periodo = signal<Date | null>(startOfToday());
 
   protected confirm(): void {
-    const fecha = this.fecha();
-    if (!fecha) return;
-    this.ref.close(fecha);
+    const periodo = this.periodo();
+    if (!periodo) return;
+    this.ref.close(periodo);
   }
 
   protected cancel(): void {
