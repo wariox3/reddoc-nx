@@ -144,8 +144,6 @@
               </td>
               <td
                 class="detalle-table__td detalle-table__td--coverage w-10 text-center tabular-nums"
-                [class.font-medium]="(line.horas_nocturnas ?? 0) > 0"
-                [class.text-indigo-600]="(line.horas_nocturnas ?? 0) > 0"
                 [class.text-brand-muted]="!line.horas_nocturnas"
               >
                 {{ line.horas_nocturnas ?? '—' }}
