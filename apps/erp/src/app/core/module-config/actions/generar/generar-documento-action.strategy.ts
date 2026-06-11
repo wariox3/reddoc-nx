@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { EMPTY, from, type Observable } from 'rxjs';
 import { catchError, filter, map, switchMap, tap } from 'rxjs/operators';
-import { I18nService, ToastService, toIsoDate } from '@reddoc/core';
+import { extractErrorMessage, I18nService, ToastService, toIsoDate } from '@reddoc/core';
 import type { ToolbarAction } from '@reddoc/feature-base';
 import type { AppDict } from '@erp/i18n';
 import { DialogService } from 'primeng/dynamicdialog';
@@ -64,8 +64,8 @@ export class GenerarDocumentoActionStrategy implements EntityActionStrategy {
               this.toast.success(dict.success.title, dict.success.desc);
               ctx.reload();
             }),
-            catchError(() => {
-              this.toast.error(dict.error.title, dict.error.desc);
+            catchError((err: unknown) => {
+              this.toast.error(dict.error.title, extractErrorMessage(err, dict.error.desc));
               return EMPTY;
             }),
           ),
