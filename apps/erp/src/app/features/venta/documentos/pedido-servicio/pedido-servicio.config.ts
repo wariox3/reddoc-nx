@@ -35,7 +35,7 @@ export const PEDIDO_SERVICIO_CONFIG: DocumentEntityConfig = {
     canCreate: true,
     canEdit: true,
     canDelete: true,
-    canSelectRows: false,
+    canSelectRows: true,
     canImport: false,
     canExportExcel: true,
     canExportZip: false,
