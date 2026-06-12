@@ -1,8 +1,9 @@
-import { Component, DestroyRef, type OnInit, inject, input, signal } from '@angular/core';
+import { Component, DestroyRef, type OnInit, computed, inject, input, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { I18nService, TenantService, ToastService } from '@reddoc/core';
+import { BreadcrumbComponent, type BreadcrumbItem } from '@reddoc/feature-base';
 import type { AppDict } from '@erp/i18n';
 import { ProgramadorService } from '../../programador.service';
 import { PROGRAMADOR_LIST_PATH } from '../../programador.constants';
@@ -11,7 +12,7 @@ import type { Programador } from '../../programador.model';
 @Component({
   selector: 'app-programador-detail',
   standalone: true,
-  imports: [ButtonModule],
+  imports: [ButtonModule, BreadcrumbComponent],
   templateUrl: './programador-detail.component.html',
   styleUrl: './programador-detail.component.scss',
 })
@@ -30,6 +31,24 @@ export class ProgramadorDetailComponent implements OnInit {
   protected readonly programador = signal<Programador | null>(null);
   protected readonly isLoading = signal(true);
   protected readonly notFound = signal(false);
+
+  /** Migas: módulo Turno → listado de programadores → nombre del programador. */
+  protected readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => {
+    const slug = this.tenant.currentSlug();
+    const programador = this.programador();
+    const items: BreadcrumbItem[] = [
+      {
+        label: this.t().modules.turno.name,
+        routerLink: slug ? ['/t', slug, 'turno'] : undefined,
+      },
+      {
+        label: this.t().entities.programador.name,
+        routerLink: slug ? ['/t', slug, ...PROGRAMADOR_LIST_PATH] : undefined,
+      },
+    ];
+    if (programador) items.push({ label: programador.nombre });
+    return items;
+  });
 
   ngOnInit(): void {
     const rawId = this.id();

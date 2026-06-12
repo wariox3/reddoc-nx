@@ -1,8 +1,9 @@
-import { Component, DestroyRef, type OnInit, inject, input, signal } from '@angular/core';
+import { Component, DestroyRef, type OnInit, computed, inject, input, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { I18nService, TenantService, ToastService } from '@reddoc/core';
+import { BreadcrumbComponent, type BreadcrumbItem } from '@reddoc/feature-base';
 import type { AppDict } from '@erp/i18n';
 import { TurnoService } from '../../turno.service';
 import { TURNO_LIST_PATH } from '../../turno.constants';
@@ -17,7 +18,7 @@ import type { Turno } from '../../turno.model';
 @Component({
   selector: 'app-turno-detail',
   standalone: true,
-  imports: [ButtonModule],
+  imports: [ButtonModule, BreadcrumbComponent],
   templateUrl: './turno-detail.component.html',
   styleUrl: './turno-detail.component.scss',
 })
@@ -37,6 +38,24 @@ export class TurnoDetailComponent implements OnInit {
   protected readonly turno = signal<Turno | null>(null);
   protected readonly isLoading = signal(true);
   protected readonly notFound = signal(false);
+
+  /** Migas: módulo Turno → listado de turnos → nombre del turno abierto. */
+  protected readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => {
+    const slug = this.tenant.currentSlug();
+    const turno = this.turno();
+    const items: BreadcrumbItem[] = [
+      {
+        label: this.t().modules.turno.name,
+        routerLink: slug ? ['/t', slug, 'turno'] : undefined,
+      },
+      {
+        label: this.t().entities.turno.name,
+        routerLink: slug ? ['/t', slug, ...TURNO_LIST_PATH] : undefined,
+      },
+    ];
+    if (turno) items.push({ label: turno.nombre });
+    return items;
+  });
 
   ngOnInit(): void {
     const rawId = this.id();

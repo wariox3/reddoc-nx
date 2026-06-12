@@ -3,6 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { I18nService, TenantService, ToastService } from '@reddoc/core';
+import { BreadcrumbComponent, type BreadcrumbItem } from '@reddoc/feature-base';
 import type { AppDict } from '@erp/i18n';
 import { SecuenciaService } from '../../secuencia.service';
 import {
@@ -22,7 +23,7 @@ import type { Secuencia } from '../../secuencia.model';
 @Component({
   selector: 'app-secuencia-detail',
   standalone: true,
-  imports: [ButtonModule],
+  imports: [ButtonModule, BreadcrumbComponent],
   templateUrl: './secuencia-detail.component.html',
   styleUrl: './secuencia-detail.component.scss',
 })
@@ -42,6 +43,24 @@ export class SecuenciaDetailComponent implements OnInit {
   protected readonly secuencia = signal<Secuencia | null>(null);
   protected readonly isLoading = signal(true);
   protected readonly notFound = signal(false);
+
+  /** Migas: módulo Turno → listado de secuencias → nombre de la secuencia. */
+  protected readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => {
+    const slug = this.tenant.currentSlug();
+    const secuencia = this.secuencia();
+    const items: BreadcrumbItem[] = [
+      {
+        label: this.t().modules.turno.name,
+        routerLink: slug ? ['/t', slug, 'turno'] : undefined,
+      },
+      {
+        label: this.t().entities.secuencia.name,
+        routerLink: slug ? ['/t', slug, ...SECUENCIA_LIST_PATH] : undefined,
+      },
+    ];
+    if (secuencia) items.push({ label: secuencia.nombre });
+    return items;
+  });
 
   /** Celdas de días del mes con valor (oculta los días sin turno asignado). */
   protected readonly monthDayCells = computed(() => {

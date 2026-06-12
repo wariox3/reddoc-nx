@@ -3,6 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { I18nService, TenantService, ToastService } from '@reddoc/core';
+import { BreadcrumbComponent, type BreadcrumbItem } from '@reddoc/feature-base';
 import type { AppDict } from '@erp/i18n';
 import { ContactoService } from '../../contacto.service';
 import { CONTACTO_LIST_PATH } from '../../contacto.constants';
@@ -26,7 +27,7 @@ interface ContactoRol {
 @Component({
   selector: 'app-contacto-detail',
   standalone: true,
-  imports: [ButtonModule],
+  imports: [ButtonModule, BreadcrumbComponent],
   templateUrl: './contacto-detail.component.html',
   styleUrl: './contacto-detail.component.scss',
 })
@@ -46,6 +47,24 @@ export class ContactoDetailComponent implements OnInit {
   protected readonly contacto = signal<Contacto | null>(null);
   protected readonly isLoading = signal(true);
   protected readonly notFound = signal(false);
+
+  /** Migas: módulo General → listado de contactos → nombre del contacto abierto. */
+  protected readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => {
+    const slug = this.tenant.currentSlug();
+    const contacto = this.contacto();
+    const items: BreadcrumbItem[] = [
+      {
+        label: this.t().modules.general.name,
+        routerLink: slug ? ['/t', slug, 'general'] : undefined,
+      },
+      {
+        label: this.t().entities.contacto.name,
+        routerLink: slug ? ['/t', slug, ...CONTACTO_LIST_PATH] : undefined,
+      },
+    ];
+    if (contacto) items.push({ label: contacto.nombre_corto });
+    return items;
+  });
 
   /** Iniciales para el monograma: nombre1+apellido1 o, si no, nombre_corto. */
   protected readonly iniciales = computed(() => {
