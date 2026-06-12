@@ -544,6 +544,19 @@ export const en: AppDict = {
         },
       },
     },
+    secuencia: {
+      name: 'Sequences',
+      searchPlaceholder: 'Search by name…',
+      columns: {
+        id: 'ID',
+        codigo: 'Code',
+        nombre: 'Name',
+        horas: 'Hours',
+        dias: 'Days',
+        homologar: 'Homologate',
+        estado: 'Inactive',
+      },
+    },
     centroCosto: {
       name: 'Cost centers',
       searchPlaceholder: 'Search by name…',

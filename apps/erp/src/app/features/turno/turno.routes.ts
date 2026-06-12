@@ -27,6 +27,11 @@ export const TURNO_ROUTES: Route[] = [
         loadChildren: () =>
           import('./masters/programador/programador.routes').then((m) => m.PROGRAMADOR_ROUTES),
       },
+      {
+        path: 'secuencias',
+        loadChildren: () =>
+          import('./masters/secuencia/secuencia.routes').then((m) => m.SECUENCIA_ROUTES),
+      },
     ],
   },
 ];
