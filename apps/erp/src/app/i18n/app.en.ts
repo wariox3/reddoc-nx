@@ -152,6 +152,7 @@ export const en: AppDict = {
       sections: {
         master: 'Administration',
         document: 'Documents',
+        process: 'Process',
         movement: 'Movements',
         utility: 'Utilities',
         report: 'Reports',
@@ -738,6 +739,35 @@ export const en: AppDict = {
         precio: 'Price',
         fechaDesde: 'From',
         fechaHasta: 'To',
+      },
+    },
+    regenerarAfectado: {
+      name: 'Regenerate affected',
+      description:
+        'This process reviews every document line and recomputes how much of each one is already affected (linked to an invoice). Use it when the pending to invoice report looks out of date.',
+      run: 'Regenerate',
+      confirm: {
+        header: 'Regenerate affected?',
+        message:
+          'The affectation of every document line will be recomputed. This may take a few seconds.',
+        accept: 'Regenerate',
+        cancel: 'Cancel',
+      },
+      result: {
+        successTitle: 'Recompute completed',
+        successDesc: 'The affectation of the lines was regenerated successfully.',
+        updatedLabel: 'Updated lines',
+        viewReport: 'View pending to invoice',
+      },
+      toasts: {
+        success: {
+          title: 'Recompute completed',
+          desc: 'The affectation of the lines was regenerated successfully.',
+        },
+        error: {
+          title: 'Could not regenerate',
+          desc: 'An error occurred while recomputing the affectation. Please try again.',
+        },
       },
     },
     servicioDocumento: {

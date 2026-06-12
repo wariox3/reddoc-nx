@@ -49,6 +49,13 @@ export const VENTA_ROUTES: Route[] = [
           ),
       },
       {
+        path: 'proceso/regenerar-afectado',
+        loadChildren: () =>
+          import('./proceso/regenerar-afectado/regenerar-afectado.routes').then(
+            (m) => m.REGENERAR_AFECTADO_ROUTES,
+          ),
+      },
+      {
         path: 'informes/pendiente-facturar',
         loadChildren: () =>
           import('./informes/pendiente-facturar/pendiente-facturar.routes').then(

@@ -1,0 +1,61 @@
+<!--
+  Proceso "Regenerar afectado".
+  Vive dentro de <lib-list-shell> para igualar a las listas: breadcrumb + card
+  con el título en el header + mismo ancho/alto. Como no hay tabla, el área de
+  contenido aloja un panel de acción centrado (icono + explicación + botón) —
+  llena el frame con intención en vez de quedar como tabla vacía. Tras correr,
+  el resultado aparece en verde con el conteo y el enlace al informe que este
+  proceso alimenta. Paleta casa (navy/sky), depth borders-only, éxito en emerald.
+-->
+<lib-list-shell [breadcrumb]="breadcrumbItems()" [title]="t().entities.regenerarAfectado.name">
+  <div table class="flex items-center justify-center p-8 max-[576px]:p-5">
+    <div class="flex w-full max-w-md flex-col items-center gap-5 text-center">
+      <span class="flex h-14 w-14 items-center justify-center rounded-2xl bg-sky-50 text-sky-700">
+        <i class="pi pi-sync text-[1.5rem]"></i>
+      </span>
+
+      <p class="m-0 text-[0.9rem] leading-relaxed text-brand-text/80">
+        {{ t().entities.regenerarAfectado.description }}
+      </p>
+
+      <p-button
+        [label]="t().entities.regenerarAfectado.run"
+        icon="pi pi-sync"
+        [loading]="status() === 'running'"
+        (onClick)="onRegenerar()"
+      />
+
+      @if (status() === 'success') {
+        <div
+          class="mt-1 flex w-full items-start gap-3 rounded-[10px] border border-emerald-200 bg-emerald-50 px-4 py-3.5 text-left"
+        >
+          <i class="pi pi-check-circle mt-px text-[1.05rem] text-emerald-600"></i>
+          <div class="flex min-w-0 flex-1 flex-col gap-1.5">
+            <div class="flex flex-col gap-0.5">
+              <span class="text-[0.85rem] font-semibold text-emerald-900">
+                {{ t().entities.regenerarAfectado.result.successTitle }}
+              </span>
+              <span class="text-[0.78rem] text-emerald-800/80">
+                @if (affectedCount() !== null) {
+                  {{ t().entities.regenerarAfectado.result.updatedLabel }}:
+                  <span class="font-semibold tabular-nums">{{ affectedCount() }}</span>
+                } @else {
+                  {{ t().entities.regenerarAfectado.result.successDesc }}
+                }
+              </span>
+            </div>
+            <a
+              [routerLink]="informeLink()"
+              class="inline-flex w-fit items-center gap-1.5 text-[0.78rem] font-semibold text-emerald-700 transition-colors hover:text-emerald-900"
+            >
+              {{ t().entities.regenerarAfectado.result.viewReport }}
+              <i class="pi pi-arrow-right text-[0.68rem]"></i>
+            </a>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</lib-list-shell>
+
+<p-confirmDialog />

@@ -152,6 +152,7 @@ export const es: AppDict = {
       sections: {
         master: 'Administrador',
         document: 'Documentos',
+        process: 'Proceso',
         movement: 'Movimiento',
         utility: 'Utilidades',
         report: 'Informes',
@@ -753,6 +754,35 @@ export const es: AppDict = {
         precio: 'Precio',
         fechaDesde: 'Desde',
         fechaHasta: 'Hasta',
+      },
+    },
+    regenerarAfectado: {
+      name: 'Regenerar afectado',
+      description:
+        'Este proceso revisa todas las líneas de documento y recalcula cuánto de cada una ya está afectado (enlazado a una factura). Úsalo cuando el informe pendiente por facturar se vea desactualizado.',
+      run: 'Regenerar',
+      confirm: {
+        header: '¿Regenerar afectado?',
+        message:
+          'Se recalculará la afectación de todas las líneas de documento. La operación puede tardar unos segundos.',
+        accept: 'Regenerar',
+        cancel: 'Cancelar',
+      },
+      result: {
+        successTitle: 'Recálculo completado',
+        successDesc: 'La afectación de las líneas se regeneró correctamente.',
+        updatedLabel: 'Líneas actualizadas',
+        viewReport: 'Ver pendiente por facturar',
+      },
+      toasts: {
+        success: {
+          title: 'Recálculo completado',
+          desc: 'La afectación de las líneas se regeneró correctamente.',
+        },
+        error: {
+          title: 'No se pudo regenerar',
+          desc: 'Ocurrió un error al recalcular la afectación. Intentá de nuevo.',
+        },
       },
     },
     servicioDocumento: {
