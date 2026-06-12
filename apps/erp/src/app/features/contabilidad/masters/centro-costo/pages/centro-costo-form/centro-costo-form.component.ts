@@ -6,6 +6,7 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { FieldErrorComponent } from '@reddoc/ui';
 import { FormErrorService, I18nService, TenantService, ToastService } from '@reddoc/core';
+import { BreadcrumbComponent, type BreadcrumbItem } from '@reddoc/feature-base';
 import type { AppDict } from '@erp/i18n';
 import { CentroCostoService } from '../../centro-costo.service';
 import { CENTRO_COSTO_LIST_PATH } from '../../centro-costo.constants';
@@ -21,7 +22,13 @@ import { centroCostoToFormValue, formValueToPayload } from '../../centro-costo.m
 @Component({
   selector: 'app-centro-costo-form',
   standalone: true,
-  imports: [ReactiveFormsModule, ButtonModule, InputTextModule, FieldErrorComponent],
+  imports: [
+    ReactiveFormsModule,
+    BreadcrumbComponent,
+    ButtonModule,
+    InputTextModule,
+    FieldErrorComponent,
+  ],
   templateUrl: './centro-costo-form.component.html',
   styleUrl: './centro-costo-form.component.scss',
 })
@@ -42,6 +49,21 @@ export class CentroCostoFormComponent implements OnInit {
 
   protected readonly isEditMode = computed(() => !!this.id());
   protected readonly isSaving = signal(false);
+
+  protected readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => {
+    const slug = this.tenant.currentSlug();
+    return [
+      {
+        label: this.t().modules.contabilidad.name,
+        routerLink: slug ? ['/t', slug, 'contabilidad'] : undefined,
+      },
+      {
+        label: this.t().entities.centroCosto.name,
+        routerLink: slug ? ['/t', slug, ...CENTRO_COSTO_LIST_PATH] : undefined,
+      },
+      { label: this.isEditMode() ? this.t().common.actions.edit : this.t().common.actions.new },
+    ];
+  });
 
   protected readonly form = this.fb.group({
     codigo: ['', Validators.required],

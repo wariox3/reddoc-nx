@@ -7,6 +7,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { CheckboxModule } from 'primeng/checkbox';
 import { FieldErrorComponent } from '@reddoc/ui';
 import { FormErrorService, I18nService, TenantService, ToastService } from '@reddoc/core';
+import { BreadcrumbComponent, type BreadcrumbItem } from '@reddoc/feature-base';
 import type { AppDict } from '@erp/i18n';
 import { SecuenciaService } from '../../secuencia.service';
 import {
@@ -32,6 +33,7 @@ import { UppercaseDirective } from '../../uppercase.directive';
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    BreadcrumbComponent,
     ButtonModule,
     InputTextModule,
     CheckboxModule,
@@ -61,6 +63,21 @@ export class SecuenciaFormComponent implements OnInit {
 
   protected readonly isEditMode = computed(() => !!this.id());
   protected readonly isSaving = signal(false);
+
+  protected readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => {
+    const slug = this.tenant.currentSlug();
+    return [
+      {
+        label: this.t().modules.turno.name,
+        routerLink: slug ? ['/t', slug, 'turno'] : undefined,
+      },
+      {
+        label: this.t().entities.secuencia.name,
+        routerLink: slug ? ['/t', slug, ...SECUENCIA_LIST_PATH] : undefined,
+      },
+      { label: this.isEditMode() ? this.t().common.actions.edit : this.t().common.actions.new },
+    ];
+  });
 
   protected readonly form = this.fb.group({
     codigo: ['', Validators.required],

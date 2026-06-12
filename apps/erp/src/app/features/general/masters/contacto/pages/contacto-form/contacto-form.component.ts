@@ -7,6 +7,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { CheckboxModule } from 'primeng/checkbox';
 import { FieldErrorComponent } from '@reddoc/ui';
 import { FormErrorService, I18nService, TenantService, ToastService } from '@reddoc/core';
+import { BreadcrumbComponent, type BreadcrumbItem } from '@reddoc/feature-base';
 import {
   ErpApiSelectComponent,
   ErpSelectOption,
@@ -33,6 +34,7 @@ import {
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    BreadcrumbComponent,
     ButtonModule,
     InputTextModule,
     CheckboxModule,
@@ -60,6 +62,21 @@ export class ContactoFormComponent implements OnInit {
 
   protected readonly isEditMode = computed(() => !!this.id());
   protected readonly isSaving = signal(false);
+
+  protected readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => {
+    const slug = this.tenant.currentSlug();
+    return [
+      {
+        label: this.t().modules.general.name,
+        routerLink: slug ? ['/t', slug, 'general'] : undefined,
+      },
+      {
+        label: this.t().entities.contacto.name,
+        routerLink: slug ? ['/t', slug, ...CONTACTO_LIST_PATH] : undefined,
+      },
+      { label: this.isEditMode() ? this.t().common.actions.edit : this.t().common.actions.new },
+    ];
+  });
 
   private readonly tipoPersona = signal<number | null>(null);
   protected readonly esNatural = computed(() => this.tipoPersona() === TIPO_PERSONA.NATURAL);

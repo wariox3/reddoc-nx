@@ -9,6 +9,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { CheckboxModule } from 'primeng/checkbox';
 import { TextareaModule } from 'primeng/textarea';
 import { FormErrorService, I18nService, TenantService, ToastService } from '@reddoc/core';
+import { BreadcrumbComponent, type BreadcrumbItem } from '@reddoc/feature-base';
 import { ErpApiSelectComponent } from '@erp/core/components/api-select/erp-api-select.component';
 import { EmpleadoAutocompleteComponent } from '@erp/core/components/empleado-autocomplete/empleado-autocomplete.component';
 import type { EmpleadoOption } from '@erp/core/components/empleado-autocomplete/empleado-autocomplete.component';
@@ -36,6 +37,7 @@ import { contratoToFormValue, formValueToPayload } from '../../contrato.mapper';
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    BreadcrumbComponent,
     ButtonModule,
     SelectModule,
     DatePickerModule,
@@ -66,6 +68,21 @@ export class ContratoFormComponent implements OnInit {
   protected readonly isEditMode = computed(() => !!this.id());
 
   protected readonly isSaving = signal(false);
+
+  protected readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => {
+    const slug = this.tenant.currentSlug();
+    return [
+      {
+        label: this.t().modules.humano.name,
+        routerLink: slug ? ['/t', slug, 'humano'] : undefined,
+      },
+      {
+        label: this.t().entities.contrato.name,
+        routerLink: slug ? ['/t', slug, ...CONTRATO_LIST_PATH] : undefined,
+      },
+      { label: this.isEditMode() ? this.t().common.actions.edit : this.t().common.actions.new },
+    ];
+  });
 
   // Las FK de secciones 2–4 arrancan deshabilitadas (pendientes de endpoint). Ver TODO de la clase.
   protected readonly form = this.fb.group({

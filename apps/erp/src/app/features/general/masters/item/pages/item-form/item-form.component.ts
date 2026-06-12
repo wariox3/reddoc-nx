@@ -10,6 +10,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { FieldErrorComponent } from '@reddoc/ui';
 import { FormErrorService, I18nService, TenantService, ToastService } from '@reddoc/core';
+import { BreadcrumbComponent, type BreadcrumbItem } from '@reddoc/feature-base';
 import { ErpCuentaSelectComponent } from '@erp/core/components/cuenta-select/erp-cuenta-select.component';
 import { ErpSelectDataService, type ErpSelectOption } from '@erp/core/data/erp-select-data.service';
 import type { AppDict } from '@erp/i18n';
@@ -28,6 +29,7 @@ import { formValueToPayload, itemToFormValue } from '../../item.mapper';
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    BreadcrumbComponent,
     ButtonModule,
     InputTextModule,
     InputNumberModule,
@@ -58,6 +60,21 @@ export class ItemFormComponent implements OnInit {
 
   protected readonly isEditMode = computed(() => !!this.id());
   protected readonly isSaving = signal(false);
+
+  protected readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => {
+    const slug = this.tenant.currentSlug();
+    return [
+      {
+        label: this.t().modules.general.name,
+        routerLink: slug ? ['/t', slug, 'general'] : undefined,
+      },
+      {
+        label: this.t().entities.item.name,
+        routerLink: slug ? ['/t', slug, ...ITEM_LIST_PATH] : undefined,
+      },
+      { label: this.isEditMode() ? this.t().common.actions.edit : this.t().common.actions.new },
+    ];
+  });
 
   /** Opciones de impuestos por tipo (cargadas en construcción). */
   protected readonly impuestosVentaOptions = signal<ErpSelectOption[]>([]);
