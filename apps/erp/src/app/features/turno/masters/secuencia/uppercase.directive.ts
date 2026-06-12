@@ -6,8 +6,9 @@ import { NgControl } from '@angular/forms';
  * la posición del cursor. Actualiza el `FormControl` asociado (ReactiveForms)
  * para que el valor del modelo también quede en uppercase, no solo la vista.
  *
- * Se usa en los inputs de código de la secuencia (código, días del mes y de
- * semana), combinado con `maxlength="10"` en el template.
+ * Se usa en los inputs de código de turno de la secuencia (días del mes y de
+ * semana), combinado con `maxlength="10"` en el template. No se aplica al campo
+ * `codigo` de la secuencia, que va tal cual lo escribe el usuario.
  */
 @Directive({
   selector: 'input[appUppercase]',
