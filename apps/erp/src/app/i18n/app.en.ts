@@ -619,6 +619,22 @@ export const en: AppDict = {
         },
       },
     },
+    turno: {
+      name: 'Shifts',
+      searchPlaceholder: 'Search by name…',
+      columns: {
+        id: 'ID',
+        codigo: 'Code',
+        nombre: 'Name',
+        horaInicio: 'Start time',
+        horaFin: 'End time',
+        horas: 'Hours',
+        horasDiurnas: 'Day hours',
+        horasNocturnas: 'Night hours',
+        color: 'Color',
+        estado: 'Inactive',
+      },
+    },
     centroCosto: {
       name: 'Cost centers',
       searchPlaceholder: 'Search by name…',

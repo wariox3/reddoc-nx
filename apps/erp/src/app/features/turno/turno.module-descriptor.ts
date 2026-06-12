@@ -26,6 +26,7 @@ export const TURNO_MODULE: ErpModuleDescriptor = {
             { labelKey: 'entities.puesto.name', path: 'puestos' },
             { labelKey: 'entities.programador.name', path: 'programadores' },
             { labelKey: 'entities.secuencia.name', path: 'secuencias' },
+            { labelKey: 'entities.turno.name', path: 'turnos' },
           ],
         },
       ],
