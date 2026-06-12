@@ -66,7 +66,11 @@ export class WorkspaceLayoutComponent {
     effect(() => {
       const expandedIds = this.sections()
         .filter((s): s is SidebarAccordion => s.kind === 'accordion')
-        .filter((s) => s.defaultExpanded === true)
+        .filter(
+          (s) =>
+            s.defaultExpanded === true ||
+            s.groups.some((g) => g.items.some((leaf) => this.isLeafActive(leaf))),
+        )
         .map((s) => s.id);
       this.expandedAccordionIds.set(new Set(expandedIds));
     });
