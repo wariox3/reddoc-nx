@@ -28,6 +28,7 @@ export const VENTA_MODULE: ErpModuleDescriptor = {
           items: [
             { labelKey: 'entities.contratoServicio.name', path: 'contrato-servicio/list' },
             { labelKey: 'entities.pedidoServicio.name', path: 'pedido-servicio/list' },
+            { labelKey: 'entities.facturaVenta.name', path: 'factura-venta/list' },
           ],
         },
       ],
