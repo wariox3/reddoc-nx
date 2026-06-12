@@ -3,11 +3,11 @@ import type { Route } from '@angular/router';
 /**
  * Rutas del master Secuencia del módulo Turno.
  *
- * Listado + formulario de alta/edición (la misma página cubre crear y editar).
- * El detalle se agregará después. Los componentes se cargan lazy para mantener
- * el bundle del master por separado.
+ * Listado + formulario de alta/edición (la misma página cubre crear y editar) +
+ * detalle de solo lectura. Los componentes se cargan lazy para mantener el
+ * bundle del master por separado.
  *
- * URL: `/t/:tenantSlug/turno/secuencias[/nuevo|/editar/:id]`
+ * URL: `/t/:tenantSlug/turno/secuencias[/nuevo|/editar/:id|/detalle/:id]`
  */
 export const SECUENCIA_ROUTES: Route[] = [
   {
@@ -29,6 +29,13 @@ export const SECUENCIA_ROUTES: Route[] = [
     loadComponent: () =>
       import('./pages/secuencia-form/secuencia-form.component').then(
         (m) => m.SecuenciaFormComponent,
+      ),
+  },
+  {
+    path: 'detalle/:id',
+    loadComponent: () =>
+      import('./pages/secuencia-detail/secuencia-detail.component').then(
+        (m) => m.SecuenciaDetailComponent,
       ),
   },
 ];

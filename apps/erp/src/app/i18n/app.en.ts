@@ -604,6 +604,20 @@ export const en: AppDict = {
           loadError: { title: 'Load error', desc: 'Could not load the sequence' },
         },
       },
+      detail: {
+        notFound: {
+          title: 'Sequence not found',
+          desc: 'The sequence you are looking for does not exist or was deleted.',
+        },
+        sections: {
+          principal: 'Main information',
+          diasMes: 'Days of the month',
+          diasSemana: 'Days of the week',
+        },
+        toasts: {
+          loadError: { title: 'Load error', desc: 'Could not load the sequence' },
+        },
+      },
     },
     centroCosto: {
       name: 'Cost centers',

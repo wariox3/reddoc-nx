@@ -619,6 +619,20 @@ export const es: AppDict = {
           loadError: { title: 'Error al cargar', desc: 'No se pudo cargar la secuencia' },
         },
       },
+      detail: {
+        notFound: {
+          title: 'Secuencia no encontrada',
+          desc: 'La secuencia que buscás no existe o fue eliminada.',
+        },
+        sections: {
+          principal: 'Información principal',
+          diasMes: 'Días del mes',
+          diasSemana: 'Días de la semana',
+        },
+        toasts: {
+          loadError: { title: 'Error al cargar', desc: 'No se pudo cargar la secuencia' },
+        },
+      },
     },
     centroCosto: {
       name: 'Centros de costo',

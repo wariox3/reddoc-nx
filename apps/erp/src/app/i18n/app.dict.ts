@@ -451,6 +451,11 @@ export interface AppDict extends AuthTranslationsHost {
           loadError: { title: string; desc: string };
         };
       };
+      detail: {
+        notFound: { title: string; desc: string };
+        sections: { principal: string; diasMes: string; diasSemana: string };
+        toasts: { loadError: { title: string; desc: string } };
+      };
     };
     centroCosto: {
       name: string;
