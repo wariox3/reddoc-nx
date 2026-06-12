@@ -675,13 +675,21 @@ export interface AppDict extends AuthTranslationsHost {
     pendienteFacturar: {
       name: string;
       columns: {
-        documento: string;
-        contacto: string;
+        id: string;
+        numero: string;
+        fecha: string;
+        cod: string;
+        puesto: string;
         item: string;
+        modalidad: string;
         cantidad: string;
-        precio: string;
-        fechaDesde: string;
-        fechaHasta: string;
+        horas: string;
+        horasDiurnas: string;
+        horasNocturnas: string;
+        iva: string;
+        valor: string;
+        valorPendiente: string;
+        total: string;
       };
     };
     regenerarAfectado: {

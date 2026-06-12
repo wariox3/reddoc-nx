@@ -4,60 +4,118 @@ import type { ToolbarAction } from '@reddoc/feature-base';
 export const PENDIENTE_FACTURAR_FILTERS_STORAGE_KEY = 'pendiente-facturar:filters:v1';
 
 /**
- * Columnas del informe. Propuesta inicial (ajustable en review): identifica el
- * documento y su contacto, más los datos de la línea pendiente por facturar.
+ * Columnas del informe, en el orden pedido por negocio. Identifica el documento
+ * y la línea (puesto, item, modalidad), las horas de cobertura y los montos
+ * (IVA, valor, valor pendiente y total). Los encabezados respetan las
+ * abreviaciones del negocio (Cód., Cant., H/HD/HN, Vr pendiente).
+ *
+ * Varios campos de monto y horas los calcula/expande el backend para el informe
+ * (ver `pendiente-facturar.model.ts`); aquí solo se mapean por nombre.
  */
 export const PENDIENTE_FACTURAR_COLUMNS: readonly ColumnDef[] = [
   {
+    field: 'id',
+    headerKey: 'entities.pendienteFacturar.columns.id',
+    type: 'number',
+    width: '70px',
+    align: 'right',
+  },
+  {
     field: 'documento_numero',
-    headerKey: 'entities.pendienteFacturar.columns.documento',
+    headerKey: 'entities.pendienteFacturar.columns.numero',
     type: 'text',
     width: '110px',
   },
   {
-    field: 'contacto_nombre',
-    headerKey: 'entities.pendienteFacturar.columns.contacto',
+    field: 'fecha',
+    headerKey: 'entities.pendienteFacturar.columns.fecha',
+    type: 'date',
+    width: '110px',
+  },
+  {
+    field: 'puesto',
+    headerKey: 'entities.pendienteFacturar.columns.cod',
+    type: 'number',
+    width: '80px',
+    align: 'right',
+  },
+  { field: 'puesto_nombre', headerKey: 'entities.pendienteFacturar.columns.puesto', type: 'text' },
+  { field: 'item_nombre', headerKey: 'entities.pendienteFacturar.columns.item', type: 'text' },
+  {
+    field: 'modalidad_nombre',
+    headerKey: 'entities.pendienteFacturar.columns.modalidad',
     type: 'text',
   },
-  { field: 'item_nombre', headerKey: 'entities.pendienteFacturar.columns.item', type: 'text' },
   {
     field: 'cantidad',
     headerKey: 'entities.pendienteFacturar.columns.cantidad',
     type: 'number',
-    width: '100px',
+    width: '80px',
     align: 'right',
   },
   {
-    field: 'precio',
-    headerKey: 'entities.pendienteFacturar.columns.precio',
+    field: 'horas',
+    headerKey: 'entities.pendienteFacturar.columns.horas',
+    type: 'number',
+    width: '70px',
+    align: 'right',
+  },
+  {
+    field: 'horas_diurnas',
+    headerKey: 'entities.pendienteFacturar.columns.horasDiurnas',
+    type: 'number',
+    width: '70px',
+    align: 'right',
+  },
+  {
+    field: 'horas_nocturnas',
+    headerKey: 'entities.pendienteFacturar.columns.horasNocturnas',
+    type: 'number',
+    width: '70px',
+    align: 'right',
+  },
+  {
+    field: 'iva',
+    headerKey: 'entities.pendienteFacturar.columns.iva',
     type: 'currency',
-    width: '140px',
+    width: '120px',
     align: 'right',
   },
   {
-    field: 'fecha_desde',
-    headerKey: 'entities.pendienteFacturar.columns.fechaDesde',
-    type: 'date',
-    width: '120px',
+    field: 'valor',
+    headerKey: 'entities.pendienteFacturar.columns.valor',
+    type: 'currency',
+    width: '130px',
+    align: 'right',
   },
   {
-    field: 'fecha_hasta',
-    headerKey: 'entities.pendienteFacturar.columns.fechaHasta',
-    type: 'date',
-    width: '120px',
+    field: 'valor_pendiente',
+    headerKey: 'entities.pendienteFacturar.columns.valorPendiente',
+    type: 'currency',
+    width: '130px',
+    align: 'right',
+  },
+  {
+    field: 'total',
+    headerKey: 'entities.pendienteFacturar.columns.total',
+    type: 'currency',
+    width: '130px',
+    align: 'right',
   },
 ];
 
-/** Campos por los que se puede filtrar (espejo de las columnas). */
+/** Campos por los que se puede filtrar (columnas descriptivas; no los montos calculados). */
 export const PENDIENTE_FACTURAR_FILTER_FIELDS: readonly FilterField[] = [
   {
     name: 'documento_numero',
-    displayNameKey: 'entities.pendienteFacturar.columns.documento',
+    displayNameKey: 'entities.pendienteFacturar.columns.numero',
     type: 'string',
   },
+  { name: 'fecha', displayNameKey: 'entities.pendienteFacturar.columns.fecha', type: 'date' },
+  { name: 'puesto', displayNameKey: 'entities.pendienteFacturar.columns.cod', type: 'number' },
   {
-    name: 'contacto_nombre',
-    displayNameKey: 'entities.pendienteFacturar.columns.contacto',
+    name: 'puesto_nombre',
+    displayNameKey: 'entities.pendienteFacturar.columns.puesto',
     type: 'string',
   },
   {
@@ -66,20 +124,14 @@ export const PENDIENTE_FACTURAR_FILTER_FIELDS: readonly FilterField[] = [
     type: 'string',
   },
   {
+    name: 'modalidad_nombre',
+    displayNameKey: 'entities.pendienteFacturar.columns.modalidad',
+    type: 'string',
+  },
+  {
     name: 'cantidad',
     displayNameKey: 'entities.pendienteFacturar.columns.cantidad',
     type: 'number',
-  },
-  { name: 'precio', displayNameKey: 'entities.pendienteFacturar.columns.precio', type: 'number' },
-  {
-    name: 'fecha_desde',
-    displayNameKey: 'entities.pendienteFacturar.columns.fechaDesde',
-    type: 'date',
-  },
-  {
-    name: 'fecha_hasta',
-    displayNameKey: 'entities.pendienteFacturar.columns.fechaHasta',
-    type: 'date',
   },
 ];
 
