@@ -472,6 +472,30 @@ export interface AppDict extends AuthTranslationsHost {
         color: string;
         estado: string;
       };
+      form: {
+        createTitle: string;
+        editTitle: string;
+        createSubtitle: string;
+        editSubtitle: string;
+        fields: {
+          codigo: string;
+          nombre: string;
+          horaInicio: string;
+          horaFin: string;
+          horas: string;
+          horasDiurnas: string;
+          horasNocturnas: string;
+          color: string;
+        };
+        validation: { required: string };
+        toasts: {
+          createSuccess: { title: string; desc: string };
+          editSuccess: { title: string; desc: string };
+          createError: { title: string; desc: string };
+          editError: { title: string; desc: string };
+          loadError: { title: string; desc: string };
+        };
+      };
     };
     centroCosto: {
       name: string;

@@ -649,6 +649,35 @@ export const es: AppDict = {
         color: 'Color',
         estado: 'Inactivo',
       },
+      form: {
+        createTitle: 'Nuevo turno',
+        editTitle: 'Editar turno',
+        createSubtitle: 'Completá la información del turno',
+        editSubtitle: 'Modificá la información del turno',
+        fields: {
+          codigo: 'Código',
+          nombre: 'Nombre',
+          horaInicio: 'Hora inicio',
+          horaFin: 'Hora fin',
+          horas: 'Horas',
+          horasDiurnas: 'Horas diurnas',
+          horasNocturnas: 'Horas nocturnas',
+          color: 'Color',
+        },
+        validation: {
+          required: 'Este campo es requerido',
+        },
+        toasts: {
+          createSuccess: { title: 'Turno creado', desc: 'El turno se creó correctamente' },
+          editSuccess: {
+            title: 'Turno actualizado',
+            desc: 'Los cambios se guardaron correctamente',
+          },
+          createError: { title: 'Error al crear', desc: 'No se pudo crear el turno' },
+          editError: { title: 'Error al guardar', desc: 'No se pudieron guardar los cambios' },
+          loadError: { title: 'Error al cargar', desc: 'No se pudo cargar el turno' },
+        },
+      },
     },
     centroCosto: {
       name: 'Centros de costo',

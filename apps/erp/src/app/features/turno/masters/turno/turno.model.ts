@@ -19,3 +19,20 @@ export interface Turno {
   readonly color: string | null;
   readonly estado_inactivo: boolean;
 }
+
+/**
+ * Write-model para create/update de turno.
+ *
+ * `estado_inactivo` no se captura en el formulario: lo gestiona el backend
+ * (alta → activo).
+ */
+export interface TurnoPayload {
+  nombre: string;
+  codigo: string;
+  hora_inicio: string | null;
+  hora_fin: string | null;
+  horas: number | null;
+  horas_diurnas: number | null;
+  horas_nocturnas: number | null;
+  color: string | null;
+}

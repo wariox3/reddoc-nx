@@ -634,6 +634,32 @@ export const en: AppDict = {
         color: 'Color',
         estado: 'Inactive',
       },
+      form: {
+        createTitle: 'New shift',
+        editTitle: 'Edit shift',
+        createSubtitle: 'Fill in the shift information',
+        editSubtitle: 'Update the shift information',
+        fields: {
+          codigo: 'Code',
+          nombre: 'Name',
+          horaInicio: 'Start time',
+          horaFin: 'End time',
+          horas: 'Hours',
+          horasDiurnas: 'Day hours',
+          horasNocturnas: 'Night hours',
+          color: 'Color',
+        },
+        validation: {
+          required: 'This field is required',
+        },
+        toasts: {
+          createSuccess: { title: 'Shift created', desc: 'The shift was created successfully' },
+          editSuccess: { title: 'Shift updated', desc: 'Changes were saved successfully' },
+          createError: { title: 'Create error', desc: 'Could not create the shift' },
+          editError: { title: 'Save error', desc: 'Could not save the changes' },
+          loadError: { title: 'Load error', desc: 'Could not load the shift' },
+        },
+      },
     },
     centroCosto: {
       name: 'Cost centers',

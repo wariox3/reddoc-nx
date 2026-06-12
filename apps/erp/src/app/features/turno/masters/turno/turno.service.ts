@@ -7,7 +7,7 @@ import {
   type ListQuery,
   type PaginatedResponse,
 } from '@reddoc/core';
-import type { Turno } from './turno.model';
+import type { Turno, TurnoPayload } from './turno.model';
 
 /**
  * Servicio HTTP de turnos (jornadas).
@@ -36,6 +36,14 @@ export class TurnoService extends BaseHttpService {
 
   getById(id: number): Observable<Turno> {
     return this.get<Turno>(`${this.resourcePath}${id}/`);
+  }
+
+  create(payload: TurnoPayload): Observable<Turno> {
+    return this.post<Turno>(this.resourcePath, payload);
+  }
+
+  update(id: number, payload: TurnoPayload): Observable<Turno> {
+    return this.put<Turno>(`${this.resourcePath}${id}/`, payload);
   }
 
   /**
