@@ -678,6 +678,17 @@ export const es: AppDict = {
           loadError: { title: 'Error al cargar', desc: 'No se pudo cargar el turno' },
         },
       },
+      detail: {
+        notFound: {
+          title: 'Turno no encontrado',
+          desc: 'El turno que buscás no existe o fue eliminado.',
+        },
+        sections: { principal: 'Información principal' },
+        activo: 'Activo',
+        toasts: {
+          loadError: { title: 'Error al cargar', desc: 'No se pudo cargar el turno' },
+        },
+      },
     },
     centroCosto: {
       name: 'Centros de costo',

@@ -660,6 +660,17 @@ export const en: AppDict = {
           loadError: { title: 'Load error', desc: 'Could not load the shift' },
         },
       },
+      detail: {
+        notFound: {
+          title: 'Shift not found',
+          desc: 'The shift you are looking for does not exist or was deleted.',
+        },
+        sections: { principal: 'Main information' },
+        activo: 'Active',
+        toasts: {
+          loadError: { title: 'Load error', desc: 'Could not load the shift' },
+        },
+      },
     },
     centroCosto: {
       name: 'Cost centers',
