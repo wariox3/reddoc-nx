@@ -15,6 +15,7 @@ import {
   SECUENCIA_WEEKDAYS,
 } from '../../secuencia.constants';
 import { secuenciaToFormValue, formValueToPayload } from '../../secuencia.mapper';
+import { UppercaseDirective } from '../../uppercase.directive';
 
 /**
  * Formulario de alta/edición de secuencia.
@@ -35,6 +36,7 @@ import { secuenciaToFormValue, formValueToPayload } from '../../secuencia.mapper
     InputTextModule,
     CheckboxModule,
     FieldErrorComponent,
+    UppercaseDirective,
   ],
   templateUrl: './secuencia-form.component.html',
   styleUrl: './secuencia-form.component.scss',

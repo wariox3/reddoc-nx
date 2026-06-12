@@ -51,7 +51,15 @@
             {{ t().entities.secuencia.form.fields.codigo }}
             <span class="ml-px text-red-500">*</span>
           </label>
-          <input id="codigo" pInputText type="text" formControlName="codigo" fluid />
+          <input
+            id="codigo"
+            pInputText
+            type="text"
+            formControlName="codigo"
+            appUppercase
+            maxlength="10"
+            fluid
+          />
           <lib-field-error
             [control]="form.controls.codigo"
             [messages]="{ required: t().entities.secuencia.form.validation.required }"
@@ -129,6 +137,8 @@
               pInputText
               type="text"
               [formControlName]="'dia_' + d"
+              appUppercase
+              maxlength="10"
               class="text-center"
               fluid
             />
@@ -163,7 +173,15 @@
             <label [for]="w.control" class="secuencia-form__label">{{
               translate(w.labelKey)
             }}</label>
-            <input [id]="w.control" pInputText type="text" [formControlName]="w.control" fluid />
+            <input
+              [id]="w.control"
+              pInputText
+              type="text"
+              [formControlName]="w.control"
+              appUppercase
+              maxlength="10"
+              fluid
+            />
           </div>
         }
       </div>
