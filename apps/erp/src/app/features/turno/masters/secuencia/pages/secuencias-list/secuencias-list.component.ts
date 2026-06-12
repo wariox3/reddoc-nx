@@ -159,9 +159,6 @@ export class SecuenciasListComponent {
   protected onRowAction(event: RowActionInvokedEvent): void {
     const secuencia = event.row as Secuencia;
     switch (event.actionId) {
-      case 'view':
-        this.navigateToDetail(secuencia.id);
-        break;
       case 'edit':
         this.navigateToEdit(secuencia.id);
         break;
@@ -172,7 +169,7 @@ export class SecuenciasListComponent {
   }
 
   protected onRowClick(row: unknown): void {
-    this.navigateToDetail((row as Secuencia).id);
+    this.navigateToEdit((row as Secuencia).id);
   }
 
   protected onToolbarAction(actionId: string): void {
@@ -267,10 +264,6 @@ export class SecuenciasListComponent {
 
   private navigateToEdit(id: number): void {
     this.router.navigate(this.buildRouteCommands('editar', id));
-  }
-
-  private navigateToDetail(id: number): void {
-    this.router.navigate(this.buildRouteCommands('detalle', id));
   }
 
   /**

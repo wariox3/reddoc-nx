@@ -12,6 +12,28 @@ export const SECUENCIAS_QUICK_SEARCH_FIELD = 'nombre';
 /** Segmentos de ruta del listado, relativos al tenant. */
 export const SECUENCIA_LIST_PATH = ['turno', 'secuencias'] as const;
 
+/** Días del mes (1..31). El nombre del control es `dia_<n>`. */
+export const SECUENCIA_MONTH_DAYS: readonly number[] = Array.from({ length: 31 }, (_, i) => i + 1);
+
+/**
+ * Días de semana + festivos del patrón. `control` es el nombre del FormControl
+ * y campo del payload; `labelKey` resuelve el label i18n.
+ */
+export const SECUENCIA_WEEKDAYS: readonly {
+  readonly control: string;
+  readonly labelKey: string;
+}[] = [
+  { control: 'lunes', labelKey: 'entities.secuencia.form.fields.lunes' },
+  { control: 'martes', labelKey: 'entities.secuencia.form.fields.martes' },
+  { control: 'miercoles', labelKey: 'entities.secuencia.form.fields.miercoles' },
+  { control: 'jueves', labelKey: 'entities.secuencia.form.fields.jueves' },
+  { control: 'viernes', labelKey: 'entities.secuencia.form.fields.viernes' },
+  { control: 'sabado', labelKey: 'entities.secuencia.form.fields.sabado' },
+  { control: 'domingo', labelKey: 'entities.secuencia.form.fields.domingo' },
+  { control: 'festivo', labelKey: 'entities.secuencia.form.fields.festivo' },
+  { control: 'domingo_festivo', labelKey: 'entities.secuencia.form.fields.domingoFestivo' },
+];
+
 /**
  * Columnas visibles del listado (resumen). Los campos por día (`dia_1..dia_31`)
  * y por día de semana (`lunes..domingo`, `festivo`, `domingo_festivo`) se omiten
@@ -65,7 +87,6 @@ export const SECUENCIAS_FILTER_FIELDS: readonly FilterField[] = [
 
 export const SECUENCIAS_ROW_ACTIONS: readonly RowAction[] = [
   { id: 'edit', labelKey: 'common.actions.edit', iconClass: 'pi pi-pencil', inline: true },
-  { id: 'view', labelKey: 'common.actions.view', iconClass: 'pi pi-eye', inline: true },
   { id: 'delete', labelKey: 'common.actions.delete', iconClass: 'pi pi-trash', severity: 'danger' },
 ];
 

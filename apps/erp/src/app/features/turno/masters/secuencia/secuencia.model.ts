@@ -58,3 +58,59 @@ export interface Secuencia {
   readonly homologar: boolean;
   readonly estado_inactivo: boolean;
 }
+
+/**
+ * Write-model para create/update de secuencia.
+ *
+ * Incluye los códigos de turno por día del mes (`dia_1..dia_31`) y por día de
+ * semana (`lunes..domingo`, `festivo`, `domingo_festivo`), los totales editables
+ * (`horas`, `dias`) y el flag `homologar`. `estado_inactivo` no se captura en el
+ * formulario: lo gestiona el backend (alta → activo).
+ */
+export interface SecuenciaPayload {
+  nombre: string;
+  codigo: string;
+  dia_1: string | null;
+  dia_2: string | null;
+  dia_3: string | null;
+  dia_4: string | null;
+  dia_5: string | null;
+  dia_6: string | null;
+  dia_7: string | null;
+  dia_8: string | null;
+  dia_9: string | null;
+  dia_10: string | null;
+  dia_11: string | null;
+  dia_12: string | null;
+  dia_13: string | null;
+  dia_14: string | null;
+  dia_15: string | null;
+  dia_16: string | null;
+  dia_17: string | null;
+  dia_18: string | null;
+  dia_19: string | null;
+  dia_20: string | null;
+  dia_21: string | null;
+  dia_22: string | null;
+  dia_23: string | null;
+  dia_24: string | null;
+  dia_25: string | null;
+  dia_26: string | null;
+  dia_27: string | null;
+  dia_28: string | null;
+  dia_29: string | null;
+  dia_30: string | null;
+  dia_31: string | null;
+  lunes: string | null;
+  martes: string | null;
+  miercoles: string | null;
+  jueves: string | null;
+  viernes: string | null;
+  sabado: string | null;
+  domingo: string | null;
+  festivo: string | null;
+  domingo_festivo: string | null;
+  horas: number | null;
+  dias: number | null;
+  homologar: boolean;
+}

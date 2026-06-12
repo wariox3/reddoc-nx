@@ -416,6 +416,41 @@ export interface AppDict extends AuthTranslationsHost {
         homologar: string;
         estado: string;
       };
+      form: {
+        createTitle: string;
+        editTitle: string;
+        createSubtitle: string;
+        editSubtitle: string;
+        cancel: string;
+        submitCreate: string;
+        submitEdit: string;
+        sections: { principal: string; diasMes: string; diasSemana: string };
+        sectionsHint: { principal: string; diasMes: string; diasSemana: string };
+        fields: {
+          codigo: string;
+          nombre: string;
+          horas: string;
+          dias: string;
+          homologar: string;
+          lunes: string;
+          martes: string;
+          miercoles: string;
+          jueves: string;
+          viernes: string;
+          sabado: string;
+          domingo: string;
+          festivo: string;
+          domingoFestivo: string;
+        };
+        validation: { required: string };
+        toasts: {
+          createSuccess: { title: string; desc: string };
+          editSuccess: { title: string; desc: string };
+          createError: { title: string; desc: string };
+          editError: { title: string; desc: string };
+          loadError: { title: string; desc: string };
+        };
+      };
     };
     centroCosto: {
       name: string;

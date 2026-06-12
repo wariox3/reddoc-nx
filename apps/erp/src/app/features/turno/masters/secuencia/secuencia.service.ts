@@ -7,7 +7,7 @@ import {
   type ListQuery,
   type PaginatedResponse,
 } from '@reddoc/core';
-import type { Secuencia } from './secuencia.model';
+import type { Secuencia, SecuenciaPayload } from './secuencia.model';
 
 /**
  * Servicio HTTP de secuencias.
@@ -20,7 +20,7 @@ import type { Secuencia } from './secuencia.model';
  * (`buildListParams`), que es donde el backend la lee.
  *
  * Tenant-scoped por default (`/turno/*` vive en el schema del tenant); no se
- * sobreescribe `tenantScoped`. `create`/`update` se agregarán con el formulario.
+ * sobreescribe `tenantScoped`.
  */
 @Injectable({ providedIn: 'root' })
 export class SecuenciaService extends BaseHttpService {
@@ -36,6 +36,14 @@ export class SecuenciaService extends BaseHttpService {
 
   getById(id: number): Observable<Secuencia> {
     return this.get<Secuencia>(`${this.resourcePath}${id}/`);
+  }
+
+  create(payload: SecuenciaPayload): Observable<Secuencia> {
+    return this.post<Secuencia>(this.resourcePath, payload);
+  }
+
+  update(id: number, payload: SecuenciaPayload): Observable<Secuencia> {
+    return this.put<Secuencia>(`${this.resourcePath}${id}/`, payload);
   }
 
   /**
