@@ -7,8 +7,9 @@ import type { ErpModuleDescriptor } from '@erp/core/erp-modules';
  * activo. Los `path` son **relativos al módulo** — el `WorkspaceLayout`
  * les prepende `/t/<slug>/venta/`.
  *
- * Acordeón "Documentos" (Factura de venta y Contrato servicio). Sumar
- * entradas a `items` (o nuevos grupos) cuando se implementen más documentos.
+ * Acordeones: "Documentos" (contrato/pedido/factura de servicio) e "Informes"
+ * (Pendiente por facturar). Sumar entradas a `items` (o nuevos grupos/acordeones)
+ * cuando se implementen más documentos o informes.
  */
 export const VENTA_MODULE: ErpModuleDescriptor = {
   id: 'venta',
@@ -27,6 +28,23 @@ export const VENTA_MODULE: ErpModuleDescriptor = {
           items: [
             { labelKey: 'entities.contratoServicio.name', path: 'contrato-servicio/list' },
             { labelKey: 'entities.pedidoServicio.name', path: 'pedido-servicio/list' },
+          ],
+        },
+      ],
+    },
+    {
+      kind: 'accordion',
+      id: 'venta-informes',
+      labelKey: 'layout.nav.sections.report',
+      iconClass: 'pi pi-chart-bar',
+      defaultExpanded: false,
+      groups: [
+        {
+          items: [
+            {
+              labelKey: 'entities.pendienteFacturar.name',
+              path: 'informes/pendiente-facturar',
+            },
           ],
         },
       ],

@@ -127,6 +127,7 @@ export interface AppDict extends AuthTranslationsHost {
         document: string;
         movement: string;
         utility: string;
+        report: string;
       };
     };
     userMenu: {
@@ -569,6 +570,18 @@ export interface AppDict extends AuthTranslationsHost {
         anulado: string;
         electronico: string;
         contabilizado: string;
+      };
+    };
+    pendienteFacturar: {
+      name: string;
+      columns: {
+        documento: string;
+        contacto: string;
+        item: string;
+        cantidad: string;
+        precio: string;
+        fechaDesde: string;
+        fechaHasta: string;
       };
     };
     servicioDocumento: {

@@ -48,6 +48,13 @@ export const VENTA_ROUTES: Route[] = [
             (m) => m.PEDIDO_SERVICIO_ROUTES,
           ),
       },
+      {
+        path: 'informes/pendiente-facturar',
+        loadChildren: () =>
+          import('./informes/pendiente-facturar/pendiente-facturar.routes').then(
+            (m) => m.PENDIENTE_FACTURAR_ROUTES,
+          ),
+      },
     ],
   },
 ];

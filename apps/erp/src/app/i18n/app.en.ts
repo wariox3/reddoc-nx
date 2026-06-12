@@ -154,6 +154,7 @@ export const en: AppDict = {
         document: 'Documents',
         movement: 'Movements',
         utility: 'Utilities',
+        report: 'Reports',
       },
     },
     userMenu: {
@@ -725,6 +726,18 @@ export const en: AppDict = {
         anulado: 'Voided',
         electronico: 'Electronic',
         contabilizado: 'Posted',
+      },
+    },
+    pendienteFacturar: {
+      name: 'Pending to invoice',
+      columns: {
+        documento: 'Document',
+        contacto: 'Customer',
+        item: 'Item',
+        cantidad: 'Quantity',
+        precio: 'Price',
+        fechaDesde: 'From',
+        fechaHasta: 'To',
       },
     },
     servicioDocumento: {
