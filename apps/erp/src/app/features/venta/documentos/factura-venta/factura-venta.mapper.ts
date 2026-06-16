@@ -20,7 +20,6 @@ export function facturaVentaToFormValue(
         ? { id: read.plazo_pago, nombre: read.plazo_pago_nombre ?? '' }
         : null,
     sede: read.sede != null ? { id: read.sede, nombre: read.sede_nombre ?? '' } : null,
-    almacen: read.almacen != null ? { id: read.almacen, nombre: read.almacen_nombre ?? '' } : null,
     forma_pago:
       read.forma_pago != null
         ? { id: read.forma_pago, nombre: read.forma_pago_nombre ?? '' }
@@ -47,7 +46,6 @@ export function formValueToPayload(
     fecha_vence: toIsoDate(raw.fecha_vence),
     plazo_pago: raw.plazo_pago?.id ?? null,
     sede: raw.sede?.id ?? null,
-    almacen: raw.almacen?.id ?? null,
     forma_pago: raw.forma_pago?.id ?? null,
     ...(includeDetalles ? { detalles: raw.detalles.map(comercialDetalleToPayload) } : {}),
   };

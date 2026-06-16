@@ -24,8 +24,6 @@ export interface FacturaVentaRead extends DocumentoReadBase {
   readonly plazo_pago_nombre?: string | null;
   readonly sede: number | null;
   readonly sede_nombre?: string | null;
-  readonly almacen: number | null;
-  readonly almacen_nombre?: string | null;
   readonly forma_pago: number | null;
   readonly forma_pago_nombre?: string | null;
   readonly detalles?: readonly ComercialDetalleRead[] | null;
@@ -36,7 +34,6 @@ export interface FacturaVentaPayload extends DocumentoPayloadBase {
   readonly fecha_vence: string | null;
   readonly plazo_pago: number | null;
   readonly sede: number | null;
-  readonly almacen: number | null;
   readonly forma_pago: number | null;
   /** Solo en alta: en edición las líneas transaccionan contra `documento-detalle`. */
   readonly detalles?: readonly ComercialDetallePayload[];

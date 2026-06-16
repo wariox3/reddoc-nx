@@ -632,8 +632,6 @@ export interface AppDict extends AuthTranslationsHost {
           plazoPagoPlaceholder: string;
           sede: string;
           sedePlaceholder: string;
-          almacen: string;
-          almacenPlaceholder: string;
           formaPago: string;
           formaPagoPlaceholder: string;
         };

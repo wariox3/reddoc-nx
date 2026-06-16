@@ -4,8 +4,6 @@ import type { ColumnDef, FilterField } from '@reddoc/core';
 export const PLAZO_PAGO_ENDPOINT = '/general/plazo-pago/seleccionar/';
 /** Endpoint `seleccionar` de sedes. */
 export const SEDE_ENDPOINT = '/general/sede/seleccionar/';
-/** Endpoint `seleccionar` de almacenes. */
-export const ALMACEN_ENDPOINT = '/general/almacen/seleccionar/';
 /** Endpoint `seleccionar` de formas de pago. */
 export const FORMA_PAGO_ENDPOINT = '/general/forma-pago/seleccionar/';
 

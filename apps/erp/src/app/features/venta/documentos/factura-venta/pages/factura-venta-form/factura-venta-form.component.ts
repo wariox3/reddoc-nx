@@ -24,7 +24,6 @@ import { ENTITY_DATA_GATEWAY } from '@erp/core/module-config';
 import type { DocumentEntityConfig } from '@erp/core/module-config';
 import type { AppDict } from '@erp/i18n';
 import {
-  ALMACEN_ENDPOINT,
   FORMA_PAGO_ENDPOINT,
   PLAZO_PAGO_ENDPOINT,
   SEDE_ENDPOINT,
@@ -91,7 +90,6 @@ export class FacturaVentaFormComponent implements OnInit {
 
   protected readonly plazoPagoEndpoint = PLAZO_PAGO_ENDPOINT;
   protected readonly sedeEndpoint = SEDE_ENDPOINT;
-  protected readonly almacenEndpoint = ALMACEN_ENDPOINT;
   protected readonly formaPagoEndpoint = FORMA_PAGO_ENDPOINT;
 
   /** Filtra el autocomplete de contacto a clientes. */
@@ -131,7 +129,6 @@ export class FacturaVentaFormComponent implements OnInit {
     fecha_vence: this.fb.control<Date | null>(null, Validators.required),
     plazo_pago: this.fb.control<ErpSelectOption | null>(null, Validators.required),
     sede: this.fb.control<ErpSelectOption | null>(null),
-    almacen: this.fb.control<ErpSelectOption | null>(null),
     forma_pago: this.fb.control<ErpSelectOption | null>(null, Validators.required),
     detalles: new FormArray<ComercialDetalleGroup>([]),
   });

@@ -838,8 +838,6 @@ export const es: AppDict = {
           plazoPagoPlaceholder: 'Selecciona…',
           sede: 'Sede',
           sedePlaceholder: 'Selecciona…',
-          almacen: 'Almacén',
-          almacenPlaceholder: 'Selecciona…',
           formaPago: 'Forma de pago',
           formaPagoPlaceholder: 'Selecciona…',
         },

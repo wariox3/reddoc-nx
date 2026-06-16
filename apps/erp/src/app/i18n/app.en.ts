@@ -817,8 +817,6 @@ export const en: AppDict = {
           plazoPagoPlaceholder: 'Select…',
           sede: 'Branch',
           sedePlaceholder: 'Select…',
-          almacen: 'Warehouse',
-          almacenPlaceholder: 'Select…',
           formaPago: 'Payment method',
           formaPagoPlaceholder: 'Select…',
         },
