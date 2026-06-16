@@ -619,6 +619,67 @@ export interface AppDict extends AuthTranslationsHost {
         total: string;
         estado: string;
       };
+      form: {
+        createTitle: string;
+        editTitle: string;
+        sectionHint: string;
+        fields: {
+          cliente: string;
+          clientePlaceholder: string;
+          fecha: string;
+          fechaVence: string;
+          plazoPago: string;
+          plazoPagoPlaceholder: string;
+          sede: string;
+          sedePlaceholder: string;
+          almacen: string;
+          almacenPlaceholder: string;
+          formaPago: string;
+          formaPagoPlaceholder: string;
+        };
+        validation: { required: string };
+        toasts: {
+          createSuccess: { title: string; desc: string };
+          createError: { title: string; desc: string };
+          editSuccess: { title: string; desc: string };
+          editError: { title: string; desc: string };
+          loadError: { title: string; desc: string };
+        };
+      };
+    };
+    comercialDetalle: {
+      title: string;
+      hint: string;
+      empty: string;
+      addLine: string;
+      removeLine: string;
+      saveLine: string;
+      impuestosTitle: string;
+      impuestosAdd: string;
+      itemPlaceholder: string;
+      detallePlaceholder: string;
+      confirmDeleteLine: string;
+      columns: {
+        linea: string;
+        item: string;
+        cantidad: string;
+        precio: string;
+        descuento: string;
+        subtotal: string;
+        impuesto: string;
+        neto: string;
+        detalle: string;
+        acciones: string;
+      };
+      resumen: {
+        subtotal: string;
+        descuento: string;
+        total: string;
+      };
+      toasts: {
+        lineSaveSuccess: { title: string; desc: string };
+        lineSaveError: { title: string; desc: string };
+      };
     };
     contratoServicio: {
       name: string;

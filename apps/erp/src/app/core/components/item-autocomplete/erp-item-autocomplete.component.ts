@@ -14,7 +14,16 @@ import { AutoComplete, AutoCompleteCompleteEvent, AutoCompleteModule } from 'pri
 import { map } from 'rxjs/operators';
 import { toFiniteNumber } from '@reddoc/core';
 import { ErpSelectDataService } from '@erp/core/data/erp-select-data.service';
-import type { ItemOption } from '../../servicio-documento-detalle.types';
+import type { ErpSelectOption } from '@erp/core/components/api-select/erp-api-select.component';
+
+/**
+ * Opción de ítem para las líneas de detalle de un documento. Extiende
+ * `ErpSelectOption` con `precio` para autollenar el precio de la línea al
+ * seleccionar. La consumen las familias de documentos (servicio, comercial…).
+ */
+export interface ItemOption extends ErpSelectOption {
+  readonly precio: number;
+}
 
 /**
  * Fila cruda del endpoint `general/item/seleccionar/`. `precio` llega como
@@ -37,12 +46,12 @@ function toOption(row: ItemApiRow): ItemOption {
 }
 
 /**
- * Autocomplete de ítems para las líneas de detalle de un documento de servicio.
+ * Autocomplete de ítems para las líneas de detalle de un documento.
  *
- * Local a la familia (no cross-app): a diferencia de los selectores de `core`,
- * emite un `ItemOption` que **incluye `precio`**, para que la línea de detalle
- * autollene el precio al seleccionar. Busca con `?search=<query>` sobre
- * `general/item/seleccionar/` y muestra `código - nombre`.
+ * A diferencia de los selectores genéricos de `core`, emite un `ItemOption` que
+ * **incluye `precio`**, para que la línea de detalle autollene el precio al
+ * seleccionar. Busca con `?search=<query>` sobre `general/item/seleccionar/` y
+ * muestra `código - nombre`. Reutilizable por cualquier familia de documentos.
  */
 @Component({
   selector: 'app-item-autocomplete',

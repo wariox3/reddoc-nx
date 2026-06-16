@@ -1,0 +1,17 @@
+.comercial-detalle-table {
+  th,
+  td {
+    padding: 0.4rem 0.5rem;
+    border-bottom: 1px solid rgba(20, 48, 73, 0.08);
+    vertical-align: top;
+  }
+
+  &__th {
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  &__row:hover {
+    background: rgba(119, 170, 215, 0.06);
+  }
+}

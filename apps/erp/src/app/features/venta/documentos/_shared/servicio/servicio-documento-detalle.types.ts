@@ -1,13 +1,9 @@
 import type { ImpuestoLinea } from '@reddoc/core';
 import type { ErpSelectOption } from '@erp/core/components/api-select/erp-api-select.component';
+import type { ItemOption } from '@erp/core/components/item-autocomplete/erp-item-autocomplete.component';
 
-/**
- * Opción de ítem para el autocomplete de detalle. Extiende `ErpSelectOption`
- * con `precio` para poder autollenar el precio de la línea al seleccionar.
- */
-export interface ItemOption extends ErpSelectOption {
-  readonly precio: number;
-}
+/** Re-export: `ItemOption` vive ahora en `core/components` (infra compartida). */
+export type { ItemOption };
 
 /**
  * Valores crudos de una línea de detalle (`form.getRawValue()` de cada

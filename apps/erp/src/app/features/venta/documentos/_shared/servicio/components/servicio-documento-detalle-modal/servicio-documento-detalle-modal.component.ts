@@ -37,7 +37,7 @@ import { ErpImpuestoSelectComponent } from '@erp/core/components/impuesto-select
 import type { AppDict } from '@erp/i18n';
 import { ItemService } from '@erp/features/general/masters/item/item.service';
 import type { Item } from '@erp/features/general/masters/item/item.model';
-import { ErpItemAutocompleteComponent } from '../item-autocomplete/erp-item-autocomplete.component';
+import { ErpItemAutocompleteComponent } from '@erp/core/components/item-autocomplete/erp-item-autocomplete.component';
 import { MODALIDAD_ENDPOINT, PUESTO_ENDPOINT } from '../../servicio-documento.constants';
 import { createDetalleGroup, type DetalleGroup } from '../../servicio-documento-detalle.form';
 import type { DetalleFormRawValue } from '../../servicio-documento-detalle.types';
