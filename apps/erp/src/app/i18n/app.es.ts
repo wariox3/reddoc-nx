@@ -828,7 +828,7 @@ export const es: AppDict = {
           subtipoCotizante: 'Subtipo de cotizante',
           ciudadContrato: 'Ciudad del contrato',
           ciudadLabora: 'Ciudad donde labora',
-          estadoTerminado: 'Contrato terminado',
+          ciudadPlaceholder: 'Buscar ciudad…',
           motivoTerminacion: 'Motivo de terminación',
           fechaUltimoPago: 'Fecha último pago',
           fechaUltimoPagoPrima: 'Fecha último pago prima',

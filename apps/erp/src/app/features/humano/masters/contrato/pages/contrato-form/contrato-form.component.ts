@@ -3,7 +3,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
-import { SelectModule } from 'primeng/select';
 import { DatePickerModule } from 'primeng/datepicker';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -11,6 +10,7 @@ import { TextareaModule } from 'primeng/textarea';
 import { FormErrorService, I18nService, TenantService, ToastService } from '@reddoc/core';
 import { BreadcrumbComponent, type BreadcrumbItem } from '@reddoc/feature-base';
 import { ErpApiSelectComponent } from '@erp/core/components/api-select/erp-api-select.component';
+import { ErpApiAutocompleteComponent } from '@erp/core/components/api-autocomplete/erp-api-autocomplete.component';
 import { EmpleadoAutocompleteComponent } from '@erp/core/components/empleado-autocomplete/empleado-autocomplete.component';
 import type { EmpleadoOption } from '@erp/core/components/empleado-autocomplete/empleado-autocomplete.component';
 import type { ErpSelectOption } from '@erp/core/components/api-select/erp-api-select.component';
@@ -26,11 +26,14 @@ import { contratoToFormValue, formValueToPayload } from '../../contrato.mapper';
  * Master del módulo Humano (camino B). La misma página cubre crear y editar:
  * sin `:id` → alta; con `:id` → edición (el id llega por `withComponentInputBinding`).
  *
- * Sección 1 (Datos del contrato): los FK ya están cableados a sus endpoints
- * `/humano/<slug>/seleccionar/` vía `<app-api-select>` (`contacto` con
- * `<app-empleado-autocomplete>`, que pinta la identificación al lado).
- * TODO(endpoint): las secciones 2–4 (remuneración, seguridad social, terminación)
- * siguen como `<p-select>` deshabilitados hasta definir sus endpoints.
+ * Todas las FK están cableadas a sus endpoints `seleccionar/` vía `<app-api-select>`
+ * (`contacto` usa `<app-empleado-autocomplete>`, que pinta la identificación al lado;
+ * `ciudad_contrato` / `ciudad_labora` usan `<app-api-autocomplete>` con búsqueda contra
+ * `/general/ciudad/seleccionar/`). Las FK de humano apuntan a `/humano/<slug>/seleccionar/`
+ * y `grupo_contabilidad` a `/contabilidad/grupo/seleccionar/`. Las cuatro entidades de
+ * seguridad social (`entidad_salud`, `entidad_pension`, `entidad_cesantias`, `entidad_caja`)
+ * comparten el endpoint `/humano/entidad/seleccionar/` discriminado por el query param
+ * booleano correspondiente (`salud` / `pension` / `cesantias` / `caja`).
  */
 @Component({
   selector: 'app-contrato-form',
@@ -39,12 +42,12 @@ import { contratoToFormValue, formValueToPayload } from '../../contrato.mapper';
     ReactiveFormsModule,
     BreadcrumbComponent,
     ButtonModule,
-    SelectModule,
     DatePickerModule,
     InputNumberModule,
     CheckboxModule,
     TextareaModule,
     ErpApiSelectComponent,
+    ErpApiAutocompleteComponent,
     EmpleadoAutocompleteComponent,
   ],
   templateUrl: './contrato-form.component.html',
@@ -84,7 +87,6 @@ export class ContratoFormComponent implements OnInit {
     ];
   });
 
-  // Las FK de secciones 2–4 arrancan deshabilitadas (pendientes de endpoint). Ver TODO de la clase.
   protected readonly form = this.fb.group({
     // Datos del contrato — selectores cableados a /humano/<slug>/seleccionar/, todos obligatorios
     contacto: this.fb.control<EmpleadoOption | null>(null, Validators.required),
@@ -93,29 +95,28 @@ export class ContratoFormComponent implements OnInit {
     grupo: this.fb.control<ErpSelectOption | null>(null, Validators.required),
     sucursal: this.fb.control<ErpSelectOption | null>(null, Validators.required),
     tiempo: this.fb.control<ErpSelectOption | null>(null, Validators.required),
-    fecha_desde: this.fb.control<Date | null>(null),
-    fecha_hasta: this.fb.control<Date | null>(null),
+    fecha_desde: this.fb.control<Date | null>(null, Validators.required),
+    fecha_hasta: this.fb.control<Date | null>(null, Validators.required),
     // Remuneración
-    salario: this.fb.control<number | null>(null),
+    salario: this.fb.control<number | null>(null, Validators.required),
     auxilio_transporte: this.fb.control<number | null>(null),
     salario_integral: this.fb.control<boolean>(false),
-    tipo_costo: this.fb.control<ErpSelectOption | null>({ value: null, disabled: true }),
-    grupo_contabilidad: this.fb.control<ErpSelectOption | null>({ value: null, disabled: true }),
+    tipo_costo: this.fb.control<ErpSelectOption | null>(null),
+    grupo_contabilidad: this.fb.control<ErpSelectOption | null>(null),
     // Seguridad social
-    salud: this.fb.control<ErpSelectOption | null>({ value: null, disabled: true }),
-    entidad_salud: this.fb.control<ErpSelectOption | null>({ value: null, disabled: true }),
-    pension: this.fb.control<ErpSelectOption | null>({ value: null, disabled: true }),
-    entidad_pension: this.fb.control<ErpSelectOption | null>({ value: null, disabled: true }),
-    entidad_cesantias: this.fb.control<ErpSelectOption | null>({ value: null, disabled: true }),
-    entidad_caja: this.fb.control<ErpSelectOption | null>({ value: null, disabled: true }),
-    riesgo: this.fb.control<ErpSelectOption | null>({ value: null, disabled: true }),
-    tipo_cotizante: this.fb.control<ErpSelectOption | null>({ value: null, disabled: true }),
-    subtipo_cotizante: this.fb.control<ErpSelectOption | null>({ value: null, disabled: true }),
-    ciudad_contrato: this.fb.control<ErpSelectOption | null>({ value: null, disabled: true }),
-    ciudad_labora: this.fb.control<ErpSelectOption | null>({ value: null, disabled: true }),
+    salud: this.fb.control<ErpSelectOption | null>(null, Validators.required),
+    entidad_salud: this.fb.control<ErpSelectOption | null>(null, Validators.required),
+    pension: this.fb.control<ErpSelectOption | null>(null, Validators.required),
+    entidad_pension: this.fb.control<ErpSelectOption | null>(null, Validators.required),
+    entidad_cesantias: this.fb.control<ErpSelectOption | null>(null, Validators.required),
+    entidad_caja: this.fb.control<ErpSelectOption | null>(null, Validators.required),
+    riesgo: this.fb.control<ErpSelectOption | null>(null, Validators.required),
+    tipo_cotizante: this.fb.control<ErpSelectOption | null>(null, Validators.required),
+    subtipo_cotizante: this.fb.control<ErpSelectOption | null>(null, Validators.required),
+    ciudad_contrato: this.fb.control<ErpSelectOption | null>(null, Validators.required),
+    ciudad_labora: this.fb.control<ErpSelectOption | null>(null, Validators.required),
     // Terminación y pagos
-    estado_terminado: this.fb.control<boolean>(false),
-    motivo_terminacion: this.fb.control<ErpSelectOption | null>({ value: null, disabled: true }),
+    motivo_terminacion: this.fb.control<ErpSelectOption | null>(null),
     fecha_ultimo_pago: this.fb.control<Date | null>(null),
     fecha_ultimo_pago_prima: this.fb.control<Date | null>(null),
     fecha_ultimo_pago_cesantia: this.fb.control<Date | null>(null),

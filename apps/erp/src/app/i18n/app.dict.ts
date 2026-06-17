@@ -616,7 +616,7 @@ export interface AppDict extends AuthTranslationsHost {
           subtipoCotizante: string;
           ciudadContrato: string;
           ciudadLabora: string;
-          estadoTerminado: string;
+          ciudadPlaceholder: string;
           motivoTerminacion: string;
           fechaUltimoPago: string;
           fechaUltimoPagoPrima: string;

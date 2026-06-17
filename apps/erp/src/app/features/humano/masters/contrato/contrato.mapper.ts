@@ -24,8 +24,10 @@ function toIsoDate(value: Date | null): string | null {
  * Sección 1 (Datos del contrato): las FK se reagrupan en `{ id, nombre }`.
  * `contacto` (empleado) necesita además la identificación (`c.identificacion`)
  * para pintar el addon; los selects resuelven la etiqueta por `id` al cargar
- * opciones, así que basta `nombre: ''` cuando no hay companion (`cargo`, `sucursal`, `tiempo`).
- * TODO(endpoint): las FK de secciones 2–4 se mapearán al cablear sus endpoints.
+ * opciones, así que basta `nombre: ''` cuando no hay companion: los `<app-api-select>`
+ * resuelven la etiqueta por `id` al cargar opciones. Las ciudades usan
+ * `<app-api-autocomplete>` (no precarga opciones), así que sí necesitan su companion
+ * `*_nombre` para pintar la etiqueta en edición.
  */
 export function contratoToFormValue(c: Contrato): Partial<ContratoFormRawValue> {
   return {
@@ -45,12 +47,35 @@ export function contratoToFormValue(c: Contrato): Partial<ContratoFormRawValue> 
     grupo: c.grupo_id != null ? { id: c.grupo_id, nombre: c.grupo_nombre ?? '' } : null,
     sucursal: c.sucursal_id != null ? { id: c.sucursal_id, nombre: '' } : null,
     tiempo: c.tiempo_id != null ? { id: c.tiempo_id, nombre: '' } : null,
+    ciudad_contrato:
+      c.ciudad_contrato_id != null
+        ? { id: c.ciudad_contrato_id, nombre: c.ciudad_contrato_nombre ?? '' }
+        : null,
+    ciudad_labora:
+      c.ciudad_labora_id != null
+        ? { id: c.ciudad_labora_id, nombre: c.ciudad_labora_nombre ?? '' }
+        : null,
     fecha_desde: parseIsoDate(c.fecha_desde),
     fecha_hasta: parseIsoDate(c.fecha_hasta),
     salario: c.salario,
     auxilio_transporte: c.auxilio_transporte,
     salario_integral: c.salario_integral,
-    estado_terminado: c.estado_terminado,
+    tipo_costo: c.tipo_costo_id != null ? { id: c.tipo_costo_id, nombre: '' } : null,
+    grupo_contabilidad:
+      c.grupo_contabilidad_id != null ? { id: c.grupo_contabilidad_id, nombre: '' } : null,
+    salud: c.salud_id != null ? { id: c.salud_id, nombre: '' } : null,
+    entidad_salud: c.entidad_salud_id != null ? { id: c.entidad_salud_id, nombre: '' } : null,
+    pension: c.pension_id != null ? { id: c.pension_id, nombre: '' } : null,
+    entidad_pension: c.entidad_pension_id != null ? { id: c.entidad_pension_id, nombre: '' } : null,
+    entidad_cesantias:
+      c.entidad_cesantias_id != null ? { id: c.entidad_cesantias_id, nombre: '' } : null,
+    entidad_caja: c.entidad_caja_id != null ? { id: c.entidad_caja_id, nombre: '' } : null,
+    riesgo: c.riesgo_id != null ? { id: c.riesgo_id, nombre: '' } : null,
+    tipo_cotizante: c.tipo_cotizante_id != null ? { id: c.tipo_cotizante_id, nombre: '' } : null,
+    subtipo_cotizante:
+      c.subtipo_cotizante_id != null ? { id: c.subtipo_cotizante_id, nombre: '' } : null,
+    motivo_terminacion:
+      c.motivo_terminacion_id != null ? { id: c.motivo_terminacion_id, nombre: '' } : null,
     fecha_ultimo_pago: parseIsoDate(c.fecha_ultimo_pago),
     fecha_ultimo_pago_prima: parseIsoDate(c.fecha_ultimo_pago_prima),
     fecha_ultimo_pago_cesantia: parseIsoDate(c.fecha_ultimo_pago_cesantia),
@@ -61,8 +86,8 @@ export function contratoToFormValue(c: Contrato): Partial<ContratoFormRawValue> 
 
 /**
  * Construye el write-model (`ContratoPayload`) desde el valor crudo del form.
- * Las FK exponen solo su `id` (hoy `null`, los dropdowns están deshabilitados);
- * las fechas Date → 'yyyy-mm-dd'; los strings vacíos se normalizan a `null`.
+ * Las FK exponen solo su `id`; las fechas Date → 'yyyy-mm-dd'; los strings vacíos
+ * se normalizan a `null`.
  */
 export function formValueToPayload(v: ContratoFormRawValue): ContratoPayload {
   return {
@@ -71,7 +96,6 @@ export function formValueToPayload(v: ContratoFormRawValue): ContratoPayload {
     salario: v.salario ?? null,
     auxilio_transporte: v.auxilio_transporte ?? null,
     salario_integral: v.salario_integral ?? false,
-    estado_terminado: v.estado_terminado ?? false,
     comentario: v.comentario || null,
     fecha_ultimo_pago: toIsoDate(v.fecha_ultimo_pago),
     fecha_ultimo_pago_prima: toIsoDate(v.fecha_ultimo_pago_prima),

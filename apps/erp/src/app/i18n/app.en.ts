@@ -807,7 +807,7 @@ export const en: AppDict = {
           subtipoCotizante: 'Contributor subtype',
           ciudadContrato: 'Contract city',
           ciudadLabora: 'Work city',
-          estadoTerminado: 'Terminated contract',
+          ciudadPlaceholder: 'Search city…',
           motivoTerminacion: 'Termination reason',
           fechaUltimoPago: 'Last payment date',
           fechaUltimoPagoPrima: 'Last bonus payment date',

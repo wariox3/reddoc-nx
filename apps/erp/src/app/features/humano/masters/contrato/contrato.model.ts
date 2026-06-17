@@ -42,6 +42,8 @@ export interface Contrato {
   // Companions de display (provisionales) para columnas FK/derivadas
   readonly contrato_tipo_nombre: string | null;
   readonly grupo_nombre: string | null;
+  readonly ciudad_contrato_nombre: string | null;
+  readonly ciudad_labora_nombre: string | null;
   readonly codigo: string | null;
   readonly identificacion: string | null;
   readonly nombre: string | null;
@@ -57,7 +59,6 @@ export interface ContratoPayload {
   readonly salario: number | null;
   readonly auxilio_transporte: number | null;
   readonly salario_integral: boolean;
-  readonly estado_terminado: boolean;
   readonly comentario: string | null;
   readonly fecha_ultimo_pago: string | null;
   readonly fecha_ultimo_pago_prima: string | null;

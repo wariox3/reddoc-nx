@@ -36,7 +36,6 @@ export interface ContratoFormRawValue {
   readonly ciudad_contrato: ErpSelectOption | null;
   readonly ciudad_labora: ErpSelectOption | null;
   // Terminación y pagos
-  readonly estado_terminado: boolean | null;
   readonly motivo_terminacion: ErpSelectOption | null;
   readonly fecha_ultimo_pago: Date | null;
   readonly fecha_ultimo_pago_prima: Date | null;
