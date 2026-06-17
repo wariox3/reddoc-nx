@@ -1,3 +1,5 @@
+<p-confirmdialog />
+
 <lib-breadcrumb [items]="breadcrumbItems()" />
 
 <form [formGroup]="form" (ngSubmit)="onSubmit()" autocomplete="off" class="flex flex-col gap-5">
@@ -129,21 +131,21 @@
           />
         </div>
 
-        <!-- Forma de pago -->
+        <!-- Método de pago -->
         <div class="flex flex-col gap-1.5">
-          <label for="forma_pago" class="factura-venta-form__label">
-            {{ t().entities.facturaVenta.form.fields.formaPago }}
+          <label for="metodo_pago" class="factura-venta-form__label">
+            {{ t().entities.facturaVenta.form.fields.metodoPago }}
             <span class="ml-px text-red-500">*</span>
           </label>
           <app-api-select
-            inputId="forma_pago"
-            formControlName="forma_pago"
-            [endpoint]="formaPagoEndpoint"
-            [placeholder]="t().entities.facturaVenta.form.fields.formaPagoPlaceholder"
-            [invalid]="form.controls.forma_pago.invalid && form.controls.forma_pago.touched"
+            inputId="metodo_pago"
+            formControlName="metodo_pago"
+            [endpoint]="metodoPagoEndpoint"
+            [placeholder]="t().entities.facturaVenta.form.fields.metodoPagoPlaceholder"
+            [invalid]="form.controls.metodo_pago.invalid && form.controls.metodo_pago.touched"
           />
           <lib-field-error
-            [control]="form.controls.forma_pago"
+            [control]="form.controls.metodo_pago"
             [messages]="{ required: t().entities.facturaVenta.form.validation.required }"
           />
         </div>
@@ -186,6 +188,9 @@
       <app-comercial-documento-detalles
         [detalles]="form.controls.detalles"
         [documentId]="documentId()"
+        [importEnabled]="true"
+        [contactoId]="form.controls.contacto.value?.id ?? null"
+        (imported)="onImported()"
       />
     </div>
   </section>

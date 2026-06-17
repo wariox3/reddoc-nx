@@ -1,5 +1,6 @@
 import type { Route } from '@angular/router';
 import { activeDocumentResolver } from '@erp/core/module-config';
+import { unsavedChangesGuard } from '@erp/core/guards/unsaved-changes.guard';
 
 /**
  * Rutas de **Factura electrónica de venta**.
@@ -40,6 +41,7 @@ export const FACTURA_VENTA_ROUTES: Route[] = [
       },
       {
         path: 'editar/:id',
+        canDeactivate: [unsavedChangesGuard],
         loadComponent: () =>
           import('./pages/factura-venta-form/factura-venta-form.component').then(
             (m) => m.FacturaVentaFormComponent,

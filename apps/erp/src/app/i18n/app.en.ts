@@ -184,6 +184,39 @@ export const en: AppDict = {
       },
     },
   },
+  documentImport: {
+    buttonLabel: 'Import from document',
+    disabledHint: 'Select a contact to import',
+    modalHeader: 'Import from document',
+    modalSubtitle: 'Select the pending lines you want to bring into the document',
+    selected: 'selected',
+    submit: 'Add',
+    cancel: 'Cancel',
+    columns: {
+      documento: 'Document',
+      fecha: 'Date',
+      contacto: 'Contact',
+      item: 'Item',
+      cantidad: 'Quantity',
+      precio: 'Price',
+      total: 'Total',
+      pendiente: 'Pending',
+    },
+    toasts: {
+      loadError: {
+        title: 'Load failed',
+        desc: 'Could not load the pending lines. Please try again.',
+      },
+      addSuccess: {
+        title: 'Lines added',
+        desc: 'The selected lines were added to the document.',
+      },
+      addError: {
+        title: 'Add failed',
+        desc: 'Could not add the lines. Please try again.',
+      },
+    },
+  },
   modules: {
     general: { name: 'General' },
     compra: { name: 'Purchases' },
@@ -817,8 +850,8 @@ export const en: AppDict = {
           plazoPagoPlaceholder: 'Select…',
           sede: 'Branch',
           sedePlaceholder: 'Select…',
-          formaPago: 'Payment method',
-          formaPagoPlaceholder: 'Select…',
+          metodoPago: 'Payment method',
+          metodoPagoPlaceholder: 'Select…',
         },
         validation: { required: 'This field is required' },
         toasts: {
@@ -852,6 +885,11 @@ export const en: AppDict = {
       addLine: 'Add line',
       removeLine: 'Remove line',
       saveLine: 'Save line',
+      saveAll: 'Save lines',
+      pendingSuffix: 'unsaved',
+      leaveHeader: 'Unsaved changes',
+      leaveMessage: 'There are unsaved lines that will be lost. Leave anyway?',
+      leaveConfirm: 'Leave without saving',
       impuestosTitle: 'Line taxes',
       impuestosAdd: 'Add',
       itemPlaceholder: 'Search item…',
@@ -882,6 +920,14 @@ export const en: AppDict = {
         lineSaveError: {
           title: 'Save failed',
           desc: 'The line could not be saved',
+        },
+        allSaved: {
+          title: 'Lines saved',
+          desc: 'Pending lines were saved',
+        },
+        incompleteLines: {
+          title: 'Incomplete lines',
+          desc: 'Complete or remove lines without an item before saving',
         },
       },
     },

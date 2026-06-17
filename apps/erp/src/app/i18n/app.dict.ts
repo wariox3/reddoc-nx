@@ -151,6 +151,30 @@ export interface AppDict extends AuthTranslationsHost {
       error: { title: string; desc: string };
     };
   };
+  documentImport: {
+    buttonLabel: string;
+    disabledHint: string;
+    modalHeader: string;
+    modalSubtitle: string;
+    selected: string;
+    submit: string;
+    cancel: string;
+    columns: {
+      documento: string;
+      fecha: string;
+      contacto: string;
+      item: string;
+      cantidad: string;
+      precio: string;
+      total: string;
+      pendiente: string;
+    };
+    toasts: {
+      loadError: { title: string; desc: string };
+      addSuccess: { title: string; desc: string };
+      addError: { title: string; desc: string };
+    };
+  };
   modules: {
     general: { name: string };
     compra: { name: string };
@@ -632,8 +656,8 @@ export interface AppDict extends AuthTranslationsHost {
           plazoPagoPlaceholder: string;
           sede: string;
           sedePlaceholder: string;
-          formaPago: string;
-          formaPagoPlaceholder: string;
+          metodoPago: string;
+          metodoPagoPlaceholder: string;
         };
         validation: { required: string };
         toasts: {
@@ -652,6 +676,11 @@ export interface AppDict extends AuthTranslationsHost {
       addLine: string;
       removeLine: string;
       saveLine: string;
+      saveAll: string;
+      pendingSuffix: string;
+      leaveHeader: string;
+      leaveMessage: string;
+      leaveConfirm: string;
       impuestosTitle: string;
       impuestosAdd: string;
       itemPlaceholder: string;
@@ -677,6 +706,8 @@ export interface AppDict extends AuthTranslationsHost {
       toasts: {
         lineSaveSuccess: { title: string; desc: string };
         lineSaveError: { title: string; desc: string };
+        allSaved: { title: string; desc: string };
+        incompleteLines: { title: string; desc: string };
       };
     };
     contratoServicio: {

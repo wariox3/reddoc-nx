@@ -1,8 +1,20 @@
-import { Component, DestroyRef, type OnInit, computed, inject, input, signal } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  type OnInit,
+  computed,
+  inject,
+  input,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Observable, forkJoin } from 'rxjs';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
+import { ConfirmationService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DatePickerModule } from 'primeng/datepicker';
 import { FieldErrorComponent } from '@reddoc/ui';
 import {
@@ -20,11 +32,12 @@ import {
   type ErpSelectOption,
 } from '@erp/core/components/api-select/erp-api-select.component';
 import { ErpSelectDataService } from '@erp/core/data/erp-select-data.service';
-import { ENTITY_DATA_GATEWAY } from '@erp/core/module-config';
+import { DocumentoDetalleService, ENTITY_DATA_GATEWAY } from '@erp/core/module-config';
 import type { DocumentEntityConfig } from '@erp/core/module-config';
+import type { CanComponentDeactivate } from '@erp/core/guards/unsaved-changes.guard';
 import type { AppDict } from '@erp/i18n';
 import {
-  FORMA_PAGO_ENDPOINT,
+  METODO_PAGO_ENDPOINT,
   PLAZO_PAGO_ENDPOINT,
   SEDE_ENDPOINT,
 } from '../../factura-venta.constants';
@@ -34,6 +47,7 @@ import {
   type ComercialDetalleGroup,
 } from '@erp/features/documentos/comercial/comercial-documento-detalle.form';
 import { comercialDetalleToFormValue } from '@erp/features/documentos/comercial/comercial-documento-detalle.mapper';
+import type { ComercialDetalleRead } from '@erp/features/documentos/comercial/comercial-documento-detalle.model';
 import { facturaVentaToFormValue, formValueToPayload } from '../../factura-venta.mapper';
 import type { FacturaVentaRead } from '../../factura-venta.model';
 
@@ -66,18 +80,21 @@ interface PlazoPagoOption extends ErpSelectOption {
     ReactiveFormsModule,
     BreadcrumbComponent,
     ButtonModule,
+    ConfirmDialogModule,
     DatePickerModule,
     FieldErrorComponent,
     ErpContactoSelectComponent,
     ErpApiSelectComponent,
     ComercialDocumentoDetallesComponent,
   ],
+  providers: [ConfirmationService],
   templateUrl: './factura-venta-form.component.html',
   styleUrl: './factura-venta-form.component.scss',
 })
-export class FacturaVentaFormComponent implements OnInit {
+export class FacturaVentaFormComponent implements OnInit, CanComponentDeactivate {
   private readonly fb = inject(FormBuilder);
   private readonly gateway = inject(ENTITY_DATA_GATEWAY);
+  private readonly detalleService = inject(DocumentoDetalleService);
   private readonly selectData = inject(ErpSelectDataService);
   private readonly toast = inject(ToastService);
   private readonly formErrors = inject(FormErrorService);
@@ -85,12 +102,16 @@ export class FacturaVentaFormComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly i18n = inject<I18nService<AppDict>>(I18nService);
+  private readonly confirmation = inject(ConfirmationService);
 
   protected readonly t = this.i18n.t;
 
+  /** Tabla de líneas: el padre le delega el flush y el conteo de pendientes. */
+  private readonly detallesTable = viewChild(ComercialDocumentoDetallesComponent);
+
   protected readonly plazoPagoEndpoint = PLAZO_PAGO_ENDPOINT;
   protected readonly sedeEndpoint = SEDE_ENDPOINT;
-  protected readonly formaPagoEndpoint = FORMA_PAGO_ENDPOINT;
+  protected readonly metodoPagoEndpoint = METODO_PAGO_ENDPOINT;
 
   /** Filtra el autocomplete de contacto a clientes. */
   protected readonly contactoParams = { cliente: 'True' } as const;
@@ -129,7 +150,7 @@ export class FacturaVentaFormComponent implements OnInit {
     fecha_vence: this.fb.control<Date | null>(null, Validators.required),
     plazo_pago: this.fb.control<ErpSelectOption | null>(null, Validators.required),
     sede: this.fb.control<ErpSelectOption | null>(null),
-    forma_pago: this.fb.control<ErpSelectOption | null>(null, Validators.required),
+    metodo_pago: this.fb.control<ErpSelectOption | null>(null, Validators.required),
     detalles: new FormArray<ComercialDetalleGroup>([]),
   });
 
@@ -154,11 +175,45 @@ export class FacturaVentaFormComponent implements OnInit {
 
   protected onSubmit(): void {
     if (this.form.invalid || this.form.pending || this.isSaving()) return;
-    this.isSaving.set(true);
 
-    const toasts = this.t().entities.facturaVenta.form.toasts;
     const id = this.id();
-    // En edición se omiten los detalles del payload: transaccionan en vivo.
+    const detalles = this.detallesTable();
+    // En edición las líneas transaccionan aparte (no viajan en el payload de la
+    // cabecera). Para que no se pierdan, antes de guardar el documento se
+    // flushean las pendientes; si hay líneas incompletas se avisa y se aborta.
+    if (id && detalles) {
+      if (detalles.hasInvalidPending()) {
+        const toast = this.t().entities.comercialDetalle.toasts.incompleteLines;
+        this.toast.warn(toast.title, toast.desc);
+        return;
+      }
+      if (detalles.pendingCount() > 0) {
+        this.isSaving.set(true);
+        // Flush silencioso: el éxito lo confirma el toast del documento; aquí solo
+        // se reporta si el guardado de líneas falla (si no, sería un fallo mudo).
+        detalles
+          .saveAll()
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe({
+            next: () => this.persistCabecera(id),
+            error: () => {
+              this.isSaving.set(false);
+              const toast = this.t().entities.comercialDetalle.toasts.lineSaveError;
+              this.toast.error(toast.title, toast.desc);
+            },
+          });
+        return;
+      }
+    }
+
+    this.isSaving.set(true);
+    this.persistCabecera(id);
+  }
+
+  /** Guarda la cabecera (create/update). Asume `isSaving` ya en `true`. */
+  private persistCabecera(id: string | undefined): void {
+    const toasts = this.t().entities.facturaVenta.form.toasts;
+    // En edición se omiten los detalles del payload: ya transaccionaron en vivo.
     const payload = formValueToPayload(
       this.form.getRawValue(),
       this.document().documentTypeId,
@@ -187,19 +242,63 @@ export class FacturaVentaFormComponent implements OnInit {
     this.navigateToList();
   }
 
+  /**
+   * Guard de salida: si hay líneas sin guardar, confirma antes de abandonar para
+   * no perderlas (el guardado del documento las flushea, así que tras guardar no
+   * hay pendientes y no molesta). Solo aplica en edición.
+   */
+  canDeactivate(): boolean | Observable<boolean> {
+    const detalles = this.detallesTable();
+    if (!detalles || detalles.pendingCount() === 0) return true;
+
+    const labels = this.t().entities.comercialDetalle;
+    return new Observable<boolean>((subscriber) => {
+      this.confirmation.confirm({
+        header: labels.leaveHeader,
+        message: labels.leaveMessage,
+        icon: 'pi pi-exclamation-triangle',
+        acceptLabel: labels.leaveConfirm,
+        rejectLabel: this.t().common.actions.cancel,
+        acceptButtonStyleClass: 'p-button-danger',
+        accept: () => {
+          subscriber.next(true);
+          subscriber.complete();
+        },
+        reject: () => {
+          subscriber.next(false);
+          subscriber.complete();
+        },
+      });
+    });
+  }
+
+  /**
+   * Tras importar líneas en **edición** (ya persistidas vía `masivo/`), recarga el
+   * documento para reflejar las nuevas líneas con sus ids y montos autoritativos.
+   */
+  protected onImported(): void {
+    const id = this.documentId();
+    if (id != null) this.loadDocumento(id);
+  }
+
   private loadDocumento(id: number): void {
-    this.gateway
-      .getById(this.document(), id)
+    // La cabecera (`documento/:id/`) ya no embebe los detalles: las líneas se
+    // traen aparte de `documento-detalle/?documento_id=`. Las dos peticiones son
+    // independientes, así que cargan en paralelo y se pueblan juntas.
+    forkJoin({
+      cabecera: this.gateway.getById(this.document(), id),
+      lineas: this.detalleService.listarPorDocumento<ComercialDetalleRead>(id),
+    })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (raw) => {
-          const read = raw as FacturaVentaRead;
+        next: ({ cabecera, lineas }) => {
+          const read = cabecera as FacturaVentaRead;
           // `emitEvent: false`: no disparar el autocálculo y respetar el
           // vencimiento que viene del backend.
           this.form.patchValue(facturaVentaToFormValue(read), { emitEvent: false });
           const detalles = this.form.controls.detalles;
           detalles.clear();
-          for (const line of read.detalles ?? [])
+          for (const line of lineas)
             detalles.push(createComercialDetalleGroup(comercialDetalleToFormValue(line)));
         },
         error: () => {

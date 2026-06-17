@@ -12,10 +12,7 @@
  * `DocumentoListRowBase`). Los demás nombres se confirman contra la API real.
  */
 import type { DocumentoPayloadBase, DocumentoReadBase } from '@reddoc/core';
-import type {
-  ComercialDetallePayload,
-  ComercialDetalleRead,
-} from '@erp/features/documentos/comercial/comercial-documento-detalle.model';
+import type { ComercialDetallePayload } from '@erp/features/documentos/comercial/comercial-documento-detalle.model';
 
 /** Read-model (GET `/documento/:id/`) de la cabecera de una factura de venta. */
 export interface FacturaVentaRead extends DocumentoReadBase {
@@ -24,9 +21,8 @@ export interface FacturaVentaRead extends DocumentoReadBase {
   readonly plazo_pago_nombre?: string | null;
   readonly sede: number | null;
   readonly sede_nombre?: string | null;
-  readonly forma_pago: number | null;
-  readonly forma_pago_nombre?: string | null;
-  readonly detalles?: readonly ComercialDetalleRead[] | null;
+  readonly metodo_pago: number | null;
+  readonly metodo_pago_nombre?: string | null;
 }
 
 /** Body (POST/PATCH) de una factura de venta. */
@@ -34,7 +30,7 @@ export interface FacturaVentaPayload extends DocumentoPayloadBase {
   readonly fecha_vence: string | null;
   readonly plazo_pago: number | null;
   readonly sede: number | null;
-  readonly forma_pago: number | null;
+  readonly metodo_pago: number | null;
   /** Solo en alta: en edición las líneas transaccionan contra `documento-detalle`. */
   readonly detalles?: readonly ComercialDetallePayload[];
 }
