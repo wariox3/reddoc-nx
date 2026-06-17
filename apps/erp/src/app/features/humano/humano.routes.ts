@@ -12,6 +12,10 @@ export const HUMANO_ROUTES: Route[] = [
         loadChildren: () =>
           import('./masters/contrato/contrato.routes').then((m) => m.CONTRATO_ROUTES),
       },
+      {
+        path: 'cargos',
+        loadChildren: () => import('./masters/cargo/cargo.routes').then((m) => m.CARGO_ROUTES),
+      },
     ],
   },
 ];

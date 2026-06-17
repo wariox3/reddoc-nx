@@ -723,6 +723,44 @@ export const es: AppDict = {
         },
       },
     },
+    cargo: {
+      name: 'Cargos',
+      searchPlaceholder: 'Buscar por nombre…',
+      columns: {
+        id: 'ID',
+        codigo: 'Código',
+        nombre: 'Nombre',
+        estado: 'Inactivo',
+      },
+      form: {
+        createTitle: 'Nuevo cargo',
+        editTitle: 'Editar cargo',
+        createSubtitle: 'Completá la información del cargo',
+        editSubtitle: 'Modificá la información del cargo',
+        fields: { codigo: 'Código', nombre: 'Nombre', estadoInactivo: 'Inactivo' },
+        validation: { required: 'Este campo es requerido' },
+        toasts: {
+          createSuccess: { title: 'Cargo creado', desc: 'El cargo se creó correctamente' },
+          editSuccess: {
+            title: 'Cargo actualizado',
+            desc: 'Los cambios se guardaron correctamente',
+          },
+          createError: { title: 'Error al crear', desc: 'No se pudo crear el cargo' },
+          editError: { title: 'Error al guardar', desc: 'No se pudieron guardar los cambios' },
+          loadError: { title: 'Error al cargar', desc: 'No se pudo cargar el cargo' },
+        },
+      },
+      detail: {
+        activo: 'Activo',
+        notFound: {
+          title: 'Cargo no encontrado',
+          desc: 'El cargo que buscás no existe o fue eliminado.',
+        },
+        toasts: {
+          loadError: { title: 'Error al cargar', desc: 'No se pudo cargar el cargo' },
+        },
+      },
+    },
     centroCosto: {
       name: 'Centros de costo',
       searchPlaceholder: 'Buscar por nombre…',

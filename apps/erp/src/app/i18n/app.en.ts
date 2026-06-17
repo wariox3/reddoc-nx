@@ -705,6 +705,44 @@ export const en: AppDict = {
         },
       },
     },
+    cargo: {
+      name: 'Positions',
+      searchPlaceholder: 'Search by name…',
+      columns: {
+        id: 'ID',
+        codigo: 'Code',
+        nombre: 'Name',
+        estado: 'Inactive',
+      },
+      form: {
+        createTitle: 'New position',
+        editTitle: 'Edit position',
+        createSubtitle: 'Fill in the position information',
+        editSubtitle: 'Update the position information',
+        fields: { codigo: 'Code', nombre: 'Name', estadoInactivo: 'Inactive' },
+        validation: { required: 'This field is required' },
+        toasts: {
+          createSuccess: {
+            title: 'Position created',
+            desc: 'The position was created successfully',
+          },
+          editSuccess: { title: 'Position updated', desc: 'Changes were saved successfully' },
+          createError: { title: 'Create error', desc: 'The position could not be created' },
+          editError: { title: 'Save error', desc: 'Changes could not be saved' },
+          loadError: { title: 'Load error', desc: 'The position could not be loaded' },
+        },
+      },
+      detail: {
+        activo: 'Active',
+        notFound: {
+          title: 'Position not found',
+          desc: 'The position you are looking for does not exist or was deleted.',
+        },
+        toasts: {
+          loadError: { title: 'Load error', desc: 'The position could not be loaded' },
+        },
+      },
+    },
     centroCosto: {
       name: 'Cost centers',
       searchPlaceholder: 'Search by name…',

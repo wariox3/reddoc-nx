@@ -4,8 +4,8 @@ import type { ErpModuleDescriptor } from '@erp/core/erp-modules';
  * Descriptor del módulo Humano para la capa de navegación.
  *
  * Los `path` del menú son **relativos al módulo** — el `WorkspaceLayout` les
- * prepende `/t/<slug>/humano/`. Por ahora solo el master `contrato`; sumar
- * entradas cuando se implementen más masters/documentos.
+ * prepende `/t/<slug>/humano/`. Por ahora los masters `contrato` y `cargo`;
+ * sumar entradas cuando se implementen más masters/documentos.
  */
 export const HUMANO_MODULE: ErpModuleDescriptor = {
   id: 'humano',
@@ -21,7 +21,10 @@ export const HUMANO_MODULE: ErpModuleDescriptor = {
       defaultExpanded: true,
       groups: [
         {
-          items: [{ labelKey: 'entities.contrato.name', path: 'contratos' }],
+          items: [
+            { labelKey: 'entities.contrato.name', path: 'contratos' },
+            { labelKey: 'entities.cargo.name', path: 'cargos' },
+          ],
         },
       ],
     },
