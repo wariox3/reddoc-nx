@@ -24,6 +24,7 @@ export const HUMANO_MODULE: ErpModuleDescriptor = {
           items: [
             { labelKey: 'entities.contrato.name', path: 'contratos' },
             { labelKey: 'entities.cargo.name', path: 'cargos' },
+            { labelKey: 'entities.grupo.name', path: 'grupos' },
           ],
         },
       ],

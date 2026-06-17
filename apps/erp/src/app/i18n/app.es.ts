@@ -723,6 +723,47 @@ export const es: AppDict = {
         },
       },
     },
+    grupo: {
+      name: 'Grupos',
+      searchPlaceholder: 'Buscar por nombre…',
+      columns: {
+        id: 'ID',
+        nombre: 'Nombre',
+        periodo: 'Período',
+      },
+      periodos: { 1: 'Quincenal', 2: 'Mensual' },
+      form: {
+        createTitle: 'Nuevo grupo',
+        editTitle: 'Editar grupo',
+        createSubtitle: 'Completá la información del grupo',
+        editSubtitle: 'Modificá la información del grupo',
+        fields: {
+          nombre: 'Nombre',
+          periodo: 'Período',
+          periodoPlaceholder: 'Seleccioná un período',
+        },
+        validation: { required: 'Este campo es requerido' },
+        toasts: {
+          createSuccess: { title: 'Grupo creado', desc: 'El grupo se creó correctamente' },
+          editSuccess: {
+            title: 'Grupo actualizado',
+            desc: 'Los cambios se guardaron correctamente',
+          },
+          createError: { title: 'Error al crear', desc: 'No se pudo crear el grupo' },
+          editError: { title: 'Error al guardar', desc: 'No se pudieron guardar los cambios' },
+          loadError: { title: 'Error al cargar', desc: 'No se pudo cargar el grupo' },
+        },
+      },
+      detail: {
+        notFound: {
+          title: 'Grupo no encontrado',
+          desc: 'El grupo que buscás no existe o fue eliminado.',
+        },
+        toasts: {
+          loadError: { title: 'Error al cargar', desc: 'No se pudo cargar el grupo' },
+        },
+      },
+    },
     cargo: {
       name: 'Cargos',
       searchPlaceholder: 'Buscar por nombre…',

@@ -705,6 +705,40 @@ export const en: AppDict = {
         },
       },
     },
+    grupo: {
+      name: 'Groups',
+      searchPlaceholder: 'Search by name…',
+      columns: {
+        id: 'ID',
+        nombre: 'Name',
+        periodo: 'Period',
+      },
+      periodos: { 1: 'Biweekly', 2: 'Monthly' },
+      form: {
+        createTitle: 'New group',
+        editTitle: 'Edit group',
+        createSubtitle: 'Fill in the group information',
+        editSubtitle: 'Update the group information',
+        fields: { nombre: 'Name', periodo: 'Period', periodoPlaceholder: 'Select a period' },
+        validation: { required: 'This field is required' },
+        toasts: {
+          createSuccess: { title: 'Group created', desc: 'The group was created successfully' },
+          editSuccess: { title: 'Group updated', desc: 'Changes were saved successfully' },
+          createError: { title: 'Create error', desc: 'The group could not be created' },
+          editError: { title: 'Save error', desc: 'Changes could not be saved' },
+          loadError: { title: 'Load error', desc: 'The group could not be loaded' },
+        },
+      },
+      detail: {
+        notFound: {
+          title: 'Group not found',
+          desc: 'The group you are looking for does not exist or was deleted.',
+        },
+        toasts: {
+          loadError: { title: 'Load error', desc: 'The group could not be loaded' },
+        },
+      },
+    },
     cargo: {
       name: 'Positions',
       searchPlaceholder: 'Search by name…',
