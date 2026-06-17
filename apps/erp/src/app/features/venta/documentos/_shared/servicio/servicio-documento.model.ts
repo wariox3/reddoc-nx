@@ -28,7 +28,6 @@ export interface ServicioDocumentoRead extends DocumentoReadBase {
   readonly estrato: number | null;
   /** El backend lo devuelve como string con cola de ceros (`"1423500.000000"`). */
   readonly salario: string | number | null;
-  readonly detalles?: readonly ServicioDocumentoDetalleRead[] | null;
 }
 
 /**

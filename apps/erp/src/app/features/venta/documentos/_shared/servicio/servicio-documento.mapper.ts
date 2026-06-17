@@ -25,13 +25,6 @@ export function servicioDocumentoToFormValue(
   };
 }
 
-/** Líneas de detalle del read-model → valores de formulario (para el FormArray). */
-export function detallesToFormValue(read: ServicioDocumentoRead): DetalleFormRawValue[] {
-  // El salario viaja a nivel documento; cada línea lo hereda.
-  const salarioDoc = toFiniteNumber(read.salario);
-  return (read.detalles ?? []).map((detalle) => detalleToFormValue(detalle, salarioDoc));
-}
-
 /** Flags `lunes…domingo` → array de índices (0=lunes … 6=domingo), como el calcPayload. */
 const DIA_FLAGS = [
   'lunes',

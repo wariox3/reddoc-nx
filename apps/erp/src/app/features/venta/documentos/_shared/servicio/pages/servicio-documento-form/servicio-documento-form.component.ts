@@ -1,7 +1,7 @@
 import { Component, DestroyRef, type OnInit, computed, inject, input, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { startWith } from 'rxjs';
+import { forkJoin, startWith } from 'rxjs';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { DatePickerModule } from 'primeng/datepicker';
@@ -13,6 +13,7 @@ import {
   I18nService,
   startOfToday,
   TenantService,
+  toFiniteNumber,
   ToastService,
 } from '@reddoc/core';
 import { BreadcrumbComponent, type BreadcrumbItem } from '@reddoc/feature-base';
@@ -22,17 +23,20 @@ import {
   ErpApiSelectComponent,
   type ErpSelectOption,
 } from '@erp/core/components/api-select/erp-api-select.component';
-import { ENTITY_DATA_GATEWAY } from '@erp/core/module-config';
+import { DocumentoDetalleService, ENTITY_DATA_GATEWAY } from '@erp/core/module-config';
 import type { DocumentEntityConfig } from '@erp/core/module-config';
 import { ConfiguracionService } from '@erp/core/services/configuracion.service';
 import type { AppDict } from '@erp/i18n';
 import { ESTRATO_OPTIONS, SECTOR_ENDPOINT } from '../../servicio-documento.constants';
 import {
   servicioDocumentoToFormValue,
-  detallesToFormValue,
+  detalleToFormValue,
   formValueToPayload,
 } from '../../servicio-documento.mapper';
-import type { ServicioDocumentoRead } from '../../servicio-documento.model';
+import type {
+  ServicioDocumentoRead,
+  ServicioDocumentoDetalleRead,
+} from '../../servicio-documento.model';
 import { createDetalleGroup, type DetalleGroup } from '../../servicio-documento-detalle.form';
 import { ServicioDocumentoDetallesComponent } from '../../components/servicio-documento-detalles/servicio-documento-detalles.component';
 
@@ -72,6 +76,7 @@ import { ServicioDocumentoDetallesComponent } from '../../components/servicio-do
 export class ServicioDocumentoFormComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly gateway = inject(ENTITY_DATA_GATEWAY);
+  private readonly detalleService = inject(DocumentoDetalleService);
   private readonly toast = inject(ToastService);
   private readonly formErrors = inject(FormErrorService);
   private readonly tenant = inject(TenantService);
@@ -188,16 +193,24 @@ export class ServicioDocumentoFormComponent implements OnInit {
   }
 
   private loadDocumento(id: number): void {
-    this.gateway
-      .getById(this.document(), id)
+    // La cabecera (`documento/:id/`) ya no embebe los detalles: las líneas se
+    // traen aparte de `documento-detalle/?documento_id=`. Las dos peticiones son
+    // independientes, así que cargan en paralelo y se pueblan juntas.
+    forkJoin({
+      cabecera: this.gateway.getById(this.document(), id),
+      lineas: this.detalleService.listarPorDocumento<ServicioDocumentoDetalleRead>(id),
+    })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (raw) => {
-          const read = raw as ServicioDocumentoRead;
+        next: ({ cabecera, lineas }) => {
+          const read = cabecera as ServicioDocumentoRead;
+          // El salario viaja en la cabecera; cada línea lo hereda.
+          const salarioDoc = toFiniteNumber(read.salario);
           this.form.patchValue(servicioDocumentoToFormValue(read));
           const detalles = this.form.controls.detalles;
           detalles.clear();
-          for (const line of detallesToFormValue(read)) detalles.push(createDetalleGroup(line));
+          for (const line of lineas)
+            detalles.push(createDetalleGroup(detalleToFormValue(line, salarioDoc)));
         },
         error: () => {
           const toasts = this.t().entities.servicioDocumento.form.toasts;
