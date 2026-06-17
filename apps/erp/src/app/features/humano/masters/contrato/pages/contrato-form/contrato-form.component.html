@@ -464,107 +464,109 @@
     </div>
   </section>
 
-  <!-- ── Sección 4: Terminación y pagos ────────────────────────────────────── -->
-  <section class="overflow-hidden rounded-xl border border-[rgba(20,48,73,0.1)] bg-brand-surface">
-    <div class="flex items-center gap-3 border-b border-[rgba(20,48,73,0.08)] px-5 py-4">
-      <span
-        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-sky-50 text-sky-700"
-      >
-        <i class="pi pi-flag text-[1.05rem]"></i>
-      </span>
-      <div class="flex min-w-0 flex-1 flex-col gap-[0.1rem]">
-        <h2 class="m-0 text-[0.95rem] font-bold tracking-tight text-brand-text">
-          {{ t().entities.contrato.form.sections.terminacion }}
-        </h2>
-        <p class="m-0 text-[0.75rem] text-brand-muted">
-          {{ t().entities.contrato.form.sectionsHint.terminacion }}
-        </p>
-      </div>
-    </div>
-
-    <div class="px-5 py-5 max-[576px]:px-4 max-[576px]:py-4">
-      <div class="grid grid-cols-1 gap-x-5 gap-y-4 sm:grid-cols-2">
-        <div class="flex flex-col gap-1.5">
-          <label for="motivo_terminacion" class="contrato-form__label">
-            {{ t().entities.contrato.form.fields.motivoTerminacion }}
-          </label>
-          <app-api-select
-            inputId="motivo_terminacion"
-            formControlName="motivo_terminacion"
-            endpoint="/humano/motivo-terminacion/seleccionar/"
-            [params]="{ limit: '100' }"
-          />
-        </div>
-
-        <div class="flex flex-col gap-1.5">
-          <label for="fecha_ultimo_pago" class="contrato-form__label">
-            {{ t().entities.contrato.form.fields.fechaUltimoPago }}
-          </label>
-          <p-datepicker
-            inputId="fecha_ultimo_pago"
-            formControlName="fecha_ultimo_pago"
-            dateFormat="yy-mm-dd"
-            [showIcon]="true"
-            appendTo="body"
-            [fluid]="true"
-          />
-        </div>
-
-        <div class="flex flex-col gap-1.5">
-          <label for="fecha_ultimo_pago_prima" class="contrato-form__label">
-            {{ t().entities.contrato.form.fields.fechaUltimoPagoPrima }}
-          </label>
-          <p-datepicker
-            inputId="fecha_ultimo_pago_prima"
-            formControlName="fecha_ultimo_pago_prima"
-            dateFormat="yy-mm-dd"
-            [showIcon]="true"
-            appendTo="body"
-            [fluid]="true"
-          />
-        </div>
-
-        <div class="flex flex-col gap-1.5">
-          <label for="fecha_ultimo_pago_cesantia" class="contrato-form__label">
-            {{ t().entities.contrato.form.fields.fechaUltimoPagoCesantia }}
-          </label>
-          <p-datepicker
-            inputId="fecha_ultimo_pago_cesantia"
-            formControlName="fecha_ultimo_pago_cesantia"
-            dateFormat="yy-mm-dd"
-            [showIcon]="true"
-            appendTo="body"
-            [fluid]="true"
-          />
-        </div>
-
-        <div class="flex flex-col gap-1.5">
-          <label for="fecha_ultimo_pago_vacacion" class="contrato-form__label">
-            {{ t().entities.contrato.form.fields.fechaUltimoPagoVacacion }}
-          </label>
-          <p-datepicker
-            inputId="fecha_ultimo_pago_vacacion"
-            formControlName="fecha_ultimo_pago_vacacion"
-            dateFormat="yy-mm-dd"
-            [showIcon]="true"
-            appendTo="body"
-            [fluid]="true"
-          />
-        </div>
-
-        <div class="flex flex-col gap-1.5 sm:col-span-2">
-          <label for="comentario" class="contrato-form__label">
-            {{ t().entities.contrato.form.fields.comentario }}
-          </label>
-          <textarea
-            id="comentario"
-            pTextarea
-            formControlName="comentario"
-            rows="3"
-            class="w-full"
-          ></textarea>
+  <!-- ── Sección 4: Terminación y pagos (oculta por ahora) ─────────────────── -->
+  @if (showTerminacion) {
+    <section class="overflow-hidden rounded-xl border border-[rgba(20,48,73,0.1)] bg-brand-surface">
+      <div class="flex items-center gap-3 border-b border-[rgba(20,48,73,0.08)] px-5 py-4">
+        <span
+          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-sky-50 text-sky-700"
+        >
+          <i class="pi pi-flag text-[1.05rem]"></i>
+        </span>
+        <div class="flex min-w-0 flex-1 flex-col gap-[0.1rem]">
+          <h2 class="m-0 text-[0.95rem] font-bold tracking-tight text-brand-text">
+            {{ t().entities.contrato.form.sections.terminacion }}
+          </h2>
+          <p class="m-0 text-[0.75rem] text-brand-muted">
+            {{ t().entities.contrato.form.sectionsHint.terminacion }}
+          </p>
         </div>
       </div>
-    </div>
-  </section>
+
+      <div class="px-5 py-5 max-[576px]:px-4 max-[576px]:py-4">
+        <div class="grid grid-cols-1 gap-x-5 gap-y-4 sm:grid-cols-2">
+          <div class="flex flex-col gap-1.5">
+            <label for="motivo_terminacion" class="contrato-form__label">
+              {{ t().entities.contrato.form.fields.motivoTerminacion }}
+            </label>
+            <app-api-select
+              inputId="motivo_terminacion"
+              formControlName="motivo_terminacion"
+              endpoint="/humano/motivo-terminacion/seleccionar/"
+              [params]="{ limit: '100' }"
+            />
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <label for="fecha_ultimo_pago" class="contrato-form__label">
+              {{ t().entities.contrato.form.fields.fechaUltimoPago }}
+            </label>
+            <p-datepicker
+              inputId="fecha_ultimo_pago"
+              formControlName="fecha_ultimo_pago"
+              dateFormat="yy-mm-dd"
+              [showIcon]="true"
+              appendTo="body"
+              [fluid]="true"
+            />
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <label for="fecha_ultimo_pago_prima" class="contrato-form__label">
+              {{ t().entities.contrato.form.fields.fechaUltimoPagoPrima }}
+            </label>
+            <p-datepicker
+              inputId="fecha_ultimo_pago_prima"
+              formControlName="fecha_ultimo_pago_prima"
+              dateFormat="yy-mm-dd"
+              [showIcon]="true"
+              appendTo="body"
+              [fluid]="true"
+            />
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <label for="fecha_ultimo_pago_cesantia" class="contrato-form__label">
+              {{ t().entities.contrato.form.fields.fechaUltimoPagoCesantia }}
+            </label>
+            <p-datepicker
+              inputId="fecha_ultimo_pago_cesantia"
+              formControlName="fecha_ultimo_pago_cesantia"
+              dateFormat="yy-mm-dd"
+              [showIcon]="true"
+              appendTo="body"
+              [fluid]="true"
+            />
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <label for="fecha_ultimo_pago_vacacion" class="contrato-form__label">
+              {{ t().entities.contrato.form.fields.fechaUltimoPagoVacacion }}
+            </label>
+            <p-datepicker
+              inputId="fecha_ultimo_pago_vacacion"
+              formControlName="fecha_ultimo_pago_vacacion"
+              dateFormat="yy-mm-dd"
+              [showIcon]="true"
+              appendTo="body"
+              [fluid]="true"
+            />
+          </div>
+
+          <div class="flex flex-col gap-1.5 sm:col-span-2">
+            <label for="comentario" class="contrato-form__label">
+              {{ t().entities.contrato.form.fields.comentario }}
+            </label>
+            <textarea
+              id="comentario"
+              pTextarea
+              formControlName="comentario"
+              rows="3"
+              class="w-full"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+    </section>
+  }
 </form>

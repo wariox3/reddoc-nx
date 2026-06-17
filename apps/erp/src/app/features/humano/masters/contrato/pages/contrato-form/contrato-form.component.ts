@@ -83,6 +83,9 @@ export class ContratoFormComponent implements OnInit {
 
   protected readonly isSaving = signal(false);
 
+  /** Oculta la sección "Terminación y pagos" por ahora (pendiente de definición). */
+  protected readonly showTerminacion = false;
+
   /** Tipo de contrato seleccionado (espejo reactivo del control para la plantilla). */
   private readonly contratoTipo = signal<ErpSelectOption | null>(null);
 
