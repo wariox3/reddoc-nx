@@ -1,22 +1,6 @@
+import { fromIsoDate, toIsoDate } from '@reddoc/core';
 import type { Contrato, ContratoPayload } from './contrato.model';
 import type { ContratoFormRawValue } from './pages/contrato-form/contrato-form.types';
-
-/** Parsea 'yyyy-mm-dd' a Date local (evita el corrimiento de día por timezone). */
-function parseIsoDate(value: string | null): Date | null {
-  if (!value) return null;
-  const [year, month, day] = value.split('-').map(Number);
-  if (!year || !month || !day) return null;
-  return new Date(year, month - 1, day);
-}
-
-/** Formatea Date a 'yyyy-mm-dd' usando partes locales. */
-function toIsoDate(value: Date | null): string | null {
-  if (!value) return null;
-  const year = value.getFullYear();
-  const month = String(value.getMonth() + 1).padStart(2, '0');
-  const day = String(value.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
 
 /**
  * Adapta el read-model (`Contrato`) a los valores del reactive form.
@@ -55,8 +39,8 @@ export function contratoToFormValue(c: Contrato): Partial<ContratoFormRawValue> 
       c.ciudad_labora_id != null
         ? { id: c.ciudad_labora_id, nombre: c.ciudad_labora_nombre ?? '' }
         : null,
-    fecha_desde: parseIsoDate(c.fecha_desde),
-    fecha_hasta: parseIsoDate(c.fecha_hasta),
+    fecha_desde: fromIsoDate(c.fecha_desde),
+    fecha_hasta: fromIsoDate(c.fecha_hasta),
     salario: c.salario,
     auxilio_transporte: c.auxilio_transporte,
     salario_integral: c.salario_integral,
@@ -76,10 +60,10 @@ export function contratoToFormValue(c: Contrato): Partial<ContratoFormRawValue> 
       c.subtipo_cotizante_id != null ? { id: c.subtipo_cotizante_id, nombre: '' } : null,
     motivo_terminacion:
       c.motivo_terminacion_id != null ? { id: c.motivo_terminacion_id, nombre: '' } : null,
-    fecha_ultimo_pago: parseIsoDate(c.fecha_ultimo_pago),
-    fecha_ultimo_pago_prima: parseIsoDate(c.fecha_ultimo_pago_prima),
-    fecha_ultimo_pago_cesantia: parseIsoDate(c.fecha_ultimo_pago_cesantia),
-    fecha_ultimo_pago_vacacion: parseIsoDate(c.fecha_ultimo_pago_vacacion),
+    fecha_ultimo_pago: fromIsoDate(c.fecha_ultimo_pago),
+    fecha_ultimo_pago_prima: fromIsoDate(c.fecha_ultimo_pago_prima),
+    fecha_ultimo_pago_cesantia: fromIsoDate(c.fecha_ultimo_pago_cesantia),
+    fecha_ultimo_pago_vacacion: fromIsoDate(c.fecha_ultimo_pago_vacacion),
     comentario: c.comentario ?? '',
   };
 }

@@ -7,7 +7,13 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { CheckboxModule } from 'primeng/checkbox';
 import { TextareaModule } from 'primeng/textarea';
-import { FormErrorService, I18nService, TenantService, ToastService } from '@reddoc/core';
+import {
+  FormErrorService,
+  I18nService,
+  TenantService,
+  ToastService,
+  startOfToday,
+} from '@reddoc/core';
 import { BreadcrumbComponent, type BreadcrumbItem } from '@reddoc/feature-base';
 import { ErpApiSelectComponent } from '@erp/core/components/api-select/erp-api-select.component';
 import { ErpApiAutocompleteComponent } from '@erp/core/components/api-autocomplete/erp-api-autocomplete.component';
@@ -17,7 +23,7 @@ import type { ErpSelectOption } from '@erp/core/components/api-select/erp-api-se
 import type { AppDict } from '@erp/i18n';
 import { ConfiguracionService } from '@erp/core/services/configuracion.service';
 import { ContratoService } from '../../contrato.service';
-import { CONTRATO_LIST_PATH } from '../../contrato.constants';
+import { CONTRATO_LIST_PATH, CONTRATO_TIPO_INDEFINIDO_ID } from '../../contrato.constants';
 import { contratoToFormValue, formValueToPayload } from '../../contrato.mapper';
 
 /**
@@ -34,6 +40,11 @@ import { contratoToFormValue, formValueToPayload } from '../../contrato.mapper';
  * seguridad social (`entidad_salud`, `entidad_pension`, `entidad_cesantias`, `entidad_caja`)
  * comparten el endpoint `/humano/entidad/seleccionar/` discriminado por el query param
  * booleano correspondiente (`salud` / `pension` / `cesantias` / `caja`).
+ *
+ * Regla de negocio del tipo de contrato: si es indefinido (id
+ * `CONTRATO_TIPO_INDEFINIDO_ID`) se oculta `fecha_hasta` y se le quita el
+ * requerido. Solo en alta, al iniciar, se sugiere la fecha de hoy en
+ * `fecha_desde` / `fecha_hasta`.
  */
 @Component({
   selector: 'app-contrato-form',
@@ -71,6 +82,14 @@ export class ContratoFormComponent implements OnInit {
   protected readonly isEditMode = computed(() => !!this.id());
 
   protected readonly isSaving = signal(false);
+
+  /** Tipo de contrato seleccionado (espejo reactivo del control para la plantilla). */
+  private readonly contratoTipo = signal<ErpSelectOption | null>(null);
+
+  /** `true` cuando el tipo de contrato es indefinido → sin `fecha_hasta`. */
+  protected readonly isIndefinido = computed(
+    () => this.contratoTipo()?.id === CONTRATO_TIPO_INDEFINIDO_ID,
+  );
 
   protected readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => {
     const slug = this.tenant.currentSlug();
@@ -124,10 +143,52 @@ export class ContratoFormComponent implements OnInit {
     comentario: this.fb.control<string>(''),
   });
 
+  constructor() {
+    // Aplica la regla del tipo de contrato cada vez que cambia (incluye la carga
+    // en edición, que dispara `valueChanges` vía `patchValue`).
+    this.form.controls.contrato_tipo.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((value) => this.onContratoTipoChange(value));
+  }
+
   ngOnInit(): void {
     const id = this.id();
-    if (id) this.loadContrato(Number(id));
-    else this.prefillRemuneracion();
+    if (id) {
+      this.loadContrato(Number(id));
+    } else {
+      this.prefillRemuneracion();
+      this.suggestToday();
+    }
+  }
+
+  /**
+   * Regla de negocio según el tipo de contrato: si es indefinido oculta
+   * `fecha_hasta` (la limpia y le quita el requerido); cualquier otro tipo la
+   * vuelve requerida.
+   */
+  private onContratoTipoChange(value: ErpSelectOption | null): void {
+    this.contratoTipo.set(value);
+    const fechaHasta = this.form.controls.fecha_hasta;
+
+    if (this.isIndefinido()) {
+      fechaHasta.reset(null, { emitEvent: false });
+      fechaHasta.clearValidators();
+    } else {
+      fechaHasta.setValidators(Validators.required);
+    }
+
+    fechaHasta.updateValueAndValidity({ emitEvent: false });
+  }
+
+  /**
+   * Sugiere la fecha de hoy en `fecha_desde` / `fecha_hasta` al iniciar el
+   * formulario en modo alta. Solo se llama al crear (nunca al editar) y respeta
+   * cualquier valor ya presente.
+   */
+  private suggestToday(): void {
+    const today = startOfToday();
+    if (!this.form.controls.fecha_desde.value) this.form.controls.fecha_desde.setValue(today);
+    if (!this.form.controls.fecha_hasta.value) this.form.controls.fecha_hasta.setValue(today);
   }
 
   protected onSubmit(): void {

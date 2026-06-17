@@ -4,6 +4,13 @@ import type { RowAction, ToolbarAction } from '@reddoc/feature-base';
 export const CONTRATOS_FILTERS_STORAGE_KEY = 'contratos:filters:v1';
 export const CONTRATOS_QUICK_SEARCH_FIELD = 'nombre';
 
+/**
+ * Id del tipo de contrato indefinido (sin fecha de fin). Cuando el tipo
+ * seleccionado coincide, el formulario oculta `fecha_hasta` y le quita la
+ * validación de requerido.
+ */
+export const CONTRATO_TIPO_INDEFINIDO_ID = 1;
+
 export const CONTRATO_LIST_PATH = ['humano', 'contratos'] as const;
 
 export const CONTRATOS_COLUMNS: readonly ColumnDef[] = [
