@@ -15,6 +15,8 @@ export type ComercialDetalleGroup = FormGroup<{
   impuestos_totales: FormControl<readonly ImpuestoLinea[]>;
   impuestos_disponibles: FormControl<readonly TasaImpuesto[]>;
   detalle: FormControl<string | null>;
+  /** Línea origen afectada (importar desde documento); `null` en líneas normales. */
+  documento_detalle_afectado: FormControl<number | null>;
 }>;
 
 /**
@@ -55,6 +57,9 @@ export function createComercialDetalleGroup(
       { nonNullable: true },
     ),
     detalle: new FormControl<string | null>(value?.detalle ?? null),
+    documento_detalle_afectado: new FormControl<number | null>(
+      value?.documento_detalle_afectado ?? null,
+    ),
   });
 
   group.controls.item.valueChanges.subscribe((opt) => {

@@ -1,9 +1,17 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { BaseHttpService } from '@reddoc/core';
+import { map } from 'rxjs/operators';
+import { BaseHttpService, type PaginatedResponse } from '@reddoc/core';
 
 /** Endpoint CRUD de líneas de documento (compartido por todos los documentos). */
 const DOCUMENTO_DETALLE_ENDPOINT = '/general/documento-detalle/';
+
+/**
+ * Tamaño de página al traer las líneas de un documento. Un documento real no
+ * llega a este volumen de líneas, así que pedimos todo en una sola página y
+ * evitamos paginar la edición.
+ */
+const DETALLE_PAGE_SIZE = 1000;
 
 /**
  * CRUD de **líneas de documento** (`/api/general/documento-detalle/`).
@@ -19,9 +27,42 @@ const DOCUMENTO_DETALLE_ENDPOINT = '/general/documento-detalle/';
  */
 @Injectable({ providedIn: 'root' })
 export class DocumentoDetalleService extends BaseHttpService {
+  /**
+   * Lista las líneas de un documento (`GET …documento-detalle/?documento_id=`).
+   *
+   * Desde que la cabecera (`GET documento/:id/`) dejó de embeber `detalles`, la
+   * edición trae las líneas en una segunda petición a este endpoint. Respuesta
+   * paginada estándar (`PaginatedResponse`); devolvemos solo los `results`.
+   */
+  listarPorDocumento<TRead = unknown>(documentoId: number): Observable<TRead[]> {
+    return this.get<PaginatedResponse<TRead>>(DOCUMENTO_DETALLE_ENDPOINT, {
+      documento_id: documentoId,
+      limit: DETALLE_PAGE_SIZE,
+    }).pipe(map((res) => [...res.results]));
+  }
+
   /** Crea una línea asociada al documento `documentoId`. Devuelve la línea creada. */
   crear<TRead = unknown>(documentoId: number, payload: object): Observable<TRead> {
     return this.post<TRead>(DOCUMENTO_DETALLE_ENDPOINT, { ...payload, documento: documentoId });
+  }
+
+  /**
+   * Alta **masiva** de líneas en un documento existente
+   * (`POST /general/documento-detalle/masivo/`). Una sola request para N líneas;
+   * la usa "importar desde documento" en modo edición.
+   *
+   * La forma de la respuesta del backend está pendiente de confirmar (¿devuelve
+   * las líneas creadas o solo un OK?); por eso el tipo de lectura se parametriza
+   * por llamada y el default es `unknown`.
+   */
+  crearMasivo<TRead = unknown>(
+    documentoId: number,
+    detalles: readonly object[],
+  ): Observable<TRead> {
+    return this.post<TRead>(`${DOCUMENTO_DETALLE_ENDPOINT}masivo/`, {
+      documento: documentoId,
+      detalles,
+    });
   }
 
   /** Actualiza una línea existente por su `id`. */

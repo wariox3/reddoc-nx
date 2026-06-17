@@ -1,0 +1,58 @@
+@let d = t().documentImport;
+
+<div class="flex flex-col gap-5">
+  <!-- Header: badge + título + subtítulo (estándar de modales del ERP) -->
+  <div class="flex items-center gap-3.5">
+    <span
+      class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-brand-blue/15"
+    >
+      <i class="pi pi-file-import text-[1.1rem] text-brand-blue"></i>
+    </span>
+    <div class="flex flex-col gap-[0.1rem]">
+      <h2
+        class="m-0 text-[1.05rem] font-extrabold leading-tight tracking-[-0.03em] text-brand-navy"
+      >
+        {{ d.modalHeader }}
+      </h2>
+      <p class="m-0 text-[0.75rem] tracking-[0.01em] text-brand-muted">{{ d.modalSubtitle }}</p>
+    </div>
+  </div>
+
+  <!-- Tabla de líneas pendientes (selección múltiple) -->
+  <lib-data-table
+    [columns]="columns"
+    [items]="items()"
+    [totalCount]="totalCount()"
+    [loading]="loading()"
+    [pageSize]="pageSize()"
+    [currentPage]="page()"
+    [selectionMode]="'multiple'"
+    [selectedRows]="selected()"
+    [scrollHeight]="'55vh'"
+    (selectionChange)="onSelectionChange($event)"
+    (pageChange)="onPageChange($event)"
+    (sortChange)="onSortChange($event)"
+  />
+
+  <!-- Footer: conteo seleccionado + acciones -->
+  <div
+    class="mt-1 flex items-center justify-between gap-3 border-t border-[rgba(20,48,73,0.08)] pt-5"
+  >
+    <span class="text-[0.78rem] text-brand-muted">{{ selectedCount() }} {{ d.selected }}</span>
+    <div class="flex items-center gap-3">
+      <p-button
+        type="button"
+        [label]="d.cancel"
+        [outlined]="true"
+        severity="secondary"
+        (onClick)="cancel()"
+      />
+      <p-button
+        type="button"
+        [label]="d.submit"
+        [disabled]="selectedCount() === 0"
+        (onClick)="confirm()"
+      />
+    </div>
+  </div>
+</div>

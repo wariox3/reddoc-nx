@@ -7,6 +7,7 @@ import {
   type TasaImpuesto,
 } from '@reddoc/core';
 import type { Item } from '@erp/features/general/masters/item/item.model';
+import type { LineaPendienteApi } from '@erp/core/module-config';
 import type {
   ComercialDetalleRead,
   ComercialDetallePayload,
@@ -119,6 +120,44 @@ export function comercialDetalleToFormValue(
     // Se rellenan al re-seleccionar el ítem; vacías preservan los montos cargados.
     impuestos_disponibles: [],
     detalle: read.detalle ?? null,
+    documento_detalle_afectado: read.documento_detalle_afectado ?? null,
+  };
+}
+
+/**
+ * Adapta una **fila pendiente** (`POST documento-detalle/pendiente/`) a una línea
+ * **nueva** del formulario para "importar desde documento". La fila ya trae todo
+ * (item, precio, cantidad, impuestos), así que no se requiere lectura extra:
+ *  - construye el `ItemOption` desde `item_id`/`item_nombre`/`precio`;
+ *  - mapea los impuestos a tasas y calcula sus montos con el kernel
+ *    (`calcularImpuestosLinea`) — front autoritativo;
+ *  - `id = null` para que la línea se cree (POST), no se actualice (PATCH);
+ *  - fija `documento_detalle_afectado = id` (línea origen) para descontar su pendiente.
+ *
+ * Caso simple (decidido): cantidad y precio salen directos de la fila; el reparto
+ * parcial cuando `afectado > 0` queda fuera de esta primera versión.
+ */
+export function pendienteLineaToFormValue(row: LineaPendienteApi): ComercialDetalleFormRawValue {
+  const precio = toFiniteNumber(row.precio) ?? 0;
+  const cantidad = toFiniteNumber(row.cantidad);
+  const tasas: TasaImpuesto[] = row.impuestos.map((imp) => ({
+    id: imp.impuesto,
+    nombre: imp.impuesto_nombre ?? '',
+    porcentaje: parseFloat(imp.impuesto_porcentaje ?? '0'),
+    porcentajeBase: parseFloat(imp.impuesto_porcentaje_base ?? '100'),
+  }));
+  const base = (cantidad ?? 0) * precio;
+  return {
+    id: null,
+    item: { id: row.item_id, nombre: row.item_nombre, precio },
+    cantidad,
+    precio,
+    descuento: 0,
+    impuestos_ids: tasas.map((tasa) => tasa.id),
+    impuestos_totales: calcularImpuestosLinea(base, tasas),
+    impuestos_disponibles: tasas,
+    detalle: null,
+    documento_detalle_afectado: row.id,
   };
 }
 
@@ -133,5 +172,6 @@ export function comercialDetalleToPayload(
     descuento: (raw.descuento ?? 0).toFixed(2),
     detalle: raw.detalle?.trim() || null,
     impuestos_ids: raw.impuestos_ids,
+    documento_detalle_afectado: raw.documento_detalle_afectado,
   };
 }

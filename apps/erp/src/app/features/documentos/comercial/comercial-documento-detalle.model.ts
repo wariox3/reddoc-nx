@@ -15,6 +15,8 @@ export interface ComercialDetalleRead extends DocumentoDetalleReadBase {
   /** Porcentaje de descuento de la línea (string con decimales, p. ej. `"10.00"`). */
   readonly descuento?: string | number | null;
   readonly detalle?: string | null;
+  /** Línea origen afectada, si la línea provino de "importar desde documento". */
+  readonly documento_detalle_afectado?: number | null;
 }
 
 /** Cuerpo de una línea de detalle comercial enviada en `POST`/`PATCH`. */
@@ -22,4 +24,6 @@ export interface ComercialDetallePayload extends DocumentoDetallePayloadBase {
   /** Porcentaje de descuento como string con 2 decimales (`"10.00"`). */
   readonly descuento: string;
   readonly detalle: string | null;
+  /** Línea origen afectada (importar desde documento); `null` en líneas normales. */
+  readonly documento_detalle_afectado: number | null;
 }

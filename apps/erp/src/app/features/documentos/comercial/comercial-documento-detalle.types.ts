@@ -44,4 +44,10 @@ export interface ComercialDetalleFormRawValue {
   readonly impuestos_disponibles: readonly TasaImpuesto[];
   /** Nota libre de la línea. */
   readonly detalle: string | null;
+  /**
+   * Id de la línea origen que esta línea **afecta** (descuenta su pendiente),
+   * cuando proviene de "importar desde documento". `null` en líneas normales.
+   * No se renderiza; viaja al backend en el payload para conservar el vínculo.
+   */
+  readonly documento_detalle_afectado: number | null;
 }
