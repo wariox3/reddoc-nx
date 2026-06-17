@@ -119,6 +119,7 @@ export class ContratoFormComponent implements OnInit {
     // Remuneración
     salario: this.fb.control<number | null>(null, Validators.required),
     auxilio_transporte: this.fb.control<number | null>(null),
+    aplica_auxilio_transporte: this.fb.control<boolean>(true),
     salario_integral: this.fb.control<boolean>(false),
     tipo_costo: this.fb.control<ErpSelectOption | null>(null),
     grupo_contabilidad: this.fb.control<ErpSelectOption | null>(null),

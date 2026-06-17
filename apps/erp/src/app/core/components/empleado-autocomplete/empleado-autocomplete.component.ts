@@ -4,10 +4,12 @@ import {
   DestroyRef,
   ViewChild,
   computed,
+  effect,
   forwardRef,
   inject,
   input,
   signal,
+  untracked,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
@@ -161,6 +163,12 @@ export class EmpleadoAutocompleteComponent implements ControlValueAccessor {
   readonly endpoint = input<string>('/general/contacto/seleccionar/');
   /** Filtros fijos extra. Default: solo empleados. */
   readonly extraParams = input<Record<string, ParamValue>>({ empleado: 'True' });
+  /**
+   * Posición (0-based) a auto-seleccionar al cargar, cuando el control está vacío.
+   * `null` (default) lo desactiva. No pisa una selección manual ni el valor cargado
+   * en edición.
+   */
+  readonly suggestedIndex = input<number | null>(null);
 
   readonly value = signal<EmpleadoOption | null>(null);
   readonly disabled = signal(false);
@@ -172,6 +180,20 @@ export class EmpleadoAutocompleteComponent implements ControlValueAccessor {
   private onChangeFn: (value: EmpleadoOption | null) => void = () => undefined;
   onTouchedFn: () => void = () => undefined;
   private skipNextFocus = false;
+
+  constructor() {
+    // Sugerencia opcional: auto-selecciona la opción en `suggestedIndex` al cargar
+    // las primeras opciones, solo si el control sigue vacío. El valor se lee sin
+    // trackear para no re-disparar el efecto al seleccionar.
+    effect(() => {
+      const index = this.suggestedIndex();
+      if (index === null || untracked(this.value) !== null) return;
+      this.fetchEmpleados('').subscribe((options) => {
+        const option = options[index];
+        if (option && untracked(this.value) === null) this.onValueChange(option);
+      });
+    });
+  }
 
   writeValue(value: EmpleadoOption | null): void {
     this.value.set(value ?? null);

@@ -793,6 +793,7 @@ export const en: AppDict = {
           fechaHasta: 'End date',
           salario: 'Salary',
           auxilioTransporte: 'Transport allowance',
+          aplicaAuxilioTransporte: 'Applies transport allowance',
           salarioIntegral: 'Integral salary',
           tipoCosto: 'Cost type',
           grupoContabilidad: 'Accounting group',

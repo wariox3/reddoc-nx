@@ -11,6 +11,7 @@ export interface Contrato {
   readonly fecha_hasta: string | null;
   readonly salario: number | null;
   readonly auxilio_transporte: number | null;
+  readonly aplica_auxilio_transporte: boolean;
   readonly salario_integral: boolean;
   readonly estado_terminado: boolean;
   readonly comentario: string | null;
@@ -58,6 +59,7 @@ export interface ContratoPayload {
   readonly fecha_hasta: string | null;
   readonly salario: number | null;
   readonly auxilio_transporte: number | null;
+  readonly aplica_auxilio_transporte: boolean;
   readonly salario_integral: boolean;
   readonly comentario: string | null;
   readonly fecha_ultimo_pago: string | null;

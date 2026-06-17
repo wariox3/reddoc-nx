@@ -43,6 +43,7 @@ export function contratoToFormValue(c: Contrato): Partial<ContratoFormRawValue> 
     fecha_hasta: fromIsoDate(c.fecha_hasta),
     salario: c.salario,
     auxilio_transporte: c.auxilio_transporte,
+    aplica_auxilio_transporte: c.aplica_auxilio_transporte,
     salario_integral: c.salario_integral,
     tipo_costo: c.tipo_costo_id != null ? { id: c.tipo_costo_id, nombre: '' } : null,
     grupo_contabilidad:
@@ -79,6 +80,7 @@ export function formValueToPayload(v: ContratoFormRawValue): ContratoPayload {
     fecha_hasta: toIsoDate(v.fecha_hasta),
     salario: v.salario ?? null,
     auxilio_transporte: v.auxilio_transporte ?? null,
+    aplica_auxilio_transporte: v.aplica_auxilio_transporte ?? true,
     salario_integral: v.salario_integral ?? false,
     comentario: v.comentario || null,
     fecha_ultimo_pago: toIsoDate(v.fecha_ultimo_pago),

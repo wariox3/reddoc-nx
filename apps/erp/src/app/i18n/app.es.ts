@@ -814,6 +814,7 @@ export const es: AppDict = {
           fechaHasta: 'Fecha hasta',
           salario: 'Salario',
           auxilioTransporte: 'Auxilio de transporte',
+          aplicaAuxilioTransporte: 'Aplica auxilio de transporte',
           salarioIntegral: 'Salario integral',
           tipoCosto: 'Tipo de costo',
           grupoContabilidad: 'Grupo de contabilidad',
