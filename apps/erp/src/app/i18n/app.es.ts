@@ -723,6 +723,42 @@ export const es: AppDict = {
         },
       },
     },
+    sucursal: {
+      name: 'Sucursales',
+      searchPlaceholder: 'Buscar por nombre…',
+      columns: {
+        id: 'ID',
+        codigo: 'Código',
+        nombre: 'Nombre',
+      },
+      form: {
+        createTitle: 'Nueva sucursal',
+        editTitle: 'Editar sucursal',
+        createSubtitle: 'Completá la información de la sucursal',
+        editSubtitle: 'Modificá la información de la sucursal',
+        fields: { codigo: 'Código', nombre: 'Nombre' },
+        validation: { required: 'Este campo es requerido' },
+        toasts: {
+          createSuccess: { title: 'Sucursal creada', desc: 'La sucursal se creó correctamente' },
+          editSuccess: {
+            title: 'Sucursal actualizada',
+            desc: 'Los cambios se guardaron correctamente',
+          },
+          createError: { title: 'Error al crear', desc: 'No se pudo crear la sucursal' },
+          editError: { title: 'Error al guardar', desc: 'No se pudieron guardar los cambios' },
+          loadError: { title: 'Error al cargar', desc: 'No se pudo cargar la sucursal' },
+        },
+      },
+      detail: {
+        notFound: {
+          title: 'Sucursal no encontrada',
+          desc: 'La sucursal que buscás no existe o fue eliminada.',
+        },
+        toasts: {
+          loadError: { title: 'Error al cargar', desc: 'No se pudo cargar la sucursal' },
+        },
+      },
+    },
     grupo: {
       name: 'Grupos',
       searchPlaceholder: 'Buscar por nombre…',

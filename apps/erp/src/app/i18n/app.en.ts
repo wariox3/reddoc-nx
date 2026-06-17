@@ -705,6 +705,39 @@ export const en: AppDict = {
         },
       },
     },
+    sucursal: {
+      name: 'Branches',
+      searchPlaceholder: 'Search by name…',
+      columns: {
+        id: 'ID',
+        codigo: 'Code',
+        nombre: 'Name',
+      },
+      form: {
+        createTitle: 'New branch',
+        editTitle: 'Edit branch',
+        createSubtitle: 'Fill in the branch information',
+        editSubtitle: 'Update the branch information',
+        fields: { codigo: 'Code', nombre: 'Name' },
+        validation: { required: 'This field is required' },
+        toasts: {
+          createSuccess: { title: 'Branch created', desc: 'The branch was created successfully' },
+          editSuccess: { title: 'Branch updated', desc: 'Changes were saved successfully' },
+          createError: { title: 'Create error', desc: 'The branch could not be created' },
+          editError: { title: 'Save error', desc: 'Changes could not be saved' },
+          loadError: { title: 'Load error', desc: 'The branch could not be loaded' },
+        },
+      },
+      detail: {
+        notFound: {
+          title: 'Branch not found',
+          desc: 'The branch you are looking for does not exist or was deleted.',
+        },
+        toasts: {
+          loadError: { title: 'Load error', desc: 'The branch could not be loaded' },
+        },
+      },
+    },
     grupo: {
       name: 'Groups',
       searchPlaceholder: 'Search by name…',

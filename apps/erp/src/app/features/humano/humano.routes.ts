@@ -20,6 +20,11 @@ export const HUMANO_ROUTES: Route[] = [
         path: 'grupos',
         loadChildren: () => import('./masters/grupo/grupo.routes').then((m) => m.GRUPO_ROUTES),
       },
+      {
+        path: 'sucursales',
+        loadChildren: () =>
+          import('./masters/sucursal/sucursal.routes').then((m) => m.SUCURSAL_ROUTES),
+      },
     ],
   },
 ];
