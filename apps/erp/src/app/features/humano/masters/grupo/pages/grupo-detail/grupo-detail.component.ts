@@ -32,14 +32,6 @@ export class GrupoDetailComponent implements OnInit {
   protected readonly isLoading = signal(true);
   protected readonly notFound = signal(false);
 
-  /** Label traducido del período del grupo cargado. */
-  protected readonly periodoLabel = computed(() => {
-    const g = this.grupo();
-    if (!g) return '';
-    const periodos = this.t().entities.grupo.periodos;
-    return periodos[g.periodo as 1 | 2] ?? String(g.periodo);
-  });
-
   /** Migas: módulo Humano → listado de grupos → nombre abierto. */
   protected readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => {
     const slug = this.tenant.currentSlug();

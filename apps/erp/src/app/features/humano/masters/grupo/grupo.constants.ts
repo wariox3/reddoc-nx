@@ -11,9 +11,6 @@ export const GRUPO_LIST_PATH = ['humano', 'grupos'] as const;
 export const GRUPO_PERIODO_QUINCENAL = 1;
 export const GRUPO_PERIODO_MENSUAL = 2;
 
-/** Prefijo i18n para resolver el label del período (`<prefix>.<value>`). */
-export const GRUPO_PERIODO_KEY_PREFIX = 'entities.grupo.periodos';
-
 export const GRUPOS_COLUMNS: readonly ColumnDef[] = [
   {
     field: 'id',
@@ -28,10 +25,9 @@ export const GRUPOS_COLUMNS: readonly ColumnDef[] = [
     type: 'text',
   },
   {
-    field: 'periodo',
+    field: 'periodo_nombre',
     headerKey: 'entities.grupo.columns.periodo',
-    type: 'enum',
-    enumKeyPrefix: GRUPO_PERIODO_KEY_PREFIX,
+    type: 'text',
   },
 ];
 
