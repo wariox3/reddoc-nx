@@ -318,6 +318,52 @@ export const es: AppDict = {
         },
       },
     },
+    precio: {
+      name: 'Precios',
+      searchPlaceholder: 'Buscar por nombre…',
+      columns: {
+        id: 'ID',
+        nombre: 'Nombre',
+        venta: 'Venta',
+        compra: 'Compra',
+        fechaVence: 'Fecha de vencimiento',
+      },
+      form: {
+        createTitle: 'Nueva lista de precios',
+        editTitle: 'Editar lista de precios',
+        createSubtitle: 'Completá la información de la lista de precios',
+        editSubtitle: 'Modificá la información de la lista de precios',
+        fields: {
+          nombre: 'Nombre',
+          venta: 'Aplica para venta',
+          compra: 'Aplica para compra',
+          fechaVence: 'Fecha de vencimiento',
+        },
+        validation: { required: 'Este campo es requerido' },
+        toasts: {
+          createSuccess: {
+            title: 'Lista de precios creada',
+            desc: 'La lista se creó correctamente',
+          },
+          editSuccess: {
+            title: 'Lista de precios actualizada',
+            desc: 'Los cambios se guardaron correctamente',
+          },
+          createError: { title: 'Error al crear', desc: 'No se pudo crear la lista de precios' },
+          editError: { title: 'Error al guardar', desc: 'No se pudieron guardar los cambios' },
+          loadError: { title: 'Error al cargar', desc: 'No se pudo cargar la lista de precios' },
+        },
+      },
+      detail: {
+        notFound: {
+          title: 'Lista de precios no encontrada',
+          desc: 'La lista de precios que buscás no existe o fue eliminada.',
+        },
+        toasts: {
+          loadError: { title: 'Error al cargar', desc: 'No se pudo cargar la lista de precios' },
+        },
+      },
+    },
     contacto: {
       name: 'Contactos',
       searchPlaceholder: 'Buscar por nombre…',

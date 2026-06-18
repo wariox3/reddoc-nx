@@ -318,6 +318,52 @@ export const en: AppDict = {
         },
       },
     },
+    precio: {
+      name: 'Prices',
+      searchPlaceholder: 'Search by name…',
+      columns: {
+        id: 'ID',
+        nombre: 'Name',
+        venta: 'Sales',
+        compra: 'Purchases',
+        fechaVence: 'Expiry date',
+      },
+      form: {
+        createTitle: 'New price list',
+        editTitle: 'Edit price list',
+        createSubtitle: 'Fill in the price list information',
+        editSubtitle: 'Update the price list information',
+        fields: {
+          nombre: 'Name',
+          venta: 'Applies to sales',
+          compra: 'Applies to purchases',
+          fechaVence: 'Expiry date',
+        },
+        validation: { required: 'This field is required' },
+        toasts: {
+          createSuccess: {
+            title: 'Price list created',
+            desc: 'The price list was created successfully',
+          },
+          editSuccess: {
+            title: 'Price list updated',
+            desc: 'Changes were saved successfully',
+          },
+          createError: { title: 'Create error', desc: 'The price list could not be created' },
+          editError: { title: 'Save error', desc: 'The changes could not be saved' },
+          loadError: { title: 'Load error', desc: 'The price list could not be loaded' },
+        },
+      },
+      detail: {
+        notFound: {
+          title: 'Price list not found',
+          desc: 'The price list you are looking for does not exist or was deleted.',
+        },
+        toasts: {
+          loadError: { title: 'Load error', desc: 'The price list could not be loaded' },
+        },
+      },
+    },
     contacto: {
       name: 'Contacts',
       searchPlaceholder: 'Search by name…',
