@@ -270,6 +270,52 @@ export interface AppDict extends AuthTranslationsHost {
         toasts: { loadError: { title: string; desc: string } };
       };
     };
+    resolucion: {
+      name: string;
+      searchPlaceholder: string;
+      columns: {
+        id: string;
+        prefijo: string;
+        numero: string;
+        consecutivoDesde: string;
+        consecutivoHasta: string;
+        fechaDesde: string;
+        fechaHasta: string;
+      };
+      form: {
+        createTitle: string;
+        editTitle: string;
+        createSubtitle: string;
+        editSubtitle: string;
+        fields: {
+          prefijo: string;
+          numero: string;
+          consecutivoDesde: string;
+          consecutivoHasta: string;
+          fechaDesde: string;
+          fechaHasta: string;
+        };
+        validation: {
+          required: string;
+          prefijoMax: string;
+          numeroDigitos: string;
+          consecutivoMax: string;
+          consecutivoOrden: string;
+          fechaOrden: string;
+        };
+        toasts: {
+          createSuccess: { title: string; desc: string };
+          editSuccess: { title: string; desc: string };
+          createError: { title: string; desc: string };
+          editError: { title: string; desc: string };
+          loadError: { title: string; desc: string };
+        };
+      };
+      detail: {
+        notFound: { title: string; desc: string };
+        toasts: { loadError: { title: string; desc: string } };
+      };
+    };
     contacto: {
       name: string;
       searchPlaceholder: string;

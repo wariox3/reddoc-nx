@@ -1,0 +1,212 @@
+<lib-breadcrumb [items]="breadcrumbItems()" />
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()" autocomplete="off" class="flex flex-col gap-5">
+  <!-- ── Encabezado de página ──────────────────────────────────────────────── -->
+  <header class="flex items-center gap-2">
+    <p-button
+      type="button"
+      [label]="t().common.actions.back"
+      icon="pi pi-arrow-left"
+      severity="secondary"
+      [outlined]="true"
+      size="small"
+      (onClick)="onCancel()"
+    />
+    <p-button
+      type="submit"
+      [label]="t().common.actions.save"
+      size="small"
+      icon="pi pi-check"
+      [loading]="isSaving()"
+      [disabled]="form.invalid || form.pending || isSaving()"
+    />
+  </header>
+
+  <!-- ── Sección: Información principal ────────────────────────────────────── -->
+  <section class="overflow-hidden rounded-xl border border-[rgba(20,48,73,0.1)] bg-brand-surface">
+    <div class="flex items-center gap-3 border-b border-[rgba(20,48,73,0.08)] px-5 py-4">
+      <span
+        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-sky-50 text-sky-700"
+      >
+        <i class="pi pi-file-edit text-[1.05rem]"></i>
+      </span>
+      <div class="flex min-w-0 flex-1 flex-col gap-[0.1rem]">
+        <h2 class="m-0 text-[0.95rem] font-bold tracking-tight text-brand-text">
+          {{
+            isEditMode()
+              ? t().entities.resolucion.form.editTitle
+              : t().entities.resolucion.form.createTitle
+          }}
+        </h2>
+        <p class="m-0 text-[0.75rem] text-brand-muted">
+          {{
+            isEditMode()
+              ? t().entities.resolucion.form.editSubtitle
+              : t().entities.resolucion.form.createSubtitle
+          }}
+        </p>
+      </div>
+    </div>
+
+    <div class="px-5 py-5 max-[576px]:px-4 max-[576px]:py-4">
+      <div class="grid grid-cols-1 gap-x-5 gap-y-4 sm:grid-cols-2">
+        <!-- Prefijo -->
+        <div class="flex flex-col gap-1.5">
+          <label for="prefijo" class="resolucion-form__label">
+            {{ t().entities.resolucion.form.fields.prefijo }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <input
+            id="prefijo"
+            pInputText
+            type="text"
+            formControlName="prefijo"
+            maxlength="10"
+            fluid
+          />
+          <lib-field-error
+            [control]="form.controls.prefijo"
+            [messages]="{
+              required: t().entities.resolucion.form.validation.required,
+              maxlength: t().entities.resolucion.form.validation.prefijoMax,
+            }"
+          />
+        </div>
+
+        <!-- Número -->
+        <div class="flex flex-col gap-1.5">
+          <label for="numero" class="resolucion-form__label">
+            {{ t().entities.resolucion.form.fields.numero }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <input
+            id="numero"
+            pInputText
+            type="text"
+            inputmode="numeric"
+            formControlName="numero"
+            fluid
+          />
+          <lib-field-error
+            [control]="form.controls.numero"
+            [messages]="{
+              required: t().entities.resolucion.form.validation.required,
+              pattern: t().entities.resolucion.form.validation.numeroDigitos,
+            }"
+          />
+        </div>
+
+        <!-- Consecutivo desde -->
+        <div class="flex flex-col gap-1.5">
+          <label for="consecutivo_desde" class="resolucion-form__label">
+            {{ t().entities.resolucion.form.fields.consecutivoDesde }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <p-inputnumber
+            inputId="consecutivo_desde"
+            formControlName="consecutivo_desde"
+            [useGrouping]="false"
+            [min]="0"
+            [max]="2147483647"
+            [maxFractionDigits]="0"
+            [fluid]="true"
+            [invalid]="
+              form.controls.consecutivo_desde.invalid && form.controls.consecutivo_desde.touched
+            "
+          />
+          <lib-field-error
+            [control]="form.controls.consecutivo_desde"
+            [messages]="{
+              required: t().entities.resolucion.form.validation.required,
+              max: t().entities.resolucion.form.validation.consecutivoMax,
+            }"
+          />
+        </div>
+
+        <!-- Consecutivo hasta -->
+        <div class="flex flex-col gap-1.5">
+          <label for="consecutivo_hasta" class="resolucion-form__label">
+            {{ t().entities.resolucion.form.fields.consecutivoHasta }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <p-inputnumber
+            inputId="consecutivo_hasta"
+            formControlName="consecutivo_hasta"
+            [useGrouping]="false"
+            [min]="0"
+            [max]="2147483647"
+            [maxFractionDigits]="0"
+            [fluid]="true"
+            [invalid]="
+              (form.controls.consecutivo_hasta.invalid &&
+                form.controls.consecutivo_hasta.touched) ||
+              (!!form.errors?.['consecutivosInvalidos'] &&
+                (form.controls.consecutivo_hasta.dirty || form.controls.consecutivo_desde.dirty))
+            "
+          />
+          <lib-field-error
+            [control]="form.controls.consecutivo_hasta"
+            [messages]="{
+              required: t().entities.resolucion.form.validation.required,
+              max: t().entities.resolucion.form.validation.consecutivoMax,
+            }"
+          />
+          @if (
+            form.errors?.['consecutivosInvalidos'] &&
+            (form.controls.consecutivo_hasta.dirty || form.controls.consecutivo_desde.dirty)
+          ) {
+            <small class="text-[0.78rem] text-red-500">
+              {{ t().entities.resolucion.form.validation.consecutivoOrden }}
+            </small>
+          }
+        </div>
+
+        <!-- Fecha desde -->
+        <div class="flex flex-col gap-1.5">
+          <label for="fecha_desde" class="resolucion-form__label">
+            {{ t().entities.resolucion.form.fields.fechaDesde }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <p-datepicker
+            inputId="fecha_desde"
+            formControlName="fecha_desde"
+            dateFormat="yy-mm-dd"
+            [showIcon]="true"
+            appendTo="body"
+            [fluid]="true"
+            [invalid]="form.controls.fecha_desde.invalid && form.controls.fecha_desde.touched"
+          />
+        </div>
+
+        <!-- Fecha hasta -->
+        <div class="flex flex-col gap-1.5">
+          <label for="fecha_hasta" class="resolucion-form__label">
+            {{ t().entities.resolucion.form.fields.fechaHasta }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <p-datepicker
+            inputId="fecha_hasta"
+            formControlName="fecha_hasta"
+            dateFormat="yy-mm-dd"
+            [showIcon]="true"
+            appendTo="body"
+            [fluid]="true"
+            [invalid]="
+              (form.controls.fecha_hasta.invalid && form.controls.fecha_hasta.touched) ||
+              (!!form.errors?.['rangoFechasInvalido'] &&
+                (form.controls.fecha_hasta.dirty || form.controls.fecha_desde.dirty))
+            "
+          />
+          @if (
+            form.errors?.['rangoFechasInvalido'] &&
+            (form.controls.fecha_hasta.dirty || form.controls.fecha_desde.dirty)
+          ) {
+            <small class="text-[0.78rem] text-red-500">
+              {{ t().entities.resolucion.form.validation.fechaOrden }}
+            </small>
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+</form>

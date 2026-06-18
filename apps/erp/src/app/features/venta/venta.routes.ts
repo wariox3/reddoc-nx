@@ -62,6 +62,16 @@ export const VENTA_ROUTES: Route[] = [
             (m) => m.PENDIENTE_FACTURAR_ROUTES,
           ),
       },
+      {
+        // Master compartido: el código vive en general/masters/resolucion, pero
+        // se enruta desde Venta con `data: { tipo: 'venta' }` para fijar el flag.
+        path: 'resoluciones',
+        data: { tipo: 'venta' },
+        loadChildren: () =>
+          import('../general/masters/resolucion/resolucion.routes').then(
+            (m) => m.RESOLUCION_ROUTES,
+          ),
+      },
     ],
   },
 ];

@@ -364,6 +364,63 @@ export const en: AppDict = {
         },
       },
     },
+    resolucion: {
+      name: 'Resolutions',
+      searchPlaceholder: 'Search by prefix…',
+      columns: {
+        id: 'ID',
+        prefijo: 'Prefix',
+        numero: 'Number',
+        consecutivoDesde: 'Consecutive from',
+        consecutivoHasta: 'Consecutive to',
+        fechaDesde: 'Date from',
+        fechaHasta: 'Date to',
+      },
+      form: {
+        createTitle: 'New resolution',
+        editTitle: 'Edit resolution',
+        createSubtitle: 'Fill in the resolution information',
+        editSubtitle: 'Update the resolution information',
+        fields: {
+          prefijo: 'Prefix',
+          numero: 'Number',
+          consecutivoDesde: 'Consecutive from',
+          consecutivoHasta: 'Consecutive to',
+          fechaDesde: 'Date from',
+          fechaHasta: 'Date to',
+        },
+        validation: {
+          required: 'This field is required',
+          prefijoMax: 'Maximum 10 characters',
+          numeroDigitos: 'Only numbers are allowed',
+          consecutivoMax: 'The value is too large',
+          consecutivoOrden: 'Consecutive to cannot be lower than consecutive from',
+          fechaOrden: 'Date to cannot be earlier than date from',
+        },
+        toasts: {
+          createSuccess: {
+            title: 'Resolution created',
+            desc: 'The resolution was created successfully',
+          },
+          editSuccess: {
+            title: 'Resolution updated',
+            desc: 'Changes were saved successfully',
+          },
+          createError: { title: 'Create error', desc: 'The resolution could not be created' },
+          editError: { title: 'Save error', desc: 'The changes could not be saved' },
+          loadError: { title: 'Load error', desc: 'The resolution could not be loaded' },
+        },
+      },
+      detail: {
+        notFound: {
+          title: 'Resolution not found',
+          desc: 'The resolution you are looking for does not exist or was deleted.',
+        },
+        toasts: {
+          loadError: { title: 'Load error', desc: 'The resolution could not be loaded' },
+        },
+      },
+    },
     contacto: {
       name: 'Contacts',
       searchPlaceholder: 'Search by name…',

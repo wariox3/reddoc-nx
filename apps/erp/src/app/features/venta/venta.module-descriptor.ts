@@ -67,5 +67,17 @@ export const VENTA_MODULE: ErpModuleDescriptor = {
         },
       ],
     },
+    {
+      kind: 'accordion',
+      id: 'venta-administracion',
+      labelKey: 'layout.nav.sections.master',
+      iconClass: 'pi pi-folder',
+      defaultExpanded: false,
+      groups: [
+        {
+          items: [{ labelKey: 'entities.resolucion.name', path: 'resoluciones' }],
+        },
+      ],
+    },
   ],
 };

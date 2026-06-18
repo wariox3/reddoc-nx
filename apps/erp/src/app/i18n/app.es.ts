@@ -364,6 +364,63 @@ export const es: AppDict = {
         },
       },
     },
+    resolucion: {
+      name: 'Resoluciones',
+      searchPlaceholder: 'Buscar por prefijo…',
+      columns: {
+        id: 'ID',
+        prefijo: 'Prefijo',
+        numero: 'Número',
+        consecutivoDesde: 'Consecutivo desde',
+        consecutivoHasta: 'Consecutivo hasta',
+        fechaDesde: 'Fecha desde',
+        fechaHasta: 'Fecha hasta',
+      },
+      form: {
+        createTitle: 'Nueva resolución',
+        editTitle: 'Editar resolución',
+        createSubtitle: 'Completá la información de la resolución',
+        editSubtitle: 'Modificá la información de la resolución',
+        fields: {
+          prefijo: 'Prefijo',
+          numero: 'Número',
+          consecutivoDesde: 'Consecutivo desde',
+          consecutivoHasta: 'Consecutivo hasta',
+          fechaDesde: 'Fecha desde',
+          fechaHasta: 'Fecha hasta',
+        },
+        validation: {
+          required: 'Este campo es requerido',
+          prefijoMax: 'Máximo 10 caracteres',
+          numeroDigitos: 'Solo se permiten números',
+          consecutivoMax: 'El valor es demasiado grande',
+          consecutivoOrden: 'El consecutivo hasta no puede ser menor que el desde',
+          fechaOrden: 'La fecha hasta no puede ser anterior a la fecha desde',
+        },
+        toasts: {
+          createSuccess: {
+            title: 'Resolución creada',
+            desc: 'La resolución se creó correctamente',
+          },
+          editSuccess: {
+            title: 'Resolución actualizada',
+            desc: 'Los cambios se guardaron correctamente',
+          },
+          createError: { title: 'Error al crear', desc: 'No se pudo crear la resolución' },
+          editError: { title: 'Error al guardar', desc: 'No se pudieron guardar los cambios' },
+          loadError: { title: 'Error al cargar', desc: 'No se pudo cargar la resolución' },
+        },
+      },
+      detail: {
+        notFound: {
+          title: 'Resolución no encontrada',
+          desc: 'La resolución que buscás no existe o fue eliminada.',
+        },
+        toasts: {
+          loadError: { title: 'Error al cargar', desc: 'No se pudo cargar la resolución' },
+        },
+      },
+    },
     contacto: {
       name: 'Contactos',
       searchPlaceholder: 'Buscar por nombre…',
