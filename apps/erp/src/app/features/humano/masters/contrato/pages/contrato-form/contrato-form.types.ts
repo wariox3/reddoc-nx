@@ -19,8 +19,7 @@ export interface ContratoFormRawValue {
   readonly fecha_hasta: Date | null;
   // Remuneración
   readonly salario: number | null;
-  readonly auxilio_transporte: number | null;
-  readonly aplica_auxilio_transporte: boolean | null;
+  readonly auxilio_transporte: boolean | null;
   readonly salario_integral: boolean | null;
   readonly tipo_costo: ErpSelectOption | null;
   readonly grupo_contabilidad: ErpSelectOption | null;

@@ -634,10 +634,8 @@ export interface AppDict extends AuthTranslationsHost {
       name: string;
       searchPlaceholder: string;
       columns: {
+        empleado: string;
         contratoTipo: string;
-        codigo: string;
-        identificacion: string;
-        nombre: string;
         fechaDesde: string;
         fechaHasta: string;
         grupo: string;
@@ -675,7 +673,6 @@ export interface AppDict extends AuthTranslationsHost {
           fechaDesde: string;
           fechaHasta: string;
           salario: string;
-          auxilioTransporte: string;
           aplicaAuxilioTransporte: string;
           salarioIntegral: string;
           tipoCosto: string;

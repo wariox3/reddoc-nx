@@ -57,7 +57,6 @@
           <app-empleado-autocomplete
             inputId="contacto"
             formControlName="contacto"
-            [suggestedIndex]="0"
             [placeholder]="t().entities.contrato.form.fields.contactoPlaceholder"
             [invalid]="form.controls.contacto.invalid && form.controls.contacto.touched"
           />
@@ -209,21 +208,6 @@
         </div>
 
         <div class="flex flex-col gap-1.5">
-          <label for="auxilio_transporte" class="contrato-form__label">
-            {{ t().entities.contrato.form.fields.auxilioTransporte }}
-          </label>
-          <p-inputnumber
-            inputId="auxilio_transporte"
-            formControlName="auxilio_transporte"
-            mode="decimal"
-            [minFractionDigits]="0"
-            [maxFractionDigits]="2"
-            prefix="$ "
-            [fluid]="true"
-          />
-        </div>
-
-        <div class="flex flex-col gap-1.5">
           <label for="tipo_costo" class="contrato-form__label">
             {{ t().entities.contrato.form.fields.tipoCosto }}
           </label>
@@ -247,30 +231,29 @@
           />
         </div>
 
-        <label
-          for="aplica_auxilio_transporte"
-          class="flex cursor-pointer items-center gap-2 self-end pb-2"
-        >
-          <p-checkbox
-            inputId="aplica_auxilio_transporte"
-            formControlName="aplica_auxilio_transporte"
-            [binary]="true"
-          />
-          <span class="text-[0.85rem] text-brand-text">
-            {{ t().entities.contrato.form.fields.aplicaAuxilioTransporte }}
-          </span>
-        </label>
+        <div class="flex flex-wrap items-center gap-x-8 gap-y-3 sm:col-span-2">
+          <label for="auxilio_transporte" class="flex cursor-pointer items-center gap-2">
+            <p-checkbox
+              inputId="auxilio_transporte"
+              formControlName="auxilio_transporte"
+              [binary]="true"
+            />
+            <span class="text-[0.85rem] text-brand-text">
+              {{ t().entities.contrato.form.fields.aplicaAuxilioTransporte }}
+            </span>
+          </label>
 
-        <label for="salario_integral" class="flex cursor-pointer items-center gap-2 self-end pb-2">
-          <p-checkbox
-            inputId="salario_integral"
-            formControlName="salario_integral"
-            [binary]="true"
-          />
-          <span class="text-[0.85rem] text-brand-text">
-            {{ t().entities.contrato.form.fields.salarioIntegral }}
-          </span>
-        </label>
+          <label for="salario_integral" class="flex cursor-pointer items-center gap-2">
+            <p-checkbox
+              inputId="salario_integral"
+              formControlName="salario_integral"
+              [binary]="true"
+            />
+            <span class="text-[0.85rem] text-brand-text">
+              {{ t().entities.contrato.form.fields.salarioIntegral }}
+            </span>
+          </label>
+        </div>
       </div>
     </div>
   </section>

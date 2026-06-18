@@ -42,8 +42,9 @@ import { contratoToFormValue, formValueToPayload } from '../../contrato.mapper';
  * booleano correspondiente (`salud` / `pension` / `cesantias` / `caja`).
  *
  * Regla de negocio del tipo de contrato: si es indefinido (id
- * `CONTRATO_TIPO_INDEFINIDO_ID`) se oculta `fecha_hasta` y se le quita el
- * requerido. Solo en alta, al iniciar, se sugiere la fecha de hoy en
+ * `CONTRATO_TIPO_INDEFINIDO_ID`) se oculta `fecha_hasta` en la UI y se le quita
+ * el requerido, pero se le fija la fecha de hoy porque el backend no acepta
+ * nulo. Solo en alta, al iniciar, se sugiere la fecha de hoy en
  * `fecha_desde` / `fecha_hasta`.
  */
 @Component({
@@ -121,8 +122,7 @@ export class ContratoFormComponent implements OnInit {
     fecha_hasta: this.fb.control<Date | null>(null, Validators.required),
     // Remuneración
     salario: this.fb.control<number | null>(null, Validators.required),
-    auxilio_transporte: this.fb.control<number | null>(null),
-    aplica_auxilio_transporte: this.fb.control<boolean>(true),
+    auxilio_transporte: this.fb.control<boolean>(true),
     salario_integral: this.fb.control<boolean>(false),
     tipo_costo: this.fb.control<ErpSelectOption | null>(null),
     grupo_contabilidad: this.fb.control<ErpSelectOption | null>(null),
@@ -167,15 +167,16 @@ export class ContratoFormComponent implements OnInit {
 
   /**
    * Regla de negocio según el tipo de contrato: si es indefinido oculta
-   * `fecha_hasta` (la limpia y le quita el requerido); cualquier otro tipo la
-   * vuelve requerida.
+   * `fecha_hasta` en la UI y le quita el requerido, pero el backend exige un
+   * valor no nulo, así que se fija la fecha de hoy como placeholder; cualquier
+   * otro tipo la vuelve requerida.
    */
   private onContratoTipoChange(value: ErpSelectOption | null): void {
     this.contratoTipo.set(value);
     const fechaHasta = this.form.controls.fecha_hasta;
 
     if (this.isIndefinido()) {
-      fechaHasta.reset(null, { emitEvent: false });
+      fechaHasta.setValue(startOfToday(), { emitEvent: false });
       fechaHasta.clearValidators();
     } else {
       fechaHasta.setValidators(Validators.required);
@@ -237,20 +238,18 @@ export class ContratoFormComponent implements OnInit {
   }
 
   /**
-   * Pre-llena salario y auxilio de transporte (solo en alta) con los valores de
-   * configuración del sistema. Mismo patrón que `servicio-documento-form`:
-   * consume el `ConfiguracionService` genérico, sin duplicar.
+   * Pre-llena el salario (solo en alta) con el valor de configuración del
+   * sistema. Mismo patrón que `servicio-documento-form`: consume el
+   * `ConfiguracionService` genérico, sin duplicar.
    */
   private prefillRemuneracion(): void {
     this.configuracion
-      .getCampos(['hum_salario_minimo', 'hum_auxilio_transporte'])
+      .getCampos(['hum_salario_minimo'])
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (campos) => {
           const salario = campos['hum_salario_minimo'];
-          const auxilio = campos['hum_auxilio_transporte'];
           if (salario != null) this.form.controls.salario.setValue(salario);
-          if (auxilio != null) this.form.controls.auxilio_transporte.setValue(auxilio);
         },
         error: () => {
           // Pre-llenado opcional: si falla, el usuario digita los valores manualmente.
