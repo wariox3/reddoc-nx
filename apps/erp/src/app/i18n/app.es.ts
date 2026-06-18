@@ -230,6 +230,43 @@ export const es: AppDict = {
     humano: { name: 'Humano' },
   },
   entities: {
+    asesor: {
+      name: 'Asesores',
+      searchPlaceholder: 'Buscar por nombre…',
+      columns: {
+        id: 'ID',
+        nombreCorto: 'Nombre corto',
+        celular: 'Celular',
+        correo: 'Correo',
+      },
+      form: {
+        createTitle: 'Nuevo asesor',
+        editTitle: 'Editar asesor',
+        createSubtitle: 'Completá la información del asesor',
+        editSubtitle: 'Modificá la información del asesor',
+        fields: { nombreCorto: 'Nombre corto', celular: 'Celular', correo: 'Correo' },
+        validation: { required: 'Este campo es requerido', email: 'El correo no es válido' },
+        toasts: {
+          createSuccess: { title: 'Asesor creado', desc: 'El asesor se creó correctamente' },
+          editSuccess: {
+            title: 'Asesor actualizado',
+            desc: 'Los cambios se guardaron correctamente',
+          },
+          createError: { title: 'Error al crear', desc: 'No se pudo crear el asesor' },
+          editError: { title: 'Error al guardar', desc: 'No se pudieron guardar los cambios' },
+          loadError: { title: 'Error al cargar', desc: 'No se pudo cargar el asesor' },
+        },
+      },
+      detail: {
+        notFound: {
+          title: 'Asesor no encontrado',
+          desc: 'El asesor que buscás no existe o fue eliminado.',
+        },
+        toasts: {
+          loadError: { title: 'Error al cargar', desc: 'No se pudo cargar el asesor' },
+        },
+      },
+    },
     contacto: {
       name: 'Contactos',
       searchPlaceholder: 'Buscar por nombre…',

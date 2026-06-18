@@ -230,6 +230,43 @@ export const en: AppDict = {
     humano: { name: 'Human' },
   },
   entities: {
+    asesor: {
+      name: 'Advisors',
+      searchPlaceholder: 'Search by name…',
+      columns: {
+        id: 'ID',
+        nombreCorto: 'Short name',
+        celular: 'Mobile',
+        correo: 'Email',
+      },
+      form: {
+        createTitle: 'New advisor',
+        editTitle: 'Edit advisor',
+        createSubtitle: 'Fill in the advisor information',
+        editSubtitle: 'Update the advisor information',
+        fields: { nombreCorto: 'Short name', celular: 'Mobile', correo: 'Email' },
+        validation: { required: 'This field is required', email: 'The email is not valid' },
+        toasts: {
+          createSuccess: { title: 'Advisor created', desc: 'The advisor was created successfully' },
+          editSuccess: {
+            title: 'Advisor updated',
+            desc: 'Changes were saved successfully',
+          },
+          createError: { title: 'Create error', desc: 'The advisor could not be created' },
+          editError: { title: 'Save error', desc: 'The changes could not be saved' },
+          loadError: { title: 'Load error', desc: 'The advisor could not be loaded' },
+        },
+      },
+      detail: {
+        notFound: {
+          title: 'Advisor not found',
+          desc: 'The advisor you are looking for does not exist or was deleted.',
+        },
+        toasts: {
+          loadError: { title: 'Load error', desc: 'The advisor could not be loaded' },
+        },
+      },
+    },
     contacto: {
       name: 'Contacts',
       searchPlaceholder: 'Search by name…',
