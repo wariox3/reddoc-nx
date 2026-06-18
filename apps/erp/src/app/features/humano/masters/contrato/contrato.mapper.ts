@@ -40,10 +40,8 @@ export function contratoToFormValue(c: Contrato): Partial<ContratoFormRawValue> 
     salario_integral: c.salario_integral,
     tipo_costo:
       c.tipo_costo != null ? { id: c.tipo_costo, nombre: c.tipo_costo_nombre ?? '' } : null,
-    grupo_contabilidad:
-      c.grupo_contabilidad != null
-        ? { id: c.grupo_contabilidad, nombre: c.grupo_contabilidad_nombre ?? '' }
-        : null,
+    centro_costo:
+      c.centro_costo != null ? { id: c.centro_costo, nombre: c.centro_costo_nombre ?? '' } : null,
     salud: c.salud != null ? { id: c.salud, nombre: c.salud_nombre ?? '' } : null,
     entidad_salud:
       c.entidad_salud != null
@@ -108,7 +106,7 @@ export function formValueToPayload(v: ContratoFormRawValue): ContratoPayload {
     entidad_pension: v.entidad_pension?.id ?? null,
     entidad_salud: v.entidad_salud?.id ?? null,
     grupo: v.grupo?.id ?? null,
-    grupo_contabilidad: v.grupo_contabilidad?.id ?? null,
+    centro_costo: v.centro_costo?.id ?? null,
     motivo_terminacion: v.motivo_terminacion?.id ?? null,
     pension: v.pension?.id ?? null,
     riesgo: v.riesgo?.id ?? null,

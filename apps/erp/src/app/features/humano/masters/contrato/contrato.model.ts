@@ -55,8 +55,8 @@ export interface Contrato {
   readonly tiempo_nombre: string | null;
   readonly tipo_costo: number | null;
   readonly tipo_costo_nombre: string | null;
-  readonly grupo_contabilidad: number | null;
-  readonly grupo_contabilidad_nombre: string | null;
+  readonly centro_costo: number | null;
+  readonly centro_costo_nombre: string | null;
   readonly motivo_terminacion: number | null;
   readonly motivo_terminacion_nombre: string | null;
 }
@@ -87,7 +87,7 @@ export interface ContratoPayload {
   readonly entidad_pension: number | null;
   readonly entidad_salud: number | null;
   readonly grupo: number | null;
-  readonly grupo_contabilidad: number | null;
+  readonly centro_costo: number | null;
   readonly motivo_terminacion: number | null;
   readonly pension: number | null;
   readonly riesgo: number | null;

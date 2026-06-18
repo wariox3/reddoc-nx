@@ -220,13 +220,13 @@
         </div>
 
         <div class="flex flex-col gap-1.5">
-          <label for="grupo_contabilidad" class="contrato-form__label">
-            {{ t().entities.contrato.form.fields.grupoContabilidad }}
+          <label for="centro_costo" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.centroCosto }}
           </label>
           <app-api-select
-            inputId="grupo_contabilidad"
-            formControlName="grupo_contabilidad"
-            endpoint="/contabilidad/grupo/seleccionar/"
+            inputId="centro_costo"
+            formControlName="centro_costo"
+            endpoint="/contabilidad/centro-costo/seleccionar/"
             [params]="{ limit: '100' }"
           />
         </div>

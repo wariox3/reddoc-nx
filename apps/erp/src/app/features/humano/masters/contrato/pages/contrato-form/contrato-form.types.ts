@@ -22,7 +22,7 @@ export interface ContratoFormRawValue {
   readonly auxilio_transporte: boolean | null;
   readonly salario_integral: boolean | null;
   readonly tipo_costo: ErpSelectOption | null;
-  readonly grupo_contabilidad: ErpSelectOption | null;
+  readonly centro_costo: ErpSelectOption | null;
   // Seguridad social
   readonly salud: ErpSelectOption | null;
   readonly entidad_salud: ErpSelectOption | null;

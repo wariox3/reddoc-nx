@@ -898,7 +898,7 @@ export const en: AppDict = {
           aplicaAuxilioTransporte: 'Applies transport allowance',
           salarioIntegral: 'Integral salary',
           tipoCosto: 'Cost type',
-          grupoContabilidad: 'Accounting group',
+          centroCosto: 'Cost center',
           salud: 'Health',
           entidadSalud: 'Health entity',
           pension: 'Pension',

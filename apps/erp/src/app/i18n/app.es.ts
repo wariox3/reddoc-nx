@@ -929,7 +929,7 @@ export const es: AppDict = {
           aplicaAuxilioTransporte: 'Aplica auxilio de transporte',
           salarioIntegral: 'Salario integral',
           tipoCosto: 'Tipo de costo',
-          grupoContabilidad: 'Grupo de contabilidad',
+          centroCosto: 'Centro de costo',
           salud: 'Salud',
           entidadSalud: 'Entidad de salud',
           pension: 'Pensión',

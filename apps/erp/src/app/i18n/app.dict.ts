@@ -676,7 +676,7 @@ export interface AppDict extends AuthTranslationsHost {
           aplicaAuxilioTransporte: string;
           salarioIntegral: string;
           tipoCosto: string;
-          grupoContabilidad: string;
+          centroCosto: string;
           salud: string;
           entidadSalud: string;
           pension: string;

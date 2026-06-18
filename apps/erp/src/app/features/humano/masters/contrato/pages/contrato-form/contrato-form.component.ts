@@ -36,7 +36,7 @@ import { contratoToFormValue, formValueToPayload } from '../../contrato.mapper';
  * (`contacto` usa `<app-empleado-autocomplete>`, que pinta la identificación al lado;
  * `ciudad_contrato` / `ciudad_labora` usan `<app-api-autocomplete>` con búsqueda contra
  * `/general/ciudad/seleccionar/`). Las FK de humano apuntan a `/humano/<slug>/seleccionar/`
- * y `grupo_contabilidad` a `/contabilidad/grupo/seleccionar/`. Las cuatro entidades de
+ * y `centro_costo` a `/contabilidad/centro-costo/seleccionar/`. Las cuatro entidades de
  * seguridad social (`entidad_salud`, `entidad_pension`, `entidad_cesantias`, `entidad_caja`)
  * comparten el endpoint `/humano/entidad/seleccionar/` discriminado por el query param
  * booleano correspondiente (`salud` / `pension` / `cesantias` / `caja`).
@@ -125,7 +125,7 @@ export class ContratoFormComponent implements OnInit {
     auxilio_transporte: this.fb.control<boolean>(true),
     salario_integral: this.fb.control<boolean>(false),
     tipo_costo: this.fb.control<ErpSelectOption | null>(null),
-    grupo_contabilidad: this.fb.control<ErpSelectOption | null>(null),
+    centro_costo: this.fb.control<ErpSelectOption | null>(null),
     // Seguridad social
     salud: this.fb.control<ErpSelectOption | null>(null, Validators.required),
     entidad_salud: this.fb.control<ErpSelectOption | null>(null, Validators.required),
