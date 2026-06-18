@@ -145,6 +145,9 @@ export const en: AppDict = {
   layout: {
     menuLabel: 'Open menu',
     drawerHeader: 'Menu',
+    tenantBadge: {
+      ariaLabel: 'Current company',
+    },
     nav: {
       dashboard: 'Dashboard',
       account: 'Manage account',

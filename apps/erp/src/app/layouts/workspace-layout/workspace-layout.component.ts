@@ -7,6 +7,7 @@ import { UserMenuComponent } from '../../shared/user-menu/user-menu.component';
 import { ActiveModuleStore } from '@erp/core/erp-modules';
 import type { AppDict } from '@erp/i18n';
 import { ModuleBarComponent } from '../module-bar/module-bar.component';
+import { TenantBadgeComponent } from '../tenant-badge/tenant-badge.component';
 import type {
   SidebarAccordion,
   SidebarLeafItem,
@@ -32,6 +33,7 @@ import type {
     DrawerModule,
     UserMenuComponent,
     ModuleBarComponent,
+    TenantBadgeComponent,
   ],
   templateUrl: './workspace-layout.component.html',
   styleUrl: './workspace-layout.component.scss',

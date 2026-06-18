@@ -118,6 +118,9 @@ export interface AppDict extends AuthTranslationsHost {
   layout: {
     menuLabel: string;
     drawerHeader: string;
+    tenantBadge: {
+      ariaLabel: string;
+    };
     nav: {
       dashboard: string;
       account: string;

@@ -36,6 +36,18 @@
     display: block;
   }
 
+  &__divider {
+    width: 1px;
+    height: 20px;
+    flex-shrink: 0;
+    background: rgba(19 38 60 / 0.12);
+  }
+
+  // Sin contenedor (el badge no renderiza) no debe quedar un divisor colgando.
+  &__brand:not(:has(.tenant-badge)) &__divider {
+    display: none;
+  }
+
   &__actions {
     display: flex;
     align-items: center;
