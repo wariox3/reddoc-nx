@@ -214,6 +214,7 @@
           <app-api-select
             inputId="tipo_costo"
             formControlName="tipo_costo"
+            [suggestedIndex]="0"
             endpoint="/humano/tipo-costo/seleccionar/"
             [params]="{ limit: '100' }"
           />
