@@ -346,6 +346,7 @@
             <app-api-select
               inputId="plazo_pago"
               formControlName="plazo_pago"
+              [suggestedIndex]="0"
               endpoint="/general/plazo-pago/seleccionar/"
               [invalid]="form.controls.plazo_pago.invalid && form.controls.plazo_pago.touched"
             />
