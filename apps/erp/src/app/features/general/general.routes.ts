@@ -31,9 +31,13 @@ export const GENERAL_ROUTES: Route[] = [
         path: 'asesores',
         loadChildren: () => import('./masters/asesor/asesor.routes').then((m) => m.ASESOR_ROUTES),
       },
-      // Futuros: sedes, almacenes, cuentas-banco, formas-pago, precios,
-      // resoluciones. Cada uno delega a su
-      // `masters/<entity>/<entity>.routes.ts`.
+      {
+        path: 'cuentas-banco',
+        loadChildren: () =>
+          import('./masters/cuenta-banco/cuenta-banco.routes').then((m) => m.CUENTA_BANCO_ROUTES),
+      },
+      // Futuros: sedes, almacenes, formas-pago, precios, resoluciones.
+      // Cada uno delega a su `masters/<entity>/<entity>.routes.ts`.
     ],
   },
 ];

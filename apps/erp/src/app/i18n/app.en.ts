@@ -267,6 +267,57 @@ export const en: AppDict = {
         },
       },
     },
+    cuentaBanco: {
+      name: 'Bank accounts',
+      searchPlaceholder: 'Search by name…',
+      columns: {
+        id: 'ID',
+        nombre: 'Name',
+        tipo: 'Type',
+        clase: 'Class',
+        numeroCuenta: 'Account number',
+      },
+      form: {
+        createTitle: 'New bank account',
+        editTitle: 'Edit bank account',
+        createSubtitle: 'Fill in the bank account information',
+        editSubtitle: 'Update the bank account information',
+        sections: { contabilidad: 'Accounting' },
+        sectionsHint: { contabilidad: 'Associated ledger account (optional)' },
+        fields: {
+          nombre: 'Name',
+          tipo: 'Account type',
+          clase: 'Account class',
+          numeroCuenta: 'Account number',
+          cuenta: 'Account',
+          selectPlaceholder: 'Select an item',
+          cuentaPlaceholder: 'Search account…',
+        },
+        validation: { required: 'This field is required' },
+        toasts: {
+          createSuccess: {
+            title: 'Bank account created',
+            desc: 'The bank account was created successfully',
+          },
+          editSuccess: {
+            title: 'Bank account updated',
+            desc: 'Changes were saved successfully',
+          },
+          createError: { title: 'Create error', desc: 'The bank account could not be created' },
+          editError: { title: 'Save error', desc: 'The changes could not be saved' },
+          loadError: { title: 'Load error', desc: 'The bank account could not be loaded' },
+        },
+      },
+      detail: {
+        notFound: {
+          title: 'Bank account not found',
+          desc: 'The bank account you are looking for does not exist or was deleted.',
+        },
+        toasts: {
+          loadError: { title: 'Load error', desc: 'The bank account could not be loaded' },
+        },
+      },
+    },
     contacto: {
       name: 'Contacts',
       searchPlaceholder: 'Search by name…',

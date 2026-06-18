@@ -267,6 +267,57 @@ export const es: AppDict = {
         },
       },
     },
+    cuentaBanco: {
+      name: 'Cuentas de banco',
+      searchPlaceholder: 'Buscar por nombre…',
+      columns: {
+        id: 'ID',
+        nombre: 'Nombre',
+        tipo: 'Tipo',
+        clase: 'Clase',
+        numeroCuenta: 'Número de cuenta',
+      },
+      form: {
+        createTitle: 'Nueva cuenta de banco',
+        editTitle: 'Editar cuenta de banco',
+        createSubtitle: 'Completá la información de la cuenta de banco',
+        editSubtitle: 'Modificá la información de la cuenta de banco',
+        sections: { contabilidad: 'Contabilidad' },
+        sectionsHint: { contabilidad: 'Cuenta contable asociada (opcional)' },
+        fields: {
+          nombre: 'Nombre',
+          tipo: 'Tipo de cuenta',
+          clase: 'Clase de cuenta',
+          numeroCuenta: 'Número de cuenta',
+          cuenta: 'Cuenta',
+          selectPlaceholder: 'Selecciona un elemento',
+          cuentaPlaceholder: 'Buscar cuenta…',
+        },
+        validation: { required: 'Este campo es requerido' },
+        toasts: {
+          createSuccess: {
+            title: 'Cuenta de banco creada',
+            desc: 'La cuenta de banco se creó correctamente',
+          },
+          editSuccess: {
+            title: 'Cuenta de banco actualizada',
+            desc: 'Los cambios se guardaron correctamente',
+          },
+          createError: { title: 'Error al crear', desc: 'No se pudo crear la cuenta de banco' },
+          editError: { title: 'Error al guardar', desc: 'No se pudieron guardar los cambios' },
+          loadError: { title: 'Error al cargar', desc: 'No se pudo cargar la cuenta de banco' },
+        },
+      },
+      detail: {
+        notFound: {
+          title: 'Cuenta de banco no encontrada',
+          desc: 'La cuenta de banco que buscás no existe o fue eliminada.',
+        },
+        toasts: {
+          loadError: { title: 'Error al cargar', desc: 'No se pudo cargar la cuenta de banco' },
+        },
+      },
+    },
     contacto: {
       name: 'Contactos',
       searchPlaceholder: 'Buscar por nombre…',
