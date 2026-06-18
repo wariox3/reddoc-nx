@@ -1407,11 +1407,11 @@ export const es: AppDict = {
       subtitle: 'Configurá el nuevo espacio de trabajo',
       fields: {
         name: 'Nombre del contenedor',
-        namePlaceholder: 'Ej: Acme Corp',
+        namePlaceholder: 'Acme Corp',
         phone: 'Teléfono',
-        phonePlaceholder: 'Ej: +54 9 11 1234-5678',
+        phonePlaceholder: '3153334455',
         email: 'Correo electrónico',
-        emailPlaceholder: 'Ej: contacto@empresa.com',
+        emailPlaceholder: 'contacto@empresa.com',
       },
       validation: {
         nameRequired: 'El nombre es obligatorio.',

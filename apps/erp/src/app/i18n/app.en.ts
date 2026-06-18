@@ -1373,11 +1373,11 @@ export const en: AppDict = {
       subtitle: 'Configure the new workspace',
       fields: {
         name: 'Company name',
-        namePlaceholder: 'E.g. Acme Corp',
+        namePlaceholder: 'Acme Corp',
         phone: 'Phone',
-        phonePlaceholder: 'E.g. +1 555 123-4567',
+        phonePlaceholder: '3153334455',
         email: 'Email',
-        emailPlaceholder: 'E.g. contact@company.com',
+        emailPlaceholder: 'contact@company.com',
       },
       validation: {
         nameRequired: 'Name is required.',
