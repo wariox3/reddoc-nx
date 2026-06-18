@@ -852,6 +852,65 @@ export const en: AppDict = {
         },
       },
     },
+    cuenta: {
+      name: 'Accounts',
+      searchPlaceholder: 'Search by name…',
+      columns: {
+        codigo: 'Code',
+        nombre: 'Name',
+        clase: 'Class',
+        movimiento: 'Movement',
+      },
+      form: {
+        createTitle: 'New account',
+        editTitle: 'Edit account',
+        createSubtitle: 'Fill in the account information',
+        editSubtitle: 'Update the account information',
+        sections: {
+          clasificacion: 'Accounting classification',
+          comportamiento: 'Behavior',
+        },
+        sectionsHint: {
+          clasificacion: 'Class, group and account it belongs to',
+          comportamiento: 'Rules for using the account in movements',
+        },
+        fields: {
+          codigo: 'Code',
+          nombre: 'Name',
+          cuentaClase: 'Class',
+          cuentaGrupo: 'Group',
+          cuentaCuenta: 'Account',
+          selectPlaceholder: 'Select an item',
+          permiteMovimiento: 'Allows movement',
+          exigeBase: 'Requires base',
+          exigeContacto: 'Requires contact',
+          exigeGrupo: 'Requires group',
+        },
+        validation: {
+          required: 'This field is required',
+          maxlength: 'Exceeds the maximum length',
+          soloDigitos: 'The code can only contain digits',
+          longitudPar: 'The code must have an even length',
+          noIniciaCero: 'The first character cannot be "0"',
+        },
+        toasts: {
+          createSuccess: { title: 'Account created', desc: 'The account was created successfully' },
+          editSuccess: { title: 'Account updated', desc: 'The changes were saved successfully' },
+          createError: { title: 'Create error', desc: 'Could not create the account' },
+          editError: { title: 'Save error', desc: 'Could not save the changes' },
+          loadError: { title: 'Load error', desc: 'Could not load the account' },
+        },
+      },
+      detail: {
+        notFound: {
+          title: 'Account not found',
+          desc: 'The account you are looking for does not exist or was deleted.',
+        },
+        toasts: {
+          loadError: { title: 'Load error', desc: 'Could not load the account' },
+        },
+      },
+    },
     contrato: {
       name: 'Contracts',
       searchPlaceholder: 'Search by name…',

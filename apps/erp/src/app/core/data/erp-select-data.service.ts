@@ -3,10 +3,15 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { BaseHttpService, PaginatedResponse, ParamValue } from '@reddoc/core';
 
-/** Opción genérica `{ id, nombre }` que devuelven los endpoints `seleccionar`. */
+/**
+ * Opción genérica `{ id, nombre }` que devuelven los endpoints `seleccionar`.
+ * Admite campos extra del endpoint (p. ej. `codigo`), accesibles desde un
+ * `displayWith` para componer la etiqueta.
+ */
 export interface ErpSelectOption {
   readonly id: number;
   readonly nombre: string;
+  readonly [key: string]: unknown;
 }
 
 /**

@@ -12,6 +12,10 @@ export const CONTABILIDAD_ROUTES: Route[] = [
         loadChildren: () =>
           import('./masters/centro-costo/centro-costo.routes').then((m) => m.CENTRO_COSTO_ROUTES),
       },
+      {
+        path: 'cuentas',
+        loadChildren: () => import('./masters/cuenta/cuenta.routes').then((m) => m.CUENTA_ROUTES),
+      },
     ],
   },
 ];

@@ -883,6 +883,68 @@ export const es: AppDict = {
         },
       },
     },
+    cuenta: {
+      name: 'Cuentas',
+      searchPlaceholder: 'Buscar por nombre…',
+      columns: {
+        codigo: 'Código',
+        nombre: 'Nombre',
+        clase: 'Clase',
+        movimiento: 'Movimiento',
+      },
+      form: {
+        createTitle: 'Nueva cuenta',
+        editTitle: 'Editar cuenta',
+        createSubtitle: 'Completá la información de la cuenta',
+        editSubtitle: 'Modificá la información de la cuenta',
+        sections: {
+          clasificacion: 'Clasificación contable',
+          comportamiento: 'Comportamiento',
+        },
+        sectionsHint: {
+          clasificacion: 'Clase, grupo y cuenta a la que pertenece',
+          comportamiento: 'Reglas de uso de la cuenta en los movimientos',
+        },
+        fields: {
+          codigo: 'Código',
+          nombre: 'Nombre',
+          cuentaClase: 'Clase',
+          cuentaGrupo: 'Grupo',
+          cuentaCuenta: 'Cuenta',
+          selectPlaceholder: 'Selecciona un elemento',
+          permiteMovimiento: 'Permite movimiento',
+          exigeBase: 'Exige base',
+          exigeContacto: 'Exige contacto',
+          exigeGrupo: 'Exige grupo',
+        },
+        validation: {
+          required: 'Este campo es requerido',
+          maxlength: 'Supera la longitud máxima',
+          soloDigitos: 'El código solo puede contener números',
+          longitudPar: 'El código debe tener una longitud par',
+          noIniciaCero: 'El primer carácter no puede ser "0"',
+        },
+        toasts: {
+          createSuccess: { title: 'Cuenta creada', desc: 'La cuenta se creó correctamente' },
+          editSuccess: {
+            title: 'Cuenta actualizada',
+            desc: 'Los cambios se guardaron correctamente',
+          },
+          createError: { title: 'Error al crear', desc: 'No se pudo crear la cuenta' },
+          editError: { title: 'Error al guardar', desc: 'No se pudieron guardar los cambios' },
+          loadError: { title: 'Error al cargar', desc: 'No se pudo cargar la cuenta' },
+        },
+      },
+      detail: {
+        notFound: {
+          title: 'Cuenta no encontrada',
+          desc: 'La cuenta que buscás no existe o fue eliminada.',
+        },
+        toasts: {
+          loadError: { title: 'Error al cargar', desc: 'No se pudo cargar la cuenta' },
+        },
+      },
+    },
     contrato: {
       name: 'Contratos',
       searchPlaceholder: 'Buscar por nombre…',
