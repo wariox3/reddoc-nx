@@ -35,6 +35,18 @@ export const VENTA_MODULE: ErpModuleDescriptor = {
     },
     {
       kind: 'accordion',
+      id: 'venta-administracion',
+      labelKey: 'layout.nav.sections.master',
+      iconClass: 'pi pi-folder',
+      defaultExpanded: false,
+      groups: [
+        {
+          items: [{ labelKey: 'entities.resolucion.name', path: 'resoluciones' }],
+        },
+      ],
+    },
+    {
+      kind: 'accordion',
       id: 'venta-proceso',
       labelKey: 'layout.nav.sections.process',
       iconClass: 'pi pi-sync',
@@ -64,18 +76,6 @@ export const VENTA_MODULE: ErpModuleDescriptor = {
               path: 'informes/pendiente-facturar',
             },
           ],
-        },
-      ],
-    },
-    {
-      kind: 'accordion',
-      id: 'venta-administracion',
-      labelKey: 'layout.nav.sections.master',
-      iconClass: 'pi pi-folder',
-      defaultExpanded: false,
-      groups: [
-        {
-          items: [{ labelKey: 'entities.resolucion.name', path: 'resoluciones' }],
         },
       ],
     },
