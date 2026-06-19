@@ -857,6 +857,49 @@ export interface AppDict extends AuthTranslationsHost {
         toasts: { loadError: { title: string; desc: string } };
       };
     };
+    credito: {
+      name: string;
+      searchPlaceholder: string;
+      columns: {
+        contrato: string;
+        concepto: string;
+        inicio: string;
+        total: string;
+        cuota: string;
+        cantidadCuotas: string;
+        saldo: string;
+        inactivo: string;
+      };
+      form: {
+        createTitle: string;
+        editTitle: string;
+        createSubtitle: string;
+        editSubtitle: string;
+        sections: { datos: string; valores: string };
+        sectionsHint: { datos: string; valores: string };
+        fields: {
+          contrato: string;
+          contratoPlaceholder: string;
+          concepto: string;
+          conceptoPlaceholder: string;
+          inicio: string;
+          total: string;
+          cuota: string;
+          cantidadCuotas: string;
+          inactivo: string;
+          aplicaPrima: string;
+          aplicaCesantia: string;
+        };
+        validation: { required: string };
+        toasts: {
+          createSuccess: { title: string; desc: string };
+          editSuccess: { title: string; desc: string };
+          createError: { title: string; desc: string };
+          editError: { title: string; desc: string };
+          loadError: { title: string; desc: string };
+        };
+      };
+    };
     contrato: {
       name: string;
       searchPlaceholder: string;
