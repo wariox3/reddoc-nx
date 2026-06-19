@@ -23,6 +23,11 @@ export const HUMANO_ROUTES: Route[] = [
           import('./masters/adicional/adicional.routes').then((m) => m.ADICIONAL_ROUTES),
       },
       {
+        path: 'novedades',
+        loadChildren: () =>
+          import('./masters/novedad/novedad.routes').then((m) => m.NOVEDAD_ROUTES),
+      },
+      {
         path: 'cargos',
         loadChildren: () => import('./masters/cargo/cargo.routes').then((m) => m.CARGO_ROUTES),
       },
