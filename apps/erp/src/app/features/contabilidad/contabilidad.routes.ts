@@ -6,7 +6,7 @@ export const CONTABILIDAD_ROUTES: Route[] = [
     path: '',
     resolve: { _module: erpModuleResolver('contabilidad') },
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'centros-costo' },
+      { path: '', pathMatch: 'full', redirectTo: 'cuentas' },
       {
         path: 'centros-costo',
         loadChildren: () =>
