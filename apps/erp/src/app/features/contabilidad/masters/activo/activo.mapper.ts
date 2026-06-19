@@ -36,9 +36,7 @@ export function activoToFormValue(a: Activo): Partial<ActivoFormRawValue> {
     valor_compra: toFiniteNumber(a.valor_compra),
     depreciacion_inicial: toFiniteNumber(a.depreciacion_inicial),
     activo_grupo:
-      a.activo_grupo_id != null
-        ? { id: a.activo_grupo_id, nombre: a.activo_grupo_nombre ?? '' }
-        : null,
+      a.activo_grupo != null ? { id: a.activo_grupo, nombre: a.activo_grupo_nombre ?? '' } : null,
     metodo_depreciacion:
       a.metodo_depreciacion != null
         ? { id: a.metodo_depreciacion, nombre: a.metodo_depreciacion_nombre ?? '' }

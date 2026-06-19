@@ -1,12 +1,10 @@
 /**
  * Activo fijo (ConActivo).
  *
- * Shape de lectura del backend. Las FK llegan como id + companion `*_nombre`
- * (y `*_codigo` para las cuentas contables). Nota la asimetría heredada: el
- * grupo de activo se lee como `activo_grupo_id` pero se escribe como
- * `activo_grupo`. El centro de costos se lee/escribe como `centro_costo`. Los
- * montos (`valor_compra`, `depreciacion_inicial`) pueden llegar como string
- * Decimal → se normalizan a número en el mapper.
+ * Shape de lectura del backend. Las FK llegan como id pelado (sin sufijo `_id`)
+ * + companion `*_nombre` (y `*_codigo` para las cuentas contables). Los montos
+ * (`valor_compra`, `depreciacion_inicial`) pueden llegar como string Decimal →
+ * se normalizan a número en el mapper.
  */
 export interface Activo {
   readonly id: number;
@@ -21,8 +19,8 @@ export interface Activo {
   readonly duracion: number | null;
   readonly valor_compra: string | number | null;
   readonly depreciacion_inicial: string | number | null;
-  // Foreign keys (id) + companion `*_nombre` / `*_codigo`
-  readonly activo_grupo_id: number | null;
+  // Foreign keys (id pelado) + companion `*_nombre` / `*_codigo`
+  readonly activo_grupo: number | null;
   readonly activo_grupo_nombre?: string | null;
   readonly metodo_depreciacion: number | null;
   readonly metodo_depreciacion_nombre?: string | null;
