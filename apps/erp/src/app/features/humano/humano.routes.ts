@@ -1,12 +1,13 @@
 import type { Route } from '@angular/router';
-import { erpModuleResolver } from '@erp/core/erp-modules';
+import { erpModuleResolver, moduleIndexRoute } from '@erp/core/erp-modules';
+import { HUMANO_MODULE } from './humano.module-descriptor';
 
 export const HUMANO_ROUTES: Route[] = [
   {
     path: '',
     resolve: { _module: erpModuleResolver('humano') },
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'contratos' },
+      moduleIndexRoute(HUMANO_MODULE),
       {
         path: 'contratos',
         loadChildren: () =>

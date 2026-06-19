@@ -1,5 +1,6 @@
 import type { Route } from '@angular/router';
-import { erpModuleResolver } from '@erp/core/erp-modules';
+import { erpModuleResolver, moduleIndexRoute } from '@erp/core/erp-modules';
+import { GENERAL_MODULE } from './general.module-descriptor';
 
 /**
  * Rutas del módulo General.
@@ -17,7 +18,7 @@ export const GENERAL_ROUTES: Route[] = [
     path: '',
     resolve: { _module: erpModuleResolver('general') },
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'contactos' },
+      moduleIndexRoute(GENERAL_MODULE),
       {
         path: 'contactos',
         loadChildren: () =>

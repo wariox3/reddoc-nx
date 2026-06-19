@@ -1,12 +1,13 @@
 import type { Route } from '@angular/router';
-import { erpModuleResolver } from '@erp/core/erp-modules';
+import { erpModuleResolver, moduleIndexRoute } from '@erp/core/erp-modules';
+import { CONTABILIDAD_MODULE } from './contabilidad.module-descriptor';
 
 export const CONTABILIDAD_ROUTES: Route[] = [
   {
     path: '',
     resolve: { _module: erpModuleResolver('contabilidad') },
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'cuentas' },
+      moduleIndexRoute(CONTABILIDAD_MODULE),
       {
         path: 'centros-costo',
         loadChildren: () =>

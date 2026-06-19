@@ -1,5 +1,6 @@
 import type { Route } from '@angular/router';
-import { erpModuleResolver } from '@erp/core/erp-modules';
+import { erpModuleResolver, moduleIndexRoute } from '@erp/core/erp-modules';
+import { COMPRA_MODULE } from './compra.module-descriptor';
 
 /**
  * Rutas del módulo Compra.
@@ -14,7 +15,7 @@ export const COMPRA_ROUTES: Route[] = [
     path: '',
     resolve: { _module: erpModuleResolver('compra') },
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'resoluciones' },
+      moduleIndexRoute(COMPRA_MODULE),
       {
         path: 'resoluciones',
         data: { tipo: 'compra' },

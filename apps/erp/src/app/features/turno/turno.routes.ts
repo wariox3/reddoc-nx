@@ -1,5 +1,6 @@
 import type { Route } from '@angular/router';
-import { erpModuleResolver } from '@erp/core/erp-modules';
+import { erpModuleResolver, moduleIndexRoute } from '@erp/core/erp-modules';
+import { TURNO_MODULE } from './turno.module-descriptor';
 
 /**
  * Rutas del módulo Turno.
@@ -17,7 +18,7 @@ export const TURNO_ROUTES: Route[] = [
     path: '',
     resolve: { _module: erpModuleResolver('turno') },
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'puestos' },
+      moduleIndexRoute(TURNO_MODULE),
       {
         path: 'puestos',
         loadChildren: () => import('./masters/puesto/puesto.routes').then((m) => m.PUESTO_ROUTES),

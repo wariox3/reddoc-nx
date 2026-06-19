@@ -1,6 +1,7 @@
 import type { Route } from '@angular/router';
-import { erpModuleResolver } from '@erp/core/erp-modules';
+import { erpModuleResolver, moduleIndexRoute } from '@erp/core/erp-modules';
 import { activeModuleResolver } from '@erp/core/module-config';
+import { VENTA_MODULE } from './venta.module-descriptor';
 
 /**
  * Rutas del módulo Venta.
@@ -26,7 +27,7 @@ export const VENTA_ROUTES: Route[] = [
       _docModule: activeModuleResolver('venta'),
     },
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'contrato-servicio' },
+      moduleIndexRoute(VENTA_MODULE),
       {
         path: 'factura-venta',
         loadChildren: () =>
