@@ -59,8 +59,8 @@ function toOption(row: ContratoApiRow): ContratoOption {
  *
  * Autocomplete sobre `humano/contrato/seleccionar/?estado_terminado=False` que:
  * - Trae los primeros resultados al enfocar (sin término de búsqueda).
- * - Busca con el parámetro legacy `?contacto__nombre_corto__icontains=<query>` (el
- *   back resuelve contra el nombre corto del empleado del contrato).
+ * - Busca con el parámetro genérico DRF `?search=<query>` (el back resuelve contra
+ *   el nombre del empleado del contrato).
  * - Muestra cada contrato a **dos líneas** (nombre + `C.C. <identificación>`) para
  *   desambiguar homónimos.
  * - Pinta la cédula del empleado del contrato elegido en un **addon pegado** a la
@@ -225,7 +225,7 @@ export class ContratoAutocompleteComponent implements ControlValueAccessor {
     return this.dataService
       .fetchOptions<ContratoApiRow>(this.endpoint(), {
         ...this.extraParams(),
-        contacto__nombre_corto__icontains: query,
+        search: query,
       })
       .pipe(
         takeUntilDestroyed(this.destroyRef),
