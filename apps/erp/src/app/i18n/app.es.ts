@@ -1213,7 +1213,10 @@ export const es: AppDict = {
         total: 'Total',
         cuota: 'Valor cuota',
         cantidadCuotas: 'Cuotas',
+        abono: 'Abono',
         saldo: 'Saldo',
+        cuotaActual: 'Cuota actual',
+        pagado: 'Pagado',
         inactivo: 'Inactivo',
       },
       form: {
@@ -1249,6 +1252,70 @@ export const es: AppDict = {
           createError: { title: 'Error al crear', desc: 'No se pudo crear el crédito' },
           editError: { title: 'Error al guardar', desc: 'No se pudieron guardar los cambios' },
           loadError: { title: 'Error al cargar', desc: 'No se pudo cargar el crédito' },
+        },
+      },
+      detail: {
+        notFound: {
+          title: 'Crédito no encontrado',
+          desc: 'El crédito que buscás no existe o fue eliminado.',
+        },
+        toasts: {
+          loadError: { title: 'Error al cargar', desc: 'No se pudo cargar el crédito' },
+        },
+      },
+    },
+    adicional: {
+      name: 'Adicionales',
+      searchPlaceholder: 'Buscar por contrato…',
+      columns: {
+        contrato: 'Contrato',
+        concepto: 'Concepto',
+        valor: 'Valor',
+        horas: 'Horas',
+        detalle: 'Detalle',
+        aplicaDiaLaborado: 'Aplica día laborado',
+        permanente: 'Permanente',
+        inactivo: 'Inactivo',
+      },
+      form: {
+        createTitle: 'Nuevo adicional',
+        editTitle: 'Editar adicional',
+        createSubtitle: 'Completá la información del adicional',
+        editSubtitle: 'Modificá la información del adicional',
+        sections: { datos: 'Datos del adicional', valores: 'Valores y condiciones' },
+        sectionsHint: {
+          datos: 'Contrato y concepto',
+          valores: 'Valor, detalle y banderas',
+        },
+        fields: {
+          contrato: 'Contrato',
+          contratoPlaceholder: 'Buscar contrato…',
+          concepto: 'Concepto',
+          conceptoPlaceholder: 'Buscar concepto…',
+          valor: 'Valor',
+          detalle: 'Detalle',
+          aplicaDiaLaborado: 'Aplica día laborado',
+          inactivo: 'Inactivo',
+        },
+        validation: { required: 'Este campo es requerido' },
+        toasts: {
+          createSuccess: { title: 'Adicional creado', desc: 'El adicional se creó correctamente' },
+          editSuccess: {
+            title: 'Adicional actualizado',
+            desc: 'Los cambios se guardaron correctamente',
+          },
+          createError: { title: 'Error al crear', desc: 'No se pudo crear el adicional' },
+          editError: { title: 'Error al guardar', desc: 'No se pudieron guardar los cambios' },
+          loadError: { title: 'Error al cargar', desc: 'No se pudo cargar el adicional' },
+        },
+      },
+      detail: {
+        notFound: {
+          title: 'Adicional no encontrado',
+          desc: 'El adicional que buscás no existe o fue eliminado.',
+        },
+        toasts: {
+          loadError: { title: 'Error al cargar', desc: 'No se pudo cargar el adicional' },
         },
       },
     },

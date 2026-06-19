@@ -1179,7 +1179,10 @@ export const en: AppDict = {
         total: 'Total',
         cuota: 'Installment',
         cantidadCuotas: 'Installments',
+        abono: 'Paid amount',
         saldo: 'Balance',
+        cuotaActual: 'Current installment',
+        pagado: 'Paid',
         inactivo: 'Inactive',
       },
       form: {
@@ -1215,6 +1218,73 @@ export const en: AppDict = {
           createError: { title: 'Create error', desc: 'The credit could not be created' },
           editError: { title: 'Save error', desc: 'The changes could not be saved' },
           loadError: { title: 'Load error', desc: 'The credit could not be loaded' },
+        },
+      },
+      detail: {
+        notFound: {
+          title: 'Credit not found',
+          desc: 'The credit you are looking for does not exist or was deleted.',
+        },
+        toasts: {
+          loadError: { title: 'Load error', desc: 'The credit could not be loaded' },
+        },
+      },
+    },
+    adicional: {
+      name: 'Additionals',
+      searchPlaceholder: 'Search by contract…',
+      columns: {
+        contrato: 'Contract',
+        concepto: 'Concept',
+        valor: 'Amount',
+        horas: 'Hours',
+        detalle: 'Detail',
+        aplicaDiaLaborado: 'Applies to worked day',
+        permanente: 'Permanent',
+        inactivo: 'Inactive',
+      },
+      form: {
+        createTitle: 'New additional',
+        editTitle: 'Edit additional',
+        createSubtitle: 'Fill in the additional information',
+        editSubtitle: 'Update the additional information',
+        sections: { datos: 'Additional details', valores: 'Amounts and terms' },
+        sectionsHint: {
+          datos: 'Contract and concept',
+          valores: 'Amount, detail and flags',
+        },
+        fields: {
+          contrato: 'Contract',
+          contratoPlaceholder: 'Search contract…',
+          concepto: 'Concept',
+          conceptoPlaceholder: 'Search concept…',
+          valor: 'Amount',
+          detalle: 'Detail',
+          aplicaDiaLaborado: 'Applies to worked day',
+          inactivo: 'Inactive',
+        },
+        validation: { required: 'This field is required' },
+        toasts: {
+          createSuccess: {
+            title: 'Additional created',
+            desc: 'The additional was created successfully',
+          },
+          editSuccess: {
+            title: 'Additional updated',
+            desc: 'Changes were saved successfully',
+          },
+          createError: { title: 'Create error', desc: 'The additional could not be created' },
+          editError: { title: 'Save error', desc: 'The changes could not be saved' },
+          loadError: { title: 'Load error', desc: 'The additional could not be loaded' },
+        },
+      },
+      detail: {
+        notFound: {
+          title: 'Additional not found',
+          desc: 'The additional you are looking for does not exist or was deleted.',
+        },
+        toasts: {
+          loadError: { title: 'Load error', desc: 'The additional could not be loaded' },
         },
       },
     },

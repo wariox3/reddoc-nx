@@ -24,19 +24,19 @@ import {
   type RowActionInvokedEvent,
 } from '@reddoc/feature-base';
 import type { AppDict } from '@erp/i18n';
-import { CreditoService } from '../../credito.service';
-import type { Credito } from '../../credito.model';
+import { AdicionalService } from '../../adicional.service';
+import type { Adicional } from '../../adicional.model';
 import {
-  CREDITOS_COLUMNS,
-  CREDITOS_FILTER_FIELDS,
-  CREDITOS_FILTERS_STORAGE_KEY,
-  CREDITOS_QUICK_SEARCH_FIELD,
-  CREDITOS_PRIMARY_ACTION,
-  CREDITOS_ROW_ACTIONS,
-} from '../../credito.constants';
+  ADICIONALES_COLUMNS,
+  ADICIONALES_FILTER_FIELDS,
+  ADICIONALES_FILTERS_STORAGE_KEY,
+  ADICIONALES_QUICK_SEARCH_FIELD,
+  ADICIONALES_PRIMARY_ACTION,
+  ADICIONALES_ROW_ACTIONS,
+} from '../../adicional.constants';
 
 @Component({
-  selector: 'app-creditos-list',
+  selector: 'app-adicionales-list',
   standalone: true,
   imports: [
     ListShellComponent,
@@ -46,11 +46,11 @@ import {
     ConfirmDialogModule,
   ],
   providers: [ConfirmationService],
-  templateUrl: './creditos-list.component.html',
-  styleUrl: './creditos-list.component.scss',
+  templateUrl: './adicionales-list.component.html',
+  styleUrl: './adicionales-list.component.scss',
 })
-export class CreditosListComponent {
-  private readonly service = inject(CreditoService);
+export class AdicionalesListComponent {
+  private readonly service = inject(AdicionalService);
   private readonly filterStorage = inject(FilterStorageService);
   private readonly tenant = inject(TenantService);
   private readonly router = inject(Router);
@@ -61,16 +61,16 @@ export class CreditosListComponent {
 
   protected readonly t = this.i18n.t;
 
-  protected readonly items = signal<readonly Credito[]>([]);
+  protected readonly items = signal<readonly Adicional[]>([]);
   protected readonly totalCount = signal(0);
   protected readonly isLoading = signal(false);
   protected readonly currentPage = signal(0);
   protected readonly pageSize = signal(25);
   protected readonly sort = signal<readonly SortSpec[]>([]);
-  protected readonly selectedRows = signal<readonly Credito[]>([]);
+  protected readonly selectedRows = signal<readonly Adicional[]>([]);
   protected readonly searchValue = signal('');
   protected readonly activeFilters = signal<readonly FilterCondition[]>(
-    this.filterStorage.read(CREDITOS_FILTERS_STORAGE_KEY),
+    this.filterStorage.read(ADICIONALES_FILTERS_STORAGE_KEY),
   );
   protected readonly filtersVisible = signal(false);
 
@@ -83,14 +83,14 @@ export class CreditosListComponent {
         label: this.t().modules.humano.name,
         routerLink: slug ? ['/t', slug, 'humano'] : undefined,
       },
-      { label: this.t().entities.credito.name },
+      { label: this.t().entities.adicional.name },
     ];
   });
 
-  protected readonly columns = CREDITOS_COLUMNS;
-  protected readonly filterFields = CREDITOS_FILTER_FIELDS;
-  protected readonly rowActions = CREDITOS_ROW_ACTIONS;
-  protected readonly primaryAction = CREDITOS_PRIMARY_ACTION;
+  protected readonly columns = ADICIONALES_COLUMNS;
+  protected readonly filterFields = ADICIONALES_FILTER_FIELDS;
+  protected readonly rowActions = ADICIONALES_ROW_ACTIONS;
+  protected readonly primaryAction = ADICIONALES_PRIMARY_ACTION;
 
   constructor() {
     this.loadList();
@@ -114,39 +114,39 @@ export class CreditosListComponent {
 
   protected onFiltersApply(filters: readonly FilterCondition[]): void {
     this.activeFilters.set(filters);
-    this.filterStorage.write(CREDITOS_FILTERS_STORAGE_KEY, filters);
+    this.filterStorage.write(ADICIONALES_FILTERS_STORAGE_KEY, filters);
     this.currentPage.set(0);
     this.loadList();
   }
 
   protected clearFilters(): void {
     this.activeFilters.set([]);
-    this.filterStorage.clear(CREDITOS_FILTERS_STORAGE_KEY);
+    this.filterStorage.clear(ADICIONALES_FILTERS_STORAGE_KEY);
     this.currentPage.set(0);
     this.loadList();
   }
 
   protected onSelectionChange(rows: unknown[]): void {
-    this.selectedRows.set(rows as Credito[]);
+    this.selectedRows.set(rows as Adicional[]);
   }
 
   protected onRowAction(event: RowActionInvokedEvent): void {
-    const credito = event.row as Credito;
+    const adicional = event.row as Adicional;
     switch (event.actionId) {
       case 'view':
-        this.navigateTo('detalle', credito.id);
+        this.navigateTo('detalle', adicional.id);
         break;
       case 'edit':
-        this.navigateTo('editar', credito.id);
+        this.navigateTo('editar', adicional.id);
         break;
       case 'delete':
-        this.confirmRemove([credito.id]);
+        this.confirmRemove([adicional.id]);
         break;
     }
   }
 
   protected onRowClick(row: unknown): void {
-    this.navigateTo('detalle', (row as Credito).id);
+    this.navigateTo('detalle', (row as Adicional).id);
   }
 
   protected onToolbarAction(actionId: string): void {
@@ -158,13 +158,13 @@ export class CreditosListComponent {
   }
 
   protected removeSelected(): void {
-    const ids = this.selectedRows().map((c) => c.id);
+    const ids = this.selectedRows().map((a) => a.id);
     if (ids.length === 0) return;
     this.confirmRemove(ids);
   }
 
   private loadList(): void {
-    const search = quickSearchCondition(CREDITOS_QUICK_SEARCH_FIELD, this.searchValue());
+    const search = quickSearchCondition(ADICIONALES_QUICK_SEARCH_FIELD, this.searchValue());
     const filters = search ? [...this.activeFilters(), search] : this.activeFilters();
 
     const query: ListQuery = {
@@ -234,6 +234,6 @@ export class CreditosListComponent {
   private navigateTo(...subPath: (string | number)[]): void {
     const slug = this.tenant.currentSlug();
     if (!slug) throw new Error('Cannot navigate without an active tenant slug.');
-    void this.router.navigate(['/t', slug, 'humano', 'creditos', ...subPath]);
+    void this.router.navigate(['/t', slug, 'humano', 'adicionales', ...subPath]);
   }
 }

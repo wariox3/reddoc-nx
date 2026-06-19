@@ -867,7 +867,10 @@ export interface AppDict extends AuthTranslationsHost {
         total: string;
         cuota: string;
         cantidadCuotas: string;
+        abono: string;
         saldo: string;
+        cuotaActual: string;
+        pagado: string;
         inactivo: string;
       };
       form: {
@@ -898,6 +901,54 @@ export interface AppDict extends AuthTranslationsHost {
           editError: { title: string; desc: string };
           loadError: { title: string; desc: string };
         };
+      };
+      detail: {
+        notFound: { title: string; desc: string };
+        toasts: { loadError: { title: string; desc: string } };
+      };
+    };
+    adicional: {
+      name: string;
+      searchPlaceholder: string;
+      columns: {
+        contrato: string;
+        concepto: string;
+        valor: string;
+        horas: string;
+        detalle: string;
+        aplicaDiaLaborado: string;
+        permanente: string;
+        inactivo: string;
+      };
+      form: {
+        createTitle: string;
+        editTitle: string;
+        createSubtitle: string;
+        editSubtitle: string;
+        sections: { datos: string; valores: string };
+        sectionsHint: { datos: string; valores: string };
+        fields: {
+          contrato: string;
+          contratoPlaceholder: string;
+          concepto: string;
+          conceptoPlaceholder: string;
+          valor: string;
+          detalle: string;
+          aplicaDiaLaborado: string;
+          inactivo: string;
+        };
+        validation: { required: string };
+        toasts: {
+          createSuccess: { title: string; desc: string };
+          editSuccess: { title: string; desc: string };
+          createError: { title: string; desc: string };
+          editError: { title: string; desc: string };
+          loadError: { title: string; desc: string };
+        };
+      };
+      detail: {
+        notFound: { title: string; desc: string };
+        toasts: { loadError: { title: string; desc: string } };
       };
     };
     contrato: {
