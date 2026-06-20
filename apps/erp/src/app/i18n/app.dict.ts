@@ -486,6 +486,9 @@ export interface AppDict extends AuthTranslationsHost {
         nombre: string;
         direccion: string;
         celular: string;
+        centroCosto: string;
+        centroCostoNombre: string;
+        ciudadNombre: string;
         latitud: string;
         longitud: string;
         comentario: string;

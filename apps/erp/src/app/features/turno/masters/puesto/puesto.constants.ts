@@ -30,6 +30,13 @@ export const PUESTOS_COLUMNS: readonly ColumnDef[] = [
   { field: 'nombre', headerKey: 'entities.puesto.columns.nombre', type: 'text' },
   { field: 'direccion', headerKey: 'entities.puesto.columns.direccion', type: 'text' },
   { field: 'celular', headerKey: 'entities.puesto.columns.celular', type: 'text' },
+  { field: 'ciudad_nombre', headerKey: 'entities.puesto.columns.ciudadNombre', type: 'text' },
+  { field: 'centro_costo', headerKey: 'entities.puesto.columns.centroCosto', type: 'text' },
+  {
+    field: 'centro_costo_nombre',
+    headerKey: 'entities.puesto.columns.centroCostoNombre',
+    type: 'text',
+  },
   {
     field: 'estado_inactivo',
     headerKey: 'entities.puesto.columns.estado',
