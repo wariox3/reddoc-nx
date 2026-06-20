@@ -120,6 +120,8 @@ export class FacturaVentaDetailComponent implements OnInit {
 
   private loadDocumento(id: number): void {
     // Mismo patrón que el form: cabecera y líneas son independientes → en paralelo.
+    // Los nombres de los FK (plazo de pago, método de pago, sede) llegan en los
+    // `*_nombre` del read; no hace falta resolverlos con peticiones extra.
     forkJoin({
       cabecera: this.gateway.getById(this.document(), id),
       lineas: this.detalleService.listarPorDocumento<ComercialDetalleRead>(id),
@@ -133,9 +135,9 @@ export class FacturaVentaDetailComponent implements OnInit {
             cliente: fv.contacto?.nombre ?? read.contacto_nombre ?? null,
             fecha: fv.fecha ?? null,
             fechaVence: fv.fecha_vence ?? null,
-            plazoPago: fv.plazo_pago?.nombre ?? read.plazo_pago_nombre ?? null,
-            sede: fv.sede?.nombre ?? read.sede_nombre ?? null,
-            metodoPago: fv.metodo_pago?.nombre ?? read.metodo_pago_nombre ?? null,
+            plazoPago: read.plazo_pago_nombre ?? null,
+            sede: read.sede_nombre ?? null,
+            metodoPago: read.metodo_pago_nombre ?? null,
           });
           this.lines.set(lineas.map((line) => comercialDetalleToFormValue(line)));
           this.isLoading.set(false);
