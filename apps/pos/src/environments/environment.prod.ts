@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
   apiUrl: '/api',
-  turnstileSiteKey: 'REEMPLAZAR_PRODUCCION',
+  turnstileSiteKey: '0x4AAAAAADn7-Pp__E0gDidF',
   landingUrl: 'https://reddoc.co',
 };
