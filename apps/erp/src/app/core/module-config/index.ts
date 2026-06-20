@@ -53,6 +53,25 @@ export {
 export { ENTITY_DATA_GATEWAY } from './data/entity-data-gateway';
 export type { EntityDataGateway } from './data/entity-data-gateway';
 export { HttpEntityDataGateway } from './data/http-entity-data-gateway.service';
+export { DocumentoDetalleService } from './data/documento-detalle.service';
+
+// Importar desde documento (servicio + tipos; el modal NO se exporta para no
+// arrastrar PrimeNG al bundle inicial — se carga vía loadComponent).
+export { ImportarDocumentoService } from './importar-documento/importar-documento.service';
+export type { PendientesPage } from './importar-documento/importar-documento.service';
+export type {
+  LineaPendienteApi,
+  LineaPendienteImpuesto,
+  ImportarDocumentoModalData,
+} from './importar-documento/importar-documento.types';
+
+// Acciones extra (Strategy + registro)
+// NOTA: se exportan SOLO el contrato, el token y los providers. Los strategies
+// y sus modales NO se exportan desde aquí para no arrastrar PrimeNG (datepicker,
+// dynamicdialog) al bundle inicial — igual que `BaseDocumentListComponent`.
+export type { EntityActionStrategy, EntityActionContext } from './actions/entity-action-strategy';
+export { ENTITY_ACTION_STRATEGY } from './actions/entity-action.token';
+export { ENTITY_ACTION_PROVIDERS } from './actions/entity-action.providers';
 
 // Storage helper
 export { buildEntityStorageKey } from './storage/build-entity-storage-key';

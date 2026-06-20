@@ -1,30 +1,26 @@
-<!-- ── Encabezado de página ──────────────────────────────────────────────── -->
-<header>
-  <button
-    type="button"
-    (click)="onCancel()"
-    class="mb-2 inline-flex cursor-pointer items-center gap-1.5 border-0 bg-transparent p-0 text-[0.78rem] font-medium text-brand-muted transition-colors hover:text-brand-text"
-  >
-    <i class="pi pi-arrow-left text-[0.7rem]"></i>
-    {{ t().entities.item.name }}
-  </button>
-  <h1 class="m-0 text-2xl font-bold tracking-tight text-brand-text">
-    @if (isEditMode()) {
-      {{ t().entities.item.form.editTitle }}
-    } @else {
-      {{ t().entities.item.form.createTitle }}
-    }
-  </h1>
-  <p class="m-0 mt-1 text-sm text-brand-muted">
-    @if (isEditMode()) {
-      {{ t().entities.item.form.editSubtitle }}
-    } @else {
-      {{ t().entities.item.form.createSubtitle }}
-    }
-  </p>
-</header>
+<lib-breadcrumb [items]="breadcrumbItems()" />
 
 <form [formGroup]="form" (ngSubmit)="onSubmit()" autocomplete="off" class="flex flex-col gap-5">
+  <!-- ── Encabezado de página ──────────────────────────────────────────────── -->
+  <header class="flex items-center gap-2">
+    <p-button
+      type="button"
+      [label]="t().common.actions.back"
+      icon="pi pi-arrow-left"
+      severity="secondary"
+      [outlined]="true"
+      size="small"
+      (onClick)="onCancel()"
+    />
+    <p-button
+      type="submit"
+      [label]="t().common.actions.save"
+      size="small"
+      icon="pi pi-check"
+      [loading]="isSaving()"
+      [disabled]="form.invalid || form.pending || isSaving()"
+    />
+  </header>
   <!-- ── Sección 1: Información principal ──────────────────────────────────── -->
   <section class="overflow-hidden rounded-xl border border-[rgba(20,48,73,0.1)] bg-brand-surface">
     <div class="flex items-center gap-3 border-b border-[rgba(20,48,73,0.08)] px-5 py-4">
@@ -35,10 +31,14 @@
       </span>
       <div class="flex min-w-0 flex-1 flex-col gap-[0.1rem]">
         <h2 class="m-0 text-[0.95rem] font-bold tracking-tight text-brand-text">
-          {{ t().entities.item.form.sections.principal }}
+          {{ isEditMode() ? t().entities.item.form.editTitle : t().entities.item.form.createTitle }}
         </h2>
         <p class="m-0 text-[0.75rem] text-brand-muted">
-          {{ t().entities.item.form.sectionsHint.principal }}
+          {{
+            isEditMode()
+              ? t().entities.item.form.editSubtitle
+              : t().entities.item.form.createSubtitle
+          }}
         </p>
       </div>
     </div>
@@ -303,24 +303,4 @@
       </div>
     </div>
   </section>
-
-  <!-- ── Footer ────────────────────────────────────────────────────────────── -->
-  <div class="flex items-center justify-end gap-3 pb-1">
-    <p-button
-      type="button"
-      [label]="t().entities.item.form.cancel"
-      [outlined]="true"
-      severity="secondary"
-      (onClick)="onCancel()"
-    />
-    <p-button
-      type="submit"
-      [label]="
-        isEditMode() ? t().entities.item.form.submitEdit : t().entities.item.form.submitCreate
-      "
-      icon="pi pi-check"
-      [loading]="isSaving()"
-      [disabled]="form.invalid || isSaving()"
-    />
-  </div>
 </form>

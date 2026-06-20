@@ -12,9 +12,9 @@ import {
  *
  * Soporta **alta y edición** (`canCreate` / `canEdit`): el
  * `BaseDocumentListComponent` muestra el botón "Nuevo" y la acción de fila
- * "Editar", que navegan a las rutas `new` / `edit`
- * (`ContratoServicioFormComponent`). `canDelete` sigue en `false` hasta que se
- * habilite la baja. `detail` se declara porque el tipo lo exige pero no se usa.
+ * "Editar", que navegan a las rutas `new` / `edit` (el
+ * `ServicioDocumentoFormComponent` compartido, parametrizado por esta config).
+ * `detail` se declara porque el tipo lo exige pero no se usa.
  *
  * - `documentTypeId` proviene de `DOCUMENT_TYPE_ID.CONTRATO_SERVICIO` (id 34)
  *   para evitar magic numbers; el gateway lo inyecta como filtro implícito.
@@ -30,6 +30,7 @@ export const CONTRATO_SERVICIO_CONFIG: DocumentEntityConfig = {
   schemaVersion: 1,
   columns: CONTRATO_SERVICIO_COLUMNS,
   filters: CONTRATO_SERVICIO_FILTERS,
+  defaultSort: [{ field: 'id', direction: 'desc' }],
   routes: {
     list: 'contrato-servicio/list',
     new: 'contrato-servicio/nuevo',
@@ -39,11 +40,16 @@ export const CONTRATO_SERVICIO_CONFIG: DocumentEntityConfig = {
   capabilities: {
     canCreate: true,
     canEdit: true,
-    canDelete: false,
-    canSelectRows: false,
+    canDelete: true,
+    canSelectRows: true,
     canImport: false,
     canExportExcel: false,
     canExportZip: false,
-    canGenerate: false,
+    canGenerate: true,
   },
+  // Acciones extra del dropdown "Acciones" (cada id ↔ un EntityActionStrategy
+  // registrado en ENTITY_ACTION_PROVIDERS):
+  //  - 'generar': modal de fecha → genera pedidos servicio desde los contratos
+  //    servicio de esa fecha.
+  extraActionIds: ['generar'],
 };

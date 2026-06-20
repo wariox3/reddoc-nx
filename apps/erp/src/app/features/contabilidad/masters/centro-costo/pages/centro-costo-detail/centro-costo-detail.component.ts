@@ -1,8 +1,9 @@
-import { Component, DestroyRef, type OnInit, inject, input, signal } from '@angular/core';
+import { Component, DestroyRef, type OnInit, computed, inject, input, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { I18nService, TenantService, ToastService } from '@reddoc/core';
+import { BreadcrumbComponent, type BreadcrumbItem } from '@reddoc/feature-base';
 import type { AppDict } from '@erp/i18n';
 import { CentroCostoService } from '../../centro-costo.service';
 import { CENTRO_COSTO_LIST_PATH } from '../../centro-costo.constants';
@@ -11,7 +12,7 @@ import type { CentroCosto } from '../../centro-costo.model';
 @Component({
   selector: 'app-centro-costo-detail',
   standalone: true,
-  imports: [ButtonModule],
+  imports: [ButtonModule, BreadcrumbComponent],
   templateUrl: './centro-costo-detail.component.html',
   styleUrl: './centro-costo-detail.component.scss',
 })
@@ -30,6 +31,24 @@ export class CentroCostoDetailComponent implements OnInit {
   protected readonly centroCosto = signal<CentroCosto | null>(null);
   protected readonly isLoading = signal(true);
   protected readonly notFound = signal(false);
+
+  /** Migas: módulo Contabilidad → listado de centros de costo → nombre abierto. */
+  protected readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => {
+    const slug = this.tenant.currentSlug();
+    const centroCosto = this.centroCosto();
+    const items: BreadcrumbItem[] = [
+      {
+        label: this.t().modules.contabilidad.name,
+        routerLink: slug ? ['/t', slug, 'contabilidad'] : undefined,
+      },
+      {
+        label: this.t().entities.centroCosto.name,
+        routerLink: slug ? ['/t', slug, ...CENTRO_COSTO_LIST_PATH] : undefined,
+      },
+    ];
+    if (centroCosto) items.push({ label: centroCosto.nombre });
+    return items;
+  });
 
   ngOnInit(): void {
     const rawId = this.id();

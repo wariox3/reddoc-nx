@@ -6,6 +6,7 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { FieldErrorComponent } from '@reddoc/ui';
 import { FormErrorService, I18nService, TenantService, ToastService } from '@reddoc/core';
+import { BreadcrumbComponent, type BreadcrumbItem } from '@reddoc/feature-base';
 import type { AppDict } from '@erp/i18n';
 import { ProgramadorService } from '../../programador.service';
 import { PROGRAMADOR_LIST_PATH } from '../../programador.constants';
@@ -14,7 +15,13 @@ import { programadorToFormValue, formValueToPayload } from '../../programador.ma
 @Component({
   selector: 'app-programador-form',
   standalone: true,
-  imports: [ReactiveFormsModule, ButtonModule, InputTextModule, FieldErrorComponent],
+  imports: [
+    ReactiveFormsModule,
+    BreadcrumbComponent,
+    ButtonModule,
+    InputTextModule,
+    FieldErrorComponent,
+  ],
   templateUrl: './programador-form.component.html',
   styleUrl: './programador-form.component.scss',
 })
@@ -34,6 +41,21 @@ export class ProgramadorFormComponent implements OnInit {
 
   protected readonly isEditMode = computed(() => !!this.id());
   protected readonly isSaving = signal(false);
+
+  protected readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => {
+    const slug = this.tenant.currentSlug();
+    return [
+      {
+        label: this.t().modules.turno.name,
+        routerLink: slug ? ['/t', slug, 'turno'] : undefined,
+      },
+      {
+        label: this.t().entities.programador.name,
+        routerLink: slug ? ['/t', slug, ...PROGRAMADOR_LIST_PATH] : undefined,
+      },
+      { label: this.isEditMode() ? this.t().common.actions.edit : this.t().common.actions.new },
+    ];
+  });
 
   protected readonly form = this.fb.group({
     nombre: ['', Validators.required],

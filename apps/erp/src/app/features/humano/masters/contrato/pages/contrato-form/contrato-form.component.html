@@ -1,0 +1,556 @@
+<lib-breadcrumb [items]="breadcrumbItems()" />
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()" autocomplete="off" class="flex flex-col gap-5">
+  <!-- ── Encabezado de página ──────────────────────────────────────────────── -->
+  <header class="flex items-center gap-2">
+    <p-button
+      type="button"
+      [label]="t().common.actions.back"
+      icon="pi pi-arrow-left"
+      severity="secondary"
+      [outlined]="true"
+      size="small"
+      (onClick)="onCancel()"
+    />
+    <p-button
+      type="submit"
+      [label]="t().common.actions.save"
+      size="small"
+      icon="pi pi-check"
+      [loading]="isSaving()"
+      [disabled]="form.invalid || form.pending || isSaving()"
+    />
+  </header>
+  <!-- ── Sección 1: Datos del contrato ─────────────────────────────────────── -->
+  <section class="overflow-hidden rounded-xl border border-[rgba(20,48,73,0.1)] bg-brand-surface">
+    <div class="flex items-center gap-3 border-b border-[rgba(20,48,73,0.08)] px-5 py-4">
+      <span
+        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-sky-50 text-sky-700"
+      >
+        <i class="pi pi-file text-[1.05rem]"></i>
+      </span>
+      <div class="flex min-w-0 flex-1 flex-col gap-[0.1rem]">
+        <h2 class="m-0 text-[0.95rem] font-bold tracking-tight text-brand-text">
+          {{
+            isEditMode()
+              ? t().entities.contrato.form.editTitle
+              : t().entities.contrato.form.createTitle
+          }}
+        </h2>
+        <p class="m-0 text-[0.75rem] text-brand-muted">
+          {{
+            isEditMode()
+              ? t().entities.contrato.form.editSubtitle
+              : t().entities.contrato.form.createSubtitle
+          }}
+        </p>
+      </div>
+    </div>
+
+    <div class="px-5 py-5 max-[576px]:px-4 max-[576px]:py-4">
+      <div class="grid grid-cols-1 gap-x-5 gap-y-4 sm:grid-cols-2">
+        <div class="flex flex-col gap-1.5">
+          <label for="contacto" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.contacto }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <app-empleado-autocomplete
+            inputId="contacto"
+            formControlName="contacto"
+            [placeholder]="t().entities.contrato.form.fields.contactoPlaceholder"
+            [invalid]="form.controls.contacto.invalid && form.controls.contacto.touched"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="contrato_tipo" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.contratoTipo }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <app-api-select
+            inputId="contrato_tipo"
+            formControlName="contrato_tipo"
+            endpoint="/humano/contrato-tipo/seleccionar/"
+            [params]="{ limit: '100' }"
+            [invalid]="form.controls.contrato_tipo.invalid && form.controls.contrato_tipo.touched"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="cargo" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.cargo }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <app-api-select
+            inputId="cargo"
+            formControlName="cargo"
+            endpoint="/humano/cargo/seleccionar/"
+            [params]="{ limit: '100' }"
+            [invalid]="form.controls.cargo.invalid && form.controls.cargo.touched"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="grupo" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.grupo }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <app-api-select
+            inputId="grupo"
+            formControlName="grupo"
+            endpoint="/humano/grupo/seleccionar/"
+            [params]="{ limit: '100' }"
+            [invalid]="form.controls.grupo.invalid && form.controls.grupo.touched"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="sucursal" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.sucursal }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <app-api-select
+            inputId="sucursal"
+            formControlName="sucursal"
+            endpoint="/humano/sucursal/seleccionar/"
+            [params]="{ limit: '100' }"
+            [invalid]="form.controls.sucursal.invalid && form.controls.sucursal.touched"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="tiempo" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.tiempo }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <app-api-select
+            inputId="tiempo"
+            formControlName="tiempo"
+            endpoint="/humano/tiempo/seleccionar/"
+            [params]="{ limit: '100' }"
+            [suggestedIndex]="1"
+            [invalid]="form.controls.tiempo.invalid && form.controls.tiempo.touched"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="fecha_desde" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.fechaDesde }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <p-datepicker
+            inputId="fecha_desde"
+            formControlName="fecha_desde"
+            dateFormat="yy-mm-dd"
+            [showIcon]="true"
+            appendTo="body"
+            [fluid]="true"
+            [invalid]="form.controls.fecha_desde.invalid && form.controls.fecha_desde.touched"
+          />
+        </div>
+
+        @if (!isIndefinido()) {
+          <div class="flex flex-col gap-1.5">
+            <label for="fecha_hasta" class="contrato-form__label">
+              {{ t().entities.contrato.form.fields.fechaHasta }}
+              <span class="ml-px text-red-500">*</span>
+            </label>
+            <p-datepicker
+              inputId="fecha_hasta"
+              formControlName="fecha_hasta"
+              dateFormat="yy-mm-dd"
+              [showIcon]="true"
+              appendTo="body"
+              [fluid]="true"
+              [invalid]="form.controls.fecha_hasta.invalid && form.controls.fecha_hasta.touched"
+            />
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Sección 2: Remuneración ───────────────────────────────────────────── -->
+  <section class="overflow-hidden rounded-xl border border-[rgba(20,48,73,0.1)] bg-brand-surface">
+    <div class="flex items-center gap-3 border-b border-[rgba(20,48,73,0.08)] px-5 py-4">
+      <span
+        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-sky-50 text-sky-700"
+      >
+        <i class="pi pi-dollar text-[1.05rem]"></i>
+      </span>
+      <div class="flex min-w-0 flex-1 flex-col gap-[0.1rem]">
+        <h2 class="m-0 text-[0.95rem] font-bold tracking-tight text-brand-text">
+          {{ t().entities.contrato.form.sections.remuneracion }}
+        </h2>
+        <p class="m-0 text-[0.75rem] text-brand-muted">
+          {{ t().entities.contrato.form.sectionsHint.remuneracion }}
+        </p>
+      </div>
+    </div>
+
+    <div class="px-5 py-5 max-[576px]:px-4 max-[576px]:py-4">
+      <div class="grid grid-cols-1 gap-x-5 gap-y-4 sm:grid-cols-2">
+        <div class="flex flex-col gap-1.5">
+          <label for="salario" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.salario }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <p-inputnumber
+            inputId="salario"
+            formControlName="salario"
+            mode="decimal"
+            [minFractionDigits]="0"
+            [maxFractionDigits]="2"
+            prefix="$ "
+            [fluid]="true"
+            [invalid]="form.controls.salario.invalid && form.controls.salario.touched"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="tipo_costo" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.tipoCosto }}
+          </label>
+          <app-api-select
+            inputId="tipo_costo"
+            formControlName="tipo_costo"
+            [suggestedIndex]="0"
+            endpoint="/humano/tipo-costo/seleccionar/"
+            [params]="{ limit: '100' }"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="centro_costo" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.centroCosto }}
+          </label>
+          <app-api-select
+            inputId="centro_costo"
+            formControlName="centro_costo"
+            endpoint="/contabilidad/centro-costo/seleccionar/"
+            [params]="{ limit: '100' }"
+          />
+        </div>
+
+        <div class="flex flex-wrap items-center gap-x-8 gap-y-3 sm:col-span-2">
+          <label for="auxilio_transporte" class="flex cursor-pointer items-center gap-2">
+            <p-checkbox
+              inputId="auxilio_transporte"
+              formControlName="auxilio_transporte"
+              [binary]="true"
+            />
+            <span class="text-[0.85rem] text-brand-text">
+              {{ t().entities.contrato.form.fields.aplicaAuxilioTransporte }}
+            </span>
+          </label>
+
+          <label for="salario_integral" class="flex cursor-pointer items-center gap-2">
+            <p-checkbox
+              inputId="salario_integral"
+              formControlName="salario_integral"
+              [binary]="true"
+            />
+            <span class="text-[0.85rem] text-brand-text">
+              {{ t().entities.contrato.form.fields.salarioIntegral }}
+            </span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Sección 3: Seguridad social ───────────────────────────────────────── -->
+  <section class="overflow-hidden rounded-xl border border-[rgba(20,48,73,0.1)] bg-brand-surface">
+    <div class="flex items-center gap-3 border-b border-[rgba(20,48,73,0.08)] px-5 py-4">
+      <span
+        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-sky-50 text-sky-700"
+      >
+        <i class="pi pi-shield text-[1.05rem]"></i>
+      </span>
+      <div class="flex min-w-0 flex-1 flex-col gap-[0.1rem]">
+        <h2 class="m-0 text-[0.95rem] font-bold tracking-tight text-brand-text">
+          {{ t().entities.contrato.form.sections.seguridadSocial }}
+        </h2>
+        <p class="m-0 text-[0.75rem] text-brand-muted">
+          {{ t().entities.contrato.form.sectionsHint.seguridadSocial }}
+        </p>
+      </div>
+    </div>
+
+    <div class="px-5 py-5 max-[576px]:px-4 max-[576px]:py-4">
+      <div class="grid grid-cols-1 gap-x-5 gap-y-4 sm:grid-cols-2">
+        <div class="flex flex-col gap-1.5">
+          <label for="salud" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.salud }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <app-api-select
+            inputId="salud"
+            formControlName="salud"
+            endpoint="/humano/salud/seleccionar/"
+            [params]="{ limit: '100' }"
+            [suggestedIndex]="0"
+            [invalid]="form.controls.salud.invalid && form.controls.salud.touched"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="entidad_salud" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.entidadSalud }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <app-api-select
+            inputId="entidad_salud"
+            formControlName="entidad_salud"
+            endpoint="/humano/entidad/seleccionar/"
+            [params]="{ salud: 'True', limit: '100' }"
+            [invalid]="form.controls.entidad_salud.invalid && form.controls.entidad_salud.touched"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="pension" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.pension }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <app-api-select
+            inputId="pension"
+            formControlName="pension"
+            endpoint="/humano/pension/seleccionar/"
+            [params]="{ limit: '100' }"
+            [suggestedIndex]="1"
+            [invalid]="form.controls.pension.invalid && form.controls.pension.touched"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="entidad_pension" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.entidadPension }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <app-api-select
+            inputId="entidad_pension"
+            formControlName="entidad_pension"
+            endpoint="/humano/entidad/seleccionar/"
+            [params]="{ pension: 'True', limit: '100' }"
+            [invalid]="
+              form.controls.entidad_pension.invalid && form.controls.entidad_pension.touched
+            "
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="entidad_cesantias" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.entidadCesantias }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <app-api-select
+            inputId="entidad_cesantias"
+            formControlName="entidad_cesantias"
+            endpoint="/humano/entidad/seleccionar/"
+            [params]="{ cesantias: 'True', limit: '100' }"
+            [invalid]="
+              form.controls.entidad_cesantias.invalid && form.controls.entidad_cesantias.touched
+            "
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="entidad_caja" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.entidadCaja }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <app-api-select
+            inputId="entidad_caja"
+            formControlName="entidad_caja"
+            endpoint="/humano/entidad/seleccionar/"
+            [params]="{ caja: 'True', limit: '100' }"
+            [invalid]="form.controls.entidad_caja.invalid && form.controls.entidad_caja.touched"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="riesgo" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.riesgo }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <app-api-select
+            inputId="riesgo"
+            formControlName="riesgo"
+            endpoint="/humano/riesgo/seleccionar/"
+            [params]="{ limit: '100' }"
+            [invalid]="form.controls.riesgo.invalid && form.controls.riesgo.touched"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="tipo_cotizante" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.tipoCotizante }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <app-api-select
+            inputId="tipo_cotizante"
+            formControlName="tipo_cotizante"
+            endpoint="/humano/tipo-cotizante/seleccionar/"
+            [params]="{ limit: '100' }"
+            [suggestedIndex]="0"
+            [invalid]="form.controls.tipo_cotizante.invalid && form.controls.tipo_cotizante.touched"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="subtipo_cotizante" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.subtipoCotizante }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <app-api-select
+            inputId="subtipo_cotizante"
+            formControlName="subtipo_cotizante"
+            endpoint="/humano/subtipo-cotizante/seleccionar/"
+            [params]="{ limit: '100' }"
+            [suggestedIndex]="6"
+            [invalid]="
+              form.controls.subtipo_cotizante.invalid && form.controls.subtipo_cotizante.touched
+            "
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="ciudad_contrato" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.ciudadContrato }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <app-api-autocomplete
+            inputId="ciudad_contrato"
+            formControlName="ciudad_contrato"
+            endpoint="/general/ciudad/seleccionar/"
+            [placeholder]="t().entities.contrato.form.fields.ciudadPlaceholder"
+            [invalid]="
+              form.controls.ciudad_contrato.invalid && form.controls.ciudad_contrato.touched
+            "
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="ciudad_labora" class="contrato-form__label">
+            {{ t().entities.contrato.form.fields.ciudadLabora }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <app-api-autocomplete
+            inputId="ciudad_labora"
+            formControlName="ciudad_labora"
+            endpoint="/general/ciudad/seleccionar/"
+            [placeholder]="t().entities.contrato.form.fields.ciudadPlaceholder"
+            [invalid]="form.controls.ciudad_labora.invalid && form.controls.ciudad_labora.touched"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Sección 4: Terminación y pagos (oculta por ahora) ─────────────────── -->
+  @if (showTerminacion) {
+    <section class="overflow-hidden rounded-xl border border-[rgba(20,48,73,0.1)] bg-brand-surface">
+      <div class="flex items-center gap-3 border-b border-[rgba(20,48,73,0.08)] px-5 py-4">
+        <span
+          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-sky-50 text-sky-700"
+        >
+          <i class="pi pi-flag text-[1.05rem]"></i>
+        </span>
+        <div class="flex min-w-0 flex-1 flex-col gap-[0.1rem]">
+          <h2 class="m-0 text-[0.95rem] font-bold tracking-tight text-brand-text">
+            {{ t().entities.contrato.form.sections.terminacion }}
+          </h2>
+          <p class="m-0 text-[0.75rem] text-brand-muted">
+            {{ t().entities.contrato.form.sectionsHint.terminacion }}
+          </p>
+        </div>
+      </div>
+
+      <div class="px-5 py-5 max-[576px]:px-4 max-[576px]:py-4">
+        <div class="grid grid-cols-1 gap-x-5 gap-y-4 sm:grid-cols-2">
+          <div class="flex flex-col gap-1.5">
+            <label for="motivo_terminacion" class="contrato-form__label">
+              {{ t().entities.contrato.form.fields.motivoTerminacion }}
+            </label>
+            <app-api-select
+              inputId="motivo_terminacion"
+              formControlName="motivo_terminacion"
+              endpoint="/humano/motivo-terminacion/seleccionar/"
+              [params]="{ limit: '100' }"
+            />
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <label for="fecha_ultimo_pago" class="contrato-form__label">
+              {{ t().entities.contrato.form.fields.fechaUltimoPago }}
+            </label>
+            <p-datepicker
+              inputId="fecha_ultimo_pago"
+              formControlName="fecha_ultimo_pago"
+              dateFormat="yy-mm-dd"
+              [showIcon]="true"
+              appendTo="body"
+              [fluid]="true"
+            />
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <label for="fecha_ultimo_pago_prima" class="contrato-form__label">
+              {{ t().entities.contrato.form.fields.fechaUltimoPagoPrima }}
+            </label>
+            <p-datepicker
+              inputId="fecha_ultimo_pago_prima"
+              formControlName="fecha_ultimo_pago_prima"
+              dateFormat="yy-mm-dd"
+              [showIcon]="true"
+              appendTo="body"
+              [fluid]="true"
+            />
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <label for="fecha_ultimo_pago_cesantia" class="contrato-form__label">
+              {{ t().entities.contrato.form.fields.fechaUltimoPagoCesantia }}
+            </label>
+            <p-datepicker
+              inputId="fecha_ultimo_pago_cesantia"
+              formControlName="fecha_ultimo_pago_cesantia"
+              dateFormat="yy-mm-dd"
+              [showIcon]="true"
+              appendTo="body"
+              [fluid]="true"
+            />
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <label for="fecha_ultimo_pago_vacacion" class="contrato-form__label">
+              {{ t().entities.contrato.form.fields.fechaUltimoPagoVacacion }}
+            </label>
+            <p-datepicker
+              inputId="fecha_ultimo_pago_vacacion"
+              formControlName="fecha_ultimo_pago_vacacion"
+              dateFormat="yy-mm-dd"
+              [showIcon]="true"
+              appendTo="body"
+              [fluid]="true"
+            />
+          </div>
+
+          <div class="flex flex-col gap-1.5 sm:col-span-2">
+            <label for="comentario" class="contrato-form__label">
+              {{ t().entities.contrato.form.fields.comentario }}
+            </label>
+            <textarea
+              id="comentario"
+              pTextarea
+              formControlName="comentario"
+              rows="3"
+              class="w-full"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+    </section>
+  }
+</form>

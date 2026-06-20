@@ -1,15 +1,9 @@
-<lib-breadcrumb [items]="breadcrumbItems()" />
-
-<header class="base-document-list__header">
-  <div class="base-document-list__title-block">
-    <h1 class="base-document-list__title">{{ translate(document().displayNameKey) }}</h1>
-  </div>
-</header>
-
-<div class="card">
+<lib-list-shell [breadcrumb]="breadcrumbItems()" [title]="translate(document().displayNameKey)">
   @if (showToolbar()) {
     <lib-data-toolbar
+      toolbar
       [primaryAction]="primaryAction()"
+      [trailingActions]="trailingActions()"
       [filtersEnabled]="filtersEnabled()"
       [activeFiltersCount]="activeFilters().length"
       [deleteSelectedEnabled]="capabilities().canDelete && hasSelection()"
@@ -22,6 +16,7 @@
   }
 
   <lib-data-table
+    table
     [columns]="columns()"
     [items]="items()"
     [totalCount]="totalCount()"
@@ -37,7 +32,7 @@
     (selectionChange)="onSelectionChange($event)"
     (rowActionInvoked)="onRowAction($event)"
   />
-</div>
+</lib-list-shell>
 
 @if (filtersEnabled()) {
   <lib-data-filter-modal

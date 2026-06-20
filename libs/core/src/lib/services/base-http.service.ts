@@ -42,8 +42,15 @@ export abstract class BaseHttpService {
     });
   }
 
-  protected post<T>(path: string, body: unknown): Observable<T> {
-    return this.http.post<T>(`${this.baseUrl}${path}`, body, { context: this.context() });
+  protected post<T>(
+    path: string,
+    body: unknown,
+    params?: Record<string, ParamValue>,
+  ): Observable<T> {
+    return this.http.post<T>(`${this.baseUrl}${path}`, body, {
+      params: buildHttpParams(params ?? {}),
+      context: this.context(),
+    });
   }
 
   protected put<T>(path: string, body: unknown): Observable<T> {

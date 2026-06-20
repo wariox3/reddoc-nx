@@ -1,4 +1,4 @@
-import { formatCop } from '@reddoc/core';
+import { formatCop, fromIsoDate } from '@reddoc/core';
 import { Movimiento, MovimientoTipo } from '../models/movimiento.model';
 
 export interface MovimientoGroup {
@@ -37,25 +37,20 @@ const MESES_CORTOS = [
   'dic',
 ];
 
-export function parseLocalDate(yyyymmdd: string): Date {
-  const [y, m, d] = yyyymmdd.split('-').map(Number);
-  return new Date(y, m - 1, d);
-}
-
 export function formatMonto(valor: string | number): string {
   return formatCop(valor);
 }
 
 export function formatDia(fecha: string): string {
-  return String(parseLocalDate(fecha).getDate());
+  return String(fromIsoDate(fecha).getDate());
 }
 
 export function formatMesCorto(fecha: string): string {
-  return MESES_CORTOS[parseLocalDate(fecha).getMonth()];
+  return MESES_CORTOS[fromIsoDate(fecha).getMonth()];
 }
 
 export function formatMesLargo(fecha: string): string {
-  const d = parseLocalDate(fecha);
+  const d = fromIsoDate(fecha);
   return `${MESES_LARGOS[d.getMonth()]} ${d.getFullYear()}`;
 }
 
@@ -88,7 +83,7 @@ export function groupByMonth(movimientos: readonly Movimiento[]): MovimientoGrou
   const buckets = new Map<string, { items: Movimiento[]; firstFecha: string }>();
 
   for (const m of movimientos) {
-    const d = parseLocalDate(m.fecha);
+    const d = fromIsoDate(m.fecha);
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
     const bucket = buckets.get(key);
     if (bucket) {

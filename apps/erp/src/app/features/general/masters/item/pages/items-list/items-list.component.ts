@@ -18,10 +18,10 @@ import {
   type SortSpec,
 } from '@reddoc/core';
 import {
-  BreadcrumbComponent,
   DataFilterModalComponent,
   DataTableComponent,
   DataToolbarComponent,
+  ListShellComponent,
   type BreadcrumbItem,
   type PageChangeEvent,
   type RowActionInvokedEvent,
@@ -52,7 +52,7 @@ import {
   selector: 'app-items-list',
   standalone: true,
   imports: [
-    BreadcrumbComponent,
+    ListShellComponent,
     DataTableComponent,
     DataToolbarComponent,
     DataFilterModalComponent,

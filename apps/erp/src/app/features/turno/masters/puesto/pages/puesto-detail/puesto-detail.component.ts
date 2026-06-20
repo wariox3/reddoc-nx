@@ -1,8 +1,9 @@
-import { Component, DestroyRef, type OnInit, inject, input, signal } from '@angular/core';
+import { Component, DestroyRef, type OnInit, computed, inject, input, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { I18nService, TenantService, ToastService } from '@reddoc/core';
+import { BreadcrumbComponent, type BreadcrumbItem } from '@reddoc/feature-base';
 import type { AppDict } from '@erp/i18n';
 import { PuestoService } from '../../puesto.service';
 import { PUESTO_LIST_PATH } from '../../puesto.constants';
@@ -17,7 +18,7 @@ import type { Puesto } from '../../puesto.model';
 @Component({
   selector: 'app-puesto-detail',
   standalone: true,
-  imports: [ButtonModule],
+  imports: [ButtonModule, BreadcrumbComponent],
   templateUrl: './puesto-detail.component.html',
   styleUrl: './puesto-detail.component.scss',
 })
@@ -37,6 +38,24 @@ export class PuestoDetailComponent implements OnInit {
   protected readonly puesto = signal<Puesto | null>(null);
   protected readonly isLoading = signal(true);
   protected readonly notFound = signal(false);
+
+  /** Migas: módulo Turno → listado de puestos → nombre del puesto abierto. */
+  protected readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => {
+    const slug = this.tenant.currentSlug();
+    const puesto = this.puesto();
+    const items: BreadcrumbItem[] = [
+      {
+        label: this.t().modules.turno.name,
+        routerLink: slug ? ['/t', slug, 'turno'] : undefined,
+      },
+      {
+        label: this.t().entities.puesto.name,
+        routerLink: slug ? ['/t', slug, ...PUESTO_LIST_PATH] : undefined,
+      },
+    ];
+    if (puesto) items.push({ label: puesto.nombre });
+    return items;
+  });
 
   ngOnInit(): void {
     const rawId = this.id();

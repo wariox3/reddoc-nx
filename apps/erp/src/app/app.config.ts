@@ -13,6 +13,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
 import { MessageService } from 'primeng/api';
+import { DialogService } from 'primeng/dynamicdialog';
 import { firstValueFrom } from 'rxjs';
 import { appRoutes } from './app.routes';
 import { environment } from '../environments/environment';
@@ -24,6 +25,7 @@ import {
   AUTH_SERVICE,
   AUTH_SKIP_URLS,
   ReddocPreset,
+  REDDOC_PRIMENG_ES,
   authInterceptor,
   errorInterceptor,
   tenantInterceptor,
@@ -32,6 +34,7 @@ import {
 import { AuthService } from './features/auth/services/auth.service';
 import { ROUTE_PATHS } from './core/constants/route-paths.constants';
 import {
+  ENTITY_ACTION_PROVIDERS,
   ENTITY_DATA_GATEWAY,
   ERP_MODULE_REGISTRY,
   HttpEntityDataGateway,
@@ -59,8 +62,14 @@ export const appConfig: ApplicationConfig = {
           cssLayer: { name: 'primeng', order: 'theme, base, primeng, utilities' },
         },
       },
+      translation: REDDOC_PRIMENG_ES,
     }),
     MessageService,
+    // Singleton root del servicio de diálogos dinámicos de PrimeNG (no es
+    // `providedIn: 'root'`); lo usan los strategies de acciones extra para abrir
+    // sus modales sin que el componente base los conozca.
+    DialogService,
+    ...ENTITY_ACTION_PROVIDERS,
     provideI18n(dictionaries),
     { provide: ENVIRONMENT, useValue: environment },
     {

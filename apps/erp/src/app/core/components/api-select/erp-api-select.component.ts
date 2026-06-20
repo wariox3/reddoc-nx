@@ -34,7 +34,12 @@ export type { ErpSelectOption };
       dataKey="id"
       appendTo="body"
       [fluid]="true"
-    />
+    >
+      @if (displayWith(); as format) {
+        <ng-template #selectedItem let-option>{{ format(option) }}</ng-template>
+        <ng-template #item let-option>{{ format(option) }}</ng-template>
+      }
+    </p-select>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
@@ -56,6 +61,13 @@ export class ErpApiSelectComponent implements ControlValueAccessor {
   readonly invalid = input<boolean>(false);
   /** Posición (0-based) a auto-seleccionar cuando cargan las opciones y el control está vacío. `null` lo desactiva. */
   readonly suggestedIndex = input<number | null>(null);
+  /**
+   * Formatea la etiqueta de la opción (seleccionada y en el desplegable). Por
+   * default se muestra `nombre`; pásalo para componer otros campos, p. ej.
+   * `(o) => \`${o.id} - ${o.nombre}\``. La opción puede tipar campos extra del
+   * endpoint vía el genérico `T`.
+   */
+  readonly displayWith = input<((option: ErpSelectOption) => string) | null>(null);
 
   readonly value = signal<ErpSelectOption | null>(null);
   readonly disabled = signal(false);
@@ -67,6 +79,13 @@ export class ErpApiSelectComponent implements ControlValueAccessor {
 
   constructor() {
     effect(() => {
+      // Sin fetch mientras el control está deshabilitado (p. ej. un select en
+      // cascada cuyo padre aún no se eligió): evita consultas prematuras y se
+      // re-dispara solo cuando se habilita.
+      if (this.disabled()) {
+        this.options.set([]);
+        return;
+      }
       const params = this.params();
       const endpoint = this.endpoint();
       this.loading.set(true);

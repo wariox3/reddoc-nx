@@ -1,5 +1,6 @@
 import type { Route } from '@angular/router';
 import { activeDocumentResolver } from '@erp/core/module-config';
+import { unsavedChangesGuard } from '@erp/core/guards/unsaved-changes.guard';
 
 /**
  * Rutas de **Factura electrónica de venta**.
@@ -14,9 +15,9 @@ import { activeDocumentResolver } from '@erp/core/module-config';
  * `ModuleNavigationStore` antes de montar la lista — el módulo padre
  * (`venta.routes.ts`) ya cargó `VENTA_CONFIG`.
  *
- * Por ahora solo el listado está implementado. `nuevo` / `editar` / `detalle`
- * apuntan al placeholder común hasta que se implemente el form/detalle
- * específico de Factura de venta.
+ * `nuevo` / `editar` comparten el `FacturaVentaFormComponent` (cabecera
+ * específica de la factura de venta). `detalle` queda en placeholder hasta que
+ * se implemente la vista de detalle.
  */
 export const FACTURA_VENTA_ROUTES: Route[] = [
   {
@@ -34,15 +35,16 @@ export const FACTURA_VENTA_ROUTES: Route[] = [
       {
         path: 'nuevo',
         loadComponent: () =>
-          import('@erp/layouts/module-placeholder/module-placeholder.component').then(
-            (m) => m.ModulePlaceholderComponent,
+          import('./pages/factura-venta-form/factura-venta-form.component').then(
+            (m) => m.FacturaVentaFormComponent,
           ),
       },
       {
         path: 'editar/:id',
+        canDeactivate: [unsavedChangesGuard],
         loadComponent: () =>
-          import('@erp/layouts/module-placeholder/module-placeholder.component').then(
-            (m) => m.ModulePlaceholderComponent,
+          import('./pages/factura-venta-form/factura-venta-form.component').then(
+            (m) => m.FacturaVentaFormComponent,
           ),
       },
       {

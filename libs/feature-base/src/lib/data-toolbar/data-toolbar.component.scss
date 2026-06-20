@@ -6,8 +6,11 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0 0 0.625rem;
-  margin-bottom: 0.75rem;
+  // La card ya no aporta padding: el toolbar se autoenmarca y separa de la tabla
+  // con un divisor (panel único sin costuras).
+  padding: 0.7rem 1rem;
+  margin: 0;
+  border-bottom: 1px solid rgba(19 38 60 / 0.08);
   min-height: 44px;
 
   &__group {

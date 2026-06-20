@@ -17,6 +17,9 @@ export const GENERAL_MODULE: ErpModuleDescriptor = {
           items: [
             { labelKey: 'entities.contacto.name', path: 'contactos' },
             { labelKey: 'entities.item.name', path: 'items' },
+            { labelKey: 'entities.asesor.name', path: 'asesores' },
+            { labelKey: 'entities.cuentaBanco.name', path: 'cuentas-banco' },
+            { labelKey: 'entities.precio.name', path: 'precios' },
           ],
         },
       ],

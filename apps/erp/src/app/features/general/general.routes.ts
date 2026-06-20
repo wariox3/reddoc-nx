@@ -1,5 +1,6 @@
 import type { Route } from '@angular/router';
-import { erpModuleResolver } from '@erp/core/erp-modules';
+import { erpModuleResolver, moduleIndexRoute } from '@erp/core/erp-modules';
+import { GENERAL_MODULE } from './general.module-descriptor';
 
 /**
  * Rutas del módulo General.
@@ -17,7 +18,7 @@ export const GENERAL_ROUTES: Route[] = [
     path: '',
     resolve: { _module: erpModuleResolver('general') },
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'contactos' },
+      moduleIndexRoute(GENERAL_MODULE),
       {
         path: 'contactos',
         loadChildren: () =>
@@ -27,9 +28,21 @@ export const GENERAL_ROUTES: Route[] = [
         path: 'items',
         loadChildren: () => import('./masters/item/item.routes').then((m) => m.ITEM_ROUTES),
       },
-      // Futuros: asesores, sedes, almacenes, cuentas-banco, formas-pago,
-      // precios, resoluciones. Cada uno delega a su
-      // `masters/<entity>/<entity>.routes.ts`.
+      {
+        path: 'asesores',
+        loadChildren: () => import('./masters/asesor/asesor.routes').then((m) => m.ASESOR_ROUTES),
+      },
+      {
+        path: 'cuentas-banco',
+        loadChildren: () =>
+          import('./masters/cuenta-banco/cuenta-banco.routes').then((m) => m.CUENTA_BANCO_ROUTES),
+      },
+      {
+        path: 'precios',
+        loadChildren: () => import('./masters/precio/precio.routes').then((m) => m.PRECIO_ROUTES),
+      },
+      // Futuros: sedes, almacenes, formas-pago, resoluciones.
+      // Cada uno delega a su `masters/<entity>/<entity>.routes.ts`.
     ],
   },
 ];

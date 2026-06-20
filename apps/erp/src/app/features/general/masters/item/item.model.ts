@@ -52,6 +52,10 @@ export interface ItemImpuesto {
   readonly impuesto_nombre?: string | null;
   readonly impuesto_venta?: boolean;
   readonly impuesto_compra?: boolean;
+  /** Porcentaje del impuesto, e.g. `"19.00"`. */
+  readonly impuesto_porcentaje?: string | null;
+  /** Porcentaje de la base sobre la que aplica, e.g. `"100.00"` o `"10.00"` para AIU. */
+  readonly impuesto_porcentaje_base?: string | null;
 }
 
 /** Payload para crear o actualizar un item. */
@@ -74,9 +78,4 @@ export interface ItemPayload {
   readonly cuenta_inventario: number | null;
   /** Ids de impuesto (unión deduplicada de venta + compra). */
   readonly impuestos_ids: readonly number[];
-}
-
-export interface ItemListResponse {
-  readonly count: number;
-  readonly results: readonly Item[];
 }

@@ -14,19 +14,16 @@ export const CENTROS_COSTO_COLUMNS: readonly ColumnDef[] = [
     type: 'number',
     width: '70px',
     align: 'right',
-    sortable: true,
   },
   {
     field: 'codigo',
     headerKey: 'entities.centroCosto.columns.codigo',
     type: 'text',
-    sortable: true,
   },
   {
     field: 'nombre',
     headerKey: 'entities.centroCosto.columns.nombre',
     type: 'text',
-    sortable: true,
   },
 ];
 

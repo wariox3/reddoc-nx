@@ -4,14 +4,14 @@ import type { ErpModuleDescriptor } from '@erp/core/erp-modules';
  * Descriptor del módulo Contabilidad para la capa de navegación.
  *
  * Los `path` del menú son **relativos al módulo** — el `WorkspaceLayout` les
- * prepende `/t/<slug>/contabilidad/`. Por ahora solo el master `centro-costo`;
- * sumar entradas cuando se implementen más masters/documentos.
+ * prepende `/t/<slug>/contabilidad/`. Sumar entradas cuando se implementen más
+ * masters/documentos.
  */
 export const CONTABILIDAD_MODULE: ErpModuleDescriptor = {
   id: 'contabilidad',
   displayNameKey: 'modules.contabilidad.name',
   iconClass: 'pi pi-calculator',
-  defaultChildPath: 'centros-costo',
+  defaultChildPath: 'cuentas',
   menu: [
     {
       kind: 'accordion',
@@ -21,7 +21,11 @@ export const CONTABILIDAD_MODULE: ErpModuleDescriptor = {
       defaultExpanded: true,
       groups: [
         {
-          items: [{ labelKey: 'entities.centroCosto.name', path: 'centros-costo' }],
+          items: [
+            { labelKey: 'entities.cuenta.name', path: 'cuentas' },
+            { labelKey: 'entities.centroCosto.name', path: 'centros-costo' },
+            { labelKey: 'entities.activo.name', path: 'activos' },
+          ],
         },
       ],
     },

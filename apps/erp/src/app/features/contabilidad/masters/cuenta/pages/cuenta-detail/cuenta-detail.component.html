@@ -1,0 +1,121 @@
+<lib-breadcrumb [items]="breadcrumbItems()" />
+
+<!-- ── Encabezado de página ──────────────────────────────────────────────────── -->
+<header class="flex items-center gap-2">
+  <p-button
+    type="button"
+    [label]="t().common.actions.back"
+    icon="pi pi-arrow-left"
+    severity="secondary"
+    [outlined]="true"
+    size="small"
+    (onClick)="onBack()"
+  />
+  @if (cuenta(); as c) {
+    <p-button
+      type="button"
+      [label]="t().common.actions.edit"
+      icon="pi pi-pencil"
+      size="small"
+      (onClick)="onEdit()"
+    />
+  }
+</header>
+
+@if (isLoading()) {
+  <div
+    class="flex items-center justify-center rounded-xl border border-[rgba(20,48,73,0.1)] bg-brand-surface py-20 text-brand-muted"
+  >
+    <i class="pi pi-spin pi-spinner text-xl"></i>
+  </div>
+} @else if (notFound()) {
+  <div
+    class="flex flex-col items-center rounded-xl border border-[rgba(20,48,73,0.1)] bg-brand-surface px-6 py-16 text-center"
+  >
+    <i class="pi pi-inbox mb-3 text-2xl text-brand-muted opacity-50"></i>
+    <p class="m-0 text-[0.95rem] font-bold text-brand-text">
+      {{ t().entities.cuenta.detail.notFound.title }}
+    </p>
+    <p class="m-0 mt-1 max-w-70 text-[0.8rem] leading-relaxed text-brand-muted">
+      {{ t().entities.cuenta.detail.notFound.desc }}
+    </p>
+  </div>
+} @else if (cuenta(); as c) {
+  <!-- ── Encabezado ───────────────────────────────────────────────────────────── -->
+  <section class="overflow-hidden rounded-xl border border-[rgba(20,48,73,0.1)] bg-brand-surface">
+    <div class="flex flex-wrap items-start gap-4 px-5 py-5 max-[576px]:px-4">
+      <span
+        class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-sky-50 text-sky-700"
+      >
+        <i class="pi pi-book text-[1.4rem]"></i>
+      </span>
+
+      <div class="flex min-w-0 flex-1 flex-col gap-2">
+        <h1 class="m-0 truncate text-2xl font-bold tracking-tight text-brand-text">
+          {{ c.nombre }}
+        </h1>
+        @if (c.codigo) {
+          <p class="m-0 text-[0.8rem] font-medium text-brand-muted">
+            {{ t().entities.cuenta.columns.codigo }}: {{ c.codigo }}
+          </p>
+        }
+
+        <div class="mt-1 flex flex-wrap gap-2">
+          @if (c.permite_movimiento) {
+            <span
+              class="inline-flex w-fit items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-[0.15rem] text-[0.7rem] font-semibold text-emerald-700"
+            >
+              <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+              {{ t().entities.cuenta.form.fields.permiteMovimiento }}
+            </span>
+          }
+          @if (c.exige_base) {
+            <span
+              class="inline-flex w-fit items-center rounded-full bg-sky-50 px-2.5 py-[0.15rem] text-[0.7rem] font-semibold text-sky-700"
+            >
+              {{ t().entities.cuenta.form.fields.exigeBase }}
+            </span>
+          }
+          @if (c.exige_contacto) {
+            <span
+              class="inline-flex w-fit items-center rounded-full bg-sky-50 px-2.5 py-[0.15rem] text-[0.7rem] font-semibold text-sky-700"
+            >
+              {{ t().entities.cuenta.form.fields.exigeContacto }}
+            </span>
+          }
+          @if (c.exige_grupo) {
+            <span
+              class="inline-flex w-fit items-center rounded-full bg-sky-50 px-2.5 py-[0.15rem] text-[0.7rem] font-semibold text-sky-700"
+            >
+              {{ t().entities.cuenta.form.fields.exigeGrupo }}
+            </span>
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Clasificación contable ───────────────────────────────────────────────── -->
+  <section class="overflow-hidden rounded-xl border border-[rgba(20,48,73,0.1)] bg-brand-surface">
+    <div class="grid grid-cols-1 gap-x-5 gap-y-4 px-5 py-5 sm:grid-cols-3 max-[576px]:px-4">
+      <div class="flex flex-col gap-1">
+        <span class="text-[0.7rem] font-semibold uppercase tracking-wide text-brand-muted">
+          {{ t().entities.cuenta.form.fields.cuentaClase }}
+        </span>
+        <span class="text-[0.9rem] text-brand-text">{{ c.cuenta_clase_nombre || '—' }}</span>
+      </div>
+      <div class="flex flex-col gap-1">
+        <span class="text-[0.7rem] font-semibold uppercase tracking-wide text-brand-muted">
+          {{ t().entities.cuenta.form.fields.cuentaGrupo }}
+        </span>
+        <span class="text-[0.9rem] text-brand-text">{{ c.cuenta_grupo_nombre || '—' }}</span>
+      </div>
+      <div class="flex flex-col gap-1">
+        <span class="text-[0.7rem] font-semibold uppercase tracking-wide text-brand-muted">
+          {{ t().entities.cuenta.form.fields.cuentaCuenta }}
+        </span>
+        <span class="text-[0.9rem] text-brand-text">{{ c.cuenta_cuenta_nombre || '—' }}</span>
+      </div>
+    </div>
+  </section>
+}

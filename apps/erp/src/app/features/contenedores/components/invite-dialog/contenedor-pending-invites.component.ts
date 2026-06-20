@@ -62,7 +62,7 @@ export class ContenedorPendingInvitesComponent {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (res) => {
-          this.invitations.set(res.results ?? []);
+          this.invitations.set([...(res.results ?? [])]);
           this.countChange.emit(this.invitations().length);
           this.isLoading.set(false);
         },

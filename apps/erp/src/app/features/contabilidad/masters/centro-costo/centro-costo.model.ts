@@ -5,11 +5,6 @@ export interface CentroCosto {
   readonly estado_inactivo: boolean;
 }
 
-export interface CentroCostoListResponse {
-  readonly count: number;
-  readonly results: readonly CentroCosto[];
-}
-
 export interface CentroCostoPayload {
   codigo: string;
   nombre: string;

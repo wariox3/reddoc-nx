@@ -4,6 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { I18nService, TenantService, ToastService } from '@reddoc/core';
+import { BreadcrumbComponent, type BreadcrumbItem } from '@reddoc/feature-base';
 import { ErpImageUploadComponent } from '@erp/core/components/image-upload/erp-image-upload.component';
 import type { AppDict } from '@erp/i18n';
 import { ItemService } from '../../item.service';
@@ -33,7 +34,7 @@ interface CuentaRow {
 @Component({
   selector: 'app-item-detail',
   standalone: true,
-  imports: [ButtonModule, CurrencyPipe, ErpImageUploadComponent],
+  imports: [ButtonModule, BreadcrumbComponent, CurrencyPipe, ErpImageUploadComponent],
   templateUrl: './item-detail.component.html',
   styleUrl: './item-detail.component.scss',
 })
@@ -54,6 +55,24 @@ export class ItemDetailComponent implements OnInit {
   protected readonly isLoading = signal(true);
   protected readonly notFound = signal(false);
   protected readonly isSavingImage = signal(false);
+
+  /** Migas: módulo General → listado de items → nombre del item abierto. */
+  protected readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => {
+    const slug = this.tenant.currentSlug();
+    const item = this.item();
+    const items: BreadcrumbItem[] = [
+      {
+        label: this.t().modules.general.name,
+        routerLink: slug ? ['/t', slug, 'general'] : undefined,
+      },
+      {
+        label: this.t().entities.item.name,
+        routerLink: slug ? ['/t', slug, ...ITEM_LIST_PATH] : undefined,
+      },
+    ];
+    if (item) items.push({ label: item.nombre });
+    return items;
+  });
 
   /**
    * URL de la imagen para el `<img>`. Punto único de ajuste: si el backend

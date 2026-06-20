@@ -1,7 +1,9 @@
 import { Route } from '@angular/router';
-import { authGuard, tenantGuard } from '@reddoc/core';
+import { authGuard } from '@reddoc/core';
 import { AUTH_ROUTES } from './features/auth/auth.routes';
 import { rootRedirectGuard } from './core/guards/root-redirect.guard';
+import { tenantAccessGuard } from './core/guards/tenant-access.guard';
+import { erpModuleResolver } from '@erp/core/erp-modules';
 
 export const appRoutes: Route[] = [
   { path: '', pathMatch: 'full', canActivate: [rootRedirectGuard], children: [] },
@@ -30,7 +32,7 @@ export const appRoutes: Route[] = [
   // Workspace layout (sidebar + main) — anidado bajo el tenant slug
   {
     path: 't/:tenantSlug',
-    canActivate: [authGuard, tenantGuard],
+    canActivate: [authGuard, tenantAccessGuard],
     loadComponent: () =>
       import('./layouts/workspace-layout/workspace-layout.component').then(
         (m) => m.WorkspaceLayoutComponent,
@@ -39,8 +41,19 @@ export const appRoutes: Route[] = [
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
       {
         path: 'dashboard',
+        // Ruta global (no-módulo): limpia el módulo activo para ocultar el sidebar.
+        resolve: { _module: erpModuleResolver(null) },
         loadComponent: () =>
           import('./features/dashboard/dashboard.component').then((m) => m.DashboardComponent),
+      },
+      {
+        path: 'configuracion',
+        // Ruta global (no-módulo): limpia el módulo activo para ocultar el sidebar.
+        resolve: { _module: erpModuleResolver(null) },
+        loadChildren: () =>
+          import('./features/configuracion/configuracion.routes').then(
+            (m) => m.CONFIGURACION_ROUTES,
+          ),
       },
       {
         path: 'general',
@@ -68,6 +81,10 @@ export const appRoutes: Route[] = [
         path: 'contabilidad',
         loadChildren: () =>
           import('./features/contabilidad/contabilidad.routes').then((m) => m.CONTABILIDAD_ROUTES),
+      },
+      {
+        path: 'humano',
+        loadChildren: () => import('./features/humano/humano.routes').then((m) => m.HUMANO_ROUTES),
       },
     ],
   },

@@ -7,7 +7,7 @@
   <lib-user-avatar styleClass="user-menu__avatar" />
 </button>
 
-<p-menu #menu [popup]="true" [model]="items" appendTo="body">
+<p-menu #menu [popup]="true" [model]="items" appendTo="body" styleClass="user-menu__menu">
   <ng-template #start>
     <div class="user-menu__header">
       <p class="user-menu__name">{{ displayName() }}</p>

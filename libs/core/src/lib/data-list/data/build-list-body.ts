@@ -1,3 +1,4 @@
+import type { ParamValue } from '../../services/base-http.service';
 import type { FilterCondition, FilterOperator, ListQuery, SortSpec } from './list-query.types';
 
 /**
@@ -8,16 +9,45 @@ import type { FilterCondition, FilterOperator, ListQuery, SortSpec } from './lis
  * ```json
  * {
  *   "filtros": [{ "propiedad": "nombre_corto", "operador": "contiene", "valor": "m" }],
- *   "ordenamientos": ["-nombre_corto"],
- *   "pagina": 1,
- *   "tamano_pagina": 25
+ *   "ordenamientos": ["-nombre_corto"]
  * }
  * ```
+ *
+ * La **paginación NO viaja en el body**: el backend (Django REST Framework) la
+ * lee de los query params de la URL (`?page=…&limit=…`). Por eso `buildListBody`
+ * solo arma `filtros`/`ordenamientos` y la paginación se construye aparte con
+ * `buildListParams` (que el servicio pasa como query params del POST).
  *
  * El front trabaja con operadores semánticos (`FilterOperator`); aquí se
  * traducen 1:1 al vocabulario de `operador` que confirmó el backend. Mantener
  * el mapeo centralizado evita que cada servicio invente el suyo.
  */
+
+/**
+ * Nombres de los query params de paginación que espera el backend. **Única
+ * fuente de verdad**: si el backend confirma otra convención (`page_size`,
+ * `offset`, …) solo se cambia aquí.
+ *
+ * `page` está confirmado por el `next` de las respuestas (`.../lista/?page=2`);
+ * `limit` es el nombre del tamaño de página (pendiente de confirmación final).
+ */
+export const LIST_PAGINATION_PARAMS = {
+  page: 'page',
+  size: 'limit',
+} as const;
+
+/**
+ * Construye los query params de paginación a partir del `ListQuery`.
+ *
+ * El `ListQuery` maneja la página 0-based; en el wire va 1-based (igual que la
+ * convención previa del body). El servicio los pasa como `params` del POST.
+ */
+export function buildListParams(query: ListQuery): Record<string, ParamValue> {
+  return {
+    [LIST_PAGINATION_PARAMS.page]: query.page + 1,
+    [LIST_PAGINATION_PARAMS.size]: query.pageSize,
+  };
+}
 
 /**
  * Mapeo de operadores semánticos al string que el backend espera en `operador`.
@@ -45,13 +75,13 @@ export interface BackendFilter {
   readonly valor: string | number | boolean;
 }
 
-/** Body completo de `POST <recurso>/lista/`. */
+/**
+ * Body completo de `POST <recurso>/lista/`. La paginación viaja como query
+ * params (ver `buildListParams`), no aquí.
+ */
 export interface AdvancedListBody {
   readonly filtros: readonly BackendFilter[];
   readonly ordenamientos: readonly string[];
-  /** Página 1-based (el `ListQuery` es 0-based; aquí se convierte). */
-  readonly pagina: number;
-  readonly tamano_pagina: number;
 }
 
 /** Traduce un `FilterCondition` genérico al shape `{propiedad, operador, valor}`. */
@@ -111,7 +141,5 @@ export function buildListBody(
   return {
     filtros: buildFiltros([...baseFilters, ...query.filters]),
     ordenamientos: buildOrdenamientos(query.sort),
-    pagina: query.page + 1,
-    tamano_pagina: query.pageSize,
   };
 }

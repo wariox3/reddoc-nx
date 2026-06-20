@@ -12,7 +12,7 @@ export class CiudadService extends BaseHttpService {
   search(query: string): Observable<Ciudad[]> {
     const params = query ? { search: query } : undefined;
     return this.get<PaginatedResponse<Ciudad>>('/contenedor/ciudad/seleccionar/', params).pipe(
-      map((res) => res.results),
+      map((res) => [...res.results]),
     );
   }
 }

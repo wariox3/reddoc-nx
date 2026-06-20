@@ -1,5 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, computed, effect, inject, input, signal } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  computed,
+  effect,
+  inject,
+  input,
+  signal,
+  untracked,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -15,10 +24,10 @@ import {
   type SortSpec,
 } from '@reddoc/core';
 import {
-  BreadcrumbComponent,
   DataFilterModalComponent,
   DataTableComponent,
   DataToolbarComponent,
+  ListShellComponent,
 } from '@reddoc/feature-base';
 import type {
   BreadcrumbItem,
@@ -27,6 +36,8 @@ import type {
   RowActionInvokedEvent,
   ToolbarAction,
 } from '@reddoc/feature-base';
+import { ENTITY_ACTION_STRATEGY } from '../../actions/entity-action.token';
+import type { EntityActionStrategy } from '../../actions/entity-action-strategy';
 import { ENTITY_DATA_GATEWAY } from '../../data/entity-data-gateway';
 import { MissingModuleContextError } from '../../errors/config.errors';
 import { ModuleNavigationStore } from '../../module-navigation.store';
@@ -69,7 +80,7 @@ const NEW_ACTION: ToolbarAction = {
   imports: [
     CommonModule,
     ConfirmDialogModule,
-    BreadcrumbComponent,
+    ListShellComponent,
     DataTableComponent,
     DataToolbarComponent,
     DataFilterModalComponent,
@@ -89,6 +100,12 @@ export class BaseDocumentListComponent {
   private readonly confirmation = inject(ConfirmationService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly i18n = inject<I18nService<unknown>>(I18nService);
+
+  /**
+   * Strategies de acciones extra registrados en `ENTITY_ACTION_STRATEGY`.
+   * `optional` para no romper contextos sin acciones registradas (tests, otras apps).
+   */
+  private readonly actionStrategies = inject(ENTITY_ACTION_STRATEGY, { optional: true }) ?? [];
 
   // ── Inputs ────────────────────────────────────────────────────────────────
   /** Documento activo inyectado por `activeDocumentResolver` vía router binding. */
@@ -120,12 +137,48 @@ export class BaseDocumentListComponent {
   );
 
   /**
-   * El toolbar solo se monta si aporta algo: crear, filtrar o eliminar. Un
-   * documento solo-lista (todas las capabilities en `false`, sin filtros) no lo
-   * muestra — queda card + tabla, sin barra vacía.
+   * Strategies de acción extra que este documento expone, en el orden de
+   * `extraActionIds`, filtrados por su `isAvailable`. Open/Closed: el componente
+   * no conoce ninguna acción concreta, solo el contrato `EntityActionStrategy`.
+   */
+  private readonly availableStrategies = computed<readonly EntityActionStrategy[]>(() => {
+    const doc = this.document();
+    return (doc.extraActionIds ?? [])
+      .map((id) => this.actionStrategies.find((s) => s.id === id))
+      .filter((s): s is EntityActionStrategy => s !== undefined)
+      .filter((s) => s.isAvailable?.(doc) ?? true);
+  });
+
+  /**
+   * Acciones extra del toolbar, agrupadas en un único dropdown "Acciones" (el
+   * toolbar lo renderiza como menú cuando el `ToolbarAction` trae `children`).
+   * Al elegir un hijo, el toolbar emite su `id` → lo resuelve `onToolbarAction`.
+   * Vacío ⇒ sin dropdown.
+   */
+  protected readonly trailingActions = computed<readonly ToolbarAction[]>(() => {
+    const children = this.availableStrategies().map((s) => s.toolbarAction);
+    if (children.length === 0) return [];
+    return [
+      {
+        id: 'actions',
+        labelKey: 'common.actions.actions',
+        iconClass: '',
+        children,
+      },
+    ];
+  });
+
+  /**
+   * El toolbar solo se monta si aporta algo: crear, filtrar, eliminar o alguna
+   * acción extra. Un documento solo-lista (todas las capabilities en `false`, sin
+   * filtros ni acciones) no lo muestra — queda card + tabla, sin barra vacía.
    */
   protected readonly showToolbar = computed(
-    () => this.capabilities().canCreate || this.filtersEnabled() || this.capabilities().canDelete,
+    () =>
+      this.capabilities().canCreate ||
+      this.filtersEnabled() ||
+      this.capabilities().canDelete ||
+      this.trailingActions().length > 0,
   );
 
   /** Clave de persistencia de filtros, versionada por `schemaVersion` del documento. */
@@ -184,12 +237,20 @@ export class BaseDocumentListComponent {
   constructor() {
     // Cuando cambia el documento (navegación entre documentos del mismo módulo),
     // restauramos los filtros guardados y recargamos la lista.
+    //
+    // El `effect` debe reaccionar SOLO al cambio de documento/módulo (`storageKey`).
+    // El cuerpo va en `untracked` porque `loadList()` lee `currentPage`/`pageSize`/
+    // `sort`/`activeFilters`: sin `untracked`, esas señales se volverían
+    // dependencias y cada cambio de página re-dispararía el effect, que resetea
+    // `currentPage` a 0 → la paginación rebotaría siempre a la primera página.
     effect(() => {
-      const storedFilters = this.filterStorage.read(this.storageKey());
-      this.activeFilters.set(storedFilters);
-      this.selectedRows.set([]);
-      this.currentPage.set(0);
-      this.loadList();
+      const key = this.storageKey();
+      untracked(() => {
+        this.activeFilters.set(this.filterStorage.read(key));
+        this.selectedRows.set([]);
+        this.currentPage.set(0);
+        this.loadList();
+      });
     });
   }
 
@@ -234,7 +295,20 @@ export class BaseDocumentListComponent {
   }
 
   protected onToolbarAction(actionId: string): void {
-    if (actionId === 'new') this.navigateToNew();
+    if (actionId === 'new') {
+      this.navigateToNew();
+      return;
+    }
+    // Acciones extra: delega en su strategy sin conocer su modal ni su endpoint.
+    const strategy = this.availableStrategies().find((s) => s.id === actionId);
+    strategy
+      ?.execute({
+        document: this.document(),
+        query: this.currentQuery(),
+        reload: () => this.loadList(),
+      })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe();
   }
 
   protected onSelectionChange(rows: unknown[]): void {
@@ -280,17 +354,20 @@ export class BaseDocumentListComponent {
 
   // ── Internos ──────────────────────────────────────────────────────────────
 
-  private loadList(): void {
-    const query: ListQuery = {
+  /** Query activo (filtros/orden/paginación) que comparten `loadList` y las acciones. */
+  private currentQuery(): ListQuery {
+    return {
       filters: this.activeFilters(),
       sort: this.sort(),
       page: this.currentPage(),
       pageSize: this.pageSize(),
     };
+  }
 
+  private loadList(): void {
     this.isLoading.set(true);
     this.gateway
-      .list(this.document(), query)
+      .list(this.document(), this.currentQuery())
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         finalize(() => this.isLoading.set(false)),

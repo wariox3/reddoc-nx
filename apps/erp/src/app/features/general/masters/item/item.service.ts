@@ -1,7 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Observable, forkJoin, map } from 'rxjs';
-import { BaseHttpService, buildListBody, type ListQuery } from '@reddoc/core';
-import type { Item, ItemListResponse, ItemPayload } from './item.model';
+import {
+  BaseHttpService,
+  buildListBody,
+  buildListParams,
+  type ListQuery,
+  type PaginatedResponse,
+} from '@reddoc/core';
+import type { Item, ItemPayload } from './item.model';
 
 /**
  * Servicio HTTP de items.
@@ -10,15 +16,19 @@ import type { Item, ItemListResponse, ItemPayload } from './item.model';
  * (camino B del enfoque híbrido — ver docs/architecture).
  *
  * Reutiliza `buildListBody` de `@reddoc/core` para enviar el body
- * `{ filtros, ordenamientos, pagina, tamano_pagina }` — la misma convención de
- * filtros y ordenamiento que esperan todos los endpoints listables del backend.
+ * `{ filtros, ordenamientos }`. La paginación va como query params
+ * (`buildListParams`), que es donde el backend la lee.
  */
 @Injectable({ providedIn: 'root' })
 export class ItemService extends BaseHttpService {
   private readonly resourcePath = '/general/item/';
 
-  list(query: ListQuery): Observable<ItemListResponse> {
-    return this.post<ItemListResponse>(this.resourcePath + 'lista/', buildListBody(query));
+  list(query: ListQuery): Observable<PaginatedResponse<Item>> {
+    return this.post<PaginatedResponse<Item>>(
+      this.resourcePath + 'lista/',
+      buildListBody(query),
+      buildListParams(query),
+    );
   }
 
   getById(id: number): Observable<Item> {

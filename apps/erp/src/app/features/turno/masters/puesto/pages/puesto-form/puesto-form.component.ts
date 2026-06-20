@@ -7,6 +7,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { FieldErrorComponent } from '@reddoc/ui';
 import { FormErrorService, I18nService, TenantService, ToastService } from '@reddoc/core';
+import { BreadcrumbComponent, type BreadcrumbItem } from '@reddoc/feature-base';
 import { type ErpSelectOption } from '@erp/core/components/api-select/erp-api-select.component';
 import { ErpApiAutocompleteComponent } from '@erp/core/components/api-autocomplete/erp-api-autocomplete.component';
 import { ErpContactoSelectComponent } from '@erp/core/components/contacto-select/erp-contacto-select.component';
@@ -26,6 +27,7 @@ import { puestoToFormValue, formValueToPayload } from '../../puesto.mapper';
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    BreadcrumbComponent,
     ButtonModule,
     InputTextModule,
     TextareaModule,
@@ -53,6 +55,21 @@ export class PuestoFormComponent implements OnInit {
 
   protected readonly isEditMode = computed(() => !!this.id());
   protected readonly isSaving = signal(false);
+
+  protected readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => {
+    const slug = this.tenant.currentSlug();
+    return [
+      {
+        label: this.t().modules.turno.name,
+        routerLink: slug ? ['/t', slug, 'turno'] : undefined,
+      },
+      {
+        label: this.t().entities.puesto.name,
+        routerLink: slug ? ['/t', slug, ...PUESTO_LIST_PATH] : undefined,
+      },
+      { label: this.isEditMode() ? this.t().common.actions.edit : this.t().common.actions.new },
+    ];
+  });
 
   protected readonly form = this.fb.group({
     nombre: ['', Validators.required],

@@ -11,6 +11,7 @@ export interface AppDict extends AuthTranslationsHost {
       delete: string;
       deleteSelected: string;
       cancel: string;
+      back: string;
       save: string;
       menuLabel: string;
       filters: string;
@@ -117,6 +118,9 @@ export interface AppDict extends AuthTranslationsHost {
   layout: {
     menuLabel: string;
     drawerHeader: string;
+    tenantBadge: {
+      ariaLabel: string;
+    };
     nav: {
       dashboard: string;
       account: string;
@@ -124,15 +128,54 @@ export interface AppDict extends AuthTranslationsHost {
       sections: {
         master: string;
         document: string;
+        process: string;
         movement: string;
         utility: string;
+        report: string;
       };
     };
     userMenu: {
       label: string;
       myContainers: string;
       manageAccount: string;
+      settings: string;
       logout: string;
+    };
+  };
+  documentActions: {
+    generar: {
+      buttonLabel: string;
+      modalHeader: string;
+      modalSubtitle: string;
+      periodoLabel: string;
+      submit: string;
+      cancel: string;
+      success: { title: string; desc: string };
+      error: { title: string; desc: string };
+    };
+  };
+  documentImport: {
+    buttonLabel: string;
+    disabledHint: string;
+    modalHeader: string;
+    modalSubtitle: string;
+    selected: string;
+    submit: string;
+    cancel: string;
+    columns: {
+      documento: string;
+      fecha: string;
+      contacto: string;
+      item: string;
+      cantidad: string;
+      precio: string;
+      total: string;
+      pendiente: string;
+    };
+    toasts: {
+      loadError: { title: string; desc: string };
+      addSuccess: { title: string; desc: string };
+      addError: { title: string; desc: string };
     };
   };
   modules: {
@@ -142,8 +185,137 @@ export interface AppDict extends AuthTranslationsHost {
     inventario: { name: string };
     turno: { name: string };
     contabilidad: { name: string };
+    humano: { name: string };
   };
   entities: {
+    asesor: {
+      name: string;
+      searchPlaceholder: string;
+      columns: { id: string; nombreCorto: string; celular: string; correo: string };
+      form: {
+        createTitle: string;
+        editTitle: string;
+        createSubtitle: string;
+        editSubtitle: string;
+        fields: { nombreCorto: string; celular: string; correo: string };
+        validation: { required: string; email: string };
+        toasts: {
+          createSuccess: { title: string; desc: string };
+          editSuccess: { title: string; desc: string };
+          createError: { title: string; desc: string };
+          editError: { title: string; desc: string };
+          loadError: { title: string; desc: string };
+        };
+      };
+      detail: {
+        notFound: { title: string; desc: string };
+        toasts: { loadError: { title: string; desc: string } };
+      };
+    };
+    cuentaBanco: {
+      name: string;
+      searchPlaceholder: string;
+      columns: { id: string; nombre: string; tipo: string; clase: string; numeroCuenta: string };
+      form: {
+        createTitle: string;
+        editTitle: string;
+        createSubtitle: string;
+        editSubtitle: string;
+        sections: { contabilidad: string };
+        sectionsHint: { contabilidad: string };
+        fields: {
+          nombre: string;
+          tipo: string;
+          clase: string;
+          numeroCuenta: string;
+          cuenta: string;
+          selectPlaceholder: string;
+          cuentaPlaceholder: string;
+        };
+        validation: { required: string };
+        toasts: {
+          createSuccess: { title: string; desc: string };
+          editSuccess: { title: string; desc: string };
+          createError: { title: string; desc: string };
+          editError: { title: string; desc: string };
+          loadError: { title: string; desc: string };
+        };
+      };
+      detail: {
+        notFound: { title: string; desc: string };
+        toasts: { loadError: { title: string; desc: string } };
+      };
+    };
+    precio: {
+      name: string;
+      searchPlaceholder: string;
+      columns: { id: string; nombre: string; venta: string; compra: string; fechaVence: string };
+      form: {
+        createTitle: string;
+        editTitle: string;
+        createSubtitle: string;
+        editSubtitle: string;
+        fields: { nombre: string; venta: string; compra: string; fechaVence: string };
+        validation: { required: string };
+        toasts: {
+          createSuccess: { title: string; desc: string };
+          editSuccess: { title: string; desc: string };
+          createError: { title: string; desc: string };
+          editError: { title: string; desc: string };
+          loadError: { title: string; desc: string };
+        };
+      };
+      detail: {
+        notFound: { title: string; desc: string };
+        toasts: { loadError: { title: string; desc: string } };
+      };
+    };
+    resolucion: {
+      name: string;
+      searchPlaceholder: string;
+      columns: {
+        id: string;
+        prefijo: string;
+        numero: string;
+        consecutivoDesde: string;
+        consecutivoHasta: string;
+        fechaDesde: string;
+        fechaHasta: string;
+      };
+      form: {
+        createTitle: string;
+        editTitle: string;
+        createSubtitle: string;
+        editSubtitle: string;
+        fields: {
+          prefijo: string;
+          numero: string;
+          consecutivoDesde: string;
+          consecutivoHasta: string;
+          fechaDesde: string;
+          fechaHasta: string;
+        };
+        validation: {
+          required: string;
+          prefijoMax: string;
+          numeroDigitos: string;
+          consecutivoMax: string;
+          consecutivoOrden: string;
+          fechaOrden: string;
+        };
+        toasts: {
+          createSuccess: { title: string; desc: string };
+          editSuccess: { title: string; desc: string };
+          createError: { title: string; desc: string };
+          editError: { title: string; desc: string };
+          loadError: { title: string; desc: string };
+        };
+      };
+      detail: {
+        notFound: { title: string; desc: string };
+        toasts: { loadError: { title: string; desc: string } };
+      };
+    };
     contacto: {
       name: string;
       searchPlaceholder: string;
@@ -387,6 +559,179 @@ export interface AppDict extends AuthTranslationsHost {
         toasts: { loadError: { title: string; desc: string } };
       };
     };
+    secuencia: {
+      name: string;
+      searchPlaceholder: string;
+      columns: {
+        id: string;
+        codigo: string;
+        nombre: string;
+        horas: string;
+        dias: string;
+        homologar: string;
+        estado: string;
+      };
+      form: {
+        createTitle: string;
+        editTitle: string;
+        createSubtitle: string;
+        editSubtitle: string;
+        cancel: string;
+        submitCreate: string;
+        submitEdit: string;
+        sections: { principal: string; diasMes: string; diasSemana: string };
+        sectionsHint: { principal: string; diasMes: string; diasSemana: string };
+        fields: {
+          codigo: string;
+          nombre: string;
+          horas: string;
+          dias: string;
+          homologar: string;
+          lunes: string;
+          martes: string;
+          miercoles: string;
+          jueves: string;
+          viernes: string;
+          sabado: string;
+          domingo: string;
+          festivo: string;
+          domingoFestivo: string;
+        };
+        validation: { required: string };
+        toasts: {
+          createSuccess: { title: string; desc: string };
+          editSuccess: { title: string; desc: string };
+          createError: { title: string; desc: string };
+          editError: { title: string; desc: string };
+          loadError: { title: string; desc: string };
+        };
+      };
+      detail: {
+        notFound: { title: string; desc: string };
+        sections: { principal: string; diasMes: string; diasSemana: string };
+        toasts: { loadError: { title: string; desc: string } };
+      };
+    };
+    turno: {
+      name: string;
+      searchPlaceholder: string;
+      columns: {
+        id: string;
+        codigo: string;
+        nombre: string;
+        horaInicio: string;
+        horaFin: string;
+        horas: string;
+        horasDiurnas: string;
+        horasNocturnas: string;
+        color: string;
+        estado: string;
+      };
+      form: {
+        createTitle: string;
+        editTitle: string;
+        createSubtitle: string;
+        editSubtitle: string;
+        fields: {
+          codigo: string;
+          nombre: string;
+          horaInicio: string;
+          horaFin: string;
+          horas: string;
+          horasDiurnas: string;
+          horasNocturnas: string;
+          color: string;
+        };
+        validation: { required: string };
+        toasts: {
+          createSuccess: { title: string; desc: string };
+          editSuccess: { title: string; desc: string };
+          createError: { title: string; desc: string };
+          editError: { title: string; desc: string };
+          loadError: { title: string; desc: string };
+        };
+      };
+      detail: {
+        notFound: { title: string; desc: string };
+        sections: { principal: string };
+        activo: string;
+        toasts: { loadError: { title: string; desc: string } };
+      };
+    };
+    sucursal: {
+      name: string;
+      searchPlaceholder: string;
+      columns: { id: string; codigo: string; nombre: string };
+      form: {
+        createTitle: string;
+        editTitle: string;
+        createSubtitle: string;
+        editSubtitle: string;
+        fields: { codigo: string; nombre: string };
+        validation: { required: string };
+        toasts: {
+          createSuccess: { title: string; desc: string };
+          editSuccess: { title: string; desc: string };
+          createError: { title: string; desc: string };
+          editError: { title: string; desc: string };
+          loadError: { title: string; desc: string };
+        };
+      };
+      detail: {
+        notFound: { title: string; desc: string };
+        toasts: { loadError: { title: string; desc: string } };
+      };
+    };
+    grupo: {
+      name: string;
+      searchPlaceholder: string;
+      columns: { id: string; nombre: string; periodo: string };
+      periodos: { 1: string; 2: string };
+      form: {
+        createTitle: string;
+        editTitle: string;
+        createSubtitle: string;
+        editSubtitle: string;
+        fields: { nombre: string; periodo: string; periodoPlaceholder: string };
+        validation: { required: string };
+        toasts: {
+          createSuccess: { title: string; desc: string };
+          editSuccess: { title: string; desc: string };
+          createError: { title: string; desc: string };
+          editError: { title: string; desc: string };
+          loadError: { title: string; desc: string };
+        };
+      };
+      detail: {
+        notFound: { title: string; desc: string };
+        toasts: { loadError: { title: string; desc: string } };
+      };
+    };
+    cargo: {
+      name: string;
+      searchPlaceholder: string;
+      columns: { id: string; codigo: string; nombre: string; estado: string };
+      form: {
+        createTitle: string;
+        editTitle: string;
+        createSubtitle: string;
+        editSubtitle: string;
+        fields: { codigo: string; nombre: string; estadoInactivo: string };
+        validation: { required: string };
+        toasts: {
+          createSuccess: { title: string; desc: string };
+          editSuccess: { title: string; desc: string };
+          createError: { title: string; desc: string };
+          editError: { title: string; desc: string };
+          loadError: { title: string; desc: string };
+        };
+      };
+      detail: {
+        activo: string;
+        notFound: { title: string; desc: string };
+        toasts: { loadError: { title: string; desc: string } };
+      };
+    };
     centroCosto: {
       name: string;
       searchPlaceholder: string;
@@ -416,6 +761,315 @@ export interface AppDict extends AuthTranslationsHost {
         toasts: { loadError: { title: string; desc: string } };
       };
     };
+    cuenta: {
+      name: string;
+      searchPlaceholder: string;
+      columns: { codigo: string; nombre: string; clase: string; movimiento: string };
+      form: {
+        createTitle: string;
+        editTitle: string;
+        createSubtitle: string;
+        editSubtitle: string;
+        sections: { clasificacion: string; comportamiento: string };
+        sectionsHint: { clasificacion: string; comportamiento: string };
+        fields: {
+          codigo: string;
+          nombre: string;
+          cuentaClase: string;
+          cuentaGrupo: string;
+          cuentaCuenta: string;
+          selectPlaceholder: string;
+          permiteMovimiento: string;
+          exigeBase: string;
+          exigeContacto: string;
+          exigeGrupo: string;
+        };
+        validation: {
+          required: string;
+          maxlength: string;
+          soloDigitos: string;
+          longitudPar: string;
+          noIniciaCero: string;
+        };
+        toasts: {
+          createSuccess: { title: string; desc: string };
+          editSuccess: { title: string; desc: string };
+          createError: { title: string; desc: string };
+          editError: { title: string; desc: string };
+          loadError: { title: string; desc: string };
+        };
+      };
+      detail: {
+        notFound: { title: string; desc: string };
+        toasts: { loadError: { title: string; desc: string } };
+      };
+    };
+    activo: {
+      name: string;
+      searchPlaceholder: string;
+      columns: {
+        id: string;
+        codigo: string;
+        nombre: string;
+        activoGrupo: string;
+        centroCosto: string;
+        valorCompra: string;
+        fechaCompra: string;
+      };
+      form: {
+        createTitle: string;
+        editTitle: string;
+        createSubtitle: string;
+        editSubtitle: string;
+        sections: { depreciacion: string; contabilidad: string };
+        sectionsHint: { depreciacion: string; contabilidad: string };
+        fields: {
+          codigo: string;
+          nombre: string;
+          marca: string;
+          serie: string;
+          modelo: string;
+          activoGrupo: string;
+          centroCosto: string;
+          metodoDepreciacion: string;
+          duracion: string;
+          valorCompra: string;
+          depreciacionInicial: string;
+          fechaCompra: string;
+          fechaActivacion: string;
+          fechaBaja: string;
+          cuentaGasto: string;
+          cuentaDepreciacion: string;
+          selectPlaceholder: string;
+          cuentaPlaceholder: string;
+        };
+        validation: { required: string; maxLength: string };
+        toasts: {
+          createSuccess: { title: string; desc: string };
+          editSuccess: { title: string; desc: string };
+          createError: { title: string; desc: string };
+          editError: { title: string; desc: string };
+          loadError: { title: string; desc: string };
+        };
+      };
+      detail: {
+        notFound: { title: string; desc: string };
+        toasts: { loadError: { title: string; desc: string } };
+      };
+    };
+    credito: {
+      name: string;
+      searchPlaceholder: string;
+      columns: {
+        contrato: string;
+        concepto: string;
+        inicio: string;
+        total: string;
+        cuota: string;
+        cantidadCuotas: string;
+        abono: string;
+        saldo: string;
+        cuotaActual: string;
+        pagado: string;
+        inactivo: string;
+      };
+      form: {
+        createTitle: string;
+        editTitle: string;
+        createSubtitle: string;
+        editSubtitle: string;
+        sections: { datos: string; valores: string };
+        sectionsHint: { datos: string; valores: string };
+        fields: {
+          contrato: string;
+          contratoPlaceholder: string;
+          concepto: string;
+          conceptoPlaceholder: string;
+          inicio: string;
+          total: string;
+          cuota: string;
+          cantidadCuotas: string;
+          inactivo: string;
+          aplicaPrima: string;
+          aplicaCesantia: string;
+        };
+        validation: { required: string };
+        toasts: {
+          createSuccess: { title: string; desc: string };
+          editSuccess: { title: string; desc: string };
+          createError: { title: string; desc: string };
+          editError: { title: string; desc: string };
+          loadError: { title: string; desc: string };
+        };
+      };
+      detail: {
+        notFound: { title: string; desc: string };
+        toasts: { loadError: { title: string; desc: string } };
+      };
+    };
+    adicional: {
+      name: string;
+      searchPlaceholder: string;
+      columns: {
+        contrato: string;
+        concepto: string;
+        valor: string;
+        horas: string;
+        detalle: string;
+        aplicaDiaLaborado: string;
+        permanente: string;
+        inactivo: string;
+      };
+      form: {
+        createTitle: string;
+        editTitle: string;
+        createSubtitle: string;
+        editSubtitle: string;
+        sections: { datos: string; valores: string };
+        sectionsHint: { datos: string; valores: string };
+        fields: {
+          contrato: string;
+          contratoPlaceholder: string;
+          concepto: string;
+          conceptoPlaceholder: string;
+          valor: string;
+          detalle: string;
+          aplicaDiaLaborado: string;
+          inactivo: string;
+        };
+        validation: { required: string };
+        toasts: {
+          createSuccess: { title: string; desc: string };
+          editSuccess: { title: string; desc: string };
+          createError: { title: string; desc: string };
+          editError: { title: string; desc: string };
+          loadError: { title: string; desc: string };
+        };
+      };
+      detail: {
+        notFound: { title: string; desc: string };
+        toasts: { loadError: { title: string; desc: string } };
+      };
+    };
+    novedad: {
+      name: string;
+      searchPlaceholder: string;
+      columns: {
+        novedadTipo: string;
+        contrato: string;
+        fechaDesde: string;
+        fechaHasta: string;
+        dias: string;
+        total: string;
+      };
+      form: {
+        createTitle: string;
+        editTitle: string;
+        createSubtitle: string;
+        editSubtitle: string;
+        sections: { vacaciones: string };
+        sectionsHint: { vacaciones: string };
+        fields: {
+          novedadTipo: string;
+          contrato: string;
+          contratoPlaceholder: string;
+          fechaDesde: string;
+          fechaHasta: string;
+          detalle: string;
+          selectPlaceholder: string;
+          novedadReferencia: string;
+          fechaDesdePeriodo: string;
+          fechaHastaPeriodo: string;
+          diasDinero: string;
+          diasDisfrutados: string;
+          diasDisfrutadosReales: string;
+        };
+        validation: { required: string; min: string; rangoFechas: string };
+        toasts: {
+          createSuccess: { title: string; desc: string };
+          editSuccess: { title: string; desc: string };
+          createError: { title: string; desc: string };
+          editError: { title: string; desc: string };
+          loadError: { title: string; desc: string };
+        };
+      };
+    };
+    contrato: {
+      name: string;
+      searchPlaceholder: string;
+      columns: {
+        empleado: string;
+        contratoTipo: string;
+        fechaDesde: string;
+        fechaHasta: string;
+        grupo: string;
+        salario: string;
+        terminado: string;
+      };
+      form: {
+        createTitle: string;
+        createSubtitle: string;
+        editTitle: string;
+        editSubtitle: string;
+        cancel: string;
+        submitCreate: string;
+        submitEdit: string;
+        sections: {
+          datos: string;
+          remuneracion: string;
+          seguridadSocial: string;
+          terminacion: string;
+        };
+        sectionsHint: {
+          datos: string;
+          remuneracion: string;
+          seguridadSocial: string;
+          terminacion: string;
+        };
+        fields: {
+          contacto: string;
+          contactoPlaceholder: string;
+          contratoTipo: string;
+          cargo: string;
+          grupo: string;
+          sucursal: string;
+          tiempo: string;
+          fechaDesde: string;
+          fechaHasta: string;
+          salario: string;
+          aplicaAuxilioTransporte: string;
+          salarioIntegral: string;
+          tipoCosto: string;
+          centroCosto: string;
+          salud: string;
+          entidadSalud: string;
+          pension: string;
+          entidadPension: string;
+          entidadCesantias: string;
+          entidadCaja: string;
+          riesgo: string;
+          tipoCotizante: string;
+          subtipoCotizante: string;
+          ciudadContrato: string;
+          ciudadLabora: string;
+          ciudadPlaceholder: string;
+          motivoTerminacion: string;
+          fechaUltimoPago: string;
+          fechaUltimoPagoPrima: string;
+          fechaUltimoPagoCesantia: string;
+          fechaUltimoPagoVacacion: string;
+          comentario: string;
+        };
+        validation: { required: string };
+        toasts: {
+          createSuccess: { title: string; desc: string };
+          editSuccess: { title: string; desc: string };
+          createError: { title: string; desc: string };
+          editError: { title: string; desc: string };
+          loadError: { title: string; desc: string };
+        };
+      };
+    };
     facturaVenta: {
       name: string;
       columns: {
@@ -424,6 +1078,72 @@ export interface AppDict extends AuthTranslationsHost {
         contacto: string;
         total: string;
         estado: string;
+      };
+      form: {
+        createTitle: string;
+        editTitle: string;
+        sectionHint: string;
+        fields: {
+          cliente: string;
+          clientePlaceholder: string;
+          fecha: string;
+          fechaVence: string;
+          plazoPago: string;
+          plazoPagoPlaceholder: string;
+          sede: string;
+          sedePlaceholder: string;
+          metodoPago: string;
+          metodoPagoPlaceholder: string;
+        };
+        validation: { required: string };
+        toasts: {
+          createSuccess: { title: string; desc: string };
+          createError: { title: string; desc: string };
+          editSuccess: { title: string; desc: string };
+          editError: { title: string; desc: string };
+          loadError: { title: string; desc: string };
+        };
+      };
+    };
+    comercialDetalle: {
+      title: string;
+      hint: string;
+      empty: string;
+      addLine: string;
+      removeLine: string;
+      saveLine: string;
+      saveAll: string;
+      pendingSuffix: string;
+      leaveHeader: string;
+      leaveMessage: string;
+      leaveConfirm: string;
+      impuestosTitle: string;
+      impuestosAdd: string;
+      itemPlaceholder: string;
+      detallePlaceholder: string;
+      confirmDeleteLine: string;
+      columns: {
+        linea: string;
+        item: string;
+        cantidad: string;
+        precio: string;
+        descuento: string;
+        subtotal: string;
+        impuesto: string;
+        neto: string;
+        detalle: string;
+        acciones: string;
+      };
+      resumen: {
+        subtotal: string;
+        descuento: string;
+        total: string;
+      };
+      toasts: {
+        lineSaveSuccess: { title: string; desc: string };
+        lineSaveError: { title: string; desc: string };
+        allSaved: { title: string; desc: string };
+        incompleteLines: { title: string; desc: string };
       };
     };
     contratoServicio: {
@@ -434,6 +1154,9 @@ export interface AppDict extends AuthTranslationsHost {
         fecha: string;
         identificacion: string;
         contacto: string;
+        horas: string;
+        horasDiurnas: string;
+        horasNocturnas: string;
         subtotal: string;
         impuesto: string;
         total: string;
@@ -448,6 +1171,75 @@ export interface AppDict extends AuthTranslationsHost {
         electronico: string;
         contabilizado: string;
       };
+    };
+    pedidoServicio: {
+      name: string;
+      columns: {
+        id: string;
+        numero: string;
+        fecha: string;
+        identificacion: string;
+        contacto: string;
+        horas: string;
+        horasDiurnas: string;
+        horasNocturnas: string;
+        subtotal: string;
+        impuesto: string;
+        total: string;
+        aprobado: string;
+        anulado: string;
+        electronico: string;
+        contabilizado: string;
+      };
+      filters: {
+        aprobado: string;
+        anulado: string;
+        electronico: string;
+        contabilizado: string;
+      };
+    };
+    pendienteFacturar: {
+      name: string;
+      columns: {
+        id: string;
+        numero: string;
+        fecha: string;
+        cod: string;
+        puesto: string;
+        item: string;
+        modalidad: string;
+        cantidad: string;
+        horas: string;
+        horasDiurnas: string;
+        horasNocturnas: string;
+        iva: string;
+        valor: string;
+        valorPendiente: string;
+        total: string;
+      };
+    };
+    regenerarAfectado: {
+      name: string;
+      description: string;
+      run: string;
+      confirm: {
+        header: string;
+        message: string;
+        accept: string;
+        cancel: string;
+      };
+      result: {
+        successTitle: string;
+        successDesc: string;
+        updatedLabel: string;
+        viewReport: string;
+      };
+      toasts: {
+        success: { title: string; desc: string };
+        error: { title: string; desc: string };
+      };
+    };
+    servicioDocumento: {
       form: {
         createTitle: string;
         createSubtitle: string;
@@ -488,7 +1280,9 @@ export interface AppDict extends AuthTranslationsHost {
           lineLabel: string;
           coverage: string;
           subtotalCol: string;
+          contractSummaryTitle: string;
           contractSubtotal: string;
+          contractTotal: string;
           yes: string;
           no: string;
           modalCreateTitle: string;
@@ -496,6 +1290,7 @@ export interface AppDict extends AuthTranslationsHost {
           modalSubtitle: string;
           modalAdd: string;
           modalSave: string;
+          confirmDeleteLine: string;
           fields: {
             item: string;
             itemPlaceholder: string;
@@ -512,15 +1307,25 @@ export interface AppDict extends AuthTranslationsHost {
             festivo: string;
             modalidad: string;
             modalidadPlaceholder: string;
+            salario: string;
             programar: string;
             programarHint: string;
             cortesia: string;
             cortesiaHint: string;
+            compuesto: string;
+            horas: string;
+            horasFull: string;
+            horasDiurnas: string;
+            horasDiurnasFull: string;
+            horasNocturnas: string;
+            horasNocturnasFull: string;
             impuestos: string;
             impuestosPlaceholder: string;
           };
           contactoRequired: string;
           sectorRequired: string;
+          estratoRequired: string;
+          salarioRequired: string;
           summary: {
             title: string;
             subtotal: string;
@@ -534,10 +1339,15 @@ export interface AppDict extends AuthTranslationsHost {
             horasDia: string;
             valorHora: string;
             precioMinimo: string;
+            definirPrecio: string;
             calculating: string;
             empty: string;
           };
           validation: { required: string };
+          toasts: {
+            lineSaveSuccess: { title: string; desc: string };
+            lineSaveError: { title: string; desc: string };
+          };
         };
       };
     };
@@ -668,6 +1478,45 @@ export interface AppDict extends AuthTranslationsHost {
         removeError: { title: string; desc: string };
         loadError: { title: string; desc: string };
       };
+    };
+  };
+  configuracion: {
+    title: string;
+    subtitle: string;
+    tabs: { general: string; humano: string };
+    unsavedChanges: string;
+    actions: { save: string };
+    general: {
+      uvt: { title: string; hint: string; label: string };
+      validation: { required: string };
+    };
+    humano: {
+      section: { title: string; hint: string };
+      fields: { salarioMinimo: string; factor: string; auxilioTransporte: string };
+      validation: { required: string };
+    };
+    empresa: {
+      sections: {
+        identidad: { title: string; hint: string };
+        contacto: { title: string; hint: string };
+      };
+      fields: {
+        nombreCorto: string;
+        tipoPersona: string;
+        identificacion: string;
+        numeroIdentificacion: string;
+        digitoVerificacion: string;
+        direccion: string;
+        ciudad: string;
+        telefono: string;
+        correo: string;
+      };
+      validation: { required: string; emailInvalid: string };
+    };
+    toasts: {
+      saveSuccess: { title: string; desc: string };
+      saveError: { title: string; desc: string };
+      loadError: { title: string; desc: string };
     };
   };
 }

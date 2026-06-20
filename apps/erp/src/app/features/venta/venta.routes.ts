@@ -1,6 +1,7 @@
 import type { Route } from '@angular/router';
-import { erpModuleResolver } from '@erp/core/erp-modules';
+import { erpModuleResolver, moduleIndexRoute } from '@erp/core/erp-modules';
 import { activeModuleResolver } from '@erp/core/module-config';
+import { VENTA_MODULE } from './venta.module-descriptor';
 
 /**
  * Rutas del módulo Venta.
@@ -26,7 +27,7 @@ export const VENTA_ROUTES: Route[] = [
       _docModule: activeModuleResolver('venta'),
     },
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'factura-venta' },
+      moduleIndexRoute(VENTA_MODULE),
       {
         path: 'factura-venta',
         loadChildren: () =>
@@ -39,6 +40,37 @@ export const VENTA_ROUTES: Route[] = [
         loadChildren: () =>
           import('./documentos/contrato-servicio/contrato-servicio.routes').then(
             (m) => m.CONTRATO_SERVICIO_ROUTES,
+          ),
+      },
+      {
+        path: 'pedido-servicio',
+        loadChildren: () =>
+          import('./documentos/pedido-servicio/pedido-servicio.routes').then(
+            (m) => m.PEDIDO_SERVICIO_ROUTES,
+          ),
+      },
+      {
+        path: 'proceso/regenerar-afectado',
+        loadChildren: () =>
+          import('./proceso/regenerar-afectado/regenerar-afectado.routes').then(
+            (m) => m.REGENERAR_AFECTADO_ROUTES,
+          ),
+      },
+      {
+        path: 'informes/pendiente-facturar',
+        loadChildren: () =>
+          import('./informes/pendiente-facturar/pendiente-facturar.routes').then(
+            (m) => m.PENDIENTE_FACTURAR_ROUTES,
+          ),
+      },
+      {
+        // Master compartido: el código vive en general/masters/resolucion, pero
+        // se enruta desde Venta con `data: { tipo: 'venta' }` para fijar el flag.
+        path: 'resoluciones',
+        data: { tipo: 'venta' },
+        loadChildren: () =>
+          import('../general/masters/resolucion/resolucion.routes').then(
+            (m) => m.RESOLUCION_ROUTES,
           ),
       },
     ],

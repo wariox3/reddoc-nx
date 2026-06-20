@@ -1,13 +1,6 @@
-<lib-breadcrumb [items]="breadcrumbItems()" />
-
-<header class="items-list__header">
-  <div class="items-list__title-block">
-    <h1 class="items-list__title">{{ t().entities.item.name }}</h1>
-  </div>
-</header>
-
-<div class="card">
+<lib-list-shell [breadcrumb]="breadcrumbItems()" [title]="t().entities.item.name">
   <lib-data-toolbar
+    toolbar
     [primaryAction]="primaryAction"
     [trailingActions]="trailingActions"
     [searchPlaceholderKey]="'entities.item.searchPlaceholder'"
@@ -22,6 +15,7 @@
   />
 
   <lib-data-table
+    table
     [columns]="columns"
     [items]="items()"
     [totalCount]="totalCount()"
@@ -39,7 +33,7 @@
     (rowActionInvoked)="onRowAction($event)"
     (rowClick)="onRowClick($event)"
   />
-</div>
+</lib-list-shell>
 
 <lib-data-filter-modal
   [fields]="filterFields"

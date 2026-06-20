@@ -1,13 +1,17 @@
 <header class="app-header">
   <div class="app-header__brand">
-    <button
-      class="app-header__hamburger"
-      (click)="toggleDrawer()"
-      [attr.aria-label]="t().layout.menuLabel"
-    >
-      <i class="pi pi-bars"></i>
-    </button>
+    @if (activeDescriptor()) {
+      <button
+        class="app-header__hamburger"
+        (click)="toggleDrawer()"
+        [attr.aria-label]="t().layout.menuLabel"
+      >
+        <i class="pi pi-bars"></i>
+      </button>
+    }
     <img src="/logos/reddoc.svg" alt="RedDoc" class="app-header__logo" />
+    <span class="app-header__divider" aria-hidden="true"></span>
+    <app-tenant-badge />
   </div>
   <app-module-bar />
   <div class="app-header__actions">
@@ -16,28 +20,32 @@
 </header>
 
 <div class="workspace-body">
-  <aside class="workspace-sidebar">
-    <nav class="workspace-nav">
-      <ng-container *ngTemplateOutlet="navTpl" />
-    </nav>
-  </aside>
+  @if (activeDescriptor()) {
+    <aside class="workspace-sidebar">
+      <nav class="workspace-nav">
+        <ng-container *ngTemplateOutlet="navTpl" />
+      </nav>
+    </aside>
+  }
 
   <main class="workspace-main">
     <router-outlet />
   </main>
 </div>
 
-<!-- Drawer móvil -->
-<p-drawer
-  [visible]="drawerVisible()"
-  (visibleChange)="drawerVisible.set($event)"
-  position="left"
-  [header]="t().layout.drawerHeader"
->
-  <nav class="workspace-nav">
-    <ng-container *ngTemplateOutlet="navTpl; context: { $implicit: true }" />
-  </nav>
-</p-drawer>
+<!-- Drawer móvil — solo cuando hay módulo activo (si no, no hay menú que abrir) -->
+@if (activeDescriptor()) {
+  <p-drawer
+    [visible]="drawerVisible()"
+    (visibleChange)="drawerVisible.set($event)"
+    position="left"
+    [header]="t().layout.drawerHeader"
+  >
+    <nav class="workspace-nav">
+      <ng-container *ngTemplateOutlet="navTpl; context: { $implicit: true }" />
+    </nav>
+  </p-drawer>
+}
 
 <!-- Template de navegación compartido entre sidebar y drawer -->
 <ng-template #navTpl let-inDrawer>
@@ -88,7 +96,7 @@
                   <a
                     class="workspace-nav__leaf"
                     [routerLink]="leafPath(leaf)"
-                    routerLinkActive="workspace-nav__leaf--active"
+                    [class.workspace-nav__leaf--active]="isLeafActive(leaf)"
                     (click)="inDrawer && drawerVisible.set(false)"
                   >
                     {{ translate(leaf.labelKey) }}

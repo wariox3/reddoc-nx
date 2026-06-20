@@ -1,12 +1,13 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { DrawerModule } from 'primeng/drawer';
 import { I18nService, TenantService } from '@reddoc/core';
 import { UserMenuComponent } from '../../shared/user-menu/user-menu.component';
 import { ActiveModuleStore } from '@erp/core/erp-modules';
 import type { AppDict } from '@erp/i18n';
 import { ModuleBarComponent } from '../module-bar/module-bar.component';
+import { TenantBadgeComponent } from '../tenant-badge/tenant-badge.component';
 import type {
   SidebarAccordion,
   SidebarLeafItem,
@@ -28,11 +29,11 @@ import type {
   imports: [
     RouterOutlet,
     RouterLink,
-    RouterLinkActive,
     NgTemplateOutlet,
     DrawerModule,
     UserMenuComponent,
     ModuleBarComponent,
+    TenantBadgeComponent,
   ],
   templateUrl: './workspace-layout.component.html',
   styleUrl: './workspace-layout.component.scss',
@@ -41,6 +42,7 @@ export class WorkspaceLayoutComponent {
   private readonly i18n = inject<I18nService<AppDict>>(I18nService);
   private readonly tenant = inject(TenantService);
   private readonly activeModuleStore = inject(ActiveModuleStore);
+  private readonly router = inject(Router);
 
   protected readonly t = this.i18n.t;
 
@@ -66,7 +68,11 @@ export class WorkspaceLayoutComponent {
     effect(() => {
       const expandedIds = this.sections()
         .filter((s): s is SidebarAccordion => s.kind === 'accordion')
-        .filter((s) => s.defaultExpanded === true)
+        .filter(
+          (s) =>
+            s.defaultExpanded === true ||
+            s.groups.some((g) => g.items.some((leaf) => this.isLeafActive(leaf))),
+        )
         .map((s) => s.id);
       this.expandedAccordionIds.set(new Set(expandedIds));
     });
@@ -111,6 +117,22 @@ export class WorkspaceLayoutComponent {
   /** Path absoluto para un item dentro de un acordeón. */
   protected leafPath(leaf: SidebarLeafItem): string {
     return this.buildPath(leaf.path);
+  }
+
+  /** Indica si un leaf item debe marcarse como activo según la URL actual. */
+  protected isLeafActive(leaf: SidebarLeafItem): boolean {
+    const parentPath = this.buildPath(this.leafParentPath(leaf.path));
+    return this.router.isActive(parentPath, {
+      paths: 'subset',
+      queryParams: 'ignored',
+      matrixParams: 'ignored',
+      fragment: 'ignored',
+    });
+  }
+
+  private leafParentPath(relativePath: string): string {
+    const segments = relativePath.split('/');
+    return segments.length > 1 ? segments.slice(0, -1).join('/') : relativePath;
   }
 
   private buildPath(relativePath: string): string {

@@ -142,7 +142,7 @@ export class ContenedorMembersListComponent {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (res) => {
-          this.members.set(res.results ?? []);
+          this.members.set([...(res.results ?? [])]);
           this.countChange.emit(this.members().length);
           this.isLoading.set(false);
         },

@@ -1,3 +1,4 @@
+import { daysBetween, fromIsoDate, startOfToday } from '@reddoc/core';
 import { Suscripcion } from './models/suscripcion.model';
 
 export type SuscripcionTone = 'success' | 'warn' | 'danger';
@@ -18,20 +19,11 @@ const FRECUENCIA_LABELS: Record<string, string> = {
   A: 'Anual',
 };
 
-const parseISO = (iso: string): Date => {
-  const [y, m, d] = iso.split('-').map(Number);
-  return new Date(y, m - 1, d);
-};
-
-const daysBetween = (a: Date, b: Date): number =>
-  Math.round((b.getTime() - a.getTime()) / 86400000);
-
 export function getSuscripcionStatus(s: Suscripcion): SuscripcionStatus {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const today = startOfToday();
 
-  const start = parseISO(s.fecha_inicio);
-  const end = parseISO(s.fecha_fin);
+  const start = fromIsoDate(s.fecha_inicio);
+  const end = fromIsoDate(s.fecha_fin);
 
   const total = Math.max(daysBetween(start, end), 1);
   const used = Math.max(daysBetween(start, today), 0);
@@ -71,7 +63,6 @@ export function formatSuscripcionId(id: number): string {
 }
 
 export function formatSuscripcionFechaFin(iso: string): string {
-  const [y, m, d] = iso.split('-').map(Number);
-  const date = new Date(y, m - 1, d);
+  const date = fromIsoDate(iso);
   return date.toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' });
 }

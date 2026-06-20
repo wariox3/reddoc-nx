@@ -1,5 +1,12 @@
 import type { ColumnDef, FilterField } from '@reddoc/core';
 
+/** Endpoint `seleccionar` del plazo de pago (alimenta el autocálculo de vencimiento). */
+export const PLAZO_PAGO_ENDPOINT = '/general/plazo-pago/seleccionar/';
+/** Endpoint `seleccionar` de sedes. */
+export const SEDE_ENDPOINT = '/general/sede/seleccionar/';
+/** Endpoint `seleccionar` de métodos de pago. */
+export const METODO_PAGO_ENDPOINT = '/general/metodo-pago/seleccionar/';
+
 /**
  * Columnas visibles del listado de Factura de venta.
  *
@@ -14,20 +21,17 @@ export const FACTURA_VENTA_COLUMNS: readonly ColumnDef[] = [
     headerKey: 'entities.facturaVenta.columns.numero',
     type: 'text',
     width: '120px',
-    sortable: true,
   },
   {
     field: 'fecha',
     headerKey: 'entities.facturaVenta.columns.fecha',
     type: 'date',
     width: '110px',
-    sortable: true,
   },
   {
     field: 'contacto_nombre',
     headerKey: 'entities.facturaVenta.columns.contacto',
     type: 'text',
-    sortable: true,
   },
   {
     field: 'total',
@@ -35,7 +39,6 @@ export const FACTURA_VENTA_COLUMNS: readonly ColumnDef[] = [
     type: 'currency',
     width: '140px',
     align: 'right',
-    sortable: true,
   },
   {
     field: 'estado_nombre',
