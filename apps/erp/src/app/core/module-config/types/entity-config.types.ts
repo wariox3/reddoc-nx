@@ -27,6 +27,7 @@ export type InventoryEffect = 'inflow' | 'outflow';
 export interface DocumentCapabilities {
   readonly canCreate: boolean;
   readonly canEdit: boolean;
+  readonly canView: boolean;
   readonly canDelete: boolean;
   readonly canSelectRows: boolean;
   readonly canImport: boolean;

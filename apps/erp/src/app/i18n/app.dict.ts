@@ -1356,6 +1356,17 @@ export interface AppDict extends AuthTranslationsHost {
           };
         };
       };
+      detail: {
+        sections: { general: string; detalles: string };
+        labels: {
+          contacto: string;
+          fecha: string;
+          sector: string;
+          estrato: string;
+          salario: string;
+        };
+        notFound: { title: string; desc: string };
+      };
     };
   };
   contenedores: {

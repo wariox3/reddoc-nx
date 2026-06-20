@@ -35,6 +35,7 @@ export const FACTURA_VENTA_CONFIG: DocumentEntityConfig = {
   capabilities: {
     canCreate: true,
     canEdit: true,
+    canView: false,
     canDelete: true,
     canSelectRows: true,
     canImport: false,

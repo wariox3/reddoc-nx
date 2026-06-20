@@ -1759,6 +1759,23 @@ export const en: AppDict = {
           },
         },
       },
+      detail: {
+        sections: {
+          general: 'General information',
+          detalles: 'Details',
+        },
+        labels: {
+          contacto: 'Contact',
+          fecha: 'Date',
+          sector: 'Sector',
+          estrato: 'Stratum',
+          salario: 'Salary',
+        },
+        notFound: {
+          title: 'Document not found',
+          desc: 'The document you are looking for does not exist or was deleted.',
+        },
+      },
     },
   },
   contenedores: {

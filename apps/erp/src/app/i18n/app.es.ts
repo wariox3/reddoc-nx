@@ -1790,6 +1790,23 @@ export const es: AppDict = {
           },
         },
       },
+      detail: {
+        sections: {
+          general: 'Información general',
+          detalles: 'Detalles',
+        },
+        labels: {
+          contacto: 'Contacto',
+          fecha: 'Fecha',
+          sector: 'Sector',
+          estrato: 'Estrato',
+          salario: 'Salario',
+        },
+        notFound: {
+          title: 'Documento no encontrado',
+          desc: 'El documento que buscas no existe o fue eliminado.',
+        },
+      },
     },
   },
   contenedores: {

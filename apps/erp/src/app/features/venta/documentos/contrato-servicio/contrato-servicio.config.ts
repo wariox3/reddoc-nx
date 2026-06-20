@@ -40,6 +40,7 @@ export const CONTRATO_SERVICIO_CONFIG: DocumentEntityConfig = {
   capabilities: {
     canCreate: true,
     canEdit: true,
+    canView: true,
     canDelete: true,
     canSelectRows: true,
     canImport: false,

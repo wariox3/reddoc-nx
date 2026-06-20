@@ -208,6 +208,14 @@ export class BaseDocumentListComponent {
   protected readonly rowActions = computed<readonly RowAction[]>(() => {
     const caps = this.capabilities();
     const actions: RowAction[] = [];
+    if (caps.canView) {
+      actions.push({
+        id: 'view',
+        labelKey: 'common.actions.view',
+        iconClass: 'pi pi-eye',
+        inline: true,
+      });
+    }
     if (caps.canEdit) {
       actions.push({
         id: 'edit',
@@ -319,6 +327,9 @@ export class BaseDocumentListComponent {
     const id = this.extractId(event.row);
     if (id === null) return;
     switch (event.actionId) {
+      case 'view':
+        this.navigateToDetail(id);
+        break;
       case 'edit':
         this.navigateToEdit(id);
         break;
@@ -424,6 +435,10 @@ export class BaseDocumentListComponent {
 
   private navigateToEdit(id: string | number): void {
     this.router.navigate([...this.buildRouteCommands(this.document().routes.edit), id]);
+  }
+
+  private navigateToDetail(id: string | number): void {
+    this.router.navigate([...this.buildRouteCommands(this.document().routes.detail), id]);
   }
 
   /**

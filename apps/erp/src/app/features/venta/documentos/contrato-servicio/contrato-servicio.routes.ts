@@ -39,6 +39,13 @@ export const CONTRATO_SERVICIO_ROUTES: Route[] = [
             (m) => m.ServicioDocumentoFormComponent,
           ),
       },
+      {
+        path: 'detalle/:id',
+        loadComponent: () =>
+          import('../_shared/servicio/pages/servicio-documento-detail/servicio-documento-detail.component').then(
+            (m) => m.ServicioDocumentoDetailComponent,
+          ),
+      },
     ],
   },
 ];
