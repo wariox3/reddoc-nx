@@ -1682,6 +1682,7 @@ export const en: AppDict = {
           lineLabel: 'Line',
           coverage: 'Coverage',
           subtotalCol: 'Subtotal',
+          documentoAfectadoCol: 'Ref',
           contractSummaryTitle: 'Document summary',
           contractSubtotal: 'Document subtotal',
           contractTotal: 'Document total',

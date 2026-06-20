@@ -70,6 +70,7 @@
           </th>
           <th class="detalle-table__th">{{ d.fields.impuestos }}</th>
           <th class="detalle-table__th text-right">{{ d.subtotalCol }}</th>
+          <th class="detalle-table__th text-center">{{ d.documentoAfectadoCol }}</th>
           <th class="detalle-table__th"></th>
         </tr>
       </thead>
@@ -77,7 +78,7 @@
       <tbody>
         @for (group of groupedLines(); track (group.puesto?.id ?? '__null__') + '_' + $index) {
           <tr class="detalle-table__group-row">
-            <td colspan="15" class="px-4 pt-4 pb-0">
+            <td colspan="16" class="px-4 pt-4 pb-0">
               <span class="detalle-table__group-label">
                 @if (group.puesto) {
                   {{ group.puesto.id }} | {{ group.puesto.nombre }}
@@ -182,6 +183,10 @@
                 {{ formatMoney(lineSubtotal(group.startIndex + $index)) }}
               </td>
 
+              <td class="detalle-table__td text-center tabular-nums text-brand-muted">
+                {{ line.documento_detalle_afectado_id ?? '—' }}
+              </td>
+
               <td class="detalle-table__td">
                 <div class="flex items-center justify-end gap-0.5">
                   <button
@@ -206,7 +211,7 @@
           }
         } @empty {
           <tr>
-            <td colspan="15" class="px-5 py-8 text-center text-sm text-brand-muted">
+            <td colspan="16" class="px-5 py-8 text-center text-sm text-brand-muted">
               <i class="pi pi-inbox mr-2"></i>{{ d.empty }}
             </td>
           </tr>

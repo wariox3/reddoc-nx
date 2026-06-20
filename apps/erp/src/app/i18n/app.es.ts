@@ -1713,6 +1713,7 @@ export const es: AppDict = {
           lineLabel: 'Línea',
           coverage: 'Cobertura',
           subtotalCol: 'Subtotal',
+          documentoAfectadoCol: 'Ref',
           contractSummaryTitle: 'Resumen del documento',
           contractSubtotal: 'Subtotal',
           contractTotal: 'Total',
