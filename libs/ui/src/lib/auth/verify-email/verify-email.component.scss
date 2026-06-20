@@ -1,0 +1,77 @@
+:host {
+  display: block;
+}
+
+.verify-layout {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--brand-bg);
+  padding: 2rem;
+}
+
+.verify-card {
+  width: 100%;
+  max-width: 440px;
+  animation: fadeUp 0.55s ease both;
+}
+
+.verify-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+
+  &__icon {
+    font-size: 3.5rem;
+
+    &--loading {
+      color: var(--brand-muted);
+    }
+    &--success {
+      color: #22c55e;
+    }
+    &--error {
+      color: var(--p-red-500, #ef4444);
+    }
+  }
+
+  &__title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--brand-text);
+    margin: 0;
+  }
+
+  &__desc {
+    font-size: 0.875rem;
+    color: var(--brand-muted);
+    margin: 0;
+    max-width: 320px;
+  }
+
+  &__action {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--brand-blue);
+    text-decoration: none;
+    margin-top: 0.5rem;
+
+    &:hover {
+      opacity: 0.75;
+    }
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

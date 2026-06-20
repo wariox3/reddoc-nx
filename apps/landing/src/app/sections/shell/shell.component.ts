@@ -9,6 +9,7 @@ import { TestimonialsComponent } from '../testimonials/testimonials.component';
 import { ContactComponent } from '../contact/contact.component';
 import { CtaComponent } from '../cta/cta.component';
 import { FooterComponent } from '../footer/footer.component';
+import { WhatsappButtonComponent } from '../../shared/whatsapp-button/whatsapp-button.component';
 
 @Component({
   selector: 'app-landing-shell',
@@ -24,6 +25,7 @@ import { FooterComponent } from '../footer/footer.component';
     ContactComponent,
     CtaComponent,
     FooterComponent,
+    WhatsappButtonComponent,
   ],
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.scss',

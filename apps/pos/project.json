@@ -1,0 +1,120 @@
+{
+  "name": "pos",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "prefix": "app",
+  "sourceRoot": "apps/pos/src",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@angular/build:application",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/pos",
+        "browser": "apps/pos/src/main.ts",
+        "polyfills": ["zone.js"],
+        "tsConfig": "apps/pos/tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "apps/pos/public"
+          },
+          {
+            "glob": "*.woff2",
+            "input": "node_modules/geist/dist/fonts/geist-sans",
+            "output": "fonts/geist"
+          },
+          {
+            "glob": "logos/**",
+            "input": "libs/ui/src/assets",
+            "output": "/"
+          }
+        ],
+        "styles": ["apps/pos/src/tailwind.css", "apps/pos/src/styles.scss"]
+      },
+      "configurations": {
+        "staging": {
+          "fileReplacements": [
+            {
+              "replace": "apps/pos/src/environments/environment.ts",
+              "with": "apps/pos/src/environments/environment.staging.ts"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "production": {
+          "fileReplacements": [
+            {
+              "replace": "apps/pos/src/environments/environment.ts",
+              "with": "apps/pos/src/environments/environment.prod.ts"
+            }
+          ],
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1.5mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "12kb",
+              "maximumError": "24kb"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "continuous": true,
+      "executor": "@angular/build:dev-server",
+      "options": {
+        "port": 4205
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "pos:build:production"
+        },
+        "development": {
+          "buildTarget": "pos:build:development",
+          "proxyConfig": "apps/pos/proxy.conf.json"
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "extract-i18n": {
+      "executor": "@angular/build:extract-i18n",
+      "options": {
+        "buildTarget": "pos:build"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/pos/jest.config.ts",
+        "tsConfig": "apps/pos/tsconfig.spec.json"
+      }
+    },
+    "serve-static": {
+      "continuous": true,
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "pos:build",
+        "port": 4205,
+        "staticFilePath": "dist/apps/pos/browser",
+        "spa": true
+      }
+    }
+  }
+}

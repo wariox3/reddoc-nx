@@ -1,0 +1,23 @@
+<button
+  type="button"
+  class="inline-flex items-center justify-center bg-transparent border-none p-0 cursor-pointer rounded-full transition-shadow duration-150 hover:shadow-[0_0_0_3px_rgba(20,48,73,0.08)] focus-visible:outline-none focus-visible:shadow-[0_0_0_3px_rgba(119,170,215,0.45)] active:scale-95"
+  (click)="toggle($event)"
+  [attr.aria-label]="'Menú de usuario, ' + displayName()"
+>
+  <lib-user-avatar styleClass="user-menu__avatar" />
+</button>
+
+<p-menu #menu [popup]="true" [model]="items" appendTo="body">
+  <ng-template #start>
+    <div
+      class="px-4 pb-[0.6rem] pt-[0.85rem] border-b border-[rgba(20,48,73,0.08)] mb-1 min-w-[200px]"
+    >
+      <p
+        class="m-0 text-[0.85rem] font-bold text-brand-navy tracking-tight capitalize leading-tight"
+      >
+        {{ displayName() }}
+      </p>
+      <p class="m-0 mt-[0.15rem] text-[0.72rem] text-brand-muted break-all">{{ email() }}</p>
+    </div>
+  </ng-template>
+</p-menu>

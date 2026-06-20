@@ -1,0 +1,100 @@
+<div class="relative min-h-screen flex items-center justify-center p-8 max-sm:px-4 max-sm:py-8">
+  <!-- Drift blobs -->
+  <div class="pointer-events-none absolute inset-0 overflow-hidden z-0">
+    <div
+      class="absolute -top-20 right-[10%] h-64 w-64 rounded-full bg-brand-blue/8 blur-3xl animate-drift1"
+    ></div>
+    <div
+      class="absolute top-[40%] -left-10 h-72 w-72 rounded-full bg-brand-muted-2/15 blur-3xl animate-drift2"
+    ></div>
+    <div
+      class="absolute bottom-0 right-[20%] h-48 w-48 rounded-full bg-brand-blue/5 blur-3xl animate-drift1 [animation-delay:-9s]"
+    ></div>
+  </div>
+
+  <div class="relative z-10 w-full max-w-sm flex flex-col items-center gap-6">
+    <!-- Card -->
+    <div
+      class="w-full bg-white border border-[rgba(20,48,73,0.1)] rounded-2xl px-8 py-10 max-sm:px-6 flex flex-col items-center gap-6 animate-fade-up"
+      style="
+        box-shadow:
+          0 4px 32px rgba(0, 158, 247, 0.07),
+          0 1px 4px rgba(20, 48, 73, 0.06);
+      "
+    >
+      <!-- Spinner SVG -->
+      <svg width="72" height="72" viewBox="0 0 72 72" fill="none" class="spinner-ring">
+        <circle cx="36" cy="36" r="30" stroke="rgba(0,158,247,0.12)" stroke-width="4" fill="none" />
+        <circle
+          cx="36"
+          cy="36"
+          r="30"
+          stroke="#009ef7"
+          stroke-width="4"
+          fill="none"
+          stroke-linecap="round"
+          class="spinner-arc"
+          style="transform-origin: center; transform: rotate(-90deg)"
+        />
+      </svg>
+
+      <!-- Texto -->
+      <div class="flex flex-col items-center gap-2 text-center">
+        <h1 class="m-0 text-[1.45rem] font-bold text-brand-text tracking-[-0.02em] leading-tight">
+          Gracias por tu pago
+        </h1>
+        <p class="m-0 text-sm text-brand-muted leading-relaxed">
+          Estamos procesando la transacción.<br />
+          Esto solo toma unos segundos.
+        </p>
+      </div>
+
+      <!-- Puntos de actividad -->
+      <div class="flex items-center gap-2">
+        <span class="dot h-[7px] w-[7px] rounded-full bg-brand-blue inline-block"></span>
+        <span class="dot h-[7px] w-[7px] rounded-full bg-brand-blue inline-block"></span>
+        <span class="dot h-[7px] w-[7px] rounded-full bg-brand-blue inline-block"></span>
+      </div>
+
+      <!-- Barra de progreso indeterminada -->
+      <div class="relative h-[3px] w-full rounded-full bg-[rgba(0,158,247,0.12)] overflow-hidden">
+        <div class="progress-bar"></div>
+      </div>
+
+      <!-- Referencia -->
+      @if (referencia(); as ref) {
+        <div class="w-full pt-1 border-t border-[rgba(20,48,73,0.07)]">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-[0.68rem] font-mono uppercase tracking-[0.14em] text-brand-muted/70"
+              >Referencia</span
+            >
+            <span
+              class="inline-flex items-center gap-1.5 rounded-md bg-[#eef2f6] border border-[rgba(20,48,73,0.08)] px-2 py-1 font-mono text-[0.62rem] tracking-wide text-brand-muted"
+            >
+              <i class="pi pi-hashtag text-[0.52rem] opacity-50"></i>
+              {{ ref }}
+            </span>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Aviso -->
+    <p
+      class="text-center text-[0.72rem] text-brand-muted/70 leading-relaxed max-w-xs animate-fade-up"
+      style="animation-delay: 0.15s"
+    >
+      No cierres esta ventana. Si el proceso demora más de lo esperado, recibirás un correo con el
+      resultado.
+    </p>
+
+    <!-- Footnote -->
+    <div
+      class="flex items-center gap-1.5 text-[0.62rem] font-mono uppercase tracking-[0.14em] text-brand-muted/60 animate-fade-up"
+      style="animation-delay: 0.25s"
+    >
+      <i class="pi pi-lock text-[0.58rem] text-emerald-500/80"></i>
+      <span>Pago procesado por Wompi</span>
+    </div>
+  </div>
+</div>

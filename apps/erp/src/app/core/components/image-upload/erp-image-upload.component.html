@@ -1,0 +1,105 @@
+<!-- ── Marco de la imagen ──────────────────────────────────────────────────── -->
+<div
+  class="erp-image-upload__frame group relative overflow-hidden rounded-xl border border-[rgba(20,48,73,0.1)] bg-brand-surface-2"
+  [style.width]="width()"
+  [style.height]="height()"
+>
+  @if (hasImage()) {
+    <img [src]="imageUrl()" [alt]="alt()" class="h-full w-full object-cover" />
+  } @else {
+    <div class="flex h-full w-full flex-col items-center justify-center gap-1.5 text-brand-muted">
+      <i class="pi pi-image text-2xl opacity-50"></i>
+      <span class="text-[0.72rem] font-medium">{{ t().common.imageUpload.empty }}</span>
+    </div>
+  }
+
+  <!-- Overlay de acciones (solo si no está deshabilitado) -->
+  @if (!disabled()) {
+    <div
+      class="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-[rgba(19,38,60,0.55)] opacity-0 backdrop-blur-[1px] transition-opacity duration-150 group-hover:opacity-100 focus-within:opacity-100"
+    >
+      <button
+        type="button"
+        (click)="openPicker()"
+        class="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border-0 bg-white/95 px-3 py-1.5 text-[0.75rem] font-semibold text-brand-text shadow-sm transition-colors hover:bg-white"
+      >
+        <i class="pi pi-camera text-[0.7rem]"></i>
+        {{ t().common.imageUpload.change }}
+      </button>
+
+      @if (hasImage()) {
+        <button
+          type="button"
+          (click)="onRemove()"
+          class="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border-0 bg-transparent px-3 py-1 text-[0.72rem] font-medium text-rose-100 transition-colors hover:text-white"
+        >
+          <i class="pi pi-trash text-[0.68rem]"></i>
+          {{ t().common.imageUpload.remove }}
+        </button>
+      }
+    </div>
+  }
+</div>
+
+<p class="mt-1.5 text-[0.68rem] leading-snug text-brand-muted">{{ t().common.imageUpload.hint }}</p>
+
+<input
+  #fileInput
+  type="file"
+  accept=".png,.jpg,.jpeg,image/png,image/jpeg"
+  class="hidden"
+  (change)="onFileSelected($event)"
+/>
+
+<!-- ── Diálogo de recorte ──────────────────────────────────────────────────── -->
+<p-dialog
+  [visible]="dialogVisible()"
+  (visibleChange)="dialogVisible.set($event)"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [style]="{ width: '32rem', maxWidth: '95vw' }"
+  [header]="t().common.imageUpload.dialogTitle"
+  (onHide)="onDialogHide()"
+>
+  <div class="flex flex-col gap-3">
+    <div class="overflow-hidden rounded-lg border border-[rgba(20,48,73,0.1)] bg-brand-surface-2">
+      <image-cropper
+        [imageChangedEvent]="fileChangeEvent()"
+        [maintainAspectRatio]="true"
+        [aspectRatio]="aspectRatio()"
+        [resizeToWidth]="512"
+        [onlyScaleDown]="true"
+        output="base64"
+        format="jpeg"
+        [imageQuality]="90"
+        (imageCropped)="onImageCropped($event)"
+      />
+    </div>
+
+    @if (tooLarge()) {
+      <p class="m-0 flex items-center gap-1.5 text-[0.78rem] font-medium text-rose-600">
+        <i class="pi pi-exclamation-triangle text-[0.72rem]"></i>
+        {{ t().common.imageUpload.tooLarge }}
+      </p>
+    }
+  </div>
+
+  <ng-template pTemplate="footer">
+    <p-button
+      type="button"
+      [label]="t().common.actions.cancel"
+      severity="secondary"
+      [text]="true"
+      (onClick)="onCancel()"
+    />
+    <p-button
+      type="button"
+      [label]="t().common.actions.save"
+      icon="pi pi-check"
+      [disabled]="!cropped() || tooLarge()"
+      (onClick)="onConfirm()"
+    />
+  </ng-template>
+</p-dialog>

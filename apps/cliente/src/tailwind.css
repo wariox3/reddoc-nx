@@ -1,0 +1,5 @@
+@layer theme, base, primeng, utilities;
+
+@import 'tailwindcss';
+@import 'tailwindcss-primeui';
+@import '../../../libs/styles/src/tailwind/brand.css';

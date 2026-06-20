@@ -1,0 +1,68 @@
+@import 'primeicons/primeicons.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  background: var(--p-surface-ground);
+  color: var(--p-text-color);
+  overflow-x: hidden;
+}
+
+:root {
+  --brand-navy: #13263c;
+  --brand-navy-deep: #0c1d2e;
+  --brand-blue: #009ef7;
+  --brand-white: #ffffff;
+
+  --brand-bg: #f8f9fa;
+  --brand-surface: #ffffff;
+  --brand-surface-2: #eef2f6;
+  --brand-text: #13263c;
+  --brand-muted: #2a6098;
+  --brand-muted-2: #68c0fb;
+  --brand-border: rgba(19 38 60 / 0.1);
+  --brand-border-hover: rgba(19 38 60 / 0.2);
+
+  --p-font-family: 'DM Sans', system-ui, sans-serif;
+}
+
+.form-panel__logo-img {
+  height: 25px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+  margin-bottom: 2rem;
+  align-self: flex-end;
+}
+
+.form-panel__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--brand-muted);
+  text-decoration: none;
+  margin-bottom: 2.5rem;
+  align-self: flex-start;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: var(--brand-text);
+
+    .pi {
+      transform: translateX(-3px);
+    }
+  }
+
+  .pi {
+    font-size: 0.8em;
+    transition: transform 0.2s ease;
+  }
+}

@@ -1,0 +1,159 @@
+<p-table
+  [value]="mutableItems()"
+  [paginator]="true"
+  [lazy]="true"
+  [rows]="pageSize()"
+  [totalRecords]="totalCount()"
+  [first]="currentPage() * pageSize()"
+  [loading]="loading()"
+  [rowsPerPageOptions]="mutableRowsPerPage()"
+  [scrollable]="true"
+  [scrollHeight]="scrollHeight()"
+  [selectionMode]="selectionMode() === 'none' ? null : 'multiple'"
+  [selection]="mutableSelection()"
+  (selectionChange)="onSelectionEvent($event)"
+  (onPage)="onPageEvent($event)"
+  sortMode="multiple"
+  [multiSortMeta]="primeSort()"
+  (onSort)="onSortEvent($event)"
+  [dataKey]="dataKey()"
+>
+  <ng-template pTemplate="header">
+    <tr>
+      @if (hasSelection()) {
+        <th class="lib-data-table__select-col">
+          <p-tableHeaderCheckbox />
+        </th>
+      }
+      @for (col of columns(); track col.field) {
+        <th
+          [style.width]="col.width"
+          [style.text-align]="col.align ?? 'left'"
+          [pSortableColumn]="col.sortable ? col.field : ''"
+        >
+          {{ translate(col.headerKey) }}
+          @if (col.sortable) {
+            <p-sortIcon [field]="col.field" />
+          }
+        </th>
+      }
+      @for (action of inlineActions(); track action.id) {
+        <th
+          class="lib-data-table__inline-action-col"
+          [attr.aria-label]="translate(action.labelKey)"
+        >
+          <span class="lib-data-table__visually-hidden">{{ translate(action.labelKey) }}</span>
+        </th>
+      }
+      @if (menuActions().length > 0) {
+        <th class="lib-data-table__actions-col" aria-hidden="true"></th>
+      }
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-row>
+    <tr [class.lib-data-table__row--clickable]="rowClickable()" (click)="onRowClicked(row)">
+      @if (hasSelection()) {
+        <td class="lib-data-table__select-col" (click)="$event.stopPropagation()">
+          <p-tableCheckbox [value]="row" />
+        </td>
+      }
+      @for (col of columns(); track col.field) {
+        <td [style.text-align]="col.align ?? 'left'">
+          @switch (col.type) {
+            @case ('boolean') {
+              @let boolVal = readValue(row, col.field);
+              @let prefix = col.booleanKeyPrefix ?? 'common.boolean';
+              <span
+                class="lib-data-table__bool-badge"
+                [class.lib-data-table__bool-badge--true]="boolVal"
+                [class.lib-data-table__bool-badge--false]="!boolVal"
+              >
+                {{ translate(prefix + '.' + boolVal) }}
+              </span>
+            }
+            @case ('enum') {
+              {{
+                col.enumKeyPrefix
+                  ? translate(col.enumKeyPrefix + '.' + readValue(row, col.field))
+                  : readValue(row, col.field)
+              }}
+            }
+            @case ('currency') {
+              {{ currencyCell(readValue(row, col.field)) }}
+            }
+            @case ('number') {
+              {{ numberCell(readValue(row, col.field)) }}
+            }
+            @case ('date') {
+              {{ dateCell(readValue(row, col.field)) }}
+            }
+            @default {
+              {{ readValue(row, col.field) }}
+            }
+          }
+        </td>
+      }
+      @for (action of inlineActions(); track action.id) {
+        <td class="lib-data-table__inline-action-col" (click)="$event.stopPropagation()">
+          @if (isActionVisible(action, row)) {
+            <button
+              type="button"
+              class="lib-data-table__row-action"
+              [class.lib-data-table__row-action--danger]="action.severity === 'danger'"
+              [pTooltip]="translate(action.labelKey)"
+              tooltipPosition="bottom"
+              [attr.aria-label]="translate(action.labelKey)"
+              (click)="invokeRowAction(action, row)"
+            >
+              <i [class]="action.iconClass"></i>
+            </button>
+          }
+        </td>
+      }
+      @if (menuActions().length > 0) {
+        <td class="lib-data-table__actions-col" (click)="$event.stopPropagation()">
+          <button
+            type="button"
+            class="lib-data-table__row-action"
+            [attr.aria-label]="translate(rowMenuLabelKey())"
+            (click)="openRowMenu($event, row)"
+          >
+            <i class="pi pi-ellipsis-v"></i>
+          </button>
+        </td>
+      }
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="paginatorright">
+    @if (totalCount() > 0) {
+      <span class="lib-data-table__paginator-count">
+        {{ rangeStart() }}–{{ rangeEnd() }} {{ translate('common.list.of') }} {{ totalCount() }}
+        {{ translate('common.list.records') }}
+      </span>
+    }
+  </ng-template>
+
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td
+        [attr.colspan]="
+          columns().length +
+          (hasSelection() ? 1 : 0) +
+          inlineActions().length +
+          (menuActions().length > 0 ? 1 : 0)
+        "
+      >
+        <div class="lib-data-table__empty">
+          <i class="pi pi-inbox lib-data-table__empty-icon"></i>
+          <p class="lib-data-table__empty-title">{{ translate(emptyTitleKey()) }}</p>
+          <p class="lib-data-table__empty-sub">{{ translate(emptySubKey()) }}</p>
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<!-- Menú de acciones compartido por todas las filas (una sola instancia). -->
+<p-menu #rowMenu [popup]="true" [model]="rowMenuItems()" appendTo="body" />

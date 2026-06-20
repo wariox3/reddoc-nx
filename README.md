@@ -1,96 +1,89 @@
-# ReddocMonorepo
+# Reddoc Monorepo
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+Monorepo Nx con la plataforma RedDoc: 1 site marketing + 6 apps internas que comparten infraestructura de auth, UI y diseño.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
+## Apps
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/getting-started/intro#learn-nx?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+| App          | Puerto | Tipo                  | Descripción                                  |
+| ------------ | ------ | --------------------- | -------------------------------------------- |
+| `landing`    | 4200   | Angular SSR/SSG       | Site público / marketing (Tailwind, i18n)    |
+| `erp`        | 4201   | Angular SPA + PrimeNG | ERP — gestión empresarial (módulo principal) |
+| `cuenta`     | 4203   | Angular SPA + PrimeNG | Perfil y seguridad de la cuenta              |
+| `transporte` | 4204   | Angular SPA + PrimeNG | Gestión de transporte                        |
+| `pos`        | 4205   | Angular SPA + PrimeNG | Punto de venta                               |
+| `turnos`     | 4206   | Angular SPA + PrimeNG | Gestión de turnos                            |
+| `cliente`    | 4207   | Angular SPA + PrimeNG | Portal de clientes                           |
 
-## Run tasks
+## Libs compartidas
 
-To run tasks with Nx use:
+- `@reddoc/core` — `BaseAuthService`, guards, interceptors, tokens (`ENVIRONMENT`, `AUTH_SERVICE`, `ROUTE_PATHS_TOKEN`, `APP_BRANDING`), tema PrimeNG (`ReddocPreset`).
+- `@reddoc/ui` — `TurnstileComponent`, páginas de auth (`LoginComponent`, `RegisterComponent`, `ForgotPasswordComponent`, `ResetPasswordComponent`, `ResendVerificationComponent`, `VerifyEmailComponent`), assets compartidos (logos).
+- `@reddoc/styles` — design tokens SCSS y `@theme` Tailwind compartido (colores brand, animaciones).
 
-```sh
-npx nx <target> <project-name>
+## Setup
+
+```bash
+npm install --legacy-peer-deps
 ```
 
-For example:
+> El flag `--legacy-peer-deps` es obligatorio: `angular-eslint@21` declara peer en `@angular/cli@21` pero el repo usa `@angular/cli@20`.
 
-```sh
-npx nx build myproject
+## Comandos comunes
+
+Todas las tareas pasan por Nx:
+
+```bash
+# Servir una app
+npx nx serve landing       # http://localhost:4200
+npx nx serve erp           # http://localhost:4201
+npx nx serve cuenta        # http://localhost:4203
+# ... idem para transporte/pos/turnos/cliente
+
+# Build
+npx nx build erp
+npx nx run-many -t build   # todas
+
+# Lint
+npx nx lint erp
+npx nx run-many -t lint
+
+# Affected (CI-style, contra main)
+npx nx affected -t lint
+npx nx affected -t build
+
+# Release
+npm run release            # commit-and-tag-version
 ```
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+## Apuntar a un backend local
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+Por defecto las SPAs proxean `/api/*` a `https://reddocapi.uk`. Si corrés el backend Django local en `http://localhost:8000`, serví con el proxy alternativo:
 
-## Add new projects
-
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
-
-To install a new plugin you can use the `nx add` command. Here's an example of adding the React plugin:
-```sh
-npx nx add @nx/react
+```bash
+npx nx serve erp        --proxy-config=apps/erp/proxy.conf.local.json
+npx nx serve cuenta     --proxy-config=apps/cuenta/proxy.conf.local.json
+npx nx serve transporte --proxy-config=apps/transporte/proxy.conf.local.json
+npx nx serve pos        --proxy-config=apps/pos/proxy.conf.local.json
+npx nx serve turnos     --proxy-config=apps/turnos/proxy.conf.local.json
+npx nx serve cliente    --proxy-config=apps/cliente/proxy.conf.local.json
 ```
 
-Use the plugin's generator to create new projects. For example, to create a new React app or library:
+Sin el flag, `nx serve` sigue usando el `proxy.conf.json` default que apunta a staging — no hace falta revertir nada.
 
-```sh
-# Generate an app
-npx nx g @nx/react:app demo
+El Django local debe servir las rutas en la raíz (`/seguridad/login/`, no `/api/seguridad/login/`) y tener habilitados para que el login por cookie funcione:
 
-# Generate a library
-npx nx g @nx/react:lib some-lib
-```
+- `CORS_ALLOW_CREDENTIALS = True`
+- `CSRF_COOKIE_SECURE = False`, `SESSION_COOKIE_SECURE = False`
+- `CSRF_TRUSTED_ORIGINS` con `http://localhost:4201`, `:4203`, `:4204`, `:4205`, `:4206`, `:4207`
 
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
+Si las requests devuelven 404, lo más probable es que el backend local sirva bajo `/api/`. En ese caso, quitá la línea `pathRewrite` del `proxy.conf.local.json` correspondiente.
 
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+## Convenciones
 
-## Set up CI!
+- **Standalone components** en todo el código.
+- **Signals** para estado local; evitar `BehaviorSubject` en código nuevo.
+- **Lazy loading** vía `loadChildren` en rutas de feature; las páginas de auth se importan eagerly desde `@reddoc/ui` (Nx prohíbe mezclar lazy/eager para una misma lib).
+- **Conventional Commits** validados por commitlint en PRs.
+- HTTP cookies HttpOnly, no tokens en localStorage. Cada app provee `AUTH_SERVICE` que extiende `BaseAuthService<TUser>`.
 
-### Step 1
-
-To connect to Nx Cloud, run the following command:
-
-```sh
-npx nx connect
-```
-
-Connecting to Nx Cloud ensures a [fast and scalable CI](https://nx.dev/ci/intro/why-nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
-
-- [Remote caching](https://nx.dev/ci/features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/ci/features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/ci/features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/ci/features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-### Step 2
-
-Use the following command to configure a CI workflow for your workspace:
-
-```sh
-npx nx g ci-workflow
-```
-
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Install Nx Console
-
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
-
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Useful links
-
-Learn more:
-
-- [Learn more about this workspace setup](https://nx.dev/getting-started/intro#learn-nx?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+Más detalle en [`CLAUDE.md`](./CLAUDE.md).

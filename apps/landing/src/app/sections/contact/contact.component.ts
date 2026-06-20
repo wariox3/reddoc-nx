@@ -1,6 +1,10 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { I18nService } from '../../i18n/i18n.service';
+import { environment } from '../../../environments/environment';
+
+const CODIGO_PROYECTO = 8;
 
 @Component({
   selector: 'app-contact',
@@ -12,7 +16,10 @@ import { I18nService } from '../../i18n/i18n.service';
 })
 export class ContactComponent {
   readonly t = inject(I18nService).t;
+  private readonly http = inject(HttpClient);
+
   readonly submitted = signal(false);
+  readonly loading = signal(false);
 
   readonly today = this.makeReqId();
 
@@ -30,7 +37,29 @@ export class ContactComponent {
 
   submit(event: Event): void {
     event.preventDefault();
-    this.submitted.set(true);
+    if (this.loading()) return;
+
+    const { name, email, phone, company, message } = this.form();
+    this.loading.set(true);
+
+    this.http
+      .post(environment.leadEndpoint, {
+        nombre: name,
+        correo: email,
+        telefono: phone,
+        empresa: company,
+        descripcion: message,
+        codigoProyecto: CODIGO_PROYECTO,
+      })
+      .subscribe({
+        next: () => {
+          this.submitted.set(true);
+          this.loading.set(false);
+        },
+        error: () => {
+          this.loading.set(false);
+        },
+      });
   }
 
   private makeReqId(): string {

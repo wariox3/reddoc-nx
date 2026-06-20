@@ -1,0 +1,25 @@
+import { COMPRA_MODULE } from '@erp/features/compra/compra.module-descriptor';
+import { CONTABILIDAD_MODULE } from '@erp/features/contabilidad/contabilidad.module-descriptor';
+import { GENERAL_MODULE } from '@erp/features/general/general.module-descriptor';
+import { HUMANO_MODULE } from '@erp/features/humano/humano.module-descriptor';
+import { INVENTARIO_MODULE } from '@erp/features/inventario/inventario.module-descriptor';
+import { TURNO_MODULE } from '@erp/features/turno/turno.module-descriptor';
+import { VENTA_MODULE } from '@erp/features/venta/venta.module-descriptor';
+import type { ErpModuleDescriptor } from './erp-module.types';
+
+/**
+ * Módulos del ERP en orden de aparición en el topbar.
+ *
+ * Import estático: son descriptores pequeños sin componentes, no justifica
+ * lazy loading. Las páginas siguen siendo lazy vía `loadComponent` desde sus
+ * `<modulo>.routes.ts`.
+ */
+export const ERP_MODULES: readonly ErpModuleDescriptor[] = [
+  GENERAL_MODULE,
+  COMPRA_MODULE,
+  VENTA_MODULE,
+  INVENTARIO_MODULE,
+  TURNO_MODULE,
+  CONTABILIDAD_MODULE,
+  HUMANO_MODULE,
+] as const;

@@ -1,0 +1,107 @@
+@let s = suscripcion();
+@let st = status();
+
+<article
+  class="bg-brand-surface rounded-xl border border-[rgba(20,48,73,0.1)] flex flex-col gap-[14px] p-5 transition-all duration-200 hover:-translate-y-px hover:shadow-md hover:border-[rgba(20,48,73,0.18)] relative"
+>
+  <!-- Header: avatar + info + id watermark -->
+  <header class="flex items-start gap-3">
+    <span
+      class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-[rgba(20,48,73,0.06)] text-[0.75rem] font-bold tracking-tight text-brand-navy"
+    >
+      {{ initials() }}
+    </span>
+    <div class="flex min-w-0 flex-1 flex-col gap-[0.2rem] leading-tight">
+      <h3 class="m-0 truncate text-[0.9rem] font-semibold text-brand-text tracking-[-0.01em]">
+        {{ s.cliente_nombre }}
+      </h3>
+      <p class="m-0 text-[0.73rem] text-brand-muted">
+        {{ s.suscripcion_tipo_nombre }}<span class="mx-1 opacity-40">·</span>{{ frecuenciaLabel() }}
+      </p>
+    </div>
+    <span
+      class="shrink-0 text-[0.62rem] font-medium text-brand-muted leading-none tracking-wide tabular-nums opacity-45"
+    >
+      {{ padId() }}
+    </span>
+  </header>
+
+  <!-- Status badge -->
+  <div>
+    <span
+      class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-[0.22rem] text-[0.68rem] font-semibold leading-none"
+      [class.bg-emerald-50]="st.tone === 'success'"
+      [class.text-emerald-700]="st.tone === 'success'"
+      [class.bg-amber-50]="st.tone === 'warn'"
+      [class.text-amber-700]="st.tone === 'warn'"
+      [class.bg-rose-50]="st.tone === 'danger'"
+      [class.text-rose-600]="st.tone === 'danger'"
+    >
+      <span
+        class="h-[6px] w-[6px] rounded-full"
+        [class.bg-emerald-500]="st.tone === 'success'"
+        [class.bg-amber-500]="st.tone === 'warn'"
+        [class.bg-rose-500]="st.tone === 'danger'"
+      ></span>
+      {{ st.badgeText }}
+    </span>
+  </div>
+
+  <!-- Date range + progress bar -->
+  <div class="flex flex-col gap-2">
+    <!-- Dates + days left -->
+    <div class="flex items-center justify-between gap-2">
+      <div class="flex items-center gap-1.5 text-[0.72rem] min-w-0">
+        <i
+          class="pi pi-calendar text-[0.65rem] shrink-0"
+          [class.text-emerald-500]="st.tone === 'success'"
+          [class.text-amber-500]="st.tone === 'warn'"
+          [class.text-rose-500]="st.tone === 'danger'"
+        ></i>
+        <span class="font-medium text-brand-text tabular-nums">{{
+          s.fecha_inicio | date: 'dd/MM/yy'
+        }}</span>
+        <span class="text-brand-muted opacity-40">→</span>
+        <span class="font-medium text-brand-text tabular-nums">{{
+          s.fecha_fin | date: 'dd/MM/yy'
+        }}</span>
+      </div>
+      <div
+        class="shrink-0 flex items-center gap-1 text-[0.72rem] font-semibold tabular-nums"
+        [class.text-emerald-600]="st.tone === 'success'"
+        [class.text-amber-600]="st.tone === 'warn'"
+        [class.text-rose-600]="st.tone === 'danger'"
+      >
+        <i class="pi pi-clock text-[0.62rem]"></i>
+        {{ st.expired ? 'Vencida' : st.left + (st.left === 1 ? ' día' : ' días') }}
+      </div>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="h-1.5 w-full rounded-full bg-[rgba(20,48,73,0.07)] overflow-hidden">
+      <div
+        class="h-full rounded-full"
+        [class.bg-sky-400]="st.tone === 'success'"
+        [class.bg-amber-400]="st.tone === 'warn'"
+        [class.bg-rose-400]="st.tone === 'danger'"
+        [style.width.%]="st.pct"
+      ></div>
+    </div>
+
+    <!-- Stats -->
+    <div class="flex justify-between text-[0.63rem] text-brand-muted tabular-nums tracking-wide">
+      <span>{{ st.used }} de {{ st.total }} días usados</span>
+      <span>{{ pctLabel() }}</span>
+    </div>
+  </div>
+
+  <!-- Footer actions -->
+  <footer class="flex items-center justify-end gap-2 pt-3 border-t border-[rgba(20,48,73,0.07)]">
+    <p-button
+      label="Actualizar suscripción"
+      icon="pi pi-bolt"
+      size="small"
+      (onClick)="goToPlanes()"
+    />
+  </footer>
+</article>

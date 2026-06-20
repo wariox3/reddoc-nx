@@ -1,0 +1,32 @@
+<div class="flex items-start" role="list" aria-label="Pasos">
+  @for (label of labels(); track $index; let i = $index, last = $last) {
+    <div class="flex flex-col items-center gap-1.5">
+      <div
+        class="h-[30px] w-[30px] rounded-full flex items-center justify-center text-[0.75rem] font-semibold transition-all duration-200"
+        [class]="
+          i <= current()
+            ? 'bg-brand-blue text-white'
+            : 'bg-transparent text-brand-muted border border-[rgba(20,48,73,0.18)]'
+        "
+      >
+        @if (i < current()) {
+          <i class="pi pi-check text-[0.65rem]"></i>
+        } @else {
+          <span class="tabular-nums">{{ i + 1 }}</span>
+        }
+      </div>
+      <span
+        class="text-[0.7rem] whitespace-nowrap"
+        [class]="i === current() ? 'font-semibold text-brand-text' : 'text-brand-muted'"
+      >
+        {{ label }}
+      </span>
+    </div>
+    @if (!last) {
+      <div
+        class="flex-1 h-px mt-[14px] mx-1.5 transition-colors duration-300"
+        [class]="i < current() ? 'bg-brand-blue' : 'bg-[rgba(20,48,73,0.18)]'"
+      ></div>
+    }
+  }
+</div>

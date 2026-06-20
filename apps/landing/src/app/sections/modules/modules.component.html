@@ -188,6 +188,9 @@
                 </li>
               }
             </ul>
+            @if (active().closing) {
+              <p class="spot-body spot-closing">{{ active().closing }}</p>
+            }
           </div>
 
           <figure class="spot-figure">

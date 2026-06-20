@@ -1,8 +1,8 @@
-// Reddoc design tokens — Operations Console typography (IBM Plex)
+// Reddoc design tokens — typography (DM Sans)
 :root {
-  --reddoc-font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --reddoc-font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --reddoc-font-display: var(--reddoc-font-sans);
-  --reddoc-font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --reddoc-font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
 
   // Compatibility tokens
   --reddoc-font: var(--reddoc-font-sans);
@@ -16,9 +16,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  font-feature-settings:
-    'ss03' on,
-    'ss04' on;
 }
 
 // Mono uppercase eyebrow — used for module labels, status, section markers

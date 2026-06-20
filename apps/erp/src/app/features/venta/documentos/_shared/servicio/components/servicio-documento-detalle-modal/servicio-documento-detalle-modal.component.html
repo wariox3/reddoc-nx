@@ -1,0 +1,483 @@
+@let d = t().entities.servicioDocumento.form.detalles;
+
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="!saving()"
+  [dismissableMask]="!saving()"
+  [focusOnShow]="false"
+  [style]="{ width: '64rem' }"
+  [breakpoints]="{ '768px': '95vw' }"
+>
+  <ng-template pTemplate="header">
+    <div class="flex items-center gap-3">
+      <span
+        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-sky-50 text-sky-700"
+      >
+        <i class="pi pi-clock text-[1.05rem]"></i>
+      </span>
+      <div class="flex flex-col gap-[0.1rem]">
+        <h2 class="m-0 text-[1.02rem] font-bold leading-tight tracking-tight text-brand-text">
+          {{ isEditMode() ? d.modalEditTitle : d.modalCreateTitle }}
+        </h2>
+        <p class="m-0 text-[0.75rem] text-brand-muted">{{ d.modalSubtitle }}</p>
+      </div>
+    </div>
+  </ng-template>
+
+  @if (visible()) {
+    <form [formGroup]="group()" class="flex flex-col gap-4 pt-1">
+      <!-- Ítem -->
+      <div class="flex flex-col gap-1.5">
+        <label for="m-item" class="detalle-modal__label">
+          {{ d.fields.item }}<span class="ml-px text-red-500">*</span>
+        </label>
+        <app-item-autocomplete
+          inputId="m-item"
+          formControlName="item"
+          [placeholder]="d.fields.itemPlaceholder"
+          [invalid]="group().controls.item.invalid && group().controls.item.touched"
+        />
+        <lib-field-error
+          [control]="group().controls.item"
+          [messages]="{ required: d.validation.required }"
+        />
+      </div>
+
+      <!-- Puesto -->
+      <div class="flex flex-col gap-1.5">
+        <label for="m-puesto" class="detalle-modal__label">
+          {{ d.fields.puesto }}<span class="ml-px text-red-500">*</span>
+        </label>
+        <app-api-select
+          inputId="m-puesto"
+          formControlName="puesto"
+          [endpoint]="puestoEndpoint"
+          [params]="puestoParams()"
+          [placeholder]="d.fields.puestoPlaceholder"
+          [invalid]="group().controls.puesto.invalid && group().controls.puesto.touched"
+        />
+        <lib-field-error
+          [control]="group().controls.puesto"
+          [messages]="{ required: d.validation.required }"
+        />
+      </div>
+
+      <!-- Inset Cobertura: inputs (izq) + tarifa supervigilancia (der) -->
+      <div
+        class="rounded-lg border border-[rgba(119,170,215,0.35)] bg-[rgba(119,170,215,0.06)] p-4"
+      >
+        <div class="flex flex-col gap-5 lg:flex-row">
+          <!-- Columna izquierda: inputs de cobertura -->
+          <div class="grid flex-1 grid-cols-1 gap-x-5 gap-y-4 sm:grid-cols-2">
+            <!-- Fecha -->
+            <div class="flex flex-col gap-1.5 sm:col-span-2">
+              <label for="m-fdesde" class="detalle-modal__label">
+                {{ d.fields.periodo }}<span class="ml-px text-red-500">*</span>
+              </label>
+              <div class="flex items-center gap-2">
+                <p-datepicker
+                  inputId="m-fdesde"
+                  formControlName="fecha_desde"
+                  dateFormat="yy-mm-dd"
+                  [showIcon]="true"
+                  appendTo="body"
+                  [fluid]="true"
+                  styleClass="flex-1"
+                  [placeholder]="d.fields.desde"
+                  [invalid]="
+                    group().controls.fecha_desde.invalid && group().controls.fecha_desde.touched
+                  "
+                />
+                <i class="pi pi-arrow-right text-[0.7rem] text-brand-muted"></i>
+                <p-datepicker
+                  formControlName="fecha_hasta"
+                  dateFormat="yy-mm-dd"
+                  [showIcon]="true"
+                  appendTo="body"
+                  [fluid]="true"
+                  styleClass="flex-1"
+                  [placeholder]="d.fields.hasta"
+                  [invalid]="
+                    group().controls.fecha_hasta.invalid && group().controls.fecha_hasta.touched
+                  "
+                />
+              </div>
+            </div>
+
+            <!-- Horario -->
+            <div class="flex flex-col gap-1.5">
+              <label for="m-hdesde" class="detalle-modal__label">
+                {{ d.fields.horario }}<span class="ml-px text-red-500">*</span>
+              </label>
+              <div class="flex items-center gap-2">
+                <p-datepicker
+                  inputId="m-hdesde"
+                  formControlName="hora_desde"
+                  [timeOnly]="true"
+                  hourFormat="24"
+                  appendTo="body"
+                  [fluid]="true"
+                  styleClass="flex-1"
+                  [invalid]="
+                    group().controls.hora_desde.invalid && group().controls.hora_desde.touched
+                  "
+                />
+                <span class="text-brand-muted">–</span>
+                <p-datepicker
+                  formControlName="hora_hasta"
+                  [timeOnly]="true"
+                  hourFormat="24"
+                  appendTo="body"
+                  [fluid]="true"
+                  styleClass="flex-1"
+                  [invalid]="
+                    group().controls.hora_hasta.invalid && group().controls.hora_hasta.touched
+                  "
+                />
+              </div>
+            </div>
+
+            <!-- Modalidad -->
+            <div class="flex flex-col gap-1.5">
+              <label for="m-modalidad" class="detalle-modal__label">
+                {{ d.fields.modalidad }}<span class="ml-px text-red-500">*</span>
+              </label>
+              <app-api-select
+                inputId="m-modalidad"
+                formControlName="modalidad"
+                [endpoint]="modalidadEndpoint"
+                [placeholder]="d.fields.modalidadPlaceholder"
+                [invalid]="group().controls.modalidad.invalid && group().controls.modalidad.touched"
+              />
+            </div>
+
+            <!-- Salario -->
+            <div class="flex flex-col gap-1.5">
+              <label for="m-salario" class="detalle-modal__label">
+                {{ d.fields.salario }}<span class="ml-px text-red-500">*</span>
+              </label>
+              <p-inputnumber
+                inputId="m-salario"
+                formControlName="salario"
+                mode="decimal"
+                [minFractionDigits]="0"
+                [maxFractionDigits]="2"
+                prefix="$ "
+                [fluid]="true"
+                [invalid]="group().controls.salario.invalid && group().controls.salario.touched"
+              />
+              <lib-field-error
+                [control]="group().controls.salario"
+                [messages]="{ required: d.validation.required }"
+              />
+            </div>
+
+            <!-- Días de la semana -->
+            <div class="flex flex-col gap-1.5">
+              <span class="detalle-modal__label">{{ d.fields.dias }}</span>
+              <div class="flex flex-wrap gap-1.5">
+                @for (label of d.fields.diasSemana; track $index) {
+                  <button
+                    type="button"
+                    (click)="toggleDia($index)"
+                    class="h-8 w-10 rounded-md text-[0.72rem] font-semibold transition-colors"
+                    [class]="
+                      formValues().dias_semana.includes($index)
+                        ? 'bg-[#143049] text-white'
+                        : 'border border-[rgba(119,170,215,0.5)] bg-white text-brand-muted hover:border-[rgba(119,170,215,0.9)] hover:text-brand-text'
+                    "
+                  >
+                    {{ label }}
+                  </button>
+                }
+                <button
+                  type="button"
+                  (click)="toggleFestivo()"
+                  class="h-8 rounded-md px-3 text-[0.72rem] font-semibold transition-colors"
+                  [class]="
+                    formValues().festivo
+                      ? 'bg-[#143049] text-white'
+                      : 'border border-[rgba(119,170,215,0.5)] bg-white text-brand-muted hover:border-[rgba(119,170,215,0.9)] hover:text-brand-text'
+                  "
+                >
+                  {{ d.fields.festivo }}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Columna derecha: tarifador supervigilancia (slim, vertical) -->
+          <div class="w-full shrink-0 lg:w-[19rem]">
+            @if (calcResult(); as r) {
+              <div
+                class="flex flex-col gap-2.5 rounded-lg border border-[rgba(20,48,73,0.1)] bg-white p-3.5 transition-opacity"
+                [class.opacity-50]="calcLoading()"
+              >
+                <!-- Encabezado: título + días de cobertura -->
+                <div class="flex items-center justify-between">
+                  <span
+                    class="text-[0.6rem] font-bold uppercase tracking-[0.08em] text-brand-muted"
+                  >
+                    {{ d.calc.title }}
+                  </span>
+                  <span
+                    class="inline-flex items-center gap-1 rounded-full bg-sky-50 px-2 py-0.5 text-[0.66rem] font-medium text-sky-700"
+                  >
+                    <i class="pi pi-calendar text-[0.58rem]"></i>
+                    {{ r.total_dias }} {{ d.calc.dias }}
+                  </span>
+                </div>
+
+                <!-- Diurna (cálido) -->
+                <div>
+                  <div class="mb-1 flex items-center gap-1.5">
+                    <i class="pi pi-sun text-[0.78rem] text-amber-500"></i>
+                    <span
+                      class="text-[0.66rem] font-semibold uppercase tracking-wide text-amber-600"
+                    >
+                      {{ d.calc.diurna }}
+                    </span>
+                  </div>
+                  <div class="flex items-baseline">
+                    <span
+                      class="text-[1.02rem] font-bold leading-none tabular-nums text-brand-text"
+                    >
+                      {{ r.horas_diurnas | number: '1.0-2' }}
+                    </span>
+                    <span class="ml-0.5 text-[0.68rem] text-brand-muted">h</span>
+                    <span class="ml-auto text-[0.64rem] tabular-nums text-brand-muted">
+                      {{ r.horas_diurnas_unidad | number: '1.0-2' }} {{ d.calc.horasDia }}
+                    </span>
+                  </div>
+                  <div class="mt-1 flex items-center justify-between">
+                    <span class="text-[0.64rem] text-brand-muted">{{ d.calc.valorHora }}</span>
+                    <span class="text-[0.74rem] font-semibold tabular-nums text-brand-text">
+                      {{ r.valor_hora_diurna | currency: 'COP' : 'symbol-narrow' : '1.2-2' }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="h-px bg-[rgba(20,48,73,0.07)]"></div>
+
+                <!-- Nocturna (frío) -->
+                <div>
+                  <div class="mb-1 flex items-center gap-1.5">
+                    <i class="pi pi-moon text-[0.78rem] text-indigo-500"></i>
+                    <span
+                      class="text-[0.66rem] font-semibold uppercase tracking-wide text-indigo-500"
+                    >
+                      {{ d.calc.nocturna }}
+                    </span>
+                  </div>
+                  <div class="flex items-baseline">
+                    <span
+                      class="text-[1.02rem] font-bold leading-none tabular-nums text-brand-text"
+                    >
+                      {{ r.horas_nocturnas | number: '1.0-2' }}
+                    </span>
+                    <span class="ml-0.5 text-[0.68rem] text-brand-muted">h</span>
+                    <span class="ml-auto text-[0.64rem] tabular-nums text-brand-muted">
+                      {{ r.horas_nocturnas_unidad | number: '1.0-2' }} {{ d.calc.horasDia }}
+                    </span>
+                  </div>
+                  <div class="mt-1 flex items-center justify-between">
+                    <span class="text-[0.64rem] text-brand-muted">{{ d.calc.valorHora }}</span>
+                    <span class="text-[0.74rem] font-semibold tabular-nums text-brand-text">
+                      {{ r.valor_hora_nocturna | currency: 'COP' : 'symbol-narrow' : '1.2-2' }}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Total: precio mínimo (cifra protagonista) -->
+                <div
+                  class="mt-0.5 flex flex-col gap-0.5 border-t border-[rgba(20,48,73,0.1)] pt-2.5"
+                >
+                  <span class="text-[0.66rem] font-medium text-brand-muted">{{
+                    d.calc.precioMinimo
+                  }}</span>
+                  <span
+                    class="text-[1.18rem] font-bold leading-none tracking-tight tabular-nums text-[#143049]"
+                  >
+                    {{ r.precio_minimo | currency: 'COP' : 'symbol-narrow' : '1.2-2' }}
+                  </span>
+                  <button
+                    type="button"
+                    (click)="definirPrecio()"
+                    [disabled]="group().controls.precio.disabled"
+                    class="mt-2 inline-flex h-8 w-full items-center justify-center gap-1.5 rounded-md border border-[rgba(20,48,73,0.18)] bg-white text-[0.72rem] font-semibold text-[#143049] transition-colors hover:bg-[rgba(20,48,73,0.05)] disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    <i class="pi pi-arrow-down text-[0.7rem]"></i>
+                    {{ d.calc.definirPrecio }}
+                  </button>
+                </div>
+              </div>
+            } @else if (calcLoading()) {
+              <div
+                class="flex h-full min-h-[8rem] items-center justify-center gap-2 rounded-lg border border-dashed border-[rgba(20,48,73,0.12)] bg-white/50 px-4 py-3 text-center text-[0.74rem] text-brand-muted"
+              >
+                <i class="pi pi-spin pi-spinner text-[0.8rem]"></i>
+                {{ d.calc.calculating }}
+              </div>
+            } @else {
+              <div
+                class="flex h-full min-h-[8rem] flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-[rgba(20,48,73,0.12)] bg-white/40 px-4 py-5 text-center text-[0.74rem] leading-snug text-brand-muted"
+              >
+                <i class="pi pi-calculator text-[1.1rem] text-sky-600/60"></i>
+                <span>{{ d.calc.empty }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Programación + comercial (izq) + resumen (der) -->
+      <div class="flex flex-col gap-5 lg:flex-row">
+        <!-- Columna izquierda: programación + comercial -->
+        <div class="flex flex-1 flex-col gap-4">
+          <!-- Programar (y futuros campos de programación) -->
+          <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
+            <label for="m-programar" class="flex w-fit cursor-pointer items-center gap-2.5">
+              <p-toggleswitch inputId="m-programar" formControlName="programar" />
+              <span class="flex flex-col">
+                <span class="text-[0.85rem] font-medium text-brand-text">{{
+                  d.fields.programar
+                }}</span>
+                <span class="text-[0.72rem] text-brand-muted">{{ d.fields.programarHint }}</span>
+              </span>
+            </label>
+
+            <label for="m-cortesia" class="flex w-fit cursor-pointer items-center gap-2.5">
+              <p-toggleswitch inputId="m-cortesia" formControlName="cortesia" />
+              <span class="flex flex-col">
+                <span class="text-[0.85rem] font-medium text-brand-text">{{
+                  d.fields.cortesia
+                }}</span>
+                <span class="text-[0.72rem] text-brand-muted">{{ d.fields.cortesiaHint }}</span>
+              </span>
+            </label>
+          </div>
+
+          <!-- Comercial: cantidad · precio · impuestos (misma línea) -->
+          <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
+            <div class="flex w-full flex-col gap-1.5 sm:w-28">
+              <label for="m-cantidad" class="detalle-modal__label">
+                {{ d.fields.cantidad }}<span class="ml-px text-red-500">*</span>
+              </label>
+              <p-inputnumber
+                inputId="m-cantidad"
+                formControlName="cantidad"
+                mode="decimal"
+                [useGrouping]="false"
+                [min]="1"
+                [minFractionDigits]="0"
+                [maxFractionDigits]="0"
+                [fluid]="true"
+              />
+            </div>
+
+            <div class="flex w-full flex-col gap-1.5 sm:w-44">
+              <label for="m-precio" class="detalle-modal__label">
+                {{ d.fields.precio }}<span class="ml-px text-red-500">*</span>
+              </label>
+              <p-inputnumber
+                inputId="m-precio"
+                formControlName="precio"
+                mode="decimal"
+                [minFractionDigits]="0"
+                [maxFractionDigits]="2"
+                prefix="$ "
+                [fluid]="true"
+              />
+            </div>
+
+            <!-- Impuestos -->
+            <div class="flex flex-1 flex-col gap-1.5">
+              <label for="m-impuestos" class="detalle-modal__label">{{ d.fields.impuestos }}</label>
+              <app-impuesto-select
+                inputId="m-impuestos"
+                formControlName="impuestos_ids"
+                [placeholder]="d.fields.impuestosPlaceholder"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Columna derecha: resumen de la línea (estilo plan-summary) -->
+        <aside
+          class="w-full shrink-0 rounded-[12px] border border-[rgba(20,48,73,0.12)] bg-brand-surface p-4 shadow-[0_1px_4px_rgba(0,0,0,0.04)] lg:w-[19rem]"
+        >
+          <span class="text-[0.6rem] font-bold uppercase tracking-[0.18em] text-brand-muted">
+            {{ d.summary.title }}
+          </span>
+
+          <div class="mt-3 flex flex-col gap-1.5">
+            <!-- Eco de los inputs -->
+            <div class="flex items-baseline justify-between gap-2 text-[0.74rem]">
+              <span class="text-brand-muted">{{ d.fields.cantidad }}</span>
+              <span class="tabular-nums text-brand-text">{{
+                formValues().cantidad | number: '1.0-2'
+              }}</span>
+            </div>
+            <div class="flex items-baseline justify-between gap-2 text-[0.74rem]">
+              <span class="text-brand-muted">{{ d.fields.precio }}</span>
+              <span class="tabular-nums text-brand-text">
+                {{ formValues().precio | currency: 'COP' : 'symbol-narrow' : '1.0-2' }}
+              </span>
+            </div>
+
+            <!-- Subtotal -->
+            <div
+              class="mt-1 flex items-baseline justify-between gap-2 border-t border-[rgba(20,48,73,0.08)] pt-2 text-[0.74rem]"
+            >
+              <span class="text-brand-muted">{{ d.summary.subtotal }}</span>
+              <span class="font-medium tabular-nums text-brand-text">
+                {{ subtotal() | currency: 'COP' : 'symbol-narrow' : '1.0-2' }}
+              </span>
+            </div>
+
+            <!-- Aquí entrarán IVA · descuentos · retenciones (filas condicionales) -->
+
+            <!-- Total (cifra protagonista) -->
+            <div
+              class="mt-1 flex items-baseline justify-between gap-2 border-t border-[rgba(20,48,73,0.1)] pt-2.5"
+            >
+              <span class="text-[0.78rem] font-semibold text-brand-text">{{
+                d.summary.total
+              }}</span>
+              <span
+                class="text-[1.35rem] font-bold leading-none tracking-[-0.02em] tabular-nums text-[#143049]"
+              >
+                {{ subtotal() | currency: 'COP' : 'symbol-narrow' : '1.0-2' }}
+              </span>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </form>
+  }
+
+  <ng-template pTemplate="footer">
+    <div class="flex items-center justify-end gap-3">
+      <p-button
+        type="button"
+        [label]="t().entities.servicioDocumento.form.cancel"
+        [outlined]="true"
+        severity="secondary"
+        [disabled]="saving()"
+        (onClick)="onCancel()"
+      />
+      <p-button
+        type="button"
+        [label]="isEditMode() ? d.modalSave : d.modalAdd"
+        icon="pi pi-check"
+        [loading]="saving()"
+        [disabled]="saving()"
+        (onClick)="onSave()"
+      />
+    </div>
+  </ng-template>
+</p-dialog>

@@ -1,0 +1,44 @@
+@theme {
+  --color-brand-navy: #13263c;
+  --color-brand-navy-deep: #0c1d2e;
+  --color-brand-blue: #009ef7;
+  --color-brand-bg: #f8f9fa;
+  --color-brand-surface: #ffffff;
+  --color-brand-surface-2: #eef2f6;
+  --color-brand-text: #13263c;
+  --color-brand-muted: #7a8fa3;
+  --color-brand-muted-2: #68c0fb;
+
+  --animate-fade-up: fadeUp 0.55s ease both;
+  --animate-drift1: drift1 18s ease-in-out infinite alternate;
+  --animate-drift2: drift2 22s ease-in-out infinite alternate;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes drift1 {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+  to {
+    transform: translate(40px, 30px) scale(1.1);
+  }
+}
+
+@keyframes drift2 {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+  to {
+    transform: translate(-30px, -20px) scale(1.08);
+  }
+}

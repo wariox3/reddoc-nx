@@ -1,0 +1,251 @@
+:host {
+  // Llena el alto disponible: el cuerpo de la tabla scrollea, el header queda
+  // fijo y el paginador anclado (modo scrollable de PrimeNG, scrollHeight=flex).
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.lib-data-table {
+  &__select-col {
+    width: 38px;
+    text-align: center;
+  }
+
+  &__actions-col {
+    width: 44px;
+    text-align: center;
+  }
+
+  &__inline-action-col {
+    width: 44px;
+    text-align: center;
+  }
+
+  // Texto solo para lectores de pantalla (headers de las columnas de íconos).
+  &__visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  &__row-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    color: var(--brand-muted);
+    cursor: pointer;
+    appearance: none;
+    padding: 0;
+    transition:
+      background 0.16s ease,
+      color 0.16s ease,
+      border-color 0.16s ease;
+
+    .pi {
+      font-size: 0.85rem;
+    }
+
+    &:hover {
+      background: rgba(19 38 60 / 0.06);
+      color: var(--brand-navy);
+      border-color: rgba(19 38 60 / 0.1);
+    }
+
+    &:focus-visible {
+      outline: none;
+      border-color: rgba(19 38 60 / 0.35);
+      box-shadow: 0 0 0 3px rgba(19 38 60 / 0.08);
+    }
+
+    &--danger {
+      color: #b91c1c;
+
+      &:hover {
+        background: #fef2f2;
+        color: #b91c1c;
+        border-color: rgba(185 28 28 / 0.25);
+      }
+    }
+  }
+
+  &__row--clickable {
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(19 38 60 / 0.025);
+    }
+  }
+
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 4rem 1rem;
+    text-align: center;
+  }
+
+  &__empty-icon {
+    font-size: 1.4rem;
+    color: var(--brand-muted);
+    opacity: 0.5;
+    margin-bottom: 0.85rem;
+  }
+
+  &__empty-title {
+    margin: 0 0 0.25rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--brand-navy);
+  }
+
+  &__empty-sub {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--brand-muted);
+    max-width: 280px;
+    line-height: 1.5;
+  }
+
+  &__menu-item--danger :where(.p-menuitem-link, .p-menuitem-text, .p-menuitem-icon) {
+    color: #b91c1c;
+  }
+
+  &__bool-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: 0.02em;
+
+    &--true {
+      background: #f0fdf4;
+      color: #16a34a;
+    }
+
+    &--false {
+      background: rgba(20 48 73 / 0.06);
+      color: var(--brand-muted);
+    }
+  }
+
+  &__paginator-count {
+    font-size: 0.8rem;
+    color: var(--brand-muted);
+  }
+}
+
+:host ::ng-deep .p-paginator {
+  justify-content: center;
+  position: relative;
+  // Pie del panel: divisor superior y respiro vertical para cerrar la caja.
+  border-top: 1px solid rgba(19 38 60 / 0.08);
+  padding-top: 0.6rem;
+  padding-bottom: 0.6rem;
+
+  .p-paginator-right-content {
+    position: absolute;
+    right: 0;
+  }
+}
+
+// ─── Flex-fill + header sticky + pulido ───────────────────────────────────────
+// Encadena el flex para que `scrollHeight="flex"` resuelva un alto real y solo
+// el cuerpo de la tabla scrollee. Estética alineada con la tabla de detalles:
+// header opaco en mayúsculas discretas, números tabulares, filas tranquilas.
+:host ::ng-deep {
+  p-table,
+  .p-datatable {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    // El marco lo pone la card; la tabla no dibuja borde ni fondo propio.
+    background: transparent;
+    border: 0;
+  }
+
+  // El bloque "sin registros" llena el alto del contenedor scrollable.
+  // Solo cuando la tabla está vacía: con datos la tabla mantiene alto auto.
+  .p-datatable-table-container:has(.lib-data-table__empty) .p-datatable-table {
+    height: 100%;
+  }
+
+  // Contenedor scrollable (el que recibe el alto y hace el scroll vertical).
+  .p-datatable-table-container {
+    flex: 1;
+    min-height: 0;
+
+    // Scrollbar fina y discreta.
+    scrollbar-width: thin;
+    scrollbar-color: rgba(19 38 60 / 0.22) transparent;
+
+    &::-webkit-scrollbar {
+      width: 9px;
+      height: 9px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(19 38 60 / 0.18);
+      border-radius: 999px;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background: rgba(19 38 60 / 0.3);
+      background-clip: padding-box;
+    }
+  }
+
+  // Densidad compacta (igual que la tabla de detalle) + dígitos alineados.
+  .p-datatable-table {
+    font-size: 0.82rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  // Header fijo: etiquetas discretas en mayúscula, fondo opaco para que las
+  // filas no se transparenten al pasar por debajo, borde inferior robusto.
+  .p-datatable-thead > tr > th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: #f8f9fa;
+    box-shadow: inset 0 -1px 0 rgba(19 38 60 / 0.1);
+    border-bottom: 0;
+    padding: 0.6rem 0.75rem;
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--brand-muted, #64748b);
+    white-space: nowrap;
+  }
+
+  // Cuerpo: separadores sutiles + hover whisper-quiet.
+  .p-datatable-tbody > tr > td {
+    padding: 0.55rem 0.75rem;
+    border-bottom: 1px solid rgba(19 38 60 / 0.06);
+  }
+
+  .p-datatable-tbody > tr:hover > td {
+    background: rgba(19 38 60 / 0.02);
+  }
+}

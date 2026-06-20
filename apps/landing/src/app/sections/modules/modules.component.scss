@@ -295,6 +295,11 @@
   margin: 0;
 }
 
+.spot-closing {
+  margin-top: 8px;
+  font-style: italic;
+}
+
 .spot-bullets {
   list-style: none;
   margin: 6px 0 0;
@@ -357,15 +362,12 @@
     }
   }
   .console-frame-body {
-    aspect-ratio: 16 / 10;
     background: var(--reddoc-surface-sunken);
     overflow: hidden;
 
     img {
       width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: top center;
+      height: auto;
       display: block;
     }
   }

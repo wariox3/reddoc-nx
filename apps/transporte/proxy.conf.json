@@ -1,0 +1,10 @@
+{
+  "/api": {
+    "target": "https://reddocapi.uk",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": { "^/api": "" },
+    "cookieDomainRewrite": "",
+    "logLevel": "info"
+  }
+}

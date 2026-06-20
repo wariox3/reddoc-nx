@@ -1,0 +1,120 @@
+<div class="bg-brand-surface border border-[rgba(20,48,73,0.1)] rounded-xl overflow-hidden">
+  <!-- Card header -->
+  <div class="flex items-center gap-3 px-5 py-4 border-b border-[rgba(20,48,73,0.08)]">
+    <span
+      class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-sky-50 text-sky-700"
+    >
+      <i class="pi pi-id-card text-[1.05rem]"></i>
+    </span>
+    <div class="flex flex-1 flex-col gap-[0.1rem] min-w-0">
+      <h2 class="m-0 text-[0.95rem] font-bold text-brand-text tracking-tight">
+        Información personal
+      </h2>
+      <p class="m-0 text-[0.75rem] text-brand-muted">
+        Actualiza tu nombre, teléfono e identificación
+      </p>
+    </div>
+  </div>
+
+  <!-- Form body -->
+  <div class="px-5 py-5 max-[576px]:px-4 max-[576px]:py-4">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+      <div class="flex flex-col gap-5">
+        <div class="grid grid-cols-2 max-[576px]:grid-cols-1 gap-1.5">
+          <div class="flex flex-col gap-1.5">
+            <label
+              for="pf-nombre"
+              class="text-[0.855rem] font-semibold text-brand-text tracking-tight"
+            >
+              Nombre corto
+            </label>
+            <input
+              pInputText
+              id="pf-nombre"
+              formControlName="nombre_corto"
+              placeholder="Ej. María García"
+              fluid
+              [class.cd-input-error]="
+                nombreCortoControl.invalid &&
+                (nombreCortoControl.touched || nombreCortoControl.dirty)
+              "
+            />
+            <lib-field-error [control]="nombreCortoControl" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-5 max-[576px]:grid-cols-1">
+          <div class="flex flex-col gap-1.5">
+            <label
+              for="pf-celular"
+              class="text-[0.855rem] font-semibold text-brand-text tracking-tight"
+            >
+              Celular <span class="text-red-500 ml-px">*</span>
+            </label>
+            <input
+              pInputText
+              id="pf-celular"
+              formControlName="celular"
+              placeholder="+57 300 000 0000"
+              fluid
+              [class.cd-input-error]="
+                celularControl.invalid && (celularControl.touched || celularControl.dirty)
+              "
+            />
+            <lib-field-error
+              [control]="celularControl"
+              [messages]="{
+                pattern: 'Solo dígitos, espacios, guiones y paréntesis (7–20 caracteres).',
+              }"
+            />
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <label for="pf-id" class="text-[0.855rem] font-semibold text-brand-text tracking-tight">
+              Número de identificación <span class="text-red-500 ml-px">*</span>
+            </label>
+            <input
+              pInputText
+              id="pf-id"
+              formControlName="numero_identificacion"
+              placeholder="12345678"
+              fluid
+              [class.cd-input-error]="
+                identificacionControl.invalid &&
+                (identificacionControl.touched || identificacionControl.dirty)
+              "
+            />
+            <lib-field-error
+              [control]="identificacionControl"
+              [messages]="{ pattern: 'Solo dígitos, entre 5 y 20 caracteres.' }"
+            />
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label
+            for="pf-email"
+            class="text-[0.855rem] font-semibold text-brand-text tracking-tight"
+          >
+            Correo electrónico
+          </label>
+          <input pInputText id="pf-email" formControlName="email" fluid />
+          <small class="inline-flex items-center gap-[0.3rem] text-[0.8rem] text-brand-muted">
+            <i class="pi pi-lock text-[0.7rem]"></i>
+            El correo electrónico no se puede modificar
+          </small>
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-6 mt-1">
+        <p-button
+          type="submit"
+          label="Guardar cambios"
+          icon="pi pi-check"
+          [loading]="isSaving()"
+          [disabled]="isPristine() || isSaving() || form.invalid"
+        />
+      </div>
+    </form>
+  </div>
+</div>
