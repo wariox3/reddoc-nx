@@ -672,6 +672,8 @@ export const es: AppDict = {
       searchPlaceholder: 'Buscar por nombre…',
       columns: {
         id: 'ID',
+        contacto: 'Contacto',
+        contactoNombre: 'Nombre del contacto',
         nombre: 'Nombre',
         direccion: 'Dirección',
         celular: 'Celular',

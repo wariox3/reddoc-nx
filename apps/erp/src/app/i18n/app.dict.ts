@@ -481,6 +481,8 @@ export interface AppDict extends AuthTranslationsHost {
       searchPlaceholder: string;
       columns: {
         id: string;
+        contacto: string;
+        contactoNombre: string;
         nombre: string;
         direccion: string;
         celular: string;

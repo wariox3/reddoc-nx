@@ -663,6 +663,8 @@ export const en: AppDict = {
       searchPlaceholder: 'Search by name…',
       columns: {
         id: 'ID',
+        contacto: 'Contact',
+        contactoNombre: 'Contact name',
         nombre: 'Name',
         direccion: 'Address',
         celular: 'Mobile',
