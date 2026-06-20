@@ -1109,6 +1109,18 @@ export interface AppDict extends AuthTranslationsHost {
           loadError: { title: string; desc: string };
         };
       };
+      detail: {
+        sections: { general: string; detalles: string };
+        labels: {
+          cliente: string;
+          fecha: string;
+          fechaVence: string;
+          plazoPago: string;
+          sede: string;
+          metodoPago: string;
+        };
+        notFound: { title: string; desc: string };
+      };
     };
     comercialDetalle: {
       title: string;

@@ -16,8 +16,8 @@ import { unsavedChangesGuard } from '@erp/core/guards/unsaved-changes.guard';
  * (`venta.routes.ts`) ya cargó `VENTA_CONFIG`.
  *
  * `nuevo` / `editar` comparten el `FacturaVentaFormComponent` (cabecera
- * específica de la factura de venta). `detalle` queda en placeholder hasta que
- * se implemente la vista de detalle.
+ * específica de la factura de venta); `detalle` muestra la ficha solo lectura
+ * (`FacturaVentaDetailComponent`).
  */
 export const FACTURA_VENTA_ROUTES: Route[] = [
   {
@@ -50,8 +50,8 @@ export const FACTURA_VENTA_ROUTES: Route[] = [
       {
         path: 'detalle/:id',
         loadComponent: () =>
-          import('@erp/layouts/module-placeholder/module-placeholder.component').then(
-            (m) => m.ModulePlaceholderComponent,
+          import('./pages/factura-venta-detail/factura-venta-detail.component').then(
+            (m) => m.FacturaVentaDetailComponent,
           ),
       },
     ],

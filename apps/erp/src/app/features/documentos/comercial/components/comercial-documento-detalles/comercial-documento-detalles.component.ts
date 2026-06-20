@@ -73,6 +73,7 @@ import type {
   ComercialDetalleFormRawValue,
   ImpuestoSeleccionarOption,
 } from '../../comercial-documento-detalle.types';
+import { ComercialDocumentoResumenComponent } from '../comercial-documento-resumen/comercial-documento-resumen.component';
 
 /** Endpoint del catálogo de impuestos (mismo que usa `app-impuesto-select`). */
 const IMPUESTO_SELECCIONAR_ENDPOINT = '/general/impuesto/seleccionar/';
@@ -105,6 +106,7 @@ const IMPUESTO_SELECCIONAR_ENDPOINT = '/general/impuesto/seleccionar/';
     ConfirmDialogModule,
     ErpItemAutocompleteComponent,
     ErpImpuestoSelectComponent,
+    ComercialDocumentoResumenComponent,
   ],
   providers: [ConfirmationService],
   templateUrl: './comercial-documento-detalles.component.html',

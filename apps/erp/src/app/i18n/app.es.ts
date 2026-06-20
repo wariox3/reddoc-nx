@@ -1502,6 +1502,24 @@ export const es: AppDict = {
           },
         },
       },
+      detail: {
+        sections: {
+          general: 'Información general',
+          detalles: 'Detalles',
+        },
+        labels: {
+          cliente: 'Cliente',
+          fecha: 'Fecha',
+          fechaVence: 'Fecha de vencimiento',
+          plazoPago: 'Plazo de pago',
+          sede: 'Sede',
+          metodoPago: 'Método de pago',
+        },
+        notFound: {
+          title: 'Factura no encontrada',
+          desc: 'La factura que buscas no existe o fue eliminada.',
+        },
+      },
     },
     comercialDetalle: {
       title: 'Detalles',

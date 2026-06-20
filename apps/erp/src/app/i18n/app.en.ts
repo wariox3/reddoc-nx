@@ -1471,6 +1471,24 @@ export const en: AppDict = {
           },
         },
       },
+      detail: {
+        sections: {
+          general: 'General information',
+          detalles: 'Details',
+        },
+        labels: {
+          cliente: 'Customer',
+          fecha: 'Date',
+          fechaVence: 'Due date',
+          plazoPago: 'Payment terms',
+          sede: 'Branch',
+          metodoPago: 'Payment method',
+        },
+        notFound: {
+          title: 'Invoice not found',
+          desc: 'The invoice you are looking for does not exist or was deleted.',
+        },
+      },
     },
     comercialDetalle: {
       title: 'Lines',
