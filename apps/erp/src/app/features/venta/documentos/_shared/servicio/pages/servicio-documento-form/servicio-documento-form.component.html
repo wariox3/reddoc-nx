@@ -44,9 +44,9 @@
     </div>
 
     <div class="px-5 py-5 max-[576px]:px-4 max-[576px]:py-4">
-      <div class="grid grid-cols-1 gap-x-5 gap-y-4 sm:grid-cols-2">
+      <div class="grid grid-cols-1 gap-x-5 gap-y-4 sm:grid-cols-4">
         <!-- Contacto -->
-        <div class="flex flex-col gap-1.5 sm:col-span-2">
+        <div class="flex flex-col gap-1.5 sm:col-span-4">
           <label for="contacto" class="servicio-documento-form__label">
             {{ t().entities.servicioDocumento.form.fields.contacto }}
             <span class="ml-px text-red-500">*</span>
@@ -91,29 +91,6 @@
           />
         </div>
 
-        <!-- Estrato -->
-        <div class="flex flex-col gap-1.5">
-          <label for="estrato" class="servicio-documento-form__label">
-            {{ t().entities.servicioDocumento.form.fields.estrato }}
-            <span class="ml-px text-red-500">*</span>
-          </label>
-          <p-select
-            inputId="estrato"
-            formControlName="estrato"
-            [options]="estratoOptions"
-            optionLabel="label"
-            optionValue="value"
-            [placeholder]="t().entities.servicioDocumento.form.fields.estratoPlaceholder"
-            appendTo="body"
-            [fluid]="true"
-            [invalid]="form.controls.estrato.invalid && form.controls.estrato.touched"
-          />
-          <lib-field-error
-            [control]="form.controls.estrato"
-            [messages]="{ required: t().entities.servicioDocumento.form.validation.required }"
-          />
-        </div>
-
         <!-- Sector -->
         <div class="flex flex-col gap-1.5">
           <label for="sector" class="servicio-documento-form__label">
@@ -138,6 +115,29 @@
               [messages]="{ required: t().entities.servicioDocumento.form.validation.required }"
             />
           }
+        </div>
+
+        <!-- Estrato -->
+        <div class="flex flex-col gap-1.5">
+          <label for="estrato" class="servicio-documento-form__label">
+            {{ t().entities.servicioDocumento.form.fields.estrato }}
+            <span class="ml-px text-red-500">*</span>
+          </label>
+          <p-select
+            inputId="estrato"
+            formControlName="estrato"
+            [options]="estratoOptions"
+            optionLabel="label"
+            optionValue="value"
+            [placeholder]="t().entities.servicioDocumento.form.fields.estratoPlaceholder"
+            appendTo="body"
+            [fluid]="true"
+            [invalid]="form.controls.estrato.invalid && form.controls.estrato.touched"
+          />
+          <lib-field-error
+            [control]="form.controls.estrato"
+            [messages]="{ required: t().entities.servicioDocumento.form.validation.required }"
+          />
         </div>
 
         <!-- Salario -->
