@@ -33,6 +33,7 @@ import type {
   MasterTouched,
 } from '@erp/core/components/import-dialog/import-dialog.types';
 import { parseImportErrors } from '@erp/core/components/import-dialog/import-dialog.utils';
+import { ActiveModuleStore, currentModuleId, resolveModuleName } from '@erp/core/erp-modules';
 import type { AppDict } from '@erp/i18n';
 import { ContactoService } from '../../contacto.service';
 import type { Contacto } from '../../contacto.model';
@@ -77,6 +78,7 @@ export class ContactosListComponent {
   private readonly fileDownload = inject(FileDownloadService);
   private readonly filterStorage = inject(FilterStorageService);
   private readonly tenant = inject(TenantService);
+  private readonly activeModule = inject(ActiveModuleStore);
   private readonly router = inject(Router);
   private readonly toast = inject(ToastService);
   private readonly confirmation = inject(ConfirmationService);
@@ -116,15 +118,15 @@ export class ContactosListComponent {
   protected readonly hasSelection = computed(() => this.selectedRows().length > 0);
 
   /**
-   * Migas: módulo (General, navegable a su home) → entidad actual (Contactos).
-   * El contacto es un master del módulo `general`, por eso el segmento es fijo.
+   * Migas: módulo activo (navegable a su home) → entidad actual (Contactos).
+   * El módulo se deriva del `ActiveModuleStore` (master compartido entre módulos).
    */
   protected readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => {
     const slug = this.tenant.currentSlug();
     return [
       {
-        label: this.t().modules.general.name,
-        routerLink: slug ? ['/t', slug, 'general'] : undefined,
+        label: resolveModuleName(this.activeModule, this.t()),
+        routerLink: slug ? ['/t', slug, currentModuleId(this.activeModule)] : undefined,
       },
       { label: this.t().entities.contacto.name },
     ];
@@ -410,11 +412,11 @@ export class ContactosListComponent {
 
   /**
    * Construye los segmentos absolutos para `router.navigate` dentro del feature.
-   * Resulta en `/t/<slug>/general/contactos/<...path>`.
+   * Resulta en `/t/<slug>/<módulo activo>/contactos/<...path>`.
    */
   private buildRouteCommands(...subPath: (string | number)[]): (string | number)[] {
     const slug = this.tenant.currentSlug();
     if (!slug) throw new Error('Cannot navigate without an active tenant slug.');
-    return ['/t', slug, 'general', 'contactos', ...subPath];
+    return ['/t', slug, currentModuleId(this.activeModule), 'contactos', ...subPath];
   }
 }

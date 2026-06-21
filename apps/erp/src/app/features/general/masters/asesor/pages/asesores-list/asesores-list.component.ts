@@ -23,6 +23,7 @@ import {
   type PageChangeEvent,
   type RowActionInvokedEvent,
 } from '@reddoc/feature-base';
+import { ActiveModuleStore, currentModuleId, resolveModuleName } from '@erp/core/erp-modules';
 import type { AppDict } from '@erp/i18n';
 import { AsesorService } from '../../asesor.service';
 import type { Asesor } from '../../asesor.model';
@@ -53,6 +54,7 @@ export class AsesoresListComponent {
   private readonly service = inject(AsesorService);
   private readonly filterStorage = inject(FilterStorageService);
   private readonly tenant = inject(TenantService);
+  private readonly activeModule = inject(ActiveModuleStore);
   private readonly router = inject(Router);
   private readonly toast = inject(ToastService);
   private readonly confirmation = inject(ConfirmationService);
@@ -80,8 +82,8 @@ export class AsesoresListComponent {
     const slug = this.tenant.currentSlug();
     return [
       {
-        label: this.t().modules.general.name,
-        routerLink: slug ? ['/t', slug, 'general'] : undefined,
+        label: resolveModuleName(this.activeModule, this.t()),
+        routerLink: slug ? ['/t', slug, currentModuleId(this.activeModule)] : undefined,
       },
       { label: this.t().entities.asesor.name },
     ];
@@ -234,6 +236,12 @@ export class AsesoresListComponent {
   private navigateTo(...subPath: (string | number)[]): void {
     const slug = this.tenant.currentSlug();
     if (!slug) throw new Error('Cannot navigate without an active tenant slug.');
-    void this.router.navigate(['/t', slug, 'general', 'asesores', ...subPath]);
+    void this.router.navigate([
+      '/t',
+      slug,
+      currentModuleId(this.activeModule),
+      'asesores',
+      ...subPath,
+    ]);
   }
 }

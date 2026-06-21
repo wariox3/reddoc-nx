@@ -73,6 +73,37 @@ export const VENTA_ROUTES: Route[] = [
             (m) => m.RESOLUCION_ROUTES,
           ),
       },
+      // Masters compartidos de general, reusados en Venta. Son module-agnostic:
+      // derivan el módulo activo del `ActiveModuleStore` (fijado por el
+      // `erpModuleResolver('venta')` de la ruta raíz), así que su navegación se
+      // queda dentro de Venta. (sede: pendiente, el master aún no existe.)
+      {
+        path: 'contactos',
+        loadChildren: () =>
+          import('../general/masters/contacto/contacto.routes').then((m) => m.CONTACTO_ROUTES),
+      },
+      {
+        path: 'items',
+        loadChildren: () =>
+          import('../general/masters/item/item.routes').then((m) => m.ITEM_ROUTES),
+      },
+      {
+        path: 'precios',
+        loadChildren: () =>
+          import('../general/masters/precio/precio.routes').then((m) => m.PRECIO_ROUTES),
+      },
+      {
+        path: 'asesores',
+        loadChildren: () =>
+          import('../general/masters/asesor/asesor.routes').then((m) => m.ASESOR_ROUTES),
+      },
+      {
+        path: 'cuentas-banco',
+        loadChildren: () =>
+          import('../general/masters/cuenta-banco/cuenta-banco.routes').then(
+            (m) => m.CUENTA_BANCO_ROUTES,
+          ),
+      },
     ],
   },
 ];

@@ -4,8 +4,8 @@ import type { RowAction, ToolbarAction } from '@reddoc/feature-base';
 export const ASESORES_FILTERS_STORAGE_KEY = 'asesores:filters:v1';
 export const ASESORES_QUICK_SEARCH_FIELD = 'nombre_corto';
 
-/** Segmentos de ruta del listado, relativos al tenant. */
-export const ASESOR_LIST_PATH = ['general', 'asesores'] as const;
+/** Segmento de ruta del listado, relativo al módulo activo (se antepone en runtime). */
+export const ASESOR_LIST_PATH = ['asesores'] as const;
 
 export const ASESORES_COLUMNS: readonly ColumnDef[] = [
   {

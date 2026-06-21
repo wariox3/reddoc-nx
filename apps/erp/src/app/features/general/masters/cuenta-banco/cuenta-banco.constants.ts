@@ -4,8 +4,8 @@ import type { RowAction, ToolbarAction } from '@reddoc/feature-base';
 export const CUENTAS_BANCO_FILTERS_STORAGE_KEY = 'cuentas-banco:filters:v1';
 export const CUENTAS_BANCO_QUICK_SEARCH_FIELD = 'nombre';
 
-/** Segmentos de ruta del listado, relativos al tenant. */
-export const CUENTA_BANCO_LIST_PATH = ['general', 'cuentas-banco'] as const;
+/** Segmento de ruta del listado, relativo al módulo activo (se antepone en runtime). */
+export const CUENTA_BANCO_LIST_PATH = ['cuentas-banco'] as const;
 
 /**
  * Id del tipo "caja" (efectivo). Para este tipo el backend no espera número de

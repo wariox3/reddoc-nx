@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { I18nService, TenantService, ToastService } from '@reddoc/core';
 import { BreadcrumbComponent, type BreadcrumbItem } from '@reddoc/feature-base';
+import { ActiveModuleStore, currentModuleId, resolveModuleName } from '@erp/core/erp-modules';
 import type { AppDict } from '@erp/i18n';
 import { AsesorService } from '../../asesor.service';
 import { ASESOR_LIST_PATH } from '../../asesor.constants';
@@ -19,6 +20,7 @@ import type { Asesor } from '../../asesor.model';
 export class AsesorDetailComponent implements OnInit {
   private readonly asesorService = inject(AsesorService);
   private readonly tenant = inject(TenantService);
+  private readonly activeModule = inject(ActiveModuleStore);
   private readonly router = inject(Router);
   private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
@@ -36,14 +38,15 @@ export class AsesorDetailComponent implements OnInit {
   protected readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => {
     const slug = this.tenant.currentSlug();
     const asesor = this.asesor();
+    const moduleId = currentModuleId(this.activeModule);
     const items: BreadcrumbItem[] = [
       {
-        label: this.t().modules.general.name,
-        routerLink: slug ? ['/t', slug, 'general'] : undefined,
+        label: resolveModuleName(this.activeModule, this.t()),
+        routerLink: slug ? ['/t', slug, moduleId] : undefined,
       },
       {
         label: this.t().entities.asesor.name,
-        routerLink: slug ? ['/t', slug, ...ASESOR_LIST_PATH] : undefined,
+        routerLink: slug ? ['/t', slug, moduleId, ...ASESOR_LIST_PATH] : undefined,
       },
     ];
     if (asesor) items.push({ label: asesor.nombre_corto });
@@ -92,6 +95,6 @@ export class AsesorDetailComponent implements OnInit {
   private navigate(...subPath: (string | number)[]): void {
     const slug = this.tenant.currentSlug();
     if (!slug) return;
-    void this.router.navigate(['/t', slug, ...subPath]);
+    void this.router.navigate(['/t', slug, currentModuleId(this.activeModule), ...subPath]);
   }
 }

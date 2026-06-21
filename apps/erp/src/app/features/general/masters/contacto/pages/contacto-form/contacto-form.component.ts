@@ -13,6 +13,7 @@ import {
   ErpSelectOption,
 } from '@erp/core/components/api-select/erp-api-select.component';
 import { ErpApiAutocompleteComponent } from '@erp/core/components/api-autocomplete/erp-api-autocomplete.component';
+import { ActiveModuleStore, currentModuleId, resolveModuleName } from '@erp/core/erp-modules';
 import type { AppDict } from '@erp/i18n';
 import { ContactoService } from '../../contacto.service';
 import { CONTACTO_LIST_PATH, TIPO_PERSONA } from '../../contacto.constants';
@@ -51,6 +52,7 @@ export class ContactoFormComponent implements OnInit {
   private readonly toast = inject(ToastService);
   private readonly formErrors = inject(FormErrorService);
   private readonly tenant = inject(TenantService);
+  private readonly activeModule = inject(ActiveModuleStore);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly i18n = inject<I18nService<AppDict>>(I18nService);
@@ -65,14 +67,15 @@ export class ContactoFormComponent implements OnInit {
 
   protected readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => {
     const slug = this.tenant.currentSlug();
+    const moduleId = currentModuleId(this.activeModule);
     return [
       {
-        label: this.t().modules.general.name,
-        routerLink: slug ? ['/t', slug, 'general'] : undefined,
+        label: resolveModuleName(this.activeModule, this.t()),
+        routerLink: slug ? ['/t', slug, moduleId] : undefined,
       },
       {
         label: this.t().entities.contacto.name,
-        routerLink: slug ? ['/t', slug, ...CONTACTO_LIST_PATH] : undefined,
+        routerLink: slug ? ['/t', slug, moduleId, ...CONTACTO_LIST_PATH] : undefined,
       },
       { label: this.isEditMode() ? this.t().common.actions.edit : this.t().common.actions.new },
     ];
@@ -331,6 +334,11 @@ export class ContactoFormComponent implements OnInit {
   private navigateToList(): void {
     const slug = this.tenant.currentSlug();
     if (!slug) return;
-    void this.router.navigate(['/t', slug, ...CONTACTO_LIST_PATH]);
+    void this.router.navigate([
+      '/t',
+      slug,
+      currentModuleId(this.activeModule),
+      ...CONTACTO_LIST_PATH,
+    ]);
   }
 }

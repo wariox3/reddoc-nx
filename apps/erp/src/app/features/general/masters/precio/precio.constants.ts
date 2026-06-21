@@ -4,8 +4,8 @@ import type { RowAction, ToolbarAction } from '@reddoc/feature-base';
 export const PRECIOS_FILTERS_STORAGE_KEY = 'precios:filters:v1';
 export const PRECIOS_QUICK_SEARCH_FIELD = 'nombre';
 
-/** Segmentos de ruta del listado, relativos al tenant. */
-export const PRECIO_LIST_PATH = ['general', 'precios'] as const;
+/** Segmento de ruta del listado, relativo al módulo activo (se antepone en runtime). */
+export const PRECIO_LIST_PATH = ['precios'] as const;
 
 export const PRECIOS_COLUMNS: readonly ColumnDef[] = [
   {
