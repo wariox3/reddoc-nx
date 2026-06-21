@@ -4,7 +4,7 @@ export const COMPRA_MODULE: ErpModuleDescriptor = {
   id: 'compra',
   displayNameKey: 'modules.compra.name',
   iconClass: 'pi pi-shopping-cart',
-  defaultChildPath: 'resoluciones',
+  defaultChildPath: 'items',
   menu: [
     {
       kind: 'accordion',
@@ -14,7 +14,12 @@ export const COMPRA_MODULE: ErpModuleDescriptor = {
       defaultExpanded: true,
       groups: [
         {
-          items: [{ labelKey: 'entities.resolucion.name', path: 'resoluciones' }],
+          items: [
+            { labelKey: 'entities.item.name', path: 'items' },
+            { labelKey: 'entities.contacto.name', path: 'contactos' },
+            { labelKey: 'entities.resolucion.name', path: 'resoluciones' },
+            // forma de pago: pendiente (el master aún no existe)
+          ],
         },
       ],
     },

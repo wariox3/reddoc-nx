@@ -5,10 +5,12 @@ import { COMPRA_MODULE } from './compra.module-descriptor';
 /**
  * Rutas del módulo Compra.
  *
- * `erpModuleResolver('compra')` en la raíz sincroniza topbar y sidebar. Por
- * ahora el módulo solo expone el master de resoluciones (compartido con Venta:
- * el código vive en general/masters/resolucion y se enruta aquí con
- * `data: { tipo: 'compra' }` para fijar el flag). El índice redirige a él.
+ * `erpModuleResolver('compra')` en la raíz sincroniza topbar y sidebar. Expone
+ * masters compartidos de general (item, contacto, resolución) reusados vía
+ * `loadChildren`: son module-agnostic (derivan el módulo activo del
+ * `ActiveModuleStore`), así que su navegación se queda en Compra. La resolución
+ * además fija el flag con `data: { tipo: 'compra' }`. (forma de pago: pendiente,
+ * el master aún no existe — ver docs/masters-pendientes.md.)
  */
 export const COMPRA_ROUTES: Route[] = [
   {
@@ -16,6 +18,16 @@ export const COMPRA_ROUTES: Route[] = [
     resolve: { _module: erpModuleResolver('compra') },
     children: [
       moduleIndexRoute(COMPRA_MODULE),
+      {
+        path: 'items',
+        loadChildren: () =>
+          import('../general/masters/item/item.routes').then((m) => m.ITEM_ROUTES),
+      },
+      {
+        path: 'contactos',
+        loadChildren: () =>
+          import('../general/masters/contacto/contacto.routes').then((m) => m.CONTACTO_ROUTES),
+      },
       {
         path: 'resoluciones',
         data: { tipo: 'compra' },
