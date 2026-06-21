@@ -16,6 +16,7 @@ segmento de la entidad). Luego cablearlo en `<modulo>.routes.ts` (loadChildren) 
 | ------------- | --------- | ------------------------- | ------------------------- | --------- |
 | sede          | Venta     | `sedes`                   | `entities.sede.name`      | Pendiente |
 | forma de pago | Compra    | `formas-pago`             | `entities.formaPago.name` | Pendiente |
+| empleado      | Humano    | `empleados`               | `entities.empleado.name`  | Pendiente |
 
 ## Notas
 
@@ -23,3 +24,7 @@ segmento de la entidad). Luego cablearlo en `<modulo>.routes.ts` (loadChildren) 
 - **forma de pago**: solicitada en el cableado de administradores del módulo Compra.
   No confundir con los endpoints `seleccionar` de `plazo-pago` / `metodo-pago` que ya
   usa la factura de venta; aquí se pide el **master** (CRUD) de forma de pago.
+- **empleado**: solicitado en el módulo Humano. El resto de admins de Humano (contrato,
+  cargo, grupo, sucursal, adicional, crédito, novedad) ya existen y están cableados.
+  Revisar si el empleado es un master propio o se deriva de `contacto` con el flag
+  `empleado` antes de implementarlo.

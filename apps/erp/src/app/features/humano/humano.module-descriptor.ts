@@ -22,13 +22,14 @@ export const HUMANO_MODULE: ErpModuleDescriptor = {
       groups: [
         {
           items: [
+            // empleado: pendiente (el master aún no existe)
             { labelKey: 'entities.contrato.name', path: 'contratos' },
-            { labelKey: 'entities.credito.name', path: 'creditos' },
-            { labelKey: 'entities.adicional.name', path: 'adicionales' },
-            { labelKey: 'entities.novedad.name', path: 'novedades' },
             { labelKey: 'entities.cargo.name', path: 'cargos' },
             { labelKey: 'entities.grupo.name', path: 'grupos' },
             { labelKey: 'entities.sucursal.name', path: 'sucursales' },
+            { labelKey: 'entities.adicional.name', path: 'adicionales' },
+            { labelKey: 'entities.credito.name', path: 'creditos' },
+            { labelKey: 'entities.novedad.name', path: 'novedades' },
           ],
         },
       ],
