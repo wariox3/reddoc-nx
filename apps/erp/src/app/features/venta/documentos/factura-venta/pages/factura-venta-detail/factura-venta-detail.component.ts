@@ -17,6 +17,7 @@ import type { DocumentEntityConfig } from '@erp/core/module-config';
 import type { AppDict } from '@erp/i18n';
 import { ComercialDocumentoLineasTableComponent } from '@erp/features/documentos/comercial/components/comercial-documento-lineas-table/comercial-documento-lineas-table.component';
 import { ComercialDocumentoResumenComponent } from '@erp/features/documentos/comercial/components/comercial-documento-resumen/comercial-documento-resumen.component';
+import { DocumentDetailActionsComponent } from '@erp/core/module-config/components/document-detail-actions/document-detail-actions.component';
 import {
   comercialDetalleToFormValue,
   toLineaCalculo,
@@ -54,6 +55,7 @@ interface CabeceraView {
     BreadcrumbComponent,
     ComercialDocumentoLineasTableComponent,
     ComercialDocumentoResumenComponent,
+    DocumentDetailActionsComponent,
   ],
   templateUrl: './factura-venta-detail.component.html',
   styleUrl: './factura-venta-detail.component.scss',
@@ -116,6 +118,19 @@ export class FacturaVentaDetailComponent implements OnInit {
     const id = this.id();
     if (!id) return;
     this.navigate(this.document().routes.edit, id);
+  }
+
+  // Acciones de la botonera — placeholder hasta definir su comportamiento real.
+  protected onAprobar(): void {
+    this.toast.info(this.t().common.comingSoon);
+  }
+
+  protected onImprimir(): void {
+    this.toast.info(this.t().common.comingSoon);
+  }
+
+  protected onArchivos(): void {
+    this.toast.info(this.t().common.comingSoon);
   }
 
   private loadDocumento(id: number): void {

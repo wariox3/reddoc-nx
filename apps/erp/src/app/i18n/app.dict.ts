@@ -153,6 +153,12 @@ export interface AppDict extends AuthTranslationsHost {
       success: { title: string; desc: string };
       error: { title: string; desc: string };
     };
+    detail: {
+      aprobar: string;
+      imprimir: string;
+      opciones: string;
+      archivos: string;
+    };
   };
   documentImport: {
     buttonLabel: string;

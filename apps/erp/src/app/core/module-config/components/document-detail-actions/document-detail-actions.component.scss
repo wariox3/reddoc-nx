@@ -1,0 +1,7 @@
+:host {
+  // Empuja la botonera a la derecha del header, separada de Volver/Editar.
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}

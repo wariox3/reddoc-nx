@@ -186,6 +186,12 @@ export const en: AppDict = {
         desc: 'Could not generate the document. Please try again.',
       },
     },
+    detail: {
+      aprobar: 'Approve',
+      imprimir: 'Print',
+      opciones: 'Options',
+      archivos: 'Files',
+    },
   },
   documentImport: {
     buttonLabel: 'Import from document',

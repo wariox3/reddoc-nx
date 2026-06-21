@@ -26,6 +26,7 @@ import type {
 import type { DetalleFormRawValue } from '../../servicio-documento-detalle.types';
 import { ServicioDocumentoResumenComponent } from '../../components/servicio-documento-resumen/servicio-documento-resumen.component';
 import { ServicioDocumentoLineasTableComponent } from '../../components/servicio-documento-lineas-table/servicio-documento-lineas-table.component';
+import { DocumentDetailActionsComponent } from '@erp/core/module-config/components/document-detail-actions/document-detail-actions.component';
 
 /** Cabecera legible del documento para la ficha (solo lo que trae `getById`). */
 interface CabeceraView {
@@ -55,6 +56,7 @@ interface CabeceraView {
     BreadcrumbComponent,
     ServicioDocumentoResumenComponent,
     ServicioDocumentoLineasTableComponent,
+    DocumentDetailActionsComponent,
   ],
   templateUrl: './servicio-documento-detail.component.html',
   styleUrl: './servicio-documento-detail.component.scss',
@@ -117,6 +119,19 @@ export class ServicioDocumentoDetailComponent implements OnInit {
     const id = this.id();
     if (!id) return;
     this.navigate(this.document().routes.edit, id);
+  }
+
+  // Acciones de la botonera — placeholder hasta definir su comportamiento real.
+  protected onAprobar(): void {
+    this.toast.info(this.t().common.comingSoon);
+  }
+
+  protected onImprimir(): void {
+    this.toast.info(this.t().common.comingSoon);
+  }
+
+  protected onArchivos(): void {
+    this.toast.info(this.t().common.comingSoon);
   }
 
   private loadDocumento(id: number): void {
