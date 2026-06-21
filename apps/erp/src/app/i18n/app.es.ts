@@ -1092,10 +1092,13 @@ export const es: AppDict = {
       name: 'Cuentas',
       searchPlaceholder: 'Buscar por nombre…',
       columns: {
+        id: 'ID',
         codigo: 'Código',
         nombre: 'Nombre',
-        clase: 'Clase',
         movimiento: 'Movimiento',
+        exigeBase: 'Exige base',
+        exigeContacto: 'Exige contacto',
+        exigeGrupo: 'Exige grupo',
       },
       form: {
         createTitle: 'Nueva cuenta',

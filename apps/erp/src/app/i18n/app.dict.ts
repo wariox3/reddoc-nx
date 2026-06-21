@@ -775,7 +775,15 @@ export interface AppDict extends AuthTranslationsHost {
     cuenta: {
       name: string;
       searchPlaceholder: string;
-      columns: { codigo: string; nombre: string; clase: string; movimiento: string };
+      columns: {
+        id: string;
+        codigo: string;
+        nombre: string;
+        movimiento: string;
+        exigeBase: string;
+        exigeContacto: string;
+        exigeGrupo: string;
+      };
       form: {
         createTitle: string;
         editTitle: string;
