@@ -1018,6 +1018,10 @@ export const en: AppDict = {
     centroCosto: {
       name: 'Cost centers',
       searchPlaceholder: 'Search by name…',
+      import: {
+        title: 'Import cost centers',
+        subtitle: 'Upload an Excel with the records to load',
+      },
       columns: {
         id: 'ID',
         codigo: 'Code',

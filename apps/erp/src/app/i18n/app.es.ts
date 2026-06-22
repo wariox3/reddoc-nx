@@ -1046,6 +1046,10 @@ export const es: AppDict = {
     centroCosto: {
       name: 'Centros de costo',
       searchPlaceholder: 'Buscar por nombre…',
+      import: {
+        title: 'Importar centros de costo',
+        subtitle: 'Subí un Excel con los registros a cargar',
+      },
       columns: {
         id: 'ID',
         codigo: 'Código',

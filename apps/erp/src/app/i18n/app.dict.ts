@@ -746,6 +746,7 @@ export interface AppDict extends AuthTranslationsHost {
     centroCosto: {
       name: string;
       searchPlaceholder: string;
+      import: { title: string; subtitle: string };
       columns: { id: string; codigo: string; nombre: string; estado: string };
       form: {
         createTitle: string;
