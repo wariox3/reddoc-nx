@@ -137,6 +137,11 @@ export class ServicioDocumentoDetailComponent implements OnInit {
       icon: 'pi pi-check-circle',
       acceptLabel: a.aprobar,
       rejectLabel: this.t().common.actions.cancel,
+      // Aprobar (afirmativa) queda como primario relleno; Cancelar baja a
+      // secundario contorneado para dar jerarquía clara — sin esto PrimeNG
+      // pinta ambos botones idénticos. Mismo lenguaje que los botones
+      // secundarios de la botonera (Imprimir/Opciones).
+      rejectButtonProps: { severity: 'secondary', outlined: true },
       accept: () => this.aprobarDocumento(Number(id)),
     });
   }
