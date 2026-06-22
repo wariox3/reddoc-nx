@@ -1061,6 +1061,48 @@ export const en: AppDict = {
         },
       },
     },
+    sede: {
+      name: 'Branches',
+      searchPlaceholder: 'Search by name…',
+      columns: {
+        id: 'ID',
+        codigo: 'Code',
+        nombre: 'Name',
+        centroCosto: 'Cost center',
+      },
+      form: {
+        createTitle: 'New branch',
+        editTitle: 'Edit branch',
+        createSubtitle: 'Fill in the branch information',
+        editSubtitle: 'Update the branch information',
+        fields: {
+          nombre: 'Name',
+          codigo: 'Code',
+          centroCosto: 'Cost center',
+          centroCostoPlaceholder: 'Search a cost center…',
+        },
+        validation: {
+          required: 'This field is required',
+          maxlength: 'Exceeds the maximum length',
+        },
+        toasts: {
+          createSuccess: { title: 'Branch created', desc: 'The branch was created successfully' },
+          editSuccess: { title: 'Branch updated', desc: 'Changes were saved successfully' },
+          createError: { title: 'Create error', desc: 'Could not create the branch' },
+          editError: { title: 'Save error', desc: 'Could not save the changes' },
+          loadError: { title: 'Load error', desc: 'Could not load the branch' },
+        },
+      },
+      detail: {
+        notFound: {
+          title: 'Branch not found',
+          desc: 'The branch you are looking for does not exist or was deleted.',
+        },
+        toasts: {
+          loadError: { title: 'Load error', desc: 'Could not load the branch' },
+        },
+      },
+    },
     cuenta: {
       name: 'Accounts',
       searchPlaceholder: 'Search by name…',

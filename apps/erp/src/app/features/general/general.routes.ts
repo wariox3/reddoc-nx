@@ -41,7 +41,11 @@ export const GENERAL_ROUTES: Route[] = [
         path: 'precios',
         loadChildren: () => import('./masters/precio/precio.routes').then((m) => m.PRECIO_ROUTES),
       },
-      // Futuros: sedes, almacenes, formas-pago, resoluciones.
+      {
+        path: 'sedes',
+        loadChildren: () => import('./masters/sede/sede.routes').then((m) => m.SEDE_ROUTES),
+      },
+      // Futuros: almacenes, formas-pago, resoluciones.
       // Cada uno delega a su `masters/<entity>/<entity>.routes.ts`.
     ],
   },

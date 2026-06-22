@@ -1092,6 +1092,51 @@ export const es: AppDict = {
         },
       },
     },
+    sede: {
+      name: 'Sedes',
+      searchPlaceholder: 'Buscar por nombre…',
+      columns: {
+        id: 'ID',
+        codigo: 'Código',
+        nombre: 'Nombre',
+        centroCosto: 'Centro de costo',
+      },
+      form: {
+        createTitle: 'Nueva sede',
+        editTitle: 'Editar sede',
+        createSubtitle: 'Completá la información de la sede',
+        editSubtitle: 'Modificá la información de la sede',
+        fields: {
+          nombre: 'Nombre',
+          codigo: 'Código',
+          centroCosto: 'Centro de costo',
+          centroCostoPlaceholder: 'Buscá un centro de costo…',
+        },
+        validation: {
+          required: 'Este campo es requerido',
+          maxlength: 'Supera la longitud máxima',
+        },
+        toasts: {
+          createSuccess: { title: 'Sede creada', desc: 'La sede se creó correctamente' },
+          editSuccess: {
+            title: 'Sede actualizada',
+            desc: 'Los cambios se guardaron correctamente',
+          },
+          createError: { title: 'Error al crear', desc: 'No se pudo crear la sede' },
+          editError: { title: 'Error al guardar', desc: 'No se pudieron guardar los cambios' },
+          loadError: { title: 'Error al cargar', desc: 'No se pudo cargar la sede' },
+        },
+      },
+      detail: {
+        notFound: {
+          title: 'Sede no encontrada',
+          desc: 'La sede que buscás no existe o fue eliminada.',
+        },
+        toasts: {
+          loadError: { title: 'Error al cargar', desc: 'No se pudo cargar la sede' },
+        },
+      },
+    },
     cuenta: {
       name: 'Cuentas',
       searchPlaceholder: 'Buscar por nombre…',
