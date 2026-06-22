@@ -5,10 +5,13 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { finalize } from 'rxjs';
 import {
+  FileDownloadService,
   FilterStorageService,
   I18nService,
   TenantService,
   ToastService,
+  buildFiltros,
+  buildOrdenamientos,
   quickSearchCondition,
   type FilterCondition,
   type ListQuery,
@@ -34,6 +37,7 @@ import {
   METODOS_PAGO_PRIMARY_ACTION,
   METODOS_PAGO_QUICK_SEARCH_FIELD,
   METODOS_PAGO_ROW_ACTIONS,
+  METODOS_PAGO_TRAILING_ACTIONS,
   METODO_PAGO_LIST_PATH,
 } from '../../metodo-pago.constants';
 
@@ -61,6 +65,7 @@ import {
 })
 export class MetodosPagoListComponent {
   private readonly service = inject(MetodoPagoService);
+  private readonly fileDownload = inject(FileDownloadService);
   private readonly filterStorage = inject(FilterStorageService);
   private readonly tenant = inject(TenantService);
   private readonly activeModule = inject(ActiveModuleStore);
@@ -85,6 +90,8 @@ export class MetodosPagoListComponent {
   );
   protected readonly filtersVisible = signal(false);
 
+  protected readonly isExportingExcel = signal(false);
+
   protected readonly hasSelection = computed(() => this.selectedRows().length > 0);
 
   protected readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => {
@@ -102,6 +109,7 @@ export class MetodosPagoListComponent {
   protected readonly filterFields = METODOS_PAGO_FILTER_FIELDS;
   protected readonly rowActions = METODOS_PAGO_ROW_ACTIONS;
   protected readonly primaryAction = METODOS_PAGO_PRIMARY_ACTION;
+  protected readonly trailingActions = METODOS_PAGO_TRAILING_ACTIONS;
 
   constructor() {
     this.loadList();
@@ -161,7 +169,14 @@ export class MetodosPagoListComponent {
   }
 
   protected onToolbarAction(actionId: string): void {
-    if (actionId === 'new') this.navigateTo('nuevo');
+    switch (actionId) {
+      case 'new':
+        this.navigateTo('nuevo');
+        break;
+      case 'export-excel':
+        this.exportExcel();
+        break;
+    }
   }
 
   protected onRefresh(): void {
@@ -172,6 +187,31 @@ export class MetodosPagoListComponent {
     const ids = this.selectedRows().map((m) => m.id);
     if (ids.length === 0) return;
     this.confirmRemove(ids);
+  }
+
+  private exportExcel(): void {
+    if (this.isExportingExcel()) return;
+    this.isExportingExcel.set(true);
+    this.fileDownload
+      .download('/general/metodo-pago/excel/', {
+        method: 'POST',
+        body: {
+          filtros: buildFiltros(this.activeFilters()),
+          ordenamientos: buildOrdenamientos(this.sort()),
+        },
+        fallbackFilename: 'metodos-pago.xlsx',
+      })
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.isExportingExcel.set(false)),
+      )
+      .subscribe({
+        error: () =>
+          this.toast.error(
+            this.t().common.toasts.exportError.title,
+            this.t().common.toasts.exportError.desc,
+          ),
+      });
   }
 
   private loadList(): void {

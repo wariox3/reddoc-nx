@@ -60,6 +60,9 @@ export const CENTROS_COSTO_TRAILING_ACTIONS: readonly ToolbarAction[] = [
     id: 'actions',
     labelKey: 'common.actions.actions',
     iconClass: '',
-    children: [{ id: 'import', labelKey: 'common.actions.import', iconClass: 'pi pi-upload' }],
+    children: [
+      { id: 'import', labelKey: 'common.actions.import', iconClass: 'pi pi-upload' },
+      { id: 'export-excel', labelKey: 'common.actions.exportExcel', iconClass: 'pi pi-file-excel' },
+    ],
   },
 ];

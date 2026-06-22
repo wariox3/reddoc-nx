@@ -5,10 +5,13 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { finalize } from 'rxjs';
 import {
+  FileDownloadService,
   FilterStorageService,
   I18nService,
   TenantService,
   ToastService,
+  buildFiltros,
+  buildOrdenamientos,
   quickSearchCondition,
   type FilterCondition,
   type ListQuery,
@@ -34,6 +37,7 @@ import {
   CUENTAS_BANCO_QUICK_SEARCH_FIELD,
   CUENTAS_BANCO_PRIMARY_ACTION,
   CUENTAS_BANCO_ROW_ACTIONS,
+  CUENTAS_BANCO_TRAILING_ACTIONS,
 } from '../../cuenta-banco.constants';
 
 @Component({
@@ -52,6 +56,7 @@ import {
 })
 export class CuentasBancoListComponent {
   private readonly service = inject(CuentaBancoService);
+  private readonly fileDownload = inject(FileDownloadService);
   private readonly filterStorage = inject(FilterStorageService);
   private readonly tenant = inject(TenantService);
   private readonly activeModule = inject(ActiveModuleStore);
@@ -76,6 +81,8 @@ export class CuentasBancoListComponent {
   );
   protected readonly filtersVisible = signal(false);
 
+  protected readonly isExportingExcel = signal(false);
+
   protected readonly hasSelection = computed(() => this.selectedRows().length > 0);
 
   protected readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => {
@@ -93,6 +100,7 @@ export class CuentasBancoListComponent {
   protected readonly filterFields = CUENTAS_BANCO_FILTER_FIELDS;
   protected readonly rowActions = CUENTAS_BANCO_ROW_ACTIONS;
   protected readonly primaryAction = CUENTAS_BANCO_PRIMARY_ACTION;
+  protected readonly trailingActions = CUENTAS_BANCO_TRAILING_ACTIONS;
 
   constructor() {
     this.loadList();
@@ -152,7 +160,14 @@ export class CuentasBancoListComponent {
   }
 
   protected onToolbarAction(actionId: string): void {
-    if (actionId === 'new') this.navigateTo('nuevo');
+    switch (actionId) {
+      case 'new':
+        this.navigateTo('nuevo');
+        break;
+      case 'export-excel':
+        this.exportExcel();
+        break;
+    }
   }
 
   protected onRefresh(): void {
@@ -163,6 +178,31 @@ export class CuentasBancoListComponent {
     const ids = this.selectedRows().map((c) => c.id);
     if (ids.length === 0) return;
     this.confirmRemove(ids);
+  }
+
+  private exportExcel(): void {
+    if (this.isExportingExcel()) return;
+    this.isExportingExcel.set(true);
+    this.fileDownload
+      .download('/general/cuenta-banco/excel/', {
+        method: 'POST',
+        body: {
+          filtros: buildFiltros(this.activeFilters()),
+          ordenamientos: buildOrdenamientos(this.sort()),
+        },
+        fallbackFilename: 'cuentas-banco.xlsx',
+      })
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.isExportingExcel.set(false)),
+      )
+      .subscribe({
+        error: () =>
+          this.toast.error(
+            this.t().common.toasts.exportError.title,
+            this.t().common.toasts.exportError.desc,
+          ),
+      });
   }
 
   private loadList(): void {

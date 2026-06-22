@@ -5,10 +5,13 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { finalize } from 'rxjs';
 import {
+  FileDownloadService,
   FilterStorageService,
   I18nService,
   TenantService,
   ToastService,
+  buildFiltros,
+  buildOrdenamientos,
   quickSearchCondition,
   type FilterCondition,
   type ListQuery,
@@ -33,6 +36,7 @@ import {
   SEDES_PRIMARY_ACTION,
   SEDES_QUICK_SEARCH_FIELD,
   SEDES_ROW_ACTIONS,
+  SEDES_TRAILING_ACTIONS,
 } from '../../sede.constants';
 
 /**
@@ -58,6 +62,7 @@ import {
 })
 export class SedesListComponent {
   private readonly service = inject(SedeService);
+  private readonly fileDownload = inject(FileDownloadService);
   private readonly filterStorage = inject(FilterStorageService);
   private readonly tenant = inject(TenantService);
   private readonly router = inject(Router);
@@ -81,6 +86,8 @@ export class SedesListComponent {
   );
   protected readonly filtersVisible = signal(false);
 
+  protected readonly isExportingExcel = signal(false);
+
   protected readonly hasSelection = computed(() => this.selectedRows().length > 0);
 
   protected readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => {
@@ -98,6 +105,7 @@ export class SedesListComponent {
   protected readonly filterFields = SEDES_FILTER_FIELDS;
   protected readonly rowActions = SEDES_ROW_ACTIONS;
   protected readonly primaryAction = SEDES_PRIMARY_ACTION;
+  protected readonly trailingActions = SEDES_TRAILING_ACTIONS;
 
   constructor() {
     this.loadList();
@@ -157,7 +165,14 @@ export class SedesListComponent {
   }
 
   protected onToolbarAction(actionId: string): void {
-    if (actionId === 'new') this.navigateTo('nuevo');
+    switch (actionId) {
+      case 'new':
+        this.navigateTo('nuevo');
+        break;
+      case 'export-excel':
+        this.exportExcel();
+        break;
+    }
   }
 
   protected onRefresh(): void {
@@ -168,6 +183,31 @@ export class SedesListComponent {
     const ids = this.selectedRows().map((s) => s.id);
     if (ids.length === 0) return;
     this.confirmRemove(ids);
+  }
+
+  private exportExcel(): void {
+    if (this.isExportingExcel()) return;
+    this.isExportingExcel.set(true);
+    this.fileDownload
+      .download('/general/sede/excel/', {
+        method: 'POST',
+        body: {
+          filtros: buildFiltros(this.activeFilters()),
+          ordenamientos: buildOrdenamientos(this.sort()),
+        },
+        fallbackFilename: 'sedes.xlsx',
+      })
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.isExportingExcel.set(false)),
+      )
+      .subscribe({
+        error: () =>
+          this.toast.error(
+            this.t().common.toasts.exportError.title,
+            this.t().common.toasts.exportError.desc,
+          ),
+      });
   }
 
   private loadList(): void {

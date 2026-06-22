@@ -6,10 +6,13 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { finalize } from 'rxjs';
 import {
+  FileDownloadService,
   FilterStorageService,
   I18nService,
   TenantService,
   ToastService,
+  buildFiltros,
+  buildOrdenamientos,
   quickSearchCondition,
   type FilterCondition,
   type ListQuery,
@@ -60,6 +63,7 @@ import {
 })
 export class CentrosCostoListComponent {
   private readonly service = inject(CentroCostoService);
+  private readonly fileDownload = inject(FileDownloadService);
   private readonly filterStorage = inject(FilterStorageService);
   private readonly tenant = inject(TenantService);
   private readonly router = inject(Router);
@@ -82,6 +86,8 @@ export class CentrosCostoListComponent {
     this.filterStorage.read(CENTROS_COSTO_FILTERS_STORAGE_KEY),
   );
   protected readonly filtersVisible = signal(false);
+
+  protected readonly isExportingExcel = signal(false);
 
   protected readonly exampleConfig = {
     mode: 'enabled' as const,
@@ -179,6 +185,9 @@ export class CentrosCostoListComponent {
       case 'import':
         this.importVisible.set(true);
         break;
+      case 'export-excel':
+        this.exportExcel();
+        break;
     }
   }
 
@@ -248,6 +257,31 @@ export class CentrosCostoListComponent {
     const ids = this.selectedRows().map((c) => c.id);
     if (ids.length === 0) return;
     this.confirmRemove(ids);
+  }
+
+  private exportExcel(): void {
+    if (this.isExportingExcel()) return;
+    this.isExportingExcel.set(true);
+    this.fileDownload
+      .download('/contabilidad/centro-costo/excel/', {
+        method: 'POST',
+        body: {
+          filtros: buildFiltros(this.activeFilters()),
+          ordenamientos: buildOrdenamientos(this.sort()),
+        },
+        fallbackFilename: 'centros-costo.xlsx',
+      })
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.isExportingExcel.set(false)),
+      )
+      .subscribe({
+        error: () =>
+          this.toast.error(
+            this.t().common.toasts.exportError.title,
+            this.t().common.toasts.exportError.desc,
+          ),
+      });
   }
 
   private loadList(): void {

@@ -5,10 +5,13 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { finalize } from 'rxjs';
 import {
+  FileDownloadService,
   FilterStorageService,
   I18nService,
   TenantService,
   ToastService,
+  buildFiltros,
+  buildOrdenamientos,
   quickSearchCondition,
   type FilterCondition,
   type ListQuery,
@@ -33,6 +36,7 @@ import {
   TURNOS_QUICK_SEARCH_FIELD,
   TURNOS_PRIMARY_ACTION,
   TURNOS_ROW_ACTIONS,
+  TURNOS_TRAILING_ACTIONS,
 } from '../../turno.constants';
 
 /**
@@ -61,6 +65,7 @@ import {
 export class TurnosListComponent {
   // ── Colaboradores ─────────────────────────────────────────────────────────
   private readonly service = inject(TurnoService);
+  private readonly fileDownload = inject(FileDownloadService);
   private readonly filterStorage = inject(FilterStorageService);
   private readonly tenant = inject(TenantService);
   private readonly router = inject(Router);
@@ -85,6 +90,8 @@ export class TurnosListComponent {
   );
   protected readonly filtersVisible = signal(false);
 
+  protected readonly isExportingExcel = signal(false);
+
   // ── Derivados ─────────────────────────────────────────────────────────────
   protected readonly hasSelection = computed(() => this.selectedRows().length > 0);
 
@@ -107,6 +114,7 @@ export class TurnosListComponent {
   protected readonly filterFields = TURNOS_FILTER_FIELDS;
   protected readonly rowActions = TURNOS_ROW_ACTIONS;
   protected readonly primaryAction = TURNOS_PRIMARY_ACTION;
+  protected readonly trailingActions = TURNOS_TRAILING_ACTIONS;
 
   constructor() {
     this.loadList();
@@ -180,6 +188,9 @@ export class TurnosListComponent {
       case 'new':
         this.router.navigate(this.buildRouteCommands('nuevo'));
         break;
+      case 'export-excel':
+        this.exportExcel();
+        break;
     }
   }
 
@@ -194,6 +205,31 @@ export class TurnosListComponent {
   }
 
   // ── Internos ──────────────────────────────────────────────────────────────
+
+  private exportExcel(): void {
+    if (this.isExportingExcel()) return;
+    this.isExportingExcel.set(true);
+    this.fileDownload
+      .download('/turno/turno/excel/', {
+        method: 'POST',
+        body: {
+          filtros: buildFiltros(this.activeFilters()),
+          ordenamientos: buildOrdenamientos(this.sort()),
+        },
+        fallbackFilename: 'turnos.xlsx',
+      })
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.isExportingExcel.set(false)),
+      )
+      .subscribe({
+        error: () =>
+          this.toast.error(
+            this.t().common.toasts.exportError.title,
+            this.t().common.toasts.exportError.desc,
+          ),
+      });
+  }
 
   private loadList(): void {
     // La búsqueda rápida se añade como un filtro `contiene` más, combinado (AND)

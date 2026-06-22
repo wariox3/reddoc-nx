@@ -5,10 +5,13 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { finalize } from 'rxjs';
 import {
+  FileDownloadService,
   FilterStorageService,
   I18nService,
   TenantService,
   ToastService,
+  buildFiltros,
+  buildOrdenamientos,
   quickSearchCondition,
   type FilterCondition,
   type ListQuery,
@@ -34,6 +37,7 @@ import {
   PRECIOS_QUICK_SEARCH_FIELD,
   PRECIOS_PRIMARY_ACTION,
   PRECIOS_ROW_ACTIONS,
+  PRECIOS_TRAILING_ACTIONS,
 } from '../../precio.constants';
 
 @Component({
@@ -52,6 +56,7 @@ import {
 })
 export class PreciosListComponent {
   private readonly service = inject(PrecioService);
+  private readonly fileDownload = inject(FileDownloadService);
   private readonly filterStorage = inject(FilterStorageService);
   private readonly tenant = inject(TenantService);
   private readonly activeModule = inject(ActiveModuleStore);
@@ -76,6 +81,8 @@ export class PreciosListComponent {
   );
   protected readonly filtersVisible = signal(false);
 
+  protected readonly isExportingExcel = signal(false);
+
   protected readonly hasSelection = computed(() => this.selectedRows().length > 0);
 
   protected readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => {
@@ -93,6 +100,7 @@ export class PreciosListComponent {
   protected readonly filterFields = PRECIOS_FILTER_FIELDS;
   protected readonly rowActions = PRECIOS_ROW_ACTIONS;
   protected readonly primaryAction = PRECIOS_PRIMARY_ACTION;
+  protected readonly trailingActions = PRECIOS_TRAILING_ACTIONS;
 
   constructor() {
     this.loadList();
@@ -152,7 +160,14 @@ export class PreciosListComponent {
   }
 
   protected onToolbarAction(actionId: string): void {
-    if (actionId === 'new') this.navigateTo('nuevo');
+    switch (actionId) {
+      case 'new':
+        this.navigateTo('nuevo');
+        break;
+      case 'export-excel':
+        this.exportExcel();
+        break;
+    }
   }
 
   protected onRefresh(): void {
@@ -163,6 +178,31 @@ export class PreciosListComponent {
     const ids = this.selectedRows().map((p) => p.id);
     if (ids.length === 0) return;
     this.confirmRemove(ids);
+  }
+
+  private exportExcel(): void {
+    if (this.isExportingExcel()) return;
+    this.isExportingExcel.set(true);
+    this.fileDownload
+      .download('/general/precio/excel/', {
+        method: 'POST',
+        body: {
+          filtros: buildFiltros(this.activeFilters()),
+          ordenamientos: buildOrdenamientos(this.sort()),
+        },
+        fallbackFilename: 'precios.xlsx',
+      })
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.isExportingExcel.set(false)),
+      )
+      .subscribe({
+        error: () =>
+          this.toast.error(
+            this.t().common.toasts.exportError.title,
+            this.t().common.toasts.exportError.desc,
+          ),
+      });
   }
 
   private loadList(): void {

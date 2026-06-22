@@ -72,3 +72,14 @@ export const ACTIVOS_PRIMARY_ACTION: ToolbarAction = {
   labelKey: 'common.actions.new',
   iconClass: 'pi pi-plus',
 };
+
+export const ACTIVOS_TRAILING_ACTIONS: readonly ToolbarAction[] = [
+  {
+    id: 'actions',
+    labelKey: 'common.actions.actions',
+    iconClass: '',
+    children: [
+      { id: 'export-excel', labelKey: 'common.actions.exportExcel', iconClass: 'pi pi-file-excel' },
+    ],
+  },
+];
