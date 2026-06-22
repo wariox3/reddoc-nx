@@ -183,6 +183,8 @@ export class CentrosCostoListComponent {
         this.navigateTo('nuevo');
         break;
       case 'import':
+        // Abre siempre limpio: descarta el resultado del intento anterior.
+        this.clearImportErrors();
         this.importVisible.set(true);
         break;
       case 'export-excel':
@@ -216,7 +218,6 @@ export class CentrosCostoListComponent {
           this.toast.success(toasts.success.title, toasts.success.desc);
           this.importVisible.set(false);
           this.clearImportErrors();
-          this.importMasters.set([]);
           this.loadList();
         },
         error: (err: HttpErrorResponse) => {
@@ -242,11 +243,12 @@ export class CentrosCostoListComponent {
     return true;
   }
 
-  /** Resetea el resultado de errores de importación (tabla + resumen). */
+  /** Resetea el resultado de la importación (tabla de errores, resumen y masters). */
   private clearImportErrors(): void {
     this.importErrors.set([]);
     this.importErrorSummary.set('');
     this.importErrorTotal.set(0);
+    this.importMasters.set([]);
   }
 
   protected onRefresh(): void {

@@ -214,6 +214,8 @@ export class ContactosListComponent {
         this.exportExcel();
         break;
       case 'import':
+        // Abre siempre limpio: descarta el resultado del intento anterior.
+        this.clearImportErrors();
         this.importVisible.set(true);
         break;
     }
@@ -236,8 +238,6 @@ export class ContactosListComponent {
       )
       .subscribe({
         next: (result) => {
-          // [DEBUG-IMPORT] temporal: ver qué llega en un 200.
-          console.debug('[import] next result =', result, '→ parsed =', parseImportErrors(result));
           // El backend puede reportar los errores de validación en un 200
           // ("No se procesó ningún registro"); si los trae, los mostramos en vez
           // de tratarlo como éxito.
@@ -246,19 +246,9 @@ export class ContactosListComponent {
           this.toast.success(toasts.success.title, toasts.success.desc);
           this.importVisible.set(false);
           this.clearImportErrors();
-          this.importMasters.set([]);
           this.loadList();
         },
         error: (err: HttpErrorResponse) => {
-          // [DEBUG-IMPORT] temporal: ver status y body del error.
-          console.debug(
-            '[import] error status =',
-            err.status,
-            'err.error =',
-            err.error,
-            '→ parsed =',
-            parseImportErrors(err.error),
-          );
           // Errores de validación (4xx) con el mismo shape. Si no hay estructura
           // (red/desconocido) → toast genérico.
           if (!this.applyImportErrors(parseImportErrors(err.error))) {
@@ -281,11 +271,12 @@ export class ContactosListComponent {
     return true;
   }
 
-  /** Resetea el resultado de errores de importación (tabla + resumen). */
+  /** Resetea el resultado de la importación (tabla de errores, resumen y masters). */
   private clearImportErrors(): void {
     this.importErrors.set([]);
     this.importErrorSummary.set('');
     this.importErrorTotal.set(0);
+    this.importMasters.set([]);
   }
 
   protected onSearchChange(value: string): void {
