@@ -73,7 +73,7 @@ export class SedeFormComponent implements OnInit {
 
   protected readonly form = this.fb.group({
     nombre: this.fb.control<string>('', [Validators.required, Validators.maxLength(100)]),
-    codigo: this.fb.control<string | null>(null, Validators.maxLength(50)),
+    codigo: this.fb.control<string | null>(null, [Validators.required, Validators.maxLength(50)]),
     centro_costo: this.fb.control<ErpSelectOption | null>(null),
   });
 

@@ -73,11 +73,15 @@
         <div class="flex flex-col gap-1.5">
           <label for="codigo" class="sede-form__label">
             {{ t().entities.sede.form.fields.codigo }}
+            <span class="ml-px text-red-500">*</span>
           </label>
           <input id="codigo" pInputText type="text" maxlength="50" formControlName="codigo" fluid />
           <lib-field-error
             [control]="form.controls.codigo"
-            [messages]="{ maxlength: t().entities.sede.form.validation.maxlength }"
+            [messages]="{
+              required: t().entities.sede.form.validation.required,
+              maxlength: t().entities.sede.form.validation.maxlength,
+            }"
           />
         </div>
 
