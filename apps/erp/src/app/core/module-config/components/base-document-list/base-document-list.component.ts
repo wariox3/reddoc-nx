@@ -208,19 +208,19 @@ export class BaseDocumentListComponent {
   protected readonly rowActions = computed<readonly RowAction[]>(() => {
     const caps = this.capabilities();
     const actions: RowAction[] = [];
-    if (caps.canView) {
-      actions.push({
-        id: 'view',
-        labelKey: 'common.actions.view',
-        iconClass: 'pi pi-eye',
-        inline: true,
-      });
-    }
     if (caps.canEdit) {
       actions.push({
         id: 'edit',
         labelKey: 'common.actions.edit',
         iconClass: 'pi pi-pencil',
+        inline: true,
+      });
+    }
+    if (caps.canView) {
+      actions.push({
+        id: 'view',
+        labelKey: 'common.actions.view',
+        iconClass: 'pi pi-eye',
         inline: true,
       });
     }
