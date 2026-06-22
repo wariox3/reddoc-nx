@@ -937,6 +937,45 @@ export interface AppDict extends AuthTranslationsHost {
         toasts: { loadError: { title: string; desc: string } };
       };
     };
+    periodo: {
+      name: string;
+      /** 13 entradas: enero..diciembre (índices 0..11) + cierre (12). */
+      meses: string[];
+      panel: { emptyAnios: string; emptyTitle: string; emptySub: string };
+      estados: { abierto: string; bloqueado: string; cerrado: string; inconsistencia: string };
+      acciones: {
+        nuevoAnio: string;
+        verInconsistencias: string;
+        bloquear: string;
+        desbloquear: string;
+        cerrar: string;
+      };
+      confirms: { cerrar: { header: string; message: string } };
+      anioNuevo: {
+        title: string;
+        subtitle: string;
+        field: { anio: string; anioPlaceholder: string };
+        validation: { required: string; rango: string };
+        submit: string;
+      };
+      inconsistencias: {
+        title: string;
+        columns: { comprobante: string; numero: string; documento: string; descripcion: string };
+        empty: string;
+        loadError: string;
+      };
+      toasts: {
+        bloquearSuccess: { title: string; desc: string };
+        bloquearError: { title: string; desc: string };
+        desbloquearSuccess: { title: string; desc: string };
+        desbloquearError: { title: string; desc: string };
+        cerrarSuccess: { title: string; desc: string };
+        cerrarError: { title: string; desc: string };
+        crearSuccess: { title: string; desc: string };
+        crearError: { title: string; desc: string };
+        loadError: { title: string; desc: string };
+      };
+    };
     credito: {
       name: string;
       searchPlaceholder: string;

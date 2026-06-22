@@ -21,6 +21,11 @@ export const CONTABILIDAD_ROUTES: Route[] = [
         path: 'activos',
         loadChildren: () => import('./masters/activo/activo.routes').then((m) => m.ACTIVO_ROUTES),
       },
+      {
+        path: 'periodo',
+        loadChildren: () =>
+          import('./masters/periodo/periodo.routes').then((m) => m.PERIODO_ROUTES),
+      },
     ],
   },
 ];

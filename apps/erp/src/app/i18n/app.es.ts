@@ -1334,6 +1334,92 @@ export const es: AppDict = {
         },
       },
     },
+    periodo: {
+      name: 'Periodos',
+      meses: [
+        'Enero',
+        'Febrero',
+        'Marzo',
+        'Abril',
+        'Mayo',
+        'Junio',
+        'Julio',
+        'Agosto',
+        'Septiembre',
+        'Octubre',
+        'Noviembre',
+        'Diciembre',
+        'Cierre',
+      ],
+      panel: {
+        emptyAnios: 'Aún no hay periodos. Creá un año para empezar.',
+        emptyTitle: 'Seleccioná un año',
+        emptySub: 'Elegí un año de la lista para ver y gestionar sus meses.',
+      },
+      estados: {
+        abierto: 'Abierto',
+        bloqueado: 'Bloqueado',
+        cerrado: 'Cerrado',
+        inconsistencia: 'Con inconsistencias',
+      },
+      acciones: {
+        nuevoAnio: 'Nuevo año',
+        verInconsistencias: 'Ver inconsistencias',
+        bloquear: 'Bloquear',
+        desbloquear: 'Desbloquear',
+        cerrar: 'Cerrar',
+      },
+      confirms: {
+        cerrar: {
+          header: 'Cerrar periodo',
+          message: '¿Seguro que querés cerrar este periodo? Esta acción no se puede deshacer.',
+        },
+      },
+      anioNuevo: {
+        title: 'Nuevo año',
+        subtitle: 'Se crearán los doce periodos mensuales del año indicado.',
+        field: { anio: 'Año', anioPlaceholder: '2025' },
+        validation: { required: 'Este campo es requerido', rango: 'Ingresá un año válido' },
+        submit: 'Crear',
+      },
+      inconsistencias: {
+        title: 'Inconsistencias',
+        columns: {
+          comprobante: 'Comprobante',
+          numero: 'Número',
+          documento: 'Documento',
+          descripcion: 'Descripción',
+        },
+        empty: 'Este periodo no tiene inconsistencias.',
+        loadError: 'No se pudieron cargar las inconsistencias.',
+      },
+      toasts: {
+        bloquearSuccess: {
+          title: 'Periodo bloqueado',
+          desc: 'El periodo se bloqueó correctamente',
+        },
+        bloquearError: { title: 'Error al bloquear', desc: 'No se pudo bloquear el periodo' },
+        desbloquearSuccess: {
+          title: 'Periodo desbloqueado',
+          desc: 'El periodo se desbloqueó correctamente',
+        },
+        desbloquearError: {
+          title: 'Error al desbloquear',
+          desc: 'No se pudo desbloquear el periodo',
+        },
+        cerrarSuccess: { title: 'Periodo cerrado', desc: 'El periodo se cerró correctamente' },
+        cerrarError: { title: 'Error al cerrar', desc: 'No se pudo cerrar el periodo' },
+        crearSuccess: {
+          title: 'Año creado',
+          desc: 'Los periodos del año se crearon correctamente',
+        },
+        crearError: {
+          title: 'Error al crear',
+          desc: 'No se pudieron crear los periodos del año',
+        },
+        loadError: { title: 'Error al cargar', desc: 'No se pudieron cargar los periodos' },
+      },
+    },
     credito: {
       name: 'Créditos',
       searchPlaceholder: 'Buscar por contrato…',
