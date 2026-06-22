@@ -779,16 +779,16 @@ export interface AppDict extends AuthTranslationsHost {
         toasts: { loadError: { title: string; desc: string } };
       };
     };
-    metodoPago: {
+    formaPago: {
       name: string;
       searchPlaceholder: string;
-      columns: { id: string; codigo: string; nombre: string };
+      columns: { id: string; nombre: string; cuenta: string };
       form: {
         createTitle: string;
         editTitle: string;
         createSubtitle: string;
         editSubtitle: string;
-        fields: { codigo: string; nombre: string };
+        fields: { nombre: string; cuenta: string; cuentaPlaceholder: string };
         validation: { required: string; maxlength: string };
         toasts: {
           createSuccess: { title: string; desc: string };

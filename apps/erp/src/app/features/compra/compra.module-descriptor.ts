@@ -18,7 +18,7 @@ export const COMPRA_MODULE: ErpModuleDescriptor = {
             { labelKey: 'entities.item.name', path: 'items' },
             { labelKey: 'entities.contacto.name', path: 'contactos' },
             { labelKey: 'entities.resolucion.name', path: 'resoluciones' },
-            { labelKey: 'entities.metodoPago.name', path: 'metodos-pago' },
+            { labelKey: 'entities.formaPago.name', path: 'formas-pago' },
           ],
         },
       ],

@@ -9,7 +9,7 @@ import { COMPRA_MODULE } from './compra.module-descriptor';
  * masters compartidos de general (item, contacto, resolución) reusados vía
  * `loadChildren`: son module-agnostic (derivan el módulo activo del
  * `ActiveModuleStore`), así que su navegación se queda en Compra. La resolución
- * además fija el flag con `data: { tipo: 'compra' }`. `metodos-pago` también es
+ * además fija el flag con `data: { tipo: 'compra' }`. `formas-pago` también es
  * un master module-agnostic de general reusado aquí.
  */
 export const COMPRA_ROUTES: Route[] = [
@@ -37,10 +37,10 @@ export const COMPRA_ROUTES: Route[] = [
           ),
       },
       {
-        path: 'metodos-pago',
+        path: 'formas-pago',
         loadChildren: () =>
-          import('../general/masters/metodo-pago/metodo-pago.routes').then(
-            (m) => m.METODO_PAGO_ROUTES,
+          import('../general/masters/forma-pago/forma-pago.routes').then(
+            (m) => m.FORMA_PAGO_ROUTES,
           ),
       },
     ],

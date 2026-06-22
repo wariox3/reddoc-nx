@@ -7,35 +7,39 @@ import { InputTextModule } from 'primeng/inputtext';
 import { FieldErrorComponent } from '@reddoc/ui';
 import { FormErrorService, I18nService, TenantService, ToastService } from '@reddoc/core';
 import { BreadcrumbComponent, type BreadcrumbItem } from '@reddoc/feature-base';
+import { ErpCuentaSelectComponent } from '@erp/core/components/cuenta-select/erp-cuenta-select.component';
+import type { ErpSelectOption } from '@erp/core/components/api-select/erp-api-select.component';
 import { ActiveModuleStore, currentModuleId, resolveModuleName } from '@erp/core/erp-modules';
 import type { AppDict } from '@erp/i18n';
-import { MetodoPagoService } from '../../metodo-pago.service';
-import { METODO_PAGO_LIST_PATH } from '../../metodo-pago.constants';
-import { formValueToPayload, metodoPagoToFormValue } from '../../metodo-pago.mapper';
+import { FormaPagoService } from '../../forma-pago.service';
+import { FORMA_PAGO_LIST_PATH } from '../../forma-pago.constants';
+import { formValueToPayload, formaPagoToFormValue } from '../../forma-pago.mapper';
 
 /**
- * Formulario de alta/edición de método de pago.
+ * Formulario de alta/edición de forma de pago.
  *
  * Master del módulo General (camino B) cableado en Compra. La misma página
- * cubre crear y editar: sin `:id` → alta; con `:id` → edición. Nombre y código
- * son obligatorios. Navegación module-agnostic vía `ActiveModuleStore`.
+ * cubre crear y editar: sin `:id` → alta; con `:id` → edición. Nombre obligatorio
+ * y una cuenta contable opcional (selector `app-cuenta-select`). Navegación
+ * module-agnostic vía `ActiveModuleStore`.
  */
 @Component({
-  selector: 'app-metodo-pago-form',
+  selector: 'app-forma-pago-form',
   standalone: true,
   imports: [
     ReactiveFormsModule,
     BreadcrumbComponent,
     ButtonModule,
     InputTextModule,
+    ErpCuentaSelectComponent,
     FieldErrorComponent,
   ],
-  templateUrl: './metodo-pago-form.component.html',
-  styleUrl: './metodo-pago-form.component.scss',
+  templateUrl: './forma-pago-form.component.html',
+  styleUrl: './forma-pago-form.component.scss',
 })
-export class MetodoPagoFormComponent implements OnInit {
+export class FormaPagoFormComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
-  private readonly service = inject(MetodoPagoService);
+  private readonly service = inject(FormaPagoService);
   private readonly toast = inject(ToastService);
   private readonly formErrors = inject(FormErrorService);
   private readonly tenant = inject(TenantService);
@@ -46,7 +50,7 @@ export class MetodoPagoFormComponent implements OnInit {
 
   protected readonly t = this.i18n.t;
 
-  /** Id del método de pago a editar (route param `:id`). Ausente en modo alta. */
+  /** Id de la forma de pago a editar (route param `:id`). Ausente en modo alta. */
   readonly id = input<string>();
 
   protected readonly isEditMode = computed(() => !!this.id());
@@ -61,28 +65,28 @@ export class MetodoPagoFormComponent implements OnInit {
         routerLink: slug ? ['/t', slug, moduleId] : undefined,
       },
       {
-        label: this.t().entities.metodoPago.name,
-        routerLink: slug ? ['/t', slug, moduleId, ...METODO_PAGO_LIST_PATH] : undefined,
+        label: this.t().entities.formaPago.name,
+        routerLink: slug ? ['/t', slug, moduleId, ...FORMA_PAGO_LIST_PATH] : undefined,
       },
       { label: this.isEditMode() ? this.t().common.actions.edit : this.t().common.actions.new },
     ];
   });
 
   protected readonly form = this.fb.group({
-    codigo: this.fb.control<string | null>(null, [Validators.required, Validators.maxLength(50)]),
     nombre: this.fb.control<string>('', [Validators.required, Validators.maxLength(100)]),
+    cuenta: this.fb.control<ErpSelectOption | null>(null),
   });
 
   ngOnInit(): void {
     const id = this.id();
-    if (id) this.loadMetodoPago(Number(id));
+    if (id) this.loadFormaPago(Number(id));
   }
 
   protected onSubmit(): void {
     if (this.form.invalid || this.isSaving()) return;
     this.isSaving.set(true);
 
-    const toasts = this.t().entities.metodoPago.form.toasts;
+    const toasts = this.t().entities.formaPago.form.toasts;
     const id = this.id();
     const payload = formValueToPayload(this.form.getRawValue());
     const operation = id ? this.service.update(Number(id), payload) : this.service.create(payload);
@@ -106,14 +110,14 @@ export class MetodoPagoFormComponent implements OnInit {
     this.navigateToList();
   }
 
-  private loadMetodoPago(id: number): void {
+  private loadFormaPago(id: number): void {
     this.service
       .getById(id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (m) => this.form.patchValue(metodoPagoToFormValue(m)),
+        next: (m) => this.form.patchValue(formaPagoToFormValue(m)),
         error: () => {
-          const toasts = this.t().entities.metodoPago.form.toasts;
+          const toasts = this.t().entities.formaPago.form.toasts;
           this.toast.error(toasts.loadError.title, toasts.loadError.desc);
         },
       });
@@ -126,7 +130,7 @@ export class MetodoPagoFormComponent implements OnInit {
       '/t',
       slug,
       currentModuleId(this.activeModule),
-      ...METODO_PAGO_LIST_PATH,
+      ...FORMA_PAGO_LIST_PATH,
     ]);
   }
 }

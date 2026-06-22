@@ -11,7 +11,7 @@
     size="small"
     (onClick)="onBack()"
   />
-  @if (metodoPago(); as m) {
+  @if (formaPago(); as m) {
     <p-button
       type="button"
       [label]="t().common.actions.edit"
@@ -34,13 +34,13 @@
   >
     <i class="pi pi-inbox mb-3 text-2xl text-brand-muted opacity-50"></i>
     <p class="m-0 text-[0.95rem] font-bold text-brand-text">
-      {{ t().entities.metodoPago.detail.notFound.title }}
+      {{ t().entities.formaPago.detail.notFound.title }}
     </p>
     <p class="m-0 mt-1 max-w-70 text-[0.8rem] leading-relaxed text-brand-muted">
-      {{ t().entities.metodoPago.detail.notFound.desc }}
+      {{ t().entities.formaPago.detail.notFound.desc }}
     </p>
   </div>
-} @else if (metodoPago(); as m) {
+} @else if (formaPago(); as m) {
   <!-- ── Encabezado ───────────────────────────────────────────────────────────── -->
   <section class="overflow-hidden rounded-xl border border-[rgba(20,48,73,0.1)] bg-brand-surface">
     <div class="flex flex-wrap items-start gap-4 px-5 py-5 max-[576px]:px-4">
@@ -57,7 +57,8 @@
           {{ m.nombre }}
         </h1>
         <p class="m-0 text-[0.8rem] font-medium text-brand-muted">
-          {{ t().entities.metodoPago.columns.codigo }}: {{ m.codigo }}
+          {{ t().entities.formaPago.columns.cuenta }}:
+          {{ m.cuenta ? [m.cuenta_codigo, m.cuenta_nombre].join(' - ') : '—' }}
         </p>
       </div>
     </div>

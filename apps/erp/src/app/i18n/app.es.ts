@@ -1110,45 +1110,49 @@ export const es: AppDict = {
         },
       },
     },
-    metodoPago: {
-      name: 'Métodos de pago',
+    formaPago: {
+      name: 'Formas de pago',
       searchPlaceholder: 'Buscar por nombre…',
       columns: {
         id: 'ID',
-        codigo: 'Código',
         nombre: 'Nombre',
+        cuenta: 'Cuenta',
       },
       form: {
-        createTitle: 'Nuevo método de pago',
-        editTitle: 'Editar método de pago',
-        createSubtitle: 'Completá la información del método de pago',
-        editSubtitle: 'Modificá la información del método de pago',
-        fields: { codigo: 'Código', nombre: 'Nombre' },
+        createTitle: 'Nueva forma de pago',
+        editTitle: 'Editar forma de pago',
+        createSubtitle: 'Completá la información de la forma de pago',
+        editSubtitle: 'Modificá la información de la forma de pago',
+        fields: {
+          nombre: 'Nombre',
+          cuenta: 'Cuenta contable',
+          cuentaPlaceholder: 'Buscar cuenta…',
+        },
         validation: {
           required: 'Este campo es requerido',
           maxlength: 'Supera la longitud máxima',
         },
         toasts: {
           createSuccess: {
-            title: 'Método de pago creado',
-            desc: 'El método de pago se creó correctamente',
+            title: 'Forma de pago creada',
+            desc: 'La forma de pago se creó correctamente',
           },
           editSuccess: {
-            title: 'Método de pago actualizado',
+            title: 'Forma de pago actualizada',
             desc: 'Los cambios se guardaron correctamente',
           },
-          createError: { title: 'Error al crear', desc: 'No se pudo crear el método de pago' },
+          createError: { title: 'Error al crear', desc: 'No se pudo crear la forma de pago' },
           editError: { title: 'Error al guardar', desc: 'No se pudieron guardar los cambios' },
-          loadError: { title: 'Error al cargar', desc: 'No se pudo cargar el método de pago' },
+          loadError: { title: 'Error al cargar', desc: 'No se pudo cargar la forma de pago' },
         },
       },
       detail: {
         notFound: {
-          title: 'Método de pago no encontrado',
-          desc: 'El método de pago que buscás no existe o fue eliminado.',
+          title: 'Forma de pago no encontrada',
+          desc: 'La forma de pago que buscás no existe o fue eliminada.',
         },
         toasts: {
-          loadError: { title: 'Error al cargar', desc: 'No se pudo cargar el método de pago' },
+          loadError: { title: 'Error al cargar', desc: 'No se pudo cargar la forma de pago' },
         },
       },
     },

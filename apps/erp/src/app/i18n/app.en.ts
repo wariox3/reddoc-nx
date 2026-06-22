@@ -1079,45 +1079,45 @@ export const en: AppDict = {
         },
       },
     },
-    metodoPago: {
-      name: 'Payment methods',
+    formaPago: {
+      name: 'Payment forms',
       searchPlaceholder: 'Search by name…',
       columns: {
         id: 'ID',
-        codigo: 'Code',
         nombre: 'Name',
+        cuenta: 'Account',
       },
       form: {
-        createTitle: 'New payment method',
-        editTitle: 'Edit payment method',
-        createSubtitle: 'Fill in the payment method information',
-        editSubtitle: 'Update the payment method information',
-        fields: { codigo: 'Code', nombre: 'Name' },
+        createTitle: 'New payment form',
+        editTitle: 'Edit payment form',
+        createSubtitle: 'Fill in the payment form information',
+        editSubtitle: 'Update the payment form information',
+        fields: { nombre: 'Name', cuenta: 'Account', cuentaPlaceholder: 'Search account…' },
         validation: {
           required: 'This field is required',
           maxlength: 'Exceeds the maximum length',
         },
         toasts: {
           createSuccess: {
-            title: 'Payment method created',
-            desc: 'The payment method was created successfully',
+            title: 'Payment form created',
+            desc: 'The payment form was created successfully',
           },
           editSuccess: {
-            title: 'Payment method updated',
+            title: 'Payment form updated',
             desc: 'Changes were saved successfully',
           },
-          createError: { title: 'Create error', desc: 'Could not create the payment method' },
+          createError: { title: 'Create error', desc: 'Could not create the payment form' },
           editError: { title: 'Save error', desc: 'Could not save the changes' },
-          loadError: { title: 'Load error', desc: 'Could not load the payment method' },
+          loadError: { title: 'Load error', desc: 'Could not load the payment form' },
         },
       },
       detail: {
         notFound: {
-          title: 'Payment method not found',
-          desc: 'The payment method you are looking for does not exist or was deleted.',
+          title: 'Payment form not found',
+          desc: 'The payment form you are looking for does not exist or was deleted.',
         },
         toasts: {
-          loadError: { title: 'Load error', desc: 'Could not load the payment method' },
+          loadError: { title: 'Load error', desc: 'Could not load the payment form' },
         },
       },
     },

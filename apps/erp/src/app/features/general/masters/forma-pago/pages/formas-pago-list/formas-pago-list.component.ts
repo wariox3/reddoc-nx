@@ -28,21 +28,21 @@ import {
 } from '@reddoc/feature-base';
 import { ActiveModuleStore, currentModuleId, resolveModuleName } from '@erp/core/erp-modules';
 import type { AppDict } from '@erp/i18n';
-import { MetodoPagoService } from '../../metodo-pago.service';
-import type { MetodoPago } from '../../metodo-pago.model';
+import { FormaPagoService } from '../../forma-pago.service';
+import type { FormaPago } from '../../forma-pago.model';
 import {
-  METODOS_PAGO_COLUMNS,
-  METODOS_PAGO_FILTER_FIELDS,
-  METODOS_PAGO_FILTERS_STORAGE_KEY,
-  METODOS_PAGO_PRIMARY_ACTION,
-  METODOS_PAGO_QUICK_SEARCH_FIELD,
-  METODOS_PAGO_ROW_ACTIONS,
-  METODOS_PAGO_TRAILING_ACTIONS,
-  METODO_PAGO_LIST_PATH,
-} from '../../metodo-pago.constants';
+  FORMAS_PAGO_COLUMNS,
+  FORMAS_PAGO_FILTER_FIELDS,
+  FORMAS_PAGO_FILTERS_STORAGE_KEY,
+  FORMAS_PAGO_PRIMARY_ACTION,
+  FORMAS_PAGO_QUICK_SEARCH_FIELD,
+  FORMAS_PAGO_ROW_ACTIONS,
+  FORMAS_PAGO_TRAILING_ACTIONS,
+  FORMA_PAGO_LIST_PATH,
+} from '../../forma-pago.constants';
 
 /**
- * Listado de métodos de pago.
+ * Listado de formas de pago.
  *
  * Master administrativo (camino B) que vive en `general/masters/` pero se
  * cablea en el módulo Compra. Es module-agnostic: deriva el módulo activo del
@@ -50,7 +50,7 @@ import {
  * monta.
  */
 @Component({
-  selector: 'app-metodos-pago-list',
+  selector: 'app-formas-pago-list',
   standalone: true,
   imports: [
     ListShellComponent,
@@ -60,11 +60,11 @@ import {
     ConfirmDialogModule,
   ],
   providers: [ConfirmationService],
-  templateUrl: './metodos-pago-list.component.html',
-  styleUrl: './metodos-pago-list.component.scss',
+  templateUrl: './formas-pago-list.component.html',
+  styleUrl: './formas-pago-list.component.scss',
 })
-export class MetodosPagoListComponent {
-  private readonly service = inject(MetodoPagoService);
+export class FormasPagoListComponent {
+  private readonly service = inject(FormaPagoService);
   private readonly fileDownload = inject(FileDownloadService);
   private readonly filterStorage = inject(FilterStorageService);
   private readonly tenant = inject(TenantService);
@@ -77,16 +77,16 @@ export class MetodosPagoListComponent {
 
   protected readonly t = this.i18n.t;
 
-  protected readonly items = signal<readonly MetodoPago[]>([]);
+  protected readonly items = signal<readonly FormaPago[]>([]);
   protected readonly totalCount = signal(0);
   protected readonly isLoading = signal(false);
   protected readonly currentPage = signal(0);
   protected readonly pageSize = signal(25);
   protected readonly sort = signal<readonly SortSpec[]>([]);
-  protected readonly selectedRows = signal<readonly MetodoPago[]>([]);
+  protected readonly selectedRows = signal<readonly FormaPago[]>([]);
   protected readonly searchValue = signal('');
   protected readonly activeFilters = signal<readonly FilterCondition[]>(
-    this.filterStorage.read(METODOS_PAGO_FILTERS_STORAGE_KEY),
+    this.filterStorage.read(FORMAS_PAGO_FILTERS_STORAGE_KEY),
   );
   protected readonly filtersVisible = signal(false);
 
@@ -101,15 +101,15 @@ export class MetodosPagoListComponent {
         label: resolveModuleName(this.activeModule, this.t()),
         routerLink: slug ? ['/t', slug, currentModuleId(this.activeModule)] : undefined,
       },
-      { label: this.t().entities.metodoPago.name },
+      { label: this.t().entities.formaPago.name },
     ];
   });
 
-  protected readonly columns = METODOS_PAGO_COLUMNS;
-  protected readonly filterFields = METODOS_PAGO_FILTER_FIELDS;
-  protected readonly rowActions = METODOS_PAGO_ROW_ACTIONS;
-  protected readonly primaryAction = METODOS_PAGO_PRIMARY_ACTION;
-  protected readonly trailingActions = METODOS_PAGO_TRAILING_ACTIONS;
+  protected readonly columns = FORMAS_PAGO_COLUMNS;
+  protected readonly filterFields = FORMAS_PAGO_FILTER_FIELDS;
+  protected readonly rowActions = FORMAS_PAGO_ROW_ACTIONS;
+  protected readonly primaryAction = FORMAS_PAGO_PRIMARY_ACTION;
+  protected readonly trailingActions = FORMAS_PAGO_TRAILING_ACTIONS;
 
   constructor() {
     this.loadList();
@@ -133,39 +133,39 @@ export class MetodosPagoListComponent {
 
   protected onFiltersApply(filters: readonly FilterCondition[]): void {
     this.activeFilters.set(filters);
-    this.filterStorage.write(METODOS_PAGO_FILTERS_STORAGE_KEY, filters);
+    this.filterStorage.write(FORMAS_PAGO_FILTERS_STORAGE_KEY, filters);
     this.currentPage.set(0);
     this.loadList();
   }
 
   protected clearFilters(): void {
     this.activeFilters.set([]);
-    this.filterStorage.clear(METODOS_PAGO_FILTERS_STORAGE_KEY);
+    this.filterStorage.clear(FORMAS_PAGO_FILTERS_STORAGE_KEY);
     this.currentPage.set(0);
     this.loadList();
   }
 
   protected onSelectionChange(rows: unknown[]): void {
-    this.selectedRows.set(rows as MetodoPago[]);
+    this.selectedRows.set(rows as FormaPago[]);
   }
 
   protected onRowAction(event: RowActionInvokedEvent): void {
-    const metodoPago = event.row as MetodoPago;
+    const formaPago = event.row as FormaPago;
     switch (event.actionId) {
       case 'view':
-        this.navigateTo('detalle', metodoPago.id);
+        this.navigateTo('detalle', formaPago.id);
         break;
       case 'edit':
-        this.navigateTo('editar', metodoPago.id);
+        this.navigateTo('editar', formaPago.id);
         break;
       case 'delete':
-        this.confirmRemove([metodoPago.id]);
+        this.confirmRemove([formaPago.id]);
         break;
     }
   }
 
   protected onRowClick(row: unknown): void {
-    this.navigateTo('detalle', (row as MetodoPago).id);
+    this.navigateTo('detalle', (row as FormaPago).id);
   }
 
   protected onToolbarAction(actionId: string): void {
@@ -193,13 +193,13 @@ export class MetodosPagoListComponent {
     if (this.isExportingExcel()) return;
     this.isExportingExcel.set(true);
     this.fileDownload
-      .download('/general/metodo-pago/excel/', {
+      .download('/general/forma-pago/excel/', {
         method: 'POST',
         body: {
           filtros: buildFiltros(this.activeFilters()),
           ordenamientos: buildOrdenamientos(this.sort()),
         },
-        fallbackFilename: 'metodos-pago.xlsx',
+        fallbackFilename: 'formas-pago.xlsx',
       })
       .pipe(
         takeUntilDestroyed(this.destroyRef),
@@ -215,7 +215,7 @@ export class MetodosPagoListComponent {
   }
 
   private loadList(): void {
-    const search = quickSearchCondition(METODOS_PAGO_QUICK_SEARCH_FIELD, this.searchValue());
+    const search = quickSearchCondition(FORMAS_PAGO_QUICK_SEARCH_FIELD, this.searchValue());
     const filters = search ? [...this.activeFilters(), search] : this.activeFilters();
 
     const query: ListQuery = {
@@ -289,7 +289,7 @@ export class MetodosPagoListComponent {
       '/t',
       slug,
       currentModuleId(this.activeModule),
-      ...METODO_PAGO_LIST_PATH,
+      ...FORMA_PAGO_LIST_PATH,
       ...subPath,
     ]);
   }
