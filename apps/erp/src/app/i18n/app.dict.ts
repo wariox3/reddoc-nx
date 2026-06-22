@@ -976,6 +976,62 @@ export interface AppDict extends AuthTranslationsHost {
         loadError: { title: string; desc: string };
       };
     };
+    empleado: {
+      name: string;
+      searchPlaceholder: string;
+      columns: {
+        id: string;
+        identificacion: string;
+        identificacion_abreviatura: string;
+        nombre: string;
+        correo: string;
+        celular: string;
+      };
+      form: {
+        createTitle: string;
+        editTitle: string;
+        createSubtitle: string;
+        editSubtitle: string;
+        sections: { banca: string };
+        sectionsHint: { banca: string };
+        fields: {
+          identificacion: string;
+          numeroIdentificacion: string;
+          nombre1: string;
+          nombre2: string;
+          apellido1: string;
+          apellido2: string;
+          telefono: string;
+          celular: string;
+          ciudad: string;
+          ciudadPlaceholder: string;
+          direccion: string;
+          barrio: string;
+          correo: string;
+          banco: string;
+          bancoPlaceholder: string;
+          numeroCuenta: string;
+          cuentaBancoClase: string;
+        };
+        validation: {
+          required: string;
+          emailInvalid: string;
+          numeroIdentificacionExistente: string;
+        };
+        toasts: {
+          createSuccess: { title: string; desc: string };
+          editSuccess: { title: string; desc: string };
+          createError: { title: string; desc: string };
+          editError: { title: string; desc: string };
+          loadError: { title: string; desc: string };
+        };
+      };
+      detail: {
+        sections: { general: string; contacto: string; ubicacion: string; banca: string };
+        notFound: { title: string; desc: string };
+        toasts: { loadError: { title: string; desc: string } };
+      };
+    };
     credito: {
       name: string;
       searchPlaceholder: string;

@@ -9,6 +9,11 @@ export const HUMANO_ROUTES: Route[] = [
     children: [
       moduleIndexRoute(HUMANO_MODULE),
       {
+        path: 'empleados',
+        loadChildren: () =>
+          import('./masters/empleado/empleado.routes').then((m) => m.EMPLEADO_ROUTES),
+      },
+      {
         path: 'contratos',
         loadChildren: () =>
           import('./masters/contrato/contrato.routes').then((m) => m.CONTRATO_ROUTES),
