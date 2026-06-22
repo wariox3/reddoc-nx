@@ -12,18 +12,20 @@ segmento de la entidad). Luego cablearlo en `<modulo>.routes.ts` (loadChildren) 
 `menu` del `<modulo>.module-descriptor.ts`, y agregar `entities.<entity>.name` en i18n
 (`app.es.ts` / `app.en.ts` / `app.dict.ts`).
 
-| Master        | Pedido en | Segmento de ruta previsto | i18n a crear              | Estado    |
-| ------------- | --------- | ------------------------- | ------------------------- | --------- |
-| sede          | Venta     | `sedes`                   | `entities.sede.name`      | Pendiente |
-| forma de pago | Compra    | `formas-pago`             | `entities.formaPago.name` | Pendiente |
-| empleado      | Humano    | `empleados`               | `entities.empleado.name`  | Pendiente |
+| Master         | Pedido en | Segmento de ruta | i18n                       | Estado    |
+| -------------- | --------- | ---------------- | -------------------------- | --------- |
+| sede           | Venta     | `sedes`          | `entities.sede.name`       | Hecho     |
+| método de pago | Compra    | `metodos-pago`   | `entities.metodoPago.name` | Hecho     |
+| empleado       | Humano    | `empleados`      | `entities.empleado.name`   | Pendiente |
 
 ## Notas
 
-- **sede**: solicitada en el cableado de administradores del módulo Venta.
-- **forma de pago**: solicitada en el cableado de administradores del módulo Compra.
-  No confundir con los endpoints `seleccionar` de `plazo-pago` / `metodo-pago` que ya
-  usa la factura de venta; aquí se pide el **master** (CRUD) de forma de pago.
+- **sede**: solicitada en el cableado de administradores del módulo Venta. Vive en
+  `features/general/masters/sede/` y se registró en el módulo General.
+- **método de pago** (antes "forma de pago"): solicitada en el módulo Compra. Es el
+  **master** (CRUD) sobre `/general/metodo-pago/`; no confundir con el endpoint
+  `seleccionar` de `metodo-pago` que ya usa la factura de venta. Vive en
+  `features/general/masters/metodo-pago/` (module-agnostic) y se cableó en Compra.
 - **empleado**: solicitado en el módulo Humano. El resto de admins de Humano (contrato,
   cargo, grupo, sucursal, adicional, crédito, novedad) ya existen y están cableados.
   Revisar si el empleado es un master propio o se deriva de `contacto` con el flag

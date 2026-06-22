@@ -1061,6 +1061,48 @@ export const en: AppDict = {
         },
       },
     },
+    metodoPago: {
+      name: 'Payment methods',
+      searchPlaceholder: 'Search by name…',
+      columns: {
+        id: 'ID',
+        codigo: 'Code',
+        nombre: 'Name',
+      },
+      form: {
+        createTitle: 'New payment method',
+        editTitle: 'Edit payment method',
+        createSubtitle: 'Fill in the payment method information',
+        editSubtitle: 'Update the payment method information',
+        fields: { codigo: 'Code', nombre: 'Name' },
+        validation: {
+          required: 'This field is required',
+          maxlength: 'Exceeds the maximum length',
+        },
+        toasts: {
+          createSuccess: {
+            title: 'Payment method created',
+            desc: 'The payment method was created successfully',
+          },
+          editSuccess: {
+            title: 'Payment method updated',
+            desc: 'Changes were saved successfully',
+          },
+          createError: { title: 'Create error', desc: 'Could not create the payment method' },
+          editError: { title: 'Save error', desc: 'Could not save the changes' },
+          loadError: { title: 'Load error', desc: 'Could not load the payment method' },
+        },
+      },
+      detail: {
+        notFound: {
+          title: 'Payment method not found',
+          desc: 'The payment method you are looking for does not exist or was deleted.',
+        },
+        toasts: {
+          loadError: { title: 'Load error', desc: 'Could not load the payment method' },
+        },
+      },
+    },
     sede: {
       name: 'Branches',
       searchPlaceholder: 'Search by name…',
