@@ -42,6 +42,19 @@ export interface EntityDataGateway {
    * Devuelve `Observable<void>`: el caller solo necesita saber cuándo terminó.
    */
   exportExcel(entity: EntityConfig, query: ListQuery): Observable<void>;
+
+  /**
+   * Aprueba un documento vía `POST <endpoint>/<id>/aprobar/` (sin body).
+   * Devuelve el documento actualizado por el backend.
+   */
+  aprobar(entity: EntityConfig, id: string | number): Observable<unknown>;
+
+  /**
+   * Descarga el PDF de un documento vía `GET <endpoint>/<id>/imprimir/` y dispara
+   * la descarga en el navegador. Devuelve `Observable<void>`: el caller solo
+   * necesita saber cuándo terminó.
+   */
+  imprimir(entity: EntityConfig, id: string | number): Observable<void>;
 }
 
 /**

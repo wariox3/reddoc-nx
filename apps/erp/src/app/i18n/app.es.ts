@@ -191,6 +191,24 @@ export const es: AppDict = {
       imprimir: 'Imprimir',
       opciones: 'Opciones',
       archivos: 'Archivos',
+      confirmAprobar: {
+        message: '¿Confirmas la aprobación de este documento?',
+        header: 'Aprobar documento',
+      },
+      toasts: {
+        aprobarSuccess: {
+          title: 'Documento aprobado',
+          desc: 'El documento se aprobó correctamente.',
+        },
+        aprobarError: {
+          title: 'No se pudo aprobar',
+          desc: 'Ocurrió un error al aprobar el documento.',
+        },
+        imprimirError: {
+          title: 'No se pudo imprimir',
+          desc: 'Ocurrió un error al generar el PDF.',
+        },
+      },
     },
   },
   documentImport: {

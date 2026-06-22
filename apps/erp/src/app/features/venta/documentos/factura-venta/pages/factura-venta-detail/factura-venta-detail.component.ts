@@ -3,6 +3,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationService } from 'primeng/api';
 import {
   I18nService,
   TenantService,
@@ -52,11 +54,13 @@ interface CabeceraView {
   standalone: true,
   imports: [
     ButtonModule,
+    ConfirmDialogModule,
     BreadcrumbComponent,
     ComercialDocumentoLineasTableComponent,
     ComercialDocumentoResumenComponent,
     DocumentDetailActionsComponent,
   ],
+  providers: [ConfirmationService],
   templateUrl: './factura-venta-detail.component.html',
   styleUrl: './factura-venta-detail.component.scss',
 })
@@ -67,6 +71,7 @@ export class FacturaVentaDetailComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly confirmation = inject(ConfirmationService);
   private readonly i18n = inject<I18nService<AppDict>>(I18nService);
 
   protected readonly t = this.i18n.t;
@@ -120,13 +125,51 @@ export class FacturaVentaDetailComponent implements OnInit {
     this.navigate(this.document().routes.edit, id);
   }
 
-  // Acciones de la botonera — placeholder hasta definir su comportamiento real.
+  /** Aprueba el documento previa confirmación; al éxito recarga la ficha. */
   protected onAprobar(): void {
-    this.toast.info(this.t().common.comingSoon);
+    const id = this.id();
+    if (!id) return;
+    const a = this.t().documentActions.detail;
+    this.confirmation.confirm({
+      message: a.confirmAprobar.message,
+      header: a.confirmAprobar.header,
+      icon: 'pi pi-check-circle',
+      acceptLabel: a.aprobar,
+      rejectLabel: this.t().common.actions.cancel,
+      accept: () => this.aprobarDocumento(Number(id)),
+    });
   }
 
+  private aprobarDocumento(id: number): void {
+    this.gateway
+      .aprobar(this.document(), id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          const ts = this.t().documentActions.detail.toasts.aprobarSuccess;
+          this.toast.success(ts.title, ts.desc);
+          this.loadDocumento(id);
+        },
+        error: () => {
+          const ts = this.t().documentActions.detail.toasts.aprobarError;
+          this.toast.error(ts.title, ts.desc);
+        },
+      });
+  }
+
+  /** Descarga el PDF del documento. */
   protected onImprimir(): void {
-    this.toast.info(this.t().common.comingSoon);
+    const id = this.id();
+    if (!id) return;
+    this.gateway
+      .imprimir(this.document(), Number(id))
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        error: () => {
+          const ts = this.t().documentActions.detail.toasts.imprimirError;
+          this.toast.error(ts.title, ts.desc);
+        },
+      });
   }
 
   protected onArchivos(): void {

@@ -150,6 +150,35 @@ export class HttpEntityDataGateway implements EntityDataGateway {
       );
   }
 
+  /** Aprueba el documento: `POST <endpoint>/<id>/aprobar/` sin body. */
+  aprobar(entity: EntityConfig, id: string | number): Observable<unknown> {
+    return this.http.post(`${entity.endpoint}/${id}/aprobar/`, {});
+  }
+
+  /**
+   * Descarga el PDF del documento vía `GET <endpoint>/<id>/imprimir/`. Mismo
+   * manejo de blob que `exportExcel`: valida que no venga vacío, resuelve el
+   * nombre del `content-disposition` (fallback `${entity.id}-${id}.pdf`) y
+   * dispara la descarga del navegador.
+   */
+  imprimir(entity: EntityConfig, id: string | number): Observable<void> {
+    return this.http
+      .get(`${entity.endpoint}/${id}/imprimir/`, { observe: 'response', responseType: 'blob' })
+      .pipe(
+        map((response) => {
+          const blob = response.body;
+          if (!blob || blob.size === 0) {
+            throw new Error('Respuesta vacía del servidor');
+          }
+          const filename = parseFilename(
+            response.headers.get('content-disposition'),
+            `${entity.id}-${id}.pdf`,
+          );
+          triggerBrowserDownload(blob, filename);
+        }),
+      );
+  }
+
   /**
    * Arma el body de `POST <endpoint>/lista/` a partir del `ListQuery` genérico.
    * El filtro por `documento_tipo_id` se inyecta como primer elemento —
