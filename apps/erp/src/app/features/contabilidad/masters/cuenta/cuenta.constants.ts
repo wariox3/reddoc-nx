@@ -79,3 +79,12 @@ export const CUENTAS_PRIMARY_ACTION: ToolbarAction = {
   labelKey: 'common.actions.new',
   iconClass: 'pi pi-plus',
 };
+
+export const CUENTAS_TRAILING_ACTIONS: readonly ToolbarAction[] = [
+  {
+    id: 'actions',
+    labelKey: 'common.actions.actions',
+    iconClass: '',
+    children: [{ id: 'import', labelKey: 'common.actions.import', iconClass: 'pi pi-upload' }],
+  },
+];

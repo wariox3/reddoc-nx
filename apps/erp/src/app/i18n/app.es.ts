@@ -1091,6 +1091,10 @@ export const es: AppDict = {
     cuenta: {
       name: 'Cuentas',
       searchPlaceholder: 'Buscar por nombre…',
+      import: {
+        title: 'Importar cuentas',
+        subtitle: 'Subí un Excel con los registros a cargar',
+      },
       columns: {
         id: 'ID',
         codigo: 'Código',

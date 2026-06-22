@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
@@ -23,6 +24,12 @@ import {
   type PageChangeEvent,
   type RowActionInvokedEvent,
 } from '@reddoc/feature-base';
+import { ImportDialogComponent } from '@erp/core/components/import-dialog/import-dialog.component';
+import type {
+  ImportError,
+  MasterTouched,
+} from '@erp/core/components/import-dialog/import-dialog.types';
+import { parseImportErrors } from '@erp/core/components/import-dialog/import-dialog.utils';
 import type { AppDict } from '@erp/i18n';
 import { CuentaService } from '../../cuenta.service';
 import type { Cuenta } from '../../cuenta.model';
@@ -33,6 +40,7 @@ import {
   CUENTAS_PRIMARY_ACTION,
   CUENTAS_QUICK_SEARCH_FIELD,
   CUENTAS_ROW_ACTIONS,
+  CUENTAS_TRAILING_ACTIONS,
 } from '../../cuenta.constants';
 
 @Component({
@@ -44,6 +52,7 @@ import {
     DataToolbarComponent,
     DataFilterModalComponent,
     ConfirmDialogModule,
+    ImportDialogComponent,
   ],
   providers: [ConfirmationService],
   templateUrl: './cuentas-list.component.html',
@@ -74,6 +83,18 @@ export class CuentasListComponent {
   );
   protected readonly filtersVisible = signal(false);
 
+  protected readonly exampleConfig = {
+    mode: 'enabled' as const,
+    endpoint: '/contabilidad/cuenta/importar-ejemplo/',
+  };
+
+  protected readonly importVisible = signal(false);
+  protected readonly importLoading = signal(false);
+  protected readonly importErrors = signal<readonly ImportError[]>([]);
+  protected readonly importErrorSummary = signal('');
+  protected readonly importErrorTotal = signal(0);
+  protected readonly importMasters = signal<readonly MasterTouched[]>([]);
+
   protected readonly hasSelection = computed(() => this.selectedRows().length > 0);
 
   protected readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => {
@@ -91,6 +112,7 @@ export class CuentasListComponent {
   protected readonly filterFields = CUENTAS_FILTER_FIELDS;
   protected readonly rowActions = CUENTAS_ROW_ACTIONS;
   protected readonly primaryAction = CUENTAS_PRIMARY_ACTION;
+  protected readonly trailingActions = CUENTAS_TRAILING_ACTIONS;
 
   constructor() {
     this.loadList();
@@ -150,7 +172,72 @@ export class CuentasListComponent {
   }
 
   protected onToolbarAction(actionId: string): void {
-    if (actionId === 'new') this.navigateTo('nuevo');
+    switch (actionId) {
+      case 'new':
+        this.navigateTo('nuevo');
+        break;
+      case 'import':
+        this.importVisible.set(true);
+        break;
+    }
+  }
+
+  protected onImportVisibleChange(value: boolean): void {
+    this.importVisible.set(value);
+  }
+
+  protected onImportRequested(file: File): void {
+    if (this.importLoading()) return;
+    this.importLoading.set(true);
+    // Limpia el resultado del intento anterior (al reintentar tras corregir).
+    this.clearImportErrors();
+    this.service
+      .importar(file)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.importLoading.set(false)),
+      )
+      .subscribe({
+        next: (result) => {
+          // El backend puede reportar los errores de validación en un 200
+          // ("No se procesó ningún registro"); si los trae, los mostramos en vez
+          // de tratarlo como éxito.
+          if (this.applyImportErrors(parseImportErrors(result))) return;
+          const toasts = this.t().common.import.toasts;
+          this.toast.success(toasts.success.title, toasts.success.desc);
+          this.importVisible.set(false);
+          this.clearImportErrors();
+          this.importMasters.set([]);
+          this.loadList();
+        },
+        error: (err: HttpErrorResponse) => {
+          // Errores de validación (4xx) con el mismo shape. Si no hay estructura
+          // (red/desconocido) → toast genérico.
+          if (!this.applyImportErrors(parseImportErrors(err.error))) {
+            const toasts = this.t().common.import.toasts;
+            this.toast.error(toasts.error.title, toasts.error.desc);
+          }
+        },
+      });
+  }
+
+  /**
+   * Vuelca los errores parseados en los signals del diálogo. Devuelve `true` si
+   * había errores/resumen (para que el llamador no siga el camino de éxito).
+   */
+  private applyImportErrors(parsed: ReturnType<typeof parseImportErrors>): boolean {
+    if (parsed.errors.length === 0 && !parsed.summary) return false;
+    this.importErrors.set(parsed.errors);
+    this.importErrorSummary.set(parsed.summary);
+    this.importErrorTotal.set(parsed.total);
+    return true;
+  }
+
+  /** Resetea el resultado de errores de importación (tabla + resumen). */
+  private clearImportErrors(): void {
+    this.importErrors.set([]);
+    this.importErrorSummary.set('');
+    this.importErrorTotal.set(0);
   }
 
   protected onRefresh(): void {
