@@ -25,6 +25,11 @@ export const CENTROS_COSTO_COLUMNS: readonly ColumnDef[] = [
     headerKey: 'entities.centroCosto.columns.nombre',
     type: 'text',
   },
+  {
+    field: 'estado_inactivo',
+    headerKey: 'entities.centroCosto.columns.estado',
+    type: 'boolean',
+  },
 ];
 
 export const CENTROS_COSTO_FILTER_FIELDS: readonly FilterField[] = [
