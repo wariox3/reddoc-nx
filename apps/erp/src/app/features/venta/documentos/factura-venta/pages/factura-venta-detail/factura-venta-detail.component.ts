@@ -37,6 +37,8 @@ interface CabeceraView {
   readonly plazoPago: string | null;
   readonly sede: string | null;
   readonly metodoPago: string | null;
+  /** Si ya está aprobado no se puede volver a aprobar (deshabilita la acción). */
+  readonly estadoAprobado: boolean;
 }
 
 /**
@@ -201,6 +203,7 @@ export class FacturaVentaDetailComponent implements OnInit {
             plazoPago: read.plazo_pago_nombre ?? null,
             sede: read.sede_nombre ?? null,
             metodoPago: read.metodo_pago_nombre ?? null,
+            estadoAprobado: read.estado_aprobado,
           });
           this.lines.set(lineas.map((line) => comercialDetalleToFormValue(line)));
           this.isLoading.set(false);

@@ -37,6 +37,8 @@ interface CabeceraView {
   readonly sector: string | null;
   readonly estrato: number | null;
   readonly salario: number | null;
+  /** Si ya está aprobado no se puede volver a aprobar (deshabilita la acción). */
+  readonly estadoAprobado: boolean;
 }
 
 /**
@@ -199,6 +201,7 @@ export class ServicioDocumentoDetailComponent implements OnInit {
             sector: fv.sector?.nombre ?? read.sector_nombre ?? null,
             estrato: fv.estrato ?? null,
             salario: fv.salario ?? null,
+            estadoAprobado: read.estado_aprobado,
           });
           const salarioDoc = toFiniteNumber(read.salario);
           this.lines.set(lineas.map((line) => detalleToFormValue(line, salarioDoc)));
