@@ -36,19 +36,19 @@ export class PeriodoService extends BaseHttpService {
     return this.post<PeriodoAccionResultado>(`${this.resourcePath}anio-nuevo/`, { anio });
   }
 
-  /** abierto → bloqueado. */
-  bloquear(id: number): Observable<PeriodoAccionResultado> {
-    return this.post<PeriodoAccionResultado>(`${this.resourcePath}bloquear/`, { id });
+  /** abierto → bloqueado. Devuelve el periodo actualizado (la vista lo parchea). */
+  bloquear(id: number): Observable<Periodo> {
+    return this.post<Periodo>(`${this.resourcePath}bloquear/`, { id });
   }
 
-  /** bloqueado → abierto. */
-  desbloquear(id: number): Observable<PeriodoAccionResultado> {
-    return this.post<PeriodoAccionResultado>(`${this.resourcePath}desbloquear/`, { id });
+  /** bloqueado → abierto. Devuelve el periodo actualizado (la vista lo parchea). */
+  desbloquear(id: number): Observable<Periodo> {
+    return this.post<Periodo>(`${this.resourcePath}desbloquear/`, { id });
   }
 
-  /** bloqueado → cerrado (prácticamente irreversible; la vista confirma antes). */
-  cerrar(id: number): Observable<PeriodoAccionResultado> {
-    return this.post<PeriodoAccionResultado>(`${this.resourcePath}cerrar/`, { id });
+  /** bloqueado → cerrado (prácticamente irreversible; la vista confirma antes). Devuelve el periodo actualizado. */
+  cerrar(id: number): Observable<Periodo> {
+    return this.post<Periodo>(`${this.resourcePath}cerrar/`, { id });
   }
 
   /** Inconsistencias contables de un periodo (año + mes). */

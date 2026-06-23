@@ -15,7 +15,7 @@ import { DialogModule } from 'primeng/dialog';
 import { Menu, MenuModule } from 'primeng/menu';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { ConfirmationService, type MenuItem } from 'primeng/api';
-import { finalize } from 'rxjs';
+import { type Observable, finalize } from 'rxjs';
 import { I18nService, TenantService, ToastService } from '@reddoc/core';
 import { BreadcrumbComponent, type BreadcrumbItem } from '@reddoc/feature-base';
 import type { AppDict } from '@erp/i18n';
@@ -32,8 +32,10 @@ import { PeriodoAnioNuevoDialogComponent } from '../../components/periodo-anio-n
  * menú de acciones por mes. Es la "firma" visual del master, distinta del resto.
  *
  * Estado en cliente: trae todos los periodos una vez (`listAll`) y deriva años y
- * meses con `computed`. Cada acción de estado recarga para reflejar transiciones e
- * inconsistencias recalculadas por el backend.
+ * meses con `computed`. Las acciones de estado (bloquear/desbloquear/cerrar) hacen
+ * **optimistic update**: parchean el periodo en el signal de inmediato, reconcilian
+ * con el periodo que devuelve el backend y revierten si la petición falla. Así la
+ * fila cambia al instante sin recargar ni mostrar el spinner de la lista completa.
  */
 @Component({
   selector: 'app-periodo-anio',
@@ -169,30 +171,24 @@ export class PeriodoAnioComponent implements OnInit {
 
   private bloquear(periodo: Periodo): void {
     const toasts = this.t().entities.periodo.toasts;
-    this.service
-      .bloquear(periodo.id)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          this.toast.success(toasts.bloquearSuccess.title, toasts.bloquearSuccess.desc);
-          this.loadAll();
-        },
-        error: () => this.toast.error(toasts.bloquearError.title, toasts.bloquearError.desc),
-      });
+    this.ejecutarAccion(
+      periodo,
+      { ...periodo, estado_bloqueado: true },
+      this.service.bloquear(periodo.id),
+      toasts.bloquearSuccess,
+      toasts.bloquearError,
+    );
   }
 
   private desbloquear(periodo: Periodo): void {
     const toasts = this.t().entities.periodo.toasts;
-    this.service
-      .desbloquear(periodo.id)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          this.toast.success(toasts.desbloquearSuccess.title, toasts.desbloquearSuccess.desc);
-          this.loadAll();
-        },
-        error: () => this.toast.error(toasts.desbloquearError.title, toasts.desbloquearError.desc),
-      });
+    this.ejecutarAccion(
+      periodo,
+      { ...periodo, estado_bloqueado: false },
+      this.service.desbloquear(periodo.id),
+      toasts.desbloquearSuccess,
+      toasts.desbloquearError,
+    );
   }
 
   private confirmarCerrar(periodo: Periodo): void {
@@ -210,16 +206,43 @@ export class PeriodoAnioComponent implements OnInit {
 
   private cerrar(periodo: Periodo): void {
     const toasts = this.t().entities.periodo.toasts;
-    this.service
-      .cerrar(periodo.id)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          this.toast.success(toasts.cerrarSuccess.title, toasts.cerrarSuccess.desc);
-          this.loadAll();
-        },
-        error: () => this.toast.error(toasts.cerrarError.title, toasts.cerrarError.desc),
-      });
+    this.ejecutarAccion(
+      periodo,
+      { ...periodo, estado_cerrado: true },
+      this.service.cerrar(periodo.id),
+      toasts.cerrarSuccess,
+      toasts.cerrarError,
+    );
+  }
+
+  /**
+   * Ejecuta una acción de estado con optimistic update: aplica `optimista` al
+   * instante, reconcilia con el periodo que devuelve el backend en `next` (fuente
+   * de verdad, incluye `estado_inconsistencia`) y revierte a `original` si falla.
+   */
+  private ejecutarAccion(
+    original: Periodo,
+    optimista: Periodo,
+    accion: Observable<Periodo>,
+    okToast: { readonly title: string; readonly desc: string },
+    errToast: { readonly title: string; readonly desc: string },
+  ): void {
+    this.patchPeriodo(optimista);
+    accion.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (actualizado) => {
+        this.patchPeriodo(actualizado);
+        this.toast.success(okToast.title, okToast.desc);
+      },
+      error: () => {
+        this.patchPeriodo(original);
+        this.toast.error(errToast.title, errToast.desc);
+      },
+    });
+  }
+
+  /** Reemplaza un periodo en el signal por su versión actualizada (match por `id`). */
+  private patchPeriodo(actualizado: Periodo): void {
+    this.periodos.update((list) => list.map((p) => (p.id === actualizado.id ? actualizado : p)));
   }
 
   private loadAll(preselect?: number): void {
