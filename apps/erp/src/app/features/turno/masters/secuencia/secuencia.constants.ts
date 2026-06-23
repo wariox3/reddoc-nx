@@ -47,7 +47,6 @@ export const SECUENCIAS_COLUMNS: readonly ColumnDef[] = [
     width: '70px',
     align: 'right',
   },
-  { field: 'codigo', headerKey: 'entities.secuencia.columns.codigo', type: 'text' },
   { field: 'nombre', headerKey: 'entities.secuencia.columns.nombre', type: 'text' },
   { field: 'horas', headerKey: 'entities.secuencia.columns.horas', type: 'number', align: 'right' },
   { field: 'dias', headerKey: 'entities.secuencia.columns.dias', type: 'number', align: 'right' },
