@@ -208,6 +208,10 @@ export const es: AppDict = {
           title: 'No se pudo imprimir',
           desc: 'Ocurrió un error al generar el PDF.',
         },
+        editBloqueado: {
+          title: 'Documento aprobado',
+          desc: 'No se puede editar un documento ya aprobado.',
+        },
       },
     },
   },

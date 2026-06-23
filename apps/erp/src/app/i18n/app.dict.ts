@@ -163,6 +163,7 @@ export interface AppDict extends AuthTranslationsHost {
         aprobarSuccess: { title: string; desc: string };
         aprobarError: { title: string; desc: string };
         imprimirError: { title: string; desc: string };
+        editBloqueado: { title: string; desc: string };
       };
     };
   };

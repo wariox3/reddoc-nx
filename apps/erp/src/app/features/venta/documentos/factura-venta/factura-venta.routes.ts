@@ -1,5 +1,5 @@
 import type { Route } from '@angular/router';
-import { activeDocumentResolver } from '@erp/core/module-config';
+import { activeDocumentResolver, editableDocumentResolver } from '@erp/core/module-config';
 import { unsavedChangesGuard } from '@erp/core/guards/unsaved-changes.guard';
 
 /**
@@ -41,6 +41,11 @@ export const FACTURA_VENTA_ROUTES: Route[] = [
       },
       {
         path: 'editar/:id',
+        // Puerta de edición: bloquea (redirige) si `canEditRow` declara el
+        // documento no editable —p. ej. aprobado, incluso por URL directa— y, si
+        // es editable, entrega la cabecera al form (input `documentoEdit`) para
+        // que no la vuelva a pedir.
+        resolve: { documentoEdit: editableDocumentResolver() },
         canDeactivate: [unsavedChangesGuard],
         loadComponent: () =>
           import('./pages/factura-venta-form/factura-venta-form.component').then(

@@ -48,6 +48,9 @@ export const CONTRATO_SERVICIO_CONFIG: DocumentEntityConfig = {
     canExportZip: false,
     canGenerate: true,
   },
+  // Un documento aprobado ya no se edita. Regla única consumida por la lista,
+  // el detalle y el resolver de la ruta de edición.
+  canEditRow: (row) => !row.estado_aprobado,
   // Acciones extra del dropdown "Acciones" (cada id ↔ un EntityActionStrategy
   // registrado en ENTITY_ACTION_PROVIDERS):
   //  - 'generar': modal de fecha → genera pedidos servicio desde los contratos

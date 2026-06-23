@@ -90,6 +90,19 @@ export class FacturaVentaDetailComponent implements OnInit {
   protected readonly isLoading = signal(true);
   protected readonly notFound = signal(false);
 
+  /**
+   * ¿Es editable el documento según su política declarativa (`canEditRow`)?
+   * Misma fuente que la lista y el resolver de la ruta de edición: si la regla
+   * dice que no (p. ej. ya aprobado), el botón "editar" queda deshabilitado.
+   */
+  protected readonly isEditable = computed(() => {
+    const cab = this.cabecera();
+    if (!cab) return false;
+    const canEditRow = this.document().canEditRow;
+    if (!canEditRow) return true;
+    return canEditRow({ id: Number(this.id()), estado_aprobado: cab.estadoAprobado });
+  });
+
   /** Resumen financiero del documento: subtotal, descuento, impuestos y total. */
   protected readonly resumen = computed<ResumenDocumento>(() =>
     calcularResumen(this.lines().map(toLineaCalculo)),

@@ -27,6 +27,7 @@ export type {
   EntityRoutes,
   DocumentEntityConfig,
   DocumentCapabilities,
+  EditableRowContext,
   InventoryEffect,
   ImportDescriptor,
 } from './types/entity-config.types';
@@ -48,6 +49,7 @@ export {
   activeDocumentResolver,
   DOCUMENT_KEY_ROUTE_PARAM,
 } from './resolvers/active-document.resolver';
+export { editableDocumentResolver } from './resolvers/editable-document.resolver';
 
 // Data gateway
 export { ENTITY_DATA_GATEWAY } from './data/entity-data-gateway';

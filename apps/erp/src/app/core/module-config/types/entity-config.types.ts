@@ -1,4 +1,10 @@
-import type { ColumnDef, FilterCondition, FilterField, SortSpec } from '@reddoc/core';
+import type {
+  ColumnDef,
+  DocumentoListRowBase,
+  FilterCondition,
+  FilterField,
+  SortSpec,
+} from '@reddoc/core';
 
 /**
  * Tipo discriminador de entidades del framework.
@@ -35,6 +41,15 @@ export interface DocumentCapabilities {
   readonly canExportZip: boolean;
   readonly canGenerate: boolean;
 }
+
+/**
+ * Datos mínimos que recibe `canEditRow`: el id y las banderas de estado base,
+ * presentes tanto en la fila de lista (`DocumentoListRowBase`) como en la
+ * lectura de detalle (`DocumentoReadBase`). Una regla que necesite más campos
+ * debe exponerlos antes en el read-model del backend, para que las 3 capas
+ * (lista, detalle, ruta de edición) puedan evaluar la misma política por igual.
+ */
+export type EditableRowContext = Pick<DocumentoListRowBase, 'id' | 'estado_aprobado'>;
 
 /**
  * Rutas relativas al módulo.
@@ -104,6 +119,21 @@ export interface DocumentEntityConfig {
   readonly defaultFilters?: readonly FilterCondition[];
   readonly routes: EntityRoutes;
   readonly capabilities: DocumentCapabilities;
+  /**
+   * Política de editabilidad por documento: decide si una fila/cabecera concreta
+   * puede editarse AHORA según su estado de negocio. Es ortogonal a
+   * `capabilities.canEdit`, que declara si el documento soporta edición en
+   * absoluto. Es la fuente ÚNICA consumida por las 3 capas: la acción "editar"
+   * de la lista (`visibleFor`), el botón "editar" del detalle (`[disabled]`) y
+   * el resolver de la ruta `editar/:id` (bloqueo por URL directa).
+   *
+   * Si se omite → siempre editable (cuando `capabilities.canEdit` es true).
+   * Aislar la regla aquí permite que evolucione (de un estado a varios) tocando
+   * solo este archivo, sin alterar el mecanismo genérico de cada capa.
+   *
+   * Ej: `canEditRow: (row) => !row.estado_aprobado`.
+   */
+  readonly canEditRow?: (row: EditableRowContext) => boolean;
   /**
    * Ids de strategies que el documento expone como acciones extras.
    * Cada id debe corresponder a un `EntityActionStrategy` registrado.

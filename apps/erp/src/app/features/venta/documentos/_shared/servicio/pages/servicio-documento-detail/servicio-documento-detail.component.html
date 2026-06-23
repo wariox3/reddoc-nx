@@ -19,6 +19,7 @@
       [label]="t().common.actions.edit"
       icon="pi pi-pencil"
       size="small"
+      [disabled]="!isEditable()"
       (onClick)="onEdit()"
     />
     <app-document-detail-actions
