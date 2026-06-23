@@ -50,9 +50,9 @@ export interface EntityDataGateway {
   aprobar(entity: EntityConfig, id: string | number): Observable<unknown>;
 
   /**
-   * Descarga el PDF de un documento vía `GET <endpoint>/<id>/imprimir/` y dispara
-   * la descarga en el navegador. Devuelve `Observable<void>`: el caller solo
-   * necesita saber cuándo terminó.
+   * Descarga el PDF de un documento vía `POST <endpoint>/imprimir/` (id en
+   * `filtros`) y dispara la descarga en el navegador. Devuelve `Observable<void>`:
+   * el caller solo necesita saber cuándo terminó.
    */
   imprimir(entity: EntityConfig, id: string | number): Observable<void>;
 }

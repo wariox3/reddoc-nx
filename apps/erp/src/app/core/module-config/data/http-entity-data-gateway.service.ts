@@ -158,14 +158,22 @@ export class HttpEntityDataGateway implements EntityDataGateway {
   }
 
   /**
-   * Descarga el PDF del documento vía `GET <endpoint>/<id>/imprimir/`. Mismo
-   * manejo de blob que `exportExcel`: valida que no venga vacío, resuelve el
-   * nombre del `content-disposition` (fallback `${entity.id}-${id}.pdf`) y
-   * dispara la descarga del navegador.
+   * Descarga el PDF del documento vía `POST <endpoint>/imprimir/` con el id en
+   * `{ filtros: [{ propiedad: 'id', operador: '=', valor: id }] }` (misma
+   * convención de filtros que el listado). Mismo manejo de blob que
+   * `exportExcel`: valida que no venga vacío, resuelve el nombre del
+   * `content-disposition` (fallback `${entity.id}-${id}.pdf`) y dispara la
+   * descarga del navegador.
    */
   imprimir(entity: EntityConfig, id: string | number): Observable<void> {
+    const body: Pick<DocumentListBody, 'filtros'> = {
+      filtros: [{ propiedad: 'id', operador: '=', valor: id }],
+    };
     return this.http
-      .get(`${entity.endpoint}/${id}/imprimir/`, { observe: 'response', responseType: 'blob' })
+      .post(`${entity.endpoint}/imprimir/`, body, {
+        observe: 'response',
+        responseType: 'blob',
+      })
       .pipe(
         map((response) => {
           const blob = response.body;
