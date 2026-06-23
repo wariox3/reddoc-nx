@@ -155,13 +155,18 @@ export interface AppDict extends AuthTranslationsHost {
     };
     detail: {
       aprobar: string;
+      desaprobar: string;
+      acciones: string;
       imprimir: string;
       opciones: string;
       archivos: string;
       confirmAprobar: { message: string; header: string };
+      confirmDesaprobar: { message: string; header: string };
       toasts: {
         aprobarSuccess: { title: string; desc: string };
         aprobarError: { title: string; desc: string };
+        desaprobarSuccess: { title: string; desc: string };
+        desaprobarError: { title: string; desc: string };
         imprimirError: { title: string; desc: string };
         editBloqueado: { title: string; desc: string };
       };

@@ -210,6 +210,39 @@ export class ServicioDocumentoDetailComponent implements OnInit {
       });
   }
 
+  /** Desaprueba el documento previa confirmación; al éxito recarga la ficha. */
+  protected onDesaprobar(): void {
+    const id = this.id();
+    if (!id) return;
+    const a = this.t().documentActions.detail;
+    this.confirmation.confirm({
+      message: a.confirmDesaprobar.message,
+      header: a.confirmDesaprobar.header,
+      icon: 'pi pi-times-circle',
+      acceptLabel: a.desaprobar,
+      rejectLabel: this.t().common.actions.cancel,
+      rejectButtonProps: { severity: 'secondary', outlined: true },
+      accept: () => this.desaprobarDocumento(Number(id)),
+    });
+  }
+
+  private desaprobarDocumento(id: number): void {
+    this.gateway
+      .desaprobar(this.document(), id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          const ts = this.t().documentActions.detail.toasts.desaprobarSuccess;
+          this.toast.success(ts.title, ts.desc);
+          this.loadDocumento(id);
+        },
+        error: () => {
+          const ts = this.t().documentActions.detail.toasts.desaprobarError;
+          this.toast.error(ts.title, ts.desc);
+        },
+      });
+  }
+
   /** Descarga el PDF del documento. */
   protected onImprimir(): void {
     const id = this.id();

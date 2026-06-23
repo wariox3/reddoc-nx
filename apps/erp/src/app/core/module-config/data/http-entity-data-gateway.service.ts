@@ -157,6 +157,13 @@ export class HttpEntityDataGateway implements EntityDataGateway {
     });
   }
 
+  /** Desaprueba el documento: `POST <endpoint>/desaprobar/` con `{ id }`. */
+  desaprobar(entity: EntityConfig, id: string | number): Observable<unknown> {
+    return this.http.post(`${entity.endpoint}/desaprobar/`, {
+      id,
+    });
+  }
+
   /**
    * Descarga el PDF del documento vía `POST <endpoint>/imprimir/` con el id en
    * `{ filtros: [{ propiedad: 'id', operador: '=', valor: id }] }` (misma

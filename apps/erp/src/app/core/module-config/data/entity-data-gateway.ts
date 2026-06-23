@@ -50,6 +50,13 @@ export interface EntityDataGateway {
   aprobar(entity: EntityConfig, id: string | number): Observable<unknown>;
 
   /**
+   * Desaprueba (revierte la aprobación de) un documento vía
+   * `POST <endpoint>/desaprobar/` con body `{ id }`. Devuelve el documento
+   * actualizado por el backend.
+   */
+  desaprobar(entity: EntityConfig, id: string | number): Observable<unknown>;
+
+  /**
    * Descarga el PDF de un documento vía `POST <endpoint>/imprimir/` (id en
    * `filtros`) y dispara la descarga en el navegador. Devuelve `Observable<void>`:
    * el caller solo necesita saber cuándo terminó.
