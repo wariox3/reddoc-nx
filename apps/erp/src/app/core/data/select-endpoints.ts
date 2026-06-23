@@ -5,9 +5,10 @@
  * más de un formulario (o que ya tenían una constante suelta). Los componentes
  * `<app-api-select>` / `<app-api-autocomplete>` los consumen vía `[endpoint]`.
  *
- * Alcance: sólo catálogos cross-form (`/general/*` + `centro-costo`). Los endpoints
- * que sólo aparecen en un único formulario (la mayoría de `/humano/*` y `/turno/*`)
- * se dejan inline en su template — centralizarlos no quita duplicación.
+ * Alcance: sólo catálogos cross-form (`/general/*`, `centro-costo` y los `/humano/*`
+ * que se compartan, p. ej. `novedad-tipo` en novedad + turno). Los endpoints que
+ * sólo aparecen en un único formulario se dejan inline en su template —
+ * centralizarlos no quita duplicación.
  */
 export const SELECT_ENDPOINTS = {
   // catálogos generales (cross-form)
@@ -22,4 +23,6 @@ export const SELECT_ENDPOINTS = {
   cuentaBancoClase: '/general/cuenta-banco-clase/seleccionar/',
   // contabilidad (cross-form)
   centroCosto: '/contabilidad/centro-costo/seleccionar/',
+  // humano (cross-form: novedad + turno)
+  novedadTipo: '/humano/novedad-tipo/seleccionar/',
 } as const;

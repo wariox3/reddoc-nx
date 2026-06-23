@@ -1,11 +1,13 @@
 /**
  * Turno: jornada de trabajo del módulo Turno. Define el horario (`hora_inicio`,
  * `hora_fin`), las horas calculadas (totales, diurnas y nocturnas), un color para
- * identificarlo visualmente y su código.
+ * identificarlo visualmente, su código, el tipo de novedad asociado y si está
+ * inactivo.
  *
  * Shape de lectura de `POST /turno/turno/lista/` y `GET /turno/turno/:id/`.
  * `hora_inicio`/`hora_fin` viajan como string (`HH:MM` o `HH:MM:SS`) y `color`
- * como string hex (`#RRGGBB`).
+ * como string hex (`#RRGGBB`). La FK `novedad_tipo` llega como id pelado más su
+ * `*_nombre` para etiquetar el selector al cargar en edición.
  */
 export interface Turno {
   readonly id: number;
@@ -17,15 +19,12 @@ export interface Turno {
   readonly horas_diurnas: number | null;
   readonly horas_nocturnas: number | null;
   readonly color: string | null;
+  readonly novedad_tipo: number | null;
+  readonly novedad_tipo_nombre: string | null;
   readonly estado_inactivo: boolean;
 }
 
-/**
- * Write-model para create/update de turno.
- *
- * `estado_inactivo` no se captura en el formulario: lo gestiona el backend
- * (alta → activo).
- */
+/** Write-model para create/update de turno. */
 export interface TurnoPayload {
   nombre: string;
   codigo: string;
@@ -35,4 +34,6 @@ export interface TurnoPayload {
   horas_diurnas: number | null;
   horas_nocturnas: number | null;
   color: string | null;
+  novedad_tipo: number | null;
+  estado_inactivo: boolean;
 }

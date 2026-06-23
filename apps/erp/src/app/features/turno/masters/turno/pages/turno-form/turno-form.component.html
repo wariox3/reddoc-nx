@@ -108,6 +108,20 @@
           </div>
         </div>
 
+        <!-- Tipo de novedad -->
+        <div class="flex flex-col gap-1.5">
+          <label for="novedad_tipo" class="turno-form__label">
+            {{ t().entities.turno.form.fields.novedadTipo }}
+          </label>
+          <app-api-select
+            inputId="novedad_tipo"
+            formControlName="novedad_tipo"
+            [endpoint]="novedadTipoEndpoint"
+            [params]="tipoParams"
+            [placeholder]="t().entities.turno.form.fields.novedadTipoPlaceholder"
+          />
+        </div>
+
         <!-- Horas / diurnas / nocturnas -->
         <div class="grid grid-cols-3 gap-x-4 sm:col-span-2">
           <div class="flex flex-col gap-1.5">
@@ -141,6 +155,17 @@
             />
           </div>
         </div>
+
+        <!-- Inactivo -->
+        <label
+          for="estado_inactivo"
+          class="flex cursor-pointer items-center gap-2 self-end pb-2 sm:col-span-2"
+        >
+          <p-checkbox inputId="estado_inactivo" formControlName="estado_inactivo" [binary]="true" />
+          <span class="text-[0.85rem] text-brand-text">
+            {{ t().entities.turno.form.fields.estadoInactivo }}
+          </span>
+        </label>
       </div>
     </div>
   </section>

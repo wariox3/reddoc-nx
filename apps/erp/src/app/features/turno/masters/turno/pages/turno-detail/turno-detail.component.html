@@ -99,6 +99,12 @@
         <dt class="turno-detail__label">{{ t().entities.turno.form.fields.codigo }}</dt>
         <dd class="turno-detail__value font-mono">{{ turno.codigo }}</dd>
       </div>
+      @if (turno.novedad_tipo_nombre) {
+        <div class="flex flex-col gap-0.5">
+          <dt class="turno-detail__label">{{ t().entities.turno.form.fields.novedadTipo }}</dt>
+          <dd class="turno-detail__value">{{ turno.novedad_tipo_nombre }}</dd>
+        </div>
+      }
       @if (turno.hora_inicio !== null) {
         <div class="flex flex-col gap-0.5">
           <dt class="turno-detail__label">{{ t().entities.turno.form.fields.horaInicio }}</dt>

@@ -4,9 +4,15 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
+import { CheckboxModule } from 'primeng/checkbox';
 import { FieldErrorComponent } from '@reddoc/ui';
 import { FormErrorService, I18nService, TenantService, ToastService } from '@reddoc/core';
 import { BreadcrumbComponent, type BreadcrumbItem } from '@reddoc/feature-base';
+import {
+  ErpApiSelectComponent,
+  type ErpSelectOption,
+} from '@erp/core/components/api-select/erp-api-select.component';
+import { SELECT_ENDPOINTS } from '@erp/core/data/select-endpoints';
 import type { AppDict } from '@erp/i18n';
 import { TurnoService } from '../../turno.service';
 import { TURNO_LIST_PATH } from '../../turno.constants';
@@ -19,7 +25,8 @@ import { turnoToFormValue, formValueToPayload } from '../../turno.mapper';
  * sin `:id` → alta; con `:id` → edición (el id llega por `withComponentInputBinding`).
  *
  * `hora_inicio`/`hora_fin` son inputs `type="time"`; las horas son numéricas y el
- * color usa el picker nativo. `estado_inactivo` no se captura aquí.
+ * color usa el picker nativo. `novedad_tipo` es un `<app-api-select>` y
+ * `estado_inactivo` un checkbox.
  */
 @Component({
   selector: 'app-turno-form',
@@ -29,7 +36,9 @@ import { turnoToFormValue, formValueToPayload } from '../../turno.mapper';
     BreadcrumbComponent,
     ButtonModule,
     InputTextModule,
+    CheckboxModule,
     FieldErrorComponent,
+    ErpApiSelectComponent,
   ],
   templateUrl: './turno-form.component.html',
   styleUrl: './turno-form.component.scss',
@@ -45,6 +54,11 @@ export class TurnoFormComponent implements OnInit {
   private readonly i18n = inject<I18nService<AppDict>>(I18nService);
 
   protected readonly t = this.i18n.t;
+
+  /** Endpoint del selector de tipo de novedad (cross-form: novedad + turno). */
+  protected readonly novedadTipoEndpoint = SELECT_ENDPOINTS.novedadTipo;
+  /** Referencia estable para no re-disparar el fetch del selector en cada ciclo de CD. */
+  protected readonly tipoParams: Record<string, string> = { limit: '100' };
 
   /** Id del turno a editar (route param `:id`). Ausente en modo alta. */
   readonly id = input<string>();
@@ -76,6 +90,8 @@ export class TurnoFormComponent implements OnInit {
     horas_diurnas: this.fb.control<number | null>(null),
     horas_nocturnas: this.fb.control<number | null>(null),
     color: this.fb.control('#143049', { nonNullable: true }),
+    novedad_tipo: this.fb.control<ErpSelectOption | null>(null),
+    estado_inactivo: this.fb.control(false, { nonNullable: true }),
   });
 
   ngOnInit(): void {

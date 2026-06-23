@@ -659,6 +659,9 @@ export interface AppDict extends AuthTranslationsHost {
           horasDiurnas: string;
           horasNocturnas: string;
           color: string;
+          novedadTipo: string;
+          novedadTipoPlaceholder: string;
+          estadoInactivo: string;
         };
         validation: { required: string };
         toasts: {

@@ -7,8 +7,8 @@ export const NOVEDADES_QUICK_SEARCH_FIELD = 'contrato_nombre';
 /** Segmentos de ruta del listado, relativos al tenant. */
 export const NOVEDAD_LIST_PATH = ['humano', 'novedades'] as const;
 
-/** Endpoint del selector de tipo de novedad. */
-export const NOVEDAD_TIPO_ENDPOINT = '/humano/novedad-tipo/seleccionar/';
+// El endpoint del selector de tipo de novedad es cross-form (novedad + turno);
+// vive en `SELECT_ENDPOINTS.novedadTipo` (`@erp/core/data/select-endpoints`).
 /** Endpoint del selector de novedad de referencia (filtrado por contrato + tipo). */
 export const NOVEDAD_REFERENCIA_ENDPOINT = '/humano/novedad/seleccionar/';
 

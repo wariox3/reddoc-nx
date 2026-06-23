@@ -923,6 +923,9 @@ export const es: AppDict = {
           horasDiurnas: 'Horas diurnas',
           horasNocturnas: 'Horas nocturnas',
           color: 'Color',
+          novedadTipo: 'Tipo de novedad',
+          novedadTipoPlaceholder: 'Selecciona…',
+          estadoInactivo: 'Inactivo',
         },
         validation: {
           required: 'Este campo es requerido',

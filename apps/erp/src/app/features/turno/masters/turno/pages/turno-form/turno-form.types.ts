@@ -1,10 +1,13 @@
+import type { ErpSelectOption } from '@erp/core/components/api-select/erp-api-select.component';
+
 /**
  * Valor crudo del formulario de turno.
  *
  * `hora_inicio`/`hora_fin` son strings `HH:MM` (input `type="time"`);
  * `horas`/`horas_diurnas`/`horas_nocturnas` son numéricos (input `type="number"`,
  * `number | null` vía `NumberValueAccessor`); `color` es el hex del input
- * `type="color"`.
+ * `type="color"`; `novedad_tipo` es la opción del selector y `estado_inactivo`
+ * el checkbox.
  */
 export interface TurnoFormRawValue {
   codigo: string | null;
@@ -16,4 +19,6 @@ export interface TurnoFormRawValue {
   horas_nocturnas: number | null;
   /** Hex del picker nativo — siempre presente (el control nunca queda vacío). */
   color: string;
+  novedad_tipo: ErpSelectOption | null;
+  estado_inactivo: boolean;
 }
