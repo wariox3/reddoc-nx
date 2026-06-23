@@ -44,7 +44,7 @@ export interface EntityDataGateway {
   exportExcel(entity: EntityConfig, query: ListQuery): Observable<void>;
 
   /**
-   * Aprueba un documento vía `POST <endpoint>/<id>/aprobar/` (sin body).
+   * Aprueba un documento vía `POST <endpoint>/aprobar/` con body `{ id }`.
    * Devuelve el documento actualizado por el backend.
    */
   aprobar(entity: EntityConfig, id: string | number): Observable<unknown>;

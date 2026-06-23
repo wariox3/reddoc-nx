@@ -152,7 +152,9 @@ export class HttpEntityDataGateway implements EntityDataGateway {
 
   /** Aprueba el documento: `POST <endpoint>/<id>/aprobar/` sin body. */
   aprobar(entity: EntityConfig, id: string | number): Observable<unknown> {
-    return this.http.post(`${entity.endpoint}/${id}/aprobar/`, {});
+    return this.http.post(`${entity.endpoint}/aprobar/`, {
+      id,
+    });
   }
 
   /**
