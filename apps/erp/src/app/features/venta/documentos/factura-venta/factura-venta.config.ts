@@ -39,11 +39,15 @@ export const FACTURA_VENTA_CONFIG: DocumentEntityConfig = {
     canDelete: true,
     canSelectRows: true,
     canImport: false,
-    canExportExcel: false,
+    canExportExcel: true,
     canExportZip: false,
     canGenerate: false,
   },
   // Un documento aprobado ya no se edita. Regla única consumida por la lista,
   // el detalle y el resolver de la ruta de edición.
   canEditRow: (row) => !row.estado_aprobado,
+  // Acciones extra del dropdown "Acciones" (cada id ↔ un EntityActionStrategy
+  // registrado en ENTITY_ACTION_PROVIDERS):
+  //  - 'export-excel': descarga el listado (filtros/orden activos) a Excel.
+  extraActionIds: ['export-excel'],
 };
