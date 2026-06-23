@@ -1415,10 +1415,10 @@ export interface AppDict extends AuthTranslationsHost {
         horas: string;
         horasDiurnas: string;
         horasNocturnas: string;
-        iva: string;
         valor: string;
-        valorPendiente: string;
         total: string;
+        afectado: string;
+        valorPendiente: string;
       };
     };
     regenerarAfectado: {

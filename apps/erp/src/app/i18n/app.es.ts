@@ -1938,10 +1938,10 @@ export const es: AppDict = {
         horas: 'H',
         horasDiurnas: 'HD',
         horasNocturnas: 'HN',
-        iva: 'IVA',
         valor: 'Valor',
-        valorPendiente: 'Vr pendiente',
         total: 'Total',
+        afectado: 'Afectado',
+        valorPendiente: 'Vr pendiente',
       },
     },
     regenerarAfectado: {

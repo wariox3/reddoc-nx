@@ -1888,10 +1888,10 @@ export const en: AppDict = {
         horas: 'H',
         horasDiurnas: 'DH',
         horasNocturnas: 'NH',
-        iva: 'VAT',
         valor: 'Value',
-        valorPendiente: 'Pending',
         total: 'Total',
+        afectado: 'Billed',
+        valorPendiente: 'Pending',
       },
     },
     regenerarAfectado: {
