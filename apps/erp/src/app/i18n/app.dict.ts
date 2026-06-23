@@ -1249,11 +1249,23 @@ export interface AppDict extends AuthTranslationsHost {
     facturaVenta: {
       name: string;
       columns: {
+        id: string;
         numero: string;
         fecha: string;
+        identificacion: string;
         contacto: string;
+        subtotal: string;
+        impuesto: string;
         total: string;
-        estado: string;
+        aprobado: string;
+        anulado: string;
+        contabilizado: string;
+      };
+      filters: {
+        aprobado: string;
+        anulado: string;
+        electronico: string;
+        contabilizado: string;
       };
       form: {
         createTitle: string;

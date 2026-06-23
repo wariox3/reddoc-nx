@@ -1689,11 +1689,23 @@ export const en: AppDict = {
     facturaVenta: {
       name: 'Sales invoice',
       columns: {
+        id: 'ID',
         numero: 'Number',
         fecha: 'Date',
+        identificacion: 'ID number',
         contacto: 'Contact',
+        subtotal: 'Subtotal',
+        impuesto: 'Tax',
         total: 'Total',
-        estado: 'Status',
+        aprobado: 'Apr',
+        anulado: 'Voi',
+        contabilizado: 'Pos',
+      },
+      filters: {
+        aprobado: 'Approved',
+        anulado: 'Voided',
+        electronico: 'Electronic',
+        contabilizado: 'Posted',
       },
       form: {
         createTitle: 'New sales invoice',

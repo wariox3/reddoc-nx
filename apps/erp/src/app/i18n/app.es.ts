@@ -1739,11 +1739,23 @@ export const es: AppDict = {
     facturaVenta: {
       name: 'Factura de venta',
       columns: {
+        id: 'ID',
         numero: 'Número',
         fecha: 'Fecha',
+        identificacion: 'Identificación',
         contacto: 'Contacto',
+        subtotal: 'Subtotal',
+        impuesto: 'Impuesto',
         total: 'Total',
-        estado: 'Estado',
+        aprobado: 'Apr',
+        anulado: 'Anu',
+        contabilizado: 'Con',
+      },
+      filters: {
+        aprobado: 'Aprobado',
+        anulado: 'Anulado',
+        electronico: 'Electrónico',
+        contabilizado: 'Contabilizado',
       },
       form: {
         createTitle: 'Nueva factura de venta',
