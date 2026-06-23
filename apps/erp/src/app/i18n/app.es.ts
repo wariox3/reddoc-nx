@@ -188,12 +188,18 @@ export const es: AppDict = {
     },
     detail: {
       aprobar: 'Aprobar',
+      desaprobar: 'Desaprobar',
+      acciones: 'Acciones',
       imprimir: 'Imprimir',
       opciones: 'Opciones',
       archivos: 'Archivos',
       confirmAprobar: {
         message: '¿Confirmas la aprobación de este documento?',
         header: 'Aprobar documento',
+      },
+      confirmDesaprobar: {
+        message: '¿Confirmas desaprobar este documento?',
+        header: 'Desaprobar documento',
       },
       toasts: {
         aprobarSuccess: {
@@ -203,6 +209,14 @@ export const es: AppDict = {
         aprobarError: {
           title: 'No se pudo aprobar',
           desc: 'Ocurrió un error al aprobar el documento.',
+        },
+        desaprobarSuccess: {
+          title: 'Documento desaprobado',
+          desc: 'El documento se desaprobó correctamente.',
+        },
+        desaprobarError: {
+          title: 'No se pudo desaprobar',
+          desc: 'Ocurrió un error al desaprobar el documento.',
         },
         imprimirError: {
           title: 'No se pudo imprimir',

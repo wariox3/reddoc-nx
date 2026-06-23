@@ -188,12 +188,18 @@ export const en: AppDict = {
     },
     detail: {
       aprobar: 'Approve',
+      desaprobar: 'Unapprove',
+      acciones: 'Actions',
       imprimir: 'Print',
       opciones: 'Options',
       archivos: 'Files',
       confirmAprobar: {
         message: 'Do you confirm the approval of this document?',
         header: 'Approve document',
+      },
+      confirmDesaprobar: {
+        message: 'Do you confirm unapproving this document?',
+        header: 'Unapprove document',
       },
       toasts: {
         aprobarSuccess: {
@@ -203,6 +209,14 @@ export const en: AppDict = {
         aprobarError: {
           title: 'Could not approve',
           desc: 'An error occurred while approving the document.',
+        },
+        desaprobarSuccess: {
+          title: 'Document unapproved',
+          desc: 'The document was unapproved successfully.',
+        },
+        desaprobarError: {
+          title: 'Could not unapprove',
+          desc: 'An error occurred while unapproving the document.',
         },
         imprimirError: {
           title: 'Could not print',

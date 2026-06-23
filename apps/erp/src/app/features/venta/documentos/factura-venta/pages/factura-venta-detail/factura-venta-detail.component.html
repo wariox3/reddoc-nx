@@ -24,7 +24,9 @@
     />
     <app-document-detail-actions
       [canAprobar]="!cabecera()?.estadoAprobado"
+      [canDesaprobar]="!!cabecera()?.estadoAprobado"
       (aprobar)="onAprobar()"
+      (desaprobar)="onDesaprobar()"
       (imprimir)="onImprimir()"
       (archivos)="onArchivos()"
     />
