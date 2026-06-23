@@ -1,5 +1,6 @@
 import type { ColumnDef, FilterField } from '@reddoc/core';
 import type { RowAction, ToolbarAction } from '@reddoc/feature-base';
+import { SELECT_ENDPOINTS } from '@erp/core/data/select-endpoints';
 
 export const SEDES_FILTERS_STORAGE_KEY = 'sedes:filters:v1';
 export const SEDES_QUICK_SEARCH_FIELD = 'nombre';
@@ -8,7 +9,7 @@ export const SEDES_QUICK_SEARCH_FIELD = 'nombre';
 export const SEDE_LIST_PATH = ['general', 'sedes'] as const;
 
 /** Endpoint `seleccionar/` de centros de costo para el autocomplete buscable. */
-export const CENTRO_COSTO_SELECT_ENDPOINT = '/contabilidad/centro-costo/seleccionar/';
+export const CENTRO_COSTO_SELECT_ENDPOINT = SELECT_ENDPOINTS.centroCosto;
 
 export const SEDES_COLUMNS: readonly ColumnDef[] = [
   {

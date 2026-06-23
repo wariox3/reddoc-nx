@@ -100,7 +100,7 @@
           <app-api-autocomplete
             inputId="ciudad"
             formControlName="ciudad"
-            endpoint="/general/ciudad/seleccionar/"
+            [endpoint]="endpoints.ciudad"
             [placeholder]="t().entities.puesto.form.fields.ciudadPlaceholder"
             [invalid]="form.controls.ciudad.invalid && form.controls.ciudad.touched"
           />
@@ -119,7 +119,7 @@
           <app-api-autocomplete
             inputId="centroCosto"
             formControlName="centroCosto"
-            endpoint="/contabilidad/centro-costo/seleccionar/"
+            [endpoint]="endpoints.centroCosto"
             [placeholder]="t().entities.puesto.form.fields.centroCostoPlaceholder"
             [invalid]="form.controls.centroCosto.invalid && form.controls.centroCosto.touched"
           />

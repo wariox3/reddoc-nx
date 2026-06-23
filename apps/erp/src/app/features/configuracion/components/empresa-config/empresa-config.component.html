@@ -72,7 +72,7 @@
             <app-api-select
               inputId="tipo_persona"
               formControlName="tipo_persona"
-              endpoint="/general/tipo-persona/seleccionar/"
+              [endpoint]="endpoints.tipoPersona"
               [invalid]="form.controls.tipo_persona.invalid && form.controls.tipo_persona.touched"
             />
             <lib-field-error
@@ -92,7 +92,7 @@
             <app-api-select
               inputId="identificacion"
               formControlName="identificacion"
-              endpoint="/general/identificacion/seleccionar/"
+              [endpoint]="endpoints.identificacion"
               [invalid]="
                 form.controls.identificacion.invalid && form.controls.identificacion.touched
               "
@@ -185,7 +185,7 @@
             <app-api-select
               inputId="ciudad"
               formControlName="ciudad"
-              endpoint="/general/ciudad/seleccionar/"
+              [endpoint]="endpoints.ciudad"
             />
           </div>
 

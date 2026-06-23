@@ -13,6 +13,7 @@ import {
   ErpSelectOption,
 } from '@erp/core/components/api-select/erp-api-select.component';
 import { ErpApiAutocompleteComponent } from '@erp/core/components/api-autocomplete/erp-api-autocomplete.component';
+import { SELECT_ENDPOINTS } from '@erp/core/data/select-endpoints';
 import { ActiveModuleStore, currentModuleId, resolveModuleName } from '@erp/core/erp-modules';
 import type { AppDict } from '@erp/i18n';
 import { ContactoService } from '../../contacto.service';
@@ -58,6 +59,9 @@ export class ContactoFormComponent implements OnInit {
   private readonly i18n = inject<I18nService<AppDict>>(I18nService);
 
   protected readonly t = this.i18n.t;
+
+  /** Endpoints `seleccionar` de catálogos compartidos, para los `<app-api-*>` del template. */
+  protected readonly endpoints = SELECT_ENDPOINTS;
 
   /** Id del contacto a editar (route param `:id`). Ausente en modo alta. */
   readonly id = input<string>();

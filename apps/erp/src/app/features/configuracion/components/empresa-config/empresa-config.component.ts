@@ -10,6 +10,7 @@ import {
   type ErpSelectOption,
 } from '@erp/core/components/api-select/erp-api-select.component';
 import { calcularDigitoVerificacion } from '@erp/features/general/masters/contacto/utils/digito-verificacion.util';
+import { SELECT_ENDPOINTS } from '@erp/core/data/select-endpoints';
 import type { AppDict } from '@erp/i18n';
 import { ConfiguracionService } from '../../configuracion.service';
 import { EMPRESA_CAMPOS } from '../../configuracion.constants';
@@ -44,6 +45,9 @@ export class EmpresaConfigComponent {
   private readonly i18n = inject<I18nService<AppDict>>(I18nService);
 
   protected readonly t = this.i18n.t;
+
+  /** Endpoints `seleccionar` de catálogos compartidos, para los `<app-api-*>` del template. */
+  protected readonly endpoints = SELECT_ENDPOINTS;
 
   protected readonly loading = signal(true);
   protected readonly loadFailed = signal(false);

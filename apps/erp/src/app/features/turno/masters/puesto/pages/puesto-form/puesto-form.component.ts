@@ -11,6 +11,7 @@ import { BreadcrumbComponent, type BreadcrumbItem } from '@reddoc/feature-base';
 import { type ErpSelectOption } from '@erp/core/components/api-select/erp-api-select.component';
 import { ErpApiAutocompleteComponent } from '@erp/core/components/api-autocomplete/erp-api-autocomplete.component';
 import { ErpContactoSelectComponent } from '@erp/core/components/contacto-select/erp-contacto-select.component';
+import { SELECT_ENDPOINTS } from '@erp/core/data/select-endpoints';
 import type { AppDict } from '@erp/i18n';
 import { PuestoService } from '../../puesto.service';
 import { PUESTO_LIST_PATH } from '../../puesto.constants';
@@ -49,6 +50,9 @@ export class PuestoFormComponent implements OnInit {
   private readonly i18n = inject<I18nService<AppDict>>(I18nService);
 
   protected readonly t = this.i18n.t;
+
+  /** Endpoints `seleccionar` de catálogos compartidos, para los `<app-api-*>` del template. */
+  protected readonly endpoints = SELECT_ENDPOINTS;
 
   /** Id del puesto a editar (route param `:id`). Ausente en modo alta. */
   readonly id = input<string>();

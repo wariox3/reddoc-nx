@@ -12,6 +12,7 @@ import {
   ErpSelectOption,
 } from '@erp/core/components/api-select/erp-api-select.component';
 import { ErpApiAutocompleteComponent } from '@erp/core/components/api-autocomplete/erp-api-autocomplete.component';
+import { SELECT_ENDPOINTS } from '@erp/core/data/select-endpoints';
 import type { AppDict } from '@erp/i18n';
 import { ContactoService } from '@erp/features/general/masters/contacto/contacto.service';
 import { TIPO_PERSONA } from '@erp/features/general/masters/contacto/contacto.constants';
@@ -58,6 +59,9 @@ export class EmpleadoFormComponent implements OnInit {
   private readonly i18n = inject<I18nService<AppDict>>(I18nService);
 
   protected readonly t = this.i18n.t;
+
+  /** Endpoints `seleccionar` de catálogos compartidos, para los `<app-api-*>` del template. */
+  protected readonly endpoints = SELECT_ENDPOINTS;
 
   /** Id del empleado a editar (route param `:id`). Ausente en alta. */
   readonly id = input<string>();

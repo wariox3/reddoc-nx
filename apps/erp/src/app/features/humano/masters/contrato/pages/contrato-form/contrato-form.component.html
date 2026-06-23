@@ -227,7 +227,7 @@
           <app-api-select
             inputId="centro_costo"
             formControlName="centro_costo"
-            endpoint="/contabilidad/centro-costo/seleccionar/"
+            [endpoint]="endpoints.centroCosto"
             [params]="{ limit: '100' }"
           />
         </div>
@@ -423,7 +423,7 @@
           <app-api-autocomplete
             inputId="ciudad_contrato"
             formControlName="ciudad_contrato"
-            endpoint="/general/ciudad/seleccionar/"
+            [endpoint]="endpoints.ciudad"
             [placeholder]="t().entities.contrato.form.fields.ciudadPlaceholder"
             [invalid]="
               form.controls.ciudad_contrato.invalid && form.controls.ciudad_contrato.touched
@@ -439,7 +439,7 @@
           <app-api-autocomplete
             inputId="ciudad_labora"
             formControlName="ciudad_labora"
-            endpoint="/general/ciudad/seleccionar/"
+            [endpoint]="endpoints.ciudad"
             [placeholder]="t().entities.contrato.form.fields.ciudadPlaceholder"
             [invalid]="form.controls.ciudad_labora.invalid && form.controls.ciudad_labora.touched"
           />

@@ -58,7 +58,7 @@
           <app-api-select
             inputId="tipo_persona"
             formControlName="tipo_persona"
-            endpoint="/general/tipo-persona/seleccionar/"
+            [endpoint]="endpoints.tipoPersona"
             [suggestedIndex]="isEditMode() ? null : 0"
             [invalid]="form.controls.tipo_persona.invalid && form.controls.tipo_persona.touched"
           />
@@ -77,7 +77,7 @@
           <app-api-select
             inputId="responsabilidad"
             formControlName="responsabilidad"
-            endpoint="/general/responsabilidad/seleccionar/"
+            [endpoint]="endpoints.responsabilidad"
             [suggestedIndex]="isEditMode() ? null : 0"
             [invalid]="
               form.controls.responsabilidad.invalid && form.controls.responsabilidad.touched
@@ -98,7 +98,7 @@
           <app-api-select
             inputId="identificacion"
             formControlName="identificacion"
-            endpoint="/general/identificacion/seleccionar/"
+            [endpoint]="endpoints.identificacion"
             [params]="identificacionParams()"
             [suggestedIndex]="isEditMode() ? null : 0"
             [invalid]="form.controls.identificacion.invalid && form.controls.identificacion.touched"
@@ -241,7 +241,7 @@
           <app-api-autocomplete
             inputId="ciudad"
             formControlName="ciudad"
-            endpoint="/general/ciudad/seleccionar/"
+            [endpoint]="endpoints.ciudad"
             [placeholder]="t().entities.contacto.form.fields.ciudadPlaceholder"
             [invalid]="form.controls.ciudad.invalid && form.controls.ciudad.touched"
           />
@@ -347,7 +347,7 @@
               inputId="plazo_pago"
               formControlName="plazo_pago"
               [suggestedIndex]="0"
-              endpoint="/general/plazo-pago/seleccionar/"
+              [endpoint]="endpoints.plazoPago"
               [invalid]="form.controls.plazo_pago.invalid && form.controls.plazo_pago.touched"
             />
             <lib-field-error
@@ -364,7 +364,7 @@
             <app-api-select
               inputId="precio"
               formControlName="precio"
-              endpoint="/general/precio/seleccionar/"
+              [endpoint]="endpoints.precio"
               [params]="precioParams"
             />
           </div>
@@ -377,7 +377,7 @@
             <app-api-select
               inputId="asesor"
               formControlName="asesor"
-              endpoint="/general/asesor/seleccionar/"
+              [endpoint]="endpoints.asesor"
             />
           </div>
 
@@ -432,7 +432,7 @@
             <app-api-autocomplete
               inputId="banco"
               formControlName="banco"
-              endpoint="/general/banco/seleccionar/"
+              [endpoint]="endpoints.banco"
               [placeholder]="t().entities.contacto.form.fields.bancoPlaceholder"
               [invalid]="form.controls.banco.invalid && form.controls.banco.touched"
             />
@@ -460,7 +460,7 @@
             <app-api-select
               inputId="cuenta_banco_clase"
               formControlName="cuenta_banco_clase"
-              endpoint="/general/cuenta-banco-clase/seleccionar/"
+              [endpoint]="endpoints.cuentaBancoClase"
             />
           </div>
 
@@ -472,7 +472,7 @@
             <app-api-select
               inputId="plazo_pago_proveedor"
               formControlName="plazo_pago_proveedor"
-              endpoint="/general/plazo-pago/seleccionar/"
+              [endpoint]="endpoints.plazoPago"
               [invalid]="
                 form.controls.plazo_pago_proveedor.invalid &&
                 form.controls.plazo_pago_proveedor.touched

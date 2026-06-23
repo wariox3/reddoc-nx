@@ -20,6 +20,7 @@ import { ErpApiAutocompleteComponent } from '@erp/core/components/api-autocomple
 import { EmpleadoAutocompleteComponent } from '@erp/core/components/empleado-autocomplete/empleado-autocomplete.component';
 import type { EmpleadoOption } from '@erp/core/components/empleado-autocomplete/empleado-autocomplete.component';
 import type { ErpSelectOption } from '@erp/core/components/api-select/erp-api-select.component';
+import { SELECT_ENDPOINTS } from '@erp/core/data/select-endpoints';
 import type { AppDict } from '@erp/i18n';
 import { ConfiguracionService } from '@erp/core/services/configuracion.service';
 import { ContratoService } from '../../contrato.service';
@@ -77,6 +78,9 @@ export class ContratoFormComponent implements OnInit {
   private readonly i18n = inject<I18nService<AppDict>>(I18nService);
 
   protected readonly t = this.i18n.t;
+
+  /** Endpoints `seleccionar` de catálogos compartidos, para los `<app-api-*>` del template. */
+  protected readonly endpoints = SELECT_ENDPOINTS;
 
   /** Id del contrato a editar (route param `:id`). Ausente en modo alta. */
   readonly id = input<string>();

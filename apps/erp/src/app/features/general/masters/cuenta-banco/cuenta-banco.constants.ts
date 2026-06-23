@@ -1,5 +1,6 @@
 import type { ColumnDef, FilterField } from '@reddoc/core';
 import type { RowAction, ToolbarAction } from '@reddoc/feature-base';
+import { SELECT_ENDPOINTS } from '@erp/core/data/select-endpoints';
 
 export const CUENTAS_BANCO_FILTERS_STORAGE_KEY = 'cuentas-banco:filters:v1';
 export const CUENTAS_BANCO_QUICK_SEARCH_FIELD = 'nombre';
@@ -17,7 +18,7 @@ export const CUENTA_BANCO_TIPO_CAJA = 3;
 
 /** Endpoints de los selectores FK. */
 export const CUENTA_BANCO_TIPO_ENDPOINT = '/general/cuenta-banco-tipo/seleccionar/';
-export const CUENTA_BANCO_CLASE_ENDPOINT = '/general/cuenta-banco-clase/seleccionar/';
+export const CUENTA_BANCO_CLASE_ENDPOINT = SELECT_ENDPOINTS.cuentaBancoClase;
 
 export const CUENTAS_BANCO_COLUMNS: readonly ColumnDef[] = [
   {

@@ -1,5 +1,6 @@
 import type { ColumnDef, FilterField } from '@reddoc/core';
 import type { RowAction, ToolbarAction } from '@reddoc/feature-base';
+import { SELECT_ENDPOINTS } from '@erp/core/data/select-endpoints';
 
 export const ACTIVOS_FILTERS_STORAGE_KEY = 'activos:filters:v1';
 export const ACTIVOS_QUICK_SEARCH_FIELD = 'nombre';
@@ -10,7 +11,7 @@ export const ACTIVO_LIST_PATH = ['contabilidad', 'activos'] as const;
 /** Endpoints de los selectores FK (convención de guion del backend nuevo). */
 export const ACTIVO_GRUPO_ENDPOINT = '/contabilidad/activo-grupo/seleccionar/';
 export const METODO_DEPRECIACION_ENDPOINT = '/contabilidad/metodo-depreciacion/seleccionar/';
-export const CENTRO_COSTO_ENDPOINT = '/contabilidad/centro-costo/seleccionar/';
+export const CENTRO_COSTO_ENDPOINT = SELECT_ENDPOINTS.centroCosto;
 
 export const ACTIVOS_COLUMNS: readonly ColumnDef[] = [
   {

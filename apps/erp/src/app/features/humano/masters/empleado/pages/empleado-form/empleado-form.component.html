@@ -52,7 +52,7 @@
           <app-api-select
             inputId="identificacion"
             formControlName="identificacion"
-            endpoint="/general/identificacion/seleccionar/"
+            [endpoint]="endpoints.identificacion"
             [params]="identificacionParams"
             [suggestedIndex]="isEditMode() ? null : 0"
             [invalid]="form.controls.identificacion.invalid && form.controls.identificacion.touched"
@@ -156,7 +156,7 @@
           <app-api-autocomplete
             inputId="ciudad"
             formControlName="ciudad"
-            endpoint="/general/ciudad/seleccionar/"
+            [endpoint]="endpoints.ciudad"
             [placeholder]="f.fields.ciudadPlaceholder"
             [invalid]="form.controls.ciudad.invalid && form.controls.ciudad.touched"
           />
@@ -227,7 +227,7 @@
           <app-api-autocomplete
             inputId="banco"
             formControlName="banco"
-            endpoint="/general/banco/seleccionar/"
+            [endpoint]="endpoints.banco"
             [placeholder]="f.fields.bancoPlaceholder"
             [invalid]="form.controls.banco.invalid && form.controls.banco.touched"
           />
@@ -257,7 +257,7 @@
           <app-api-select
             inputId="cuenta_banco_clase"
             formControlName="cuenta_banco_clase"
-            endpoint="/general/cuenta-banco-clase/seleccionar/"
+            [endpoint]="endpoints.cuentaBancoClase"
             [invalid]="
               form.controls.cuenta_banco_clase.invalid && form.controls.cuenta_banco_clase.touched
             "
