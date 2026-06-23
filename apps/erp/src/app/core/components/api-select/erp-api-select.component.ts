@@ -81,9 +81,13 @@ export class ErpApiSelectComponent implements ControlValueAccessor {
     effect(() => {
       // Sin fetch mientras el control está deshabilitado (p. ej. un select en
       // cascada cuyo padre aún no se eligió): evita consultas prematuras y se
-      // re-dispara solo cuando se habilita.
+      // re-dispara solo cuando se habilita. Si hay un valor seleccionado (caso
+      // de un select bloqueado en edición), se siembra como única opción para
+      // que el p-select pueda pintar su label —sin la opción en la lista, el
+      // valor saldría en blanco—. Sin valor (cascada) queda vacío, igual que antes.
       if (this.disabled()) {
-        this.options.set([]);
+        const current = this.value();
+        this.options.set(current ? [current] : []);
         return;
       }
       const params = this.params();
