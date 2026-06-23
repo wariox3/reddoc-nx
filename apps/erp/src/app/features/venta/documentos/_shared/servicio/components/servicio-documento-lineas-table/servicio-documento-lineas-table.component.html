@@ -58,7 +58,17 @@
         @for (line of group.items; track line.id ?? $index) {
           <tr class="detalle-table__row">
             <td class="detalle-table__td text-center text-brand-muted tabular-nums">
-              {{ line.id ?? '—' }}
+              @if (linkable() && line.id !== null) {
+                <button
+                  type="button"
+                  class="cursor-pointer border-0 bg-transparent p-0 font-medium text-sky-700 underline-offset-2 hover:underline tabular-nums"
+                  (click)="verAfectacion.emit(line)"
+                >
+                  {{ line.id }}
+                </button>
+              } @else {
+                {{ line.id ?? '—' }}
+              }
             </td>
             <td class="detalle-table__td font-medium text-brand-text">
               {{ line.item?.nombre || '—' }}
@@ -151,7 +161,17 @@
             </td>
 
             <td class="detalle-table__td text-center tabular-nums text-brand-muted">
-              {{ line.documento_detalle_afectado_id ?? '—' }}
+              @if (linkable() && line.documento_detalle_afectado_id !== null) {
+                <button
+                  type="button"
+                  class="cursor-pointer border-0 bg-transparent p-0 font-medium text-sky-700 underline-offset-2 hover:underline tabular-nums"
+                  (click)="verAfectacion.emit(line)"
+                >
+                  {{ line.documento_detalle_afectado_id }}
+                </button>
+              } @else {
+                {{ line.documento_detalle_afectado_id ?? '—' }}
+              }
             </td>
 
             @if (showActions()) {

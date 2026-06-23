@@ -31,10 +31,18 @@ export class ServicioDocumentoLineasTableComponent {
   /** Muestra la columna de acciones (editar/eliminar). Solo lectura por defecto. */
   readonly showActions = input<boolean>(false);
 
+  /**
+   * Hace clickeables las columnas # y REF para consultar la afectación de la
+   * línea. Solo el detail lo activa; en el form quedan como texto plano.
+   */
+  readonly linkable = input<boolean>(false);
+
   /** Índice absoluto de la línea a editar. */
   readonly edit = output<number>();
   /** Índice absoluto de la línea a eliminar. */
   readonly remove = output<number>();
+  /** Línea cuya afectación se quiere consultar (clic en # o REF). */
+  readonly verAfectacion = output<DetalleFormRawValue>();
 
   /** Columnas totales para el `colspan` de la fila de grupo y el empty state. */
   protected readonly colspan = computed(() => (this.showActions() ? 16 : 15));

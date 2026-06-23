@@ -1,4 +1,4 @@
-import { Component, inject, input } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
 import { I18nService, formatCop, type ImpuestoLinea } from '@reddoc/core';
 import type { AppDict } from '@erp/i18n';
 import { lineBruto, lineNeto } from '../../comercial-documento-detalle.mapper';
@@ -24,6 +24,15 @@ export class ComercialDocumentoLineasTableComponent {
 
   /** Líneas a renderizar (read mapeado a la forma del front). */
   readonly lines = input.required<readonly ComercialDetalleFormRawValue[]>();
+
+  /**
+   * Hace clickeable la columna # para consultar la afectación de la línea. Solo
+   * el detail lo activa; en el form queda como texto plano.
+   */
+  readonly linkable = input<boolean>(false);
+
+  /** Línea cuya afectación se quiere consultar (clic en #). */
+  readonly verAfectacion = output<ComercialDetalleFormRawValue>();
 
   protected readonly formatMoney = formatCop;
 

@@ -41,6 +41,23 @@ export class DocumentoDetalleService extends BaseHttpService {
     }).pipe(map((res) => [...res.results]));
   }
 
+  /** Trae una línea por su `id` (`GET …documento-detalle/<id>/`). */
+  obtenerPorId<TRead = unknown>(id: number): Observable<TRead> {
+    return this.get<TRead>(`${DOCUMENTO_DETALLE_ENDPOINT}${id}/`);
+  }
+
+  /**
+   * Lista las líneas que **afectan** a una línea dada
+   * (`GET …documento-detalle/?documento_detalle_afectado=<id>`). Pueden ser
+   * varias, por eso es lista. Respuesta paginada estándar; devolvemos `results`.
+   */
+  listarPorAfectado<TRead = unknown>(afectadoId: number): Observable<TRead[]> {
+    return this.get<PaginatedResponse<TRead>>(DOCUMENTO_DETALLE_ENDPOINT, {
+      documento_detalle_afectado: afectadoId,
+      limit: DETALLE_PAGE_SIZE,
+    }).pipe(map((res) => [...res.results]));
+  }
+
   /** Crea una línea asociada al documento `documentoId`. Devuelve la línea creada. */
   crear<TRead = unknown>(documentoId: number, payload: object): Observable<TRead> {
     return this.post<TRead>(DOCUMENTO_DETALLE_ENDPOINT, { ...payload, documento: documentoId });

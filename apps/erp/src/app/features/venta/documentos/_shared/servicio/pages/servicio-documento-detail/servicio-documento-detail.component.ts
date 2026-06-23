@@ -135,6 +135,38 @@ export class ServicioDocumentoDetailComponent implements OnInit {
     this.navigate(this.document().routes.list);
   }
 
+  /**
+   * Clic en # / REF de una línea: dispara las dos peticiones de afectación y
+   * loguea las respuestas (sin UI por ahora, para inspeccionar el shape):
+   *  - por pk (`documento_detalle_afectado_id`) → el detalle al que afecta.
+   *  - por filtro (`?documento_detalle_afectado=<line.id>`) → los que la afectan.
+   */
+  protected onVerAfectacion(line: DetalleFormRawValue): void {
+    const afectadoId = line.documento_detalle_afectado_id;
+    if (afectadoId != null) {
+      this.detalleService
+        .obtenerPorId(afectadoId)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((res) => console.log('[afectación] a quién afecta (pk', afectadoId, '):', res));
+    } else {
+      console.log('[afectación] la línea', line.id, 'no afecta a ninguna (sin REF)');
+    }
+
+    if (line.id != null) {
+      this.detalleService
+        .listarPorAfectado(line.id)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((res) =>
+          console.log(
+            '[afectación] quién lo afecta (documento_detalle_afectado=',
+            line.id,
+            '):',
+            res,
+          ),
+        );
+    }
+  }
+
   protected onEdit(): void {
     const id = this.id();
     if (!id) return;
