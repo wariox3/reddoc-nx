@@ -55,9 +55,7 @@ export function secuenciaToFormValue(s: Secuencia): Partial<SecuenciaFormRawValu
   const days = {} as Record<DayField, string>;
   for (const f of DAY_FIELDS) days[f] = s[f] ?? '';
   return {
-    codigo: s.codigo,
     nombre: s.nombre,
-    horas: s.horas,
     dias: s.dias,
     homologar: s.homologar,
     ...days,
@@ -68,9 +66,7 @@ export function formValueToPayload(v: SecuenciaFormRawValue): SecuenciaPayload {
   const days = {} as Record<DayField, string | null>;
   for (const f of DAY_FIELDS) days[f] = v[f] || null;
   return {
-    codigo: v.codigo ?? '',
     nombre: v.nombre ?? '',
-    horas: v.horas ?? null,
     dias: v.dias ?? null,
     homologar: v.homologar,
     ...days,

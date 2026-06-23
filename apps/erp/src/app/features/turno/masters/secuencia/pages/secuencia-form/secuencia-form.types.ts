@@ -2,13 +2,12 @@
  * Valor crudo del formulario de secuencia.
  *
  * Los campos por día (`dia_1..dia_31`, días de semana, festivos) son strings de
- * texto libre (código del turno). `horas`/`dias` son numéricos (el input
- * `type="number"` los entrega como `number | null` vía `NumberValueAccessor`).
+ * texto libre (código del turno). `dias` es numérico y requerido (el input
+ * `type="number"` lo entrega como `number | null` vía `NumberValueAccessor`).
+ * `codigo`/`horas` ya no se capturan: no se envían al backend desde el form.
  */
 export interface SecuenciaFormRawValue {
-  codigo: string | null;
   nombre: string | null;
-  horas: number | null;
   dias: number | null;
   homologar: boolean;
   dia_1: string | null;

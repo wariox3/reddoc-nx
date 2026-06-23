@@ -63,13 +63,12 @@ export interface Secuencia {
  * Write-model para create/update de secuencia.
  *
  * Incluye los códigos de turno por día del mes (`dia_1..dia_31`) y por día de
- * semana (`lunes..domingo`, `festivo`, `domingo_festivo`), los totales editables
- * (`horas`, `dias`) y el flag `homologar`. `estado_inactivo` no se captura en el
- * formulario: lo gestiona el backend (alta → activo).
+ * semana (`lunes..domingo`, `festivo`, `domingo_festivo`), el total editable
+ * (`dias`) y el flag `homologar`. `codigo`/`horas` ya no se envían desde el
+ * formulario; `estado_inactivo` no se captura: lo gestiona el backend (alta → activo).
  */
 export interface SecuenciaPayload {
   nombre: string;
-  codigo: string;
   dia_1: string | null;
   dia_2: string | null;
   dia_3: string | null;
@@ -110,7 +109,6 @@ export interface SecuenciaPayload {
   domingo: string | null;
   festivo: string | null;
   domingo_festivo: string | null;
-  horas: number | null;
   dias: number | null;
   homologar: boolean;
 }

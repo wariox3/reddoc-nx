@@ -25,8 +25,9 @@ import { UppercaseDirective } from '../../uppercase.directive';
  * sin `:id` → alta; con `:id` → edición (el id llega por `withComponentInputBinding`).
  *
  * Los días del mes (`dia_1..dia_31`) y de semana (`lunes..domingo`, festivos)
- * son inputs de texto libre con el código del turno; `horas`/`dias` son numéricos
- * y `homologar` un checkbox. `estado_inactivo` no se captura aquí.
+ * son inputs de texto libre con el código del turno; `dias` es numérico y
+ * requerido y `homologar` un checkbox. `codigo`/`horas`/`estado_inactivo` no se
+ * capturan aquí (no se envían al backend desde el formulario).
  */
 @Component({
   selector: 'app-secuencia-form',
@@ -80,10 +81,8 @@ export class SecuenciaFormComponent implements OnInit {
   });
 
   protected readonly form = this.fb.group({
-    codigo: ['', Validators.required],
     nombre: ['', Validators.required],
-    horas: this.fb.control<number | null>(null),
-    dias: this.fb.control<number | null>(null),
+    dias: this.fb.control<number | null>(null, Validators.required),
     homologar: this.fb.control(false, { nonNullable: true }),
     dia_1: [''],
     dia_2: [''],
