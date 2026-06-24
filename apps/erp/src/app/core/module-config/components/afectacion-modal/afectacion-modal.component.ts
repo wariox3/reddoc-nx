@@ -9,7 +9,7 @@ import {
   untracked,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { forkJoin } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { I18nService, ToastService, formatCop, toFiniteNumber } from '@reddoc/core';
@@ -69,8 +69,13 @@ export class AfectacionModalComponent {
 
   /** Visibilidad two-way: la ficha la abre seteándola en `true`. */
   readonly visible = model<boolean>(false);
-  /** Id de la línea clickeada cuya afectación se consulta. */
+  /** Id de la línea clickeada; arma la cabecera (`obtenerPorId`). */
   readonly lineId = input<number | null>(null);
+  /**
+   * `documento_detalle_afectado` (REF) de la línea clickeada; con él se consulta
+   * "quién la afecta". Si es `null` (línea sin REF) la tabla queda vacía.
+   */
+  readonly afectadoId = input<number | null>(null);
 
   protected readonly loading = signal(false);
   protected readonly error = signal(false);
@@ -80,13 +85,13 @@ export class AfectacionModalComponent {
   protected readonly formatMoney = formatCop;
 
   constructor() {
-    // Al abrir, carga la afectación de la línea activa. `lineId` se lee con
-    // `untracked` (la ficha la setea junto con `visible`); solo `visible` dispara.
+    // Al abrir, carga la afectación de la línea activa. Los ids se leen con
+    // `untracked` (la ficha los setea junto con `visible`); solo `visible` dispara.
     effect(() => {
       if (!this.visible()) return;
-      const id = untracked(this.lineId);
-      if (id == null) return;
-      this.load(id);
+      const lineId = untracked(this.lineId);
+      if (lineId == null) return;
+      this.load(lineId, untracked(this.afectadoId));
     });
   }
 
@@ -108,15 +113,20 @@ export class AfectacionModalComponent {
     });
   }
 
-  private load(id: number): void {
+  private load(lineId: number, afectadoId: number | null): void {
     this.loading.set(true);
     this.error.set(false);
     this.cabecera.set(null);
     this.filas.set([]);
 
     forkJoin({
-      cabecera: this.detalleService.obtenerPorId<AfectacionDetalleRead>(id),
-      filas: this.detalleService.listarPorAfectado<AfectacionDetalleRead>(id),
+      // Cabecera: la línea clickeada. Tabla: quién afecta a su origen (REF). Sin
+      // REF no hay a quién consultar → lista vacía sin pegarle al backend.
+      cabecera: this.detalleService.obtenerPorId<AfectacionDetalleRead>(lineId),
+      filas:
+        afectadoId == null
+          ? of<AfectacionDetalleRead[]>([])
+          : this.detalleService.listarPorAfectado<AfectacionDetalleRead>(afectadoId),
     })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({

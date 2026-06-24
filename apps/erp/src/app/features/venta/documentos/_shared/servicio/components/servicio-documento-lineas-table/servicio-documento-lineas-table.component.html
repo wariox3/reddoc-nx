@@ -161,16 +161,16 @@
             </td>
 
             <td class="detalle-table__td text-center tabular-nums text-brand-muted">
-              @if (linkable() && line.documento_detalle_afectado_id !== null) {
+              @if (linkable() && line.documento_detalle_afectado !== null) {
                 <button
                   type="button"
                   class="cursor-pointer border-0 bg-transparent p-0 font-medium text-sky-700 underline-offset-2 hover:underline tabular-nums"
                   (click)="verAfectacion.emit(line)"
                 >
-                  {{ line.documento_detalle_afectado_id }}
+                  {{ line.documento_detalle_afectado }}
                 </button>
               } @else {
-                {{ line.documento_detalle_afectado_id ?? '—' }}
+                {{ line.documento_detalle_afectado ?? '—' }}
               }
             </td>
 

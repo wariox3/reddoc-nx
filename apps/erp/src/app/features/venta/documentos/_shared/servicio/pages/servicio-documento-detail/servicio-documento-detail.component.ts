@@ -96,6 +96,7 @@ export class ServicioDocumentoDetailComponent implements OnInit {
   /** Control del modal de afectación (trazabilidad de una línea). */
   protected readonly afectacionVisible = signal(false);
   protected readonly afectacionLineId = signal<number | null>(null);
+  protected readonly afectacionAfectadoId = signal<number | null>(null);
 
   /**
    * ¿Es editable el documento según su política declarativa (`canEditRow`)?
@@ -145,6 +146,7 @@ export class ServicioDocumentoDetailComponent implements OnInit {
   protected onVerAfectacion(line: DetalleFormRawValue): void {
     if (line.id == null) return;
     this.afectacionLineId.set(line.id);
+    this.afectacionAfectadoId.set(line.documento_detalle_afectado);
     this.afectacionVisible.set(true);
   }
 

@@ -41,5 +41,5 @@ export interface DetalleFormRawValue {
   /** Precio mínimo regulado de la cobertura (del tarifador). No editable por UI. */
   readonly precio_minimo: number | null;
   /** Referencia a la línea afectada en otro documento. Derivada del backend; no editable. */
-  readonly documento_detalle_afectado_id: number | null;
+  readonly documento_detalle_afectado: number | null;
 }

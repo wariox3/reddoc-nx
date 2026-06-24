@@ -35,7 +35,11 @@
 
 <p-confirmDialog />
 
-<app-afectacion-modal [(visible)]="afectacionVisible" [lineId]="afectacionLineId()" />
+<app-afectacion-modal
+  [(visible)]="afectacionVisible"
+  [lineId]="afectacionLineId()"
+  [afectadoId]="afectacionAfectadoId()"
+/>
 
 @if (isLoading()) {
   <!-- ── Estado de carga ─────────────────────────────────────────────────────── -->
