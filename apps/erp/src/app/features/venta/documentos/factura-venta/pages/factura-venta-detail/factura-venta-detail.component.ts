@@ -20,6 +20,7 @@ import type { AppDict } from '@erp/i18n';
 import { ComercialDocumentoLineasTableComponent } from '@erp/features/documentos/comercial/components/comercial-documento-lineas-table/comercial-documento-lineas-table.component';
 import { ComercialDocumentoResumenComponent } from '@erp/features/documentos/comercial/components/comercial-documento-resumen/comercial-documento-resumen.component';
 import { DocumentDetailActionsComponent } from '@erp/core/module-config/components/document-detail-actions/document-detail-actions.component';
+import { AfectacionModalComponent } from '@erp/core/module-config/components/afectacion-modal/afectacion-modal.component';
 import {
   comercialDetalleToFormValue,
   toLineaCalculo,
@@ -61,6 +62,7 @@ interface CabeceraView {
     ComercialDocumentoLineasTableComponent,
     ComercialDocumentoResumenComponent,
     DocumentDetailActionsComponent,
+    AfectacionModalComponent,
   ],
   providers: [ConfirmationService],
   templateUrl: './factura-venta-detail.component.html',
@@ -89,6 +91,10 @@ export class FacturaVentaDetailComponent implements OnInit {
   protected readonly lines = signal<readonly ComercialDetalleFormRawValue[]>([]);
   protected readonly isLoading = signal(true);
   protected readonly notFound = signal(false);
+
+  /** Control del modal de afectación (trazabilidad de una línea). */
+  protected readonly afectacionVisible = signal(false);
+  protected readonly afectacionLineId = signal<number | null>(null);
 
   /**
    * ¿Es editable el documento según su política declarativa (`canEditRow`)?
@@ -134,36 +140,11 @@ export class FacturaVentaDetailComponent implements OnInit {
     this.navigate(this.document().routes.list);
   }
 
-  /**
-   * Clic en # de una línea: dispara las dos peticiones de afectación y loguea las
-   * respuestas (sin UI por ahora, para inspeccionar el shape):
-   *  - por pk (`documento_detalle_afectado`) → el detalle al que afecta.
-   *  - por filtro (`?documento_detalle_afectado=<line.id>`) → los que la afectan.
-   */
+  /** Clic en # de una línea: abre el modal de afectación (trazabilidad) de esa línea. */
   protected onVerAfectacion(line: ComercialDetalleFormRawValue): void {
-    const afectadoId = line.documento_detalle_afectado;
-    if (afectadoId != null) {
-      this.detalleService
-        .obtenerPorId(afectadoId)
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe((res) => console.log('[afectación] a quién afecta (pk', afectadoId, '):', res));
-    } else {
-      console.log('[afectación] la línea', line.id, 'no afecta a ninguna (sin REF)');
-    }
-
-    if (line.id != null) {
-      this.detalleService
-        .listarPorAfectado(line.id)
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe((res) =>
-          console.log(
-            '[afectación] quién lo afecta (documento_detalle_afectado=',
-            line.id,
-            '):',
-            res,
-          ),
-        );
-    }
+    if (line.id == null) return;
+    this.afectacionLineId.set(line.id);
+    this.afectacionVisible.set(true);
   }
 
   protected onEdit(): void {

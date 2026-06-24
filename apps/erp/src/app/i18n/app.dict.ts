@@ -171,6 +171,27 @@ export interface AppDict extends AuthTranslationsHost {
         editBloqueado: { title: string; desc: string };
       };
     };
+    afectacion: {
+      title: string;
+      subtitle: string;
+      cols: {
+        id: string;
+        documento: string;
+        item: string;
+        cantidad: string;
+        precio: string;
+        periodo: string;
+        puesto: string;
+        modalidad: string;
+        subtotal: string;
+        baseImpuesto: string;
+        impuesto: string;
+        total: string;
+      };
+      empty: string;
+      close: string;
+      loadError: { title: string; desc: string };
+    };
   };
   documentImport: {
     buttonLabel: string;

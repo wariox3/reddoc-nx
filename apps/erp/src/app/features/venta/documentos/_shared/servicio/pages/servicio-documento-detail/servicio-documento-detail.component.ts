@@ -29,6 +29,7 @@ import type { DetalleFormRawValue } from '../../servicio-documento-detalle.types
 import { ServicioDocumentoResumenComponent } from '../../components/servicio-documento-resumen/servicio-documento-resumen.component';
 import { ServicioDocumentoLineasTableComponent } from '../../components/servicio-documento-lineas-table/servicio-documento-lineas-table.component';
 import { DocumentDetailActionsComponent } from '@erp/core/module-config/components/document-detail-actions/document-detail-actions.component';
+import { AfectacionModalComponent } from '@erp/core/module-config/components/afectacion-modal/afectacion-modal.component';
 
 /** Cabecera legible del documento para la ficha (solo lo que trae `getById`). */
 interface CabeceraView {
@@ -62,6 +63,7 @@ interface CabeceraView {
     ServicioDocumentoResumenComponent,
     ServicioDocumentoLineasTableComponent,
     DocumentDetailActionsComponent,
+    AfectacionModalComponent,
   ],
   providers: [ConfirmationService],
   templateUrl: './servicio-documento-detail.component.html',
@@ -90,6 +92,10 @@ export class ServicioDocumentoDetailComponent implements OnInit {
   protected readonly lines = signal<readonly DetalleFormRawValue[]>([]);
   protected readonly isLoading = signal(true);
   protected readonly notFound = signal(false);
+
+  /** Control del modal de afectación (trazabilidad de una línea). */
+  protected readonly afectacionVisible = signal(false);
+  protected readonly afectacionLineId = signal<number | null>(null);
 
   /**
    * ¿Es editable el documento según su política declarativa (`canEditRow`)?
@@ -135,36 +141,11 @@ export class ServicioDocumentoDetailComponent implements OnInit {
     this.navigate(this.document().routes.list);
   }
 
-  /**
-   * Clic en # / REF de una línea: dispara las dos peticiones de afectación y
-   * loguea las respuestas (sin UI por ahora, para inspeccionar el shape):
-   *  - por pk (`documento_detalle_afectado_id`) → el detalle al que afecta.
-   *  - por filtro (`?documento_detalle_afectado=<line.id>`) → los que la afectan.
-   */
+  /** Clic en # / REF de una línea: abre el modal de afectación (trazabilidad) de esa línea. */
   protected onVerAfectacion(line: DetalleFormRawValue): void {
-    const afectadoId = line.documento_detalle_afectado_id;
-    if (afectadoId != null) {
-      this.detalleService
-        .obtenerPorId(afectadoId)
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe((res) => console.log('[afectación] a quién afecta (pk', afectadoId, '):', res));
-    } else {
-      console.log('[afectación] la línea', line.id, 'no afecta a ninguna (sin REF)');
-    }
-
-    if (line.id != null) {
-      this.detalleService
-        .listarPorAfectado(line.id)
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe((res) =>
-          console.log(
-            '[afectación] quién lo afecta (documento_detalle_afectado=',
-            line.id,
-            '):',
-            res,
-          ),
-        );
-    }
+    if (line.id == null) return;
+    this.afectacionLineId.set(line.id);
+    this.afectacionVisible.set(true);
   }
 
   protected onEdit(): void {
