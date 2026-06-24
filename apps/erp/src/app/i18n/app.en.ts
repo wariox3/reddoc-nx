@@ -917,6 +917,24 @@ export const en: AppDict = {
         },
       },
     },
+    soporte: {
+      name: 'Supports',
+      searchPlaceholder: 'Search…',
+      columns: {
+        id: 'ID',
+        fechaDesde: 'Date from',
+        fechaHasta: 'Date to',
+        fechaHastaPeriodo: 'Date to period',
+        grupo: 'Group',
+      },
+    },
+    programacion: {
+      name: 'Scheduling',
+      searchPlaceholder: 'Search…',
+      columns: {
+        id: 'ID',
+      },
+    },
     turno: {
       name: 'Shifts',
       searchPlaceholder: 'Search by name…',

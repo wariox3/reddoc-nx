@@ -156,7 +156,7 @@ export const es: AppDict = {
         master: 'Administrador',
         document: 'Documentos',
         process: 'Proceso',
-        movement: 'Movimiento',
+        movement: 'Movimientos',
         utility: 'Utilidades',
         report: 'Informes',
       },
@@ -930,6 +930,24 @@ export const es: AppDict = {
         toasts: {
           loadError: { title: 'Error al cargar', desc: 'No se pudo cargar la secuencia' },
         },
+      },
+    },
+    soporte: {
+      name: 'Soportes',
+      searchPlaceholder: 'Buscar…',
+      columns: {
+        id: 'ID',
+        fechaDesde: 'Fecha desde',
+        fechaHasta: 'Fecha hasta',
+        fechaHastaPeriodo: 'Fecha hasta periodo',
+        grupo: 'Grupo',
+      },
+    },
+    programacion: {
+      name: 'Programación',
+      searchPlaceholder: 'Buscar…',
+      columns: {
+        id: 'ID',
       },
     },
     turno: {

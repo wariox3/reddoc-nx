@@ -16,6 +16,21 @@ export const TURNO_MODULE: ErpModuleDescriptor = {
   menu: [
     {
       kind: 'accordion',
+      id: 'turno-movimientos',
+      labelKey: 'layout.nav.sections.movement',
+      iconClass: 'pi pi-sync',
+      defaultExpanded: true,
+      groups: [
+        {
+          items: [
+            { labelKey: 'entities.soporte.name', path: 'soportes' },
+            { labelKey: 'entities.programacion.name', path: 'programaciones' },
+          ],
+        },
+      ],
+    },
+    {
+      kind: 'accordion',
       id: 'turno-administracion',
       labelKey: 'layout.nav.sections.master',
       iconClass: 'pi pi-folder',

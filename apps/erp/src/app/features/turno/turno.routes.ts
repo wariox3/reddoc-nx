@@ -20,6 +20,18 @@ export const TURNO_ROUTES: Route[] = [
     children: [
       moduleIndexRoute(TURNO_MODULE),
       {
+        path: 'soportes',
+        loadChildren: () =>
+          import('./movimientos/soporte/soporte.routes').then((m) => m.SOPORTE_ROUTES),
+      },
+      {
+        path: 'programaciones',
+        loadChildren: () =>
+          import('./movimientos/programacion/programacion.routes').then(
+            (m) => m.PROGRAMACION_ROUTES,
+          ),
+      },
+      {
         path: 'puestos',
         loadChildren: () => import('./masters/puesto/puesto.routes').then((m) => m.PUESTO_ROUTES),
       },
