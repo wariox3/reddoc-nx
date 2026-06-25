@@ -248,6 +248,7 @@ export interface AppDict extends AuthTranslationsHost {
         };
       };
       detail: {
+        eyebrow: string;
         notFound: { title: string; desc: string };
         toasts: { loadError: { title: string; desc: string } };
       };
@@ -282,6 +283,7 @@ export interface AppDict extends AuthTranslationsHost {
         };
       };
       detail: {
+        eyebrow: string;
         notFound: { title: string; desc: string };
         toasts: { loadError: { title: string; desc: string } };
       };
@@ -306,6 +308,7 @@ export interface AppDict extends AuthTranslationsHost {
         };
       };
       detail: {
+        eyebrow: string;
         notFound: { title: string; desc: string };
         toasts: { loadError: { title: string; desc: string } };
       };
@@ -352,6 +355,8 @@ export interface AppDict extends AuthTranslationsHost {
         };
       };
       detail: {
+        eyebrow: string;
+        vigencia: string;
         notFound: { title: string; desc: string };
         toasts: { loadError: { title: string; desc: string } };
       };
@@ -438,6 +443,7 @@ export interface AppDict extends AuthTranslationsHost {
       detail: {
         title: string;
         subtitle: string;
+        eyebrow: string;
         sections: {
           general: string;
           contacto: string;
@@ -505,6 +511,7 @@ export interface AppDict extends AuthTranslationsHost {
         };
       };
       detail: {
+        eyebrow: string;
         sections: { precios: string; impuestos: string; cuentas: string };
         labels: { impuestosVenta: string; impuestosCompra: string; sinImpuestos: string };
         notFound: { title: string; desc: string };
@@ -570,6 +577,7 @@ export interface AppDict extends AuthTranslationsHost {
         };
       };
       detail: {
+        eyebrow: string;
         notFound: { title: string; desc: string };
         sections: { ubicacion: string; relaciones: string; comentario: string };
         toasts: { loadError: { title: string; desc: string } };
@@ -600,6 +608,7 @@ export interface AppDict extends AuthTranslationsHost {
         };
       };
       detail: {
+        eyebrow: string;
         notFound: { title: string; desc: string };
         toasts: { loadError: { title: string; desc: string } };
       };
@@ -652,6 +661,7 @@ export interface AppDict extends AuthTranslationsHost {
         };
       };
       detail: {
+        eyebrow: string;
         notFound: { title: string; desc: string };
         sections: { principal: string; diasMes: string; diasSemana: string };
         toasts: { loadError: { title: string; desc: string } };
@@ -716,6 +726,7 @@ export interface AppDict extends AuthTranslationsHost {
         };
       };
       detail: {
+        eyebrow: string;
         notFound: { title: string; desc: string };
         sections: { principal: string };
         activo: string;
@@ -742,6 +753,7 @@ export interface AppDict extends AuthTranslationsHost {
         };
       };
       detail: {
+        eyebrow: string;
         notFound: { title: string; desc: string };
         toasts: { loadError: { title: string; desc: string } };
       };
@@ -767,6 +779,7 @@ export interface AppDict extends AuthTranslationsHost {
         };
       };
       detail: {
+        eyebrow: string;
         notFound: { title: string; desc: string };
         toasts: { loadError: { title: string; desc: string } };
       };
@@ -791,6 +804,7 @@ export interface AppDict extends AuthTranslationsHost {
         };
       };
       detail: {
+        eyebrow: string;
         activo: string;
         notFound: { title: string; desc: string };
         toasts: { loadError: { title: string; desc: string } };
@@ -822,6 +836,7 @@ export interface AppDict extends AuthTranslationsHost {
         };
       };
       detail: {
+        eyebrow: string;
         notFound: { title: string; desc: string };
         toasts: { loadError: { title: string; desc: string } };
       };
@@ -846,6 +861,7 @@ export interface AppDict extends AuthTranslationsHost {
         };
       };
       detail: {
+        eyebrow: string;
         notFound: { title: string; desc: string };
         toasts: { loadError: { title: string; desc: string } };
       };
@@ -875,6 +891,7 @@ export interface AppDict extends AuthTranslationsHost {
         };
       };
       detail: {
+        eyebrow: string;
         notFound: { title: string; desc: string };
         toasts: { loadError: { title: string; desc: string } };
       };
@@ -927,6 +944,7 @@ export interface AppDict extends AuthTranslationsHost {
         };
       };
       detail: {
+        eyebrow: string;
         notFound: { title: string; desc: string };
         toasts: { loadError: { title: string; desc: string } };
       };
@@ -980,6 +998,7 @@ export interface AppDict extends AuthTranslationsHost {
         };
       };
       detail: {
+        eyebrow: string;
         notFound: { title: string; desc: string };
         toasts: { loadError: { title: string; desc: string } };
       };
@@ -1074,6 +1093,7 @@ export interface AppDict extends AuthTranslationsHost {
         };
       };
       detail: {
+        eyebrow: string;
         sections: { general: string; contacto: string; ubicacion: string; banca: string };
         notFound: { title: string; desc: string };
         toasts: { loadError: { title: string; desc: string } };
@@ -1125,6 +1145,7 @@ export interface AppDict extends AuthTranslationsHost {
         };
       };
       detail: {
+        eyebrow: string;
         notFound: { title: string; desc: string };
         toasts: { loadError: { title: string; desc: string } };
       };
@@ -1169,6 +1190,7 @@ export interface AppDict extends AuthTranslationsHost {
         };
       };
       detail: {
+        eyebrow: string;
         notFound: { title: string; desc: string };
         toasts: { loadError: { title: string; desc: string } };
       };

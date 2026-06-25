@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { I18nService, TenantService, ToastService } from '@reddoc/core';
 import { BreadcrumbComponent, type BreadcrumbItem } from '@reddoc/feature-base';
+import { DetailHeaderComponent } from '@erp/core/components/detail-header/detail-header.component';
 import type { AppDict } from '@erp/i18n';
 import { SecuenciaService } from '../../secuencia.service';
 import {
@@ -23,7 +24,7 @@ import type { Secuencia } from '../../secuencia.model';
 @Component({
   selector: 'app-secuencia-detail',
   standalone: true,
-  imports: [ButtonModule, BreadcrumbComponent],
+  imports: [ButtonModule, BreadcrumbComponent, DetailHeaderComponent],
   templateUrl: './secuencia-detail.component.html',
   styleUrl: './secuencia-detail.component.scss',
 })

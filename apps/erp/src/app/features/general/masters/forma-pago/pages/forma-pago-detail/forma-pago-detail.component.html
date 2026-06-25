@@ -42,25 +42,14 @@
   </div>
 } @else if (formaPago(); as m) {
   <!-- ── Encabezado ───────────────────────────────────────────────────────────── -->
-  <section class="overflow-hidden rounded-xl border border-[rgba(20,48,73,0.1)] bg-brand-surface">
-    <div class="flex flex-wrap items-start gap-4 px-5 py-5 max-[576px]:px-4">
-      <!-- Ícono -->
-      <span
-        class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-sky-50 text-sky-700"
-      >
-        <i class="pi pi-credit-card text-[1.4rem]"></i>
-      </span>
-
-      <!-- Identidad -->
-      <div class="flex min-w-0 flex-1 flex-col gap-2">
-        <h1 class="m-0 truncate text-2xl font-bold tracking-tight text-brand-text">
-          {{ m.nombre }}
-        </h1>
-        <p class="m-0 text-[0.8rem] font-medium text-brand-muted">
-          {{ t().entities.formaPago.columns.cuenta }}:
-          {{ m.cuenta ? [m.cuenta_codigo, m.cuenta_nombre].join(' - ') : '—' }}
-        </p>
-      </div>
-    </div>
-  </section>
+  <app-detail-header
+    icon="pi pi-credit-card"
+    [eyebrow]="t().entities.formaPago.detail.eyebrow"
+    [title]="m.nombre"
+  >
+    <p detailHeaderSubtitle class="m-0 text-[0.8rem] font-medium text-brand-muted">
+      {{ t().entities.formaPago.columns.cuenta }}:
+      {{ m.cuenta ? [m.cuenta_codigo, m.cuenta_nombre].join(' - ') : '—' }}
+    </p>
+  </app-detail-header>
 }

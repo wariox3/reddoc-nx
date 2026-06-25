@@ -325,6 +325,7 @@ export const es: AppDict = {
         },
       },
       detail: {
+        eyebrow: 'Asesor',
         notFound: {
           title: 'Asesor no encontrado',
           desc: 'El asesor que buscás no existe o fue eliminado.',
@@ -376,6 +377,7 @@ export const es: AppDict = {
         },
       },
       detail: {
+        eyebrow: 'Cuenta de banco',
         notFound: {
           title: 'Cuenta de banco no encontrada',
           desc: 'La cuenta de banco que buscás no existe o fue eliminada.',
@@ -422,6 +424,7 @@ export const es: AppDict = {
         },
       },
       detail: {
+        eyebrow: 'Lista de precios',
         notFound: {
           title: 'Lista de precios no encontrada',
           desc: 'La lista de precios que buscás no existe o fue eliminada.',
@@ -479,6 +482,8 @@ export const es: AppDict = {
         },
       },
       detail: {
+        eyebrow: 'Resolución',
+        vigencia: 'Vigencia',
         notFound: {
           title: 'Resolución no encontrada',
           desc: 'La resolución que buscás no existe o fue eliminada.',
@@ -605,6 +610,7 @@ export const es: AppDict = {
       detail: {
         title: 'Detalle del contacto',
         subtitle: 'Información y datos comerciales',
+        eyebrow: 'Contacto',
         sections: {
           general: 'Información general',
           contacto: 'Contacto',
@@ -700,6 +706,7 @@ export const es: AppDict = {
         },
       },
       detail: {
+        eyebrow: 'Ítem',
         sections: {
           precios: 'Precios',
           impuestos: 'Impuestos',
@@ -797,6 +804,7 @@ export const es: AppDict = {
         },
       },
       detail: {
+        eyebrow: 'Puesto',
         notFound: {
           title: 'Puesto no encontrado',
           desc: 'El puesto que buscás no existe o fue eliminado.',
@@ -846,6 +854,7 @@ export const es: AppDict = {
         },
       },
       detail: {
+        eyebrow: 'Programador',
         notFound: {
           title: 'Programador no encontrado',
           desc: 'El programador que buscás no existe o fue eliminado.',
@@ -919,6 +928,7 @@ export const es: AppDict = {
         },
       },
       detail: {
+        eyebrow: 'Secuencia',
         notFound: {
           title: 'Secuencia no encontrada',
           desc: 'La secuencia que buscás no existe o fue eliminada.',
@@ -999,6 +1009,7 @@ export const es: AppDict = {
         },
       },
       detail: {
+        eyebrow: 'Turno',
         notFound: {
           title: 'Turno no encontrado',
           desc: 'El turno que buscás no existe o fue eliminado.',
@@ -1037,6 +1048,7 @@ export const es: AppDict = {
         },
       },
       detail: {
+        eyebrow: 'Sucursal',
         notFound: {
           title: 'Sucursal no encontrada',
           desc: 'La sucursal que buscás no existe o fue eliminada.',
@@ -1078,6 +1090,7 @@ export const es: AppDict = {
         },
       },
       detail: {
+        eyebrow: 'Grupo',
         notFound: {
           title: 'Grupo no encontrado',
           desc: 'El grupo que buscás no existe o fue eliminado.',
@@ -1115,6 +1128,7 @@ export const es: AppDict = {
         },
       },
       detail: {
+        eyebrow: 'Cargo',
         activo: 'Activo',
         notFound: {
           title: 'Cargo no encontrado',
@@ -1165,6 +1179,7 @@ export const es: AppDict = {
         },
       },
       detail: {
+        eyebrow: 'Centro de costo',
         notFound: {
           title: 'Centro de costo no encontrado',
           desc: 'El centro de costo que buscás no existe o fue eliminado.',
@@ -1211,6 +1226,7 @@ export const es: AppDict = {
         },
       },
       detail: {
+        eyebrow: 'Forma de pago',
         notFound: {
           title: 'Forma de pago no encontrada',
           desc: 'La forma de pago que buscás no existe o fue eliminada.',
@@ -1256,6 +1272,7 @@ export const es: AppDict = {
         },
       },
       detail: {
+        eyebrow: 'Sede',
         notFound: {
           title: 'Sede no encontrada',
           desc: 'La sede que buscás no existe o fue eliminada.',
@@ -1325,6 +1342,7 @@ export const es: AppDict = {
         },
       },
       detail: {
+        eyebrow: 'Cuenta',
         notFound: {
           title: 'Cuenta no encontrada',
           desc: 'La cuenta que buscás no existe o fue eliminada.',
@@ -1389,6 +1407,7 @@ export const es: AppDict = {
         },
       },
       detail: {
+        eyebrow: 'Activo fijo',
         notFound: {
           title: 'Activo no encontrado',
           desc: 'El activo que buscás no existe o fue eliminado.',
@@ -1538,6 +1557,7 @@ export const es: AppDict = {
         },
       },
       detail: {
+        eyebrow: 'Empleado',
         sections: {
           general: 'Información general',
           contacto: 'Contacto',
@@ -1603,6 +1623,7 @@ export const es: AppDict = {
         },
       },
       detail: {
+        eyebrow: 'Crédito',
         notFound: {
           title: 'Crédito no encontrado',
           desc: 'El crédito que buscás no existe o fue eliminado.',
@@ -1658,6 +1679,7 @@ export const es: AppDict = {
         },
       },
       detail: {
+        eyebrow: 'Adicional',
         notFound: {
           title: 'Adicional no encontrado',
           desc: 'El adicional que buscás no existe o fue eliminado.',

@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { I18nService, TenantService, ToastService } from '@reddoc/core';
 import { BreadcrumbComponent, type BreadcrumbItem } from '@reddoc/feature-base';
+import { DetailHeaderComponent } from '@erp/core/components/detail-header/detail-header.component';
 import type { AppDict } from '@erp/i18n';
 import { TurnoService } from '../../turno.service';
 import { TURNO_LIST_PATH } from '../../turno.constants';
@@ -18,7 +19,7 @@ import type { Turno } from '../../turno.model';
 @Component({
   selector: 'app-turno-detail',
   standalone: true,
-  imports: [ButtonModule, BreadcrumbComponent],
+  imports: [ButtonModule, BreadcrumbComponent, DetailHeaderComponent],
   templateUrl: './turno-detail.component.html',
   styleUrl: './turno-detail.component.scss',
 })

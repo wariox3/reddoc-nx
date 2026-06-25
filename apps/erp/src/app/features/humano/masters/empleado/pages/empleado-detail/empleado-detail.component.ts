@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { I18nService, TenantService, ToastService } from '@reddoc/core';
 import { BreadcrumbComponent, type BreadcrumbItem } from '@reddoc/feature-base';
+import { DetailHeaderComponent } from '@erp/core/components/detail-header/detail-header.component';
 import type { AppDict } from '@erp/i18n';
 import { ContactoService } from '@erp/features/general/masters/contacto/contacto.service';
 import type { Empleado } from '../../empleado.model';
@@ -17,7 +18,7 @@ import { EMPLEADO_LIST_PATH } from '../../empleado.constants';
 @Component({
   selector: 'app-empleado-detail',
   standalone: true,
-  imports: [ButtonModule, BreadcrumbComponent],
+  imports: [ButtonModule, BreadcrumbComponent, DetailHeaderComponent],
   templateUrl: './empleado-detail.component.html',
   styleUrl: './empleado-detail.component.scss',
 })

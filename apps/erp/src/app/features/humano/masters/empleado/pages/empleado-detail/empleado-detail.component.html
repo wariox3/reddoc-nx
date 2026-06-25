@@ -42,21 +42,19 @@
   </div>
 } @else if (empleado(); as c) {
   <!-- ── Identidad ───────────────────────────────────────────────────────── -->
-  <section class="overflow-hidden rounded-xl border border-[rgba(20,48,73,0.1)] bg-brand-surface">
-    <div class="flex flex-wrap items-start gap-4 px-5 py-5 max-[576px]:px-4">
-      <span
-        class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-sky-50 text-[1.05rem] font-bold tracking-tight text-sky-700"
-      >
-        {{ iniciales() }}
-      </span>
-      <div class="flex min-w-0 flex-1 flex-col gap-1">
-        <h1 class="m-0 truncate text-2xl font-bold tracking-tight text-brand-text">
-          {{ c.nombre_corto }}
-        </h1>
-        <span class="text-[0.85rem] font-medium text-brand-muted">{{ documento() }}</span>
-      </div>
-    </div>
-  </section>
+  <app-detail-header [eyebrow]="d.eyebrow" [title]="c.nombre_corto">
+    <!-- Monograma de iniciales -->
+    <span
+      detailHeaderMedia
+      class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-sky-50 text-[1.05rem] font-bold tracking-tight text-sky-700"
+    >
+      {{ iniciales() }}
+    </span>
+
+    <p detailHeaderSubtitle class="m-0 text-[0.8rem] font-medium text-brand-muted">
+      {{ documento() }}
+    </p>
+  </app-detail-header>
 
   <!-- ── Información general ──────────────────────────────────────────────── -->
   <section class="overflow-hidden rounded-xl border border-[rgba(20,48,73,0.1)] bg-brand-surface">

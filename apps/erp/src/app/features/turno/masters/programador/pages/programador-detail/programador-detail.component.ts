@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { I18nService, TenantService, ToastService } from '@reddoc/core';
 import { BreadcrumbComponent, type BreadcrumbItem } from '@reddoc/feature-base';
+import { DetailHeaderComponent } from '@erp/core/components/detail-header/detail-header.component';
 import type { AppDict } from '@erp/i18n';
 import { ProgramadorService } from '../../programador.service';
 import { PROGRAMADOR_LIST_PATH } from '../../programador.constants';
@@ -12,7 +13,7 @@ import type { Programador } from '../../programador.model';
 @Component({
   selector: 'app-programador-detail',
   standalone: true,
-  imports: [ButtonModule, BreadcrumbComponent],
+  imports: [ButtonModule, BreadcrumbComponent, DetailHeaderComponent],
   templateUrl: './programador-detail.component.html',
   styleUrl: './programador-detail.component.scss',
 })

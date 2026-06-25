@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { I18nService, TenantService, ToastService } from '@reddoc/core';
 import { BreadcrumbComponent, type BreadcrumbItem } from '@reddoc/feature-base';
+import { DetailHeaderComponent } from '@erp/core/components/detail-header/detail-header.component';
 import type { AppDict } from '@erp/i18n';
 import { PuestoService } from '../../puesto.service';
 import { PUESTO_LIST_PATH } from '../../puesto.constants';
@@ -18,7 +19,7 @@ import type { Puesto } from '../../puesto.model';
 @Component({
   selector: 'app-puesto-detail',
   standalone: true,
-  imports: [ButtonModule, BreadcrumbComponent],
+  imports: [ButtonModule, BreadcrumbComponent, DetailHeaderComponent],
   templateUrl: './puesto-detail.component.html',
   styleUrl: './puesto-detail.component.scss',
 })

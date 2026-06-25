@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { I18nService, TenantService, ToastService } from '@reddoc/core';
 import { BreadcrumbComponent, type BreadcrumbItem } from '@reddoc/feature-base';
+import { DetailHeaderComponent } from '@erp/core/components/detail-header/detail-header.component';
 import type { AppDict } from '@erp/i18n';
 import { SedeService } from '../../sede.service';
 import { SEDE_LIST_PATH } from '../../sede.constants';
@@ -12,7 +13,7 @@ import type { Sede } from '../../sede.model';
 @Component({
   selector: 'app-sede-detail',
   standalone: true,
-  imports: [ButtonModule, BreadcrumbComponent],
+  imports: [ButtonModule, BreadcrumbComponent, DetailHeaderComponent],
   templateUrl: './sede-detail.component.html',
   styleUrl: './sede-detail.component.scss',
 })
