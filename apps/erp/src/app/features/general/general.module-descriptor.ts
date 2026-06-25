@@ -4,8 +4,9 @@ export const GENERAL_MODULE: ErpModuleDescriptor = {
   id: 'general',
   displayNameKey: 'modules.general.name',
   iconClass: 'pi pi-cog',
-  defaultChildPath: 'contactos',
+  defaultChildPath: 'inicio',
   menu: [
+    { kind: 'item', labelKey: 'layout.nav.home', iconClass: 'pi pi-home', path: 'inicio' },
     {
       kind: 'accordion',
       id: 'general-administracion',

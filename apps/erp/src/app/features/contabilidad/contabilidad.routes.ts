@@ -9,6 +9,14 @@ export const CONTABILIDAD_ROUTES: Route[] = [
     children: [
       moduleIndexRoute(CONTABILIDAD_MODULE),
       {
+        // Inicio del módulo (vacío por ahora — sin endpoints de estadísticas).
+        path: 'inicio',
+        loadComponent: () =>
+          import('@erp/layouts/module-placeholder/module-placeholder.component').then(
+            (m) => m.ModulePlaceholderComponent,
+          ),
+      },
+      {
         path: 'centros-costo',
         loadChildren: () =>
           import('./masters/centro-costo/centro-costo.routes').then((m) => m.CENTRO_COSTO_ROUTES),

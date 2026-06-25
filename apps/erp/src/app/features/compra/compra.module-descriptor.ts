@@ -4,8 +4,9 @@ export const COMPRA_MODULE: ErpModuleDescriptor = {
   id: 'compra',
   displayNameKey: 'modules.compra.name',
   iconClass: 'pi pi-shopping-cart',
-  defaultChildPath: 'items',
+  defaultChildPath: 'inicio',
   menu: [
+    { kind: 'item', labelKey: 'layout.nav.home', iconClass: 'pi pi-home', path: 'inicio' },
     {
       kind: 'accordion',
       id: 'compra-administracion',

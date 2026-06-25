@@ -11,8 +11,9 @@ export const CONTABILIDAD_MODULE: ErpModuleDescriptor = {
   id: 'contabilidad',
   displayNameKey: 'modules.contabilidad.name',
   iconClass: 'pi pi-calculator',
-  defaultChildPath: 'cuentas',
+  defaultChildPath: 'inicio',
   menu: [
+    { kind: 'item', labelKey: 'layout.nav.home', iconClass: 'pi pi-home', path: 'inicio' },
     {
       kind: 'accordion',
       id: 'contabilidad-administracion',

@@ -11,8 +11,9 @@ export const HUMANO_MODULE: ErpModuleDescriptor = {
   id: 'humano',
   displayNameKey: 'modules.humano.name',
   iconClass: 'pi pi-users',
-  defaultChildPath: 'empleados',
+  defaultChildPath: 'inicio',
   menu: [
+    { kind: 'item', labelKey: 'layout.nav.home', iconClass: 'pi pi-home', path: 'inicio' },
     {
       kind: 'accordion',
       id: 'humano-administracion',

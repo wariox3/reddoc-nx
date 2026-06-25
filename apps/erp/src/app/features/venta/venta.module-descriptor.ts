@@ -15,8 +15,9 @@ export const VENTA_MODULE: ErpModuleDescriptor = {
   id: 'venta',
   displayNameKey: 'modules.venta.name',
   iconClass: 'pi pi-tag',
-  defaultChildPath: 'contrato-servicio/list',
+  defaultChildPath: 'inicio',
   menu: [
+    { kind: 'item', labelKey: 'layout.nav.home', iconClass: 'pi pi-home', path: 'inicio' },
     {
       kind: 'accordion',
       id: 'venta-documentos',

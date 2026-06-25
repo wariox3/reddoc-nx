@@ -19,6 +19,14 @@ export const COMPRA_ROUTES: Route[] = [
     children: [
       moduleIndexRoute(COMPRA_MODULE),
       {
+        // Inicio del módulo (vacío por ahora — sin endpoints de estadísticas).
+        path: 'inicio',
+        loadComponent: () =>
+          import('@erp/layouts/module-placeholder/module-placeholder.component').then(
+            (m) => m.ModulePlaceholderComponent,
+          ),
+      },
+      {
         path: 'items',
         loadChildren: () =>
           import('../general/masters/item/item.routes').then((m) => m.ITEM_ROUTES),
