@@ -123,6 +123,7 @@ export interface AppDict extends AuthTranslationsHost {
     };
     nav: {
       dashboard: string;
+      home: string;
       account: string;
       empty: string;
       sections: {
@@ -1774,6 +1775,35 @@ export interface AppDict extends AuthTranslationsHost {
       saveSuccess: { title: string; desc: string };
       saveError: { title: string; desc: string };
       loadError: { title: string; desc: string };
+    };
+  };
+  turnoInicio: {
+    title: string;
+    subtitle: string;
+    loading: string;
+    error: string;
+    empty: string;
+    kpis: {
+      horasPlaneadas: string;
+      horasEjecutadas: string;
+      cumplimiento: string;
+      desviacion: string;
+    };
+    charts: {
+      jornada: string;
+      tendencia: string;
+    };
+    series: {
+      planeadas: string;
+      ejecutadas: string;
+      diurnas: string;
+      nocturnas: string;
+    };
+    ranges: {
+      esteMes: string;
+      mesPasado: string;
+      ultimosTresMeses: string;
+      esteAnio: string;
     };
   };
 }

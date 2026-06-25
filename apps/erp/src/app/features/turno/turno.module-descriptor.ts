@@ -12,8 +12,9 @@ export const TURNO_MODULE: ErpModuleDescriptor = {
   id: 'turno',
   displayNameKey: 'modules.turno.name',
   iconClass: 'pi pi-calendar',
-  defaultChildPath: 'puestos',
+  defaultChildPath: 'inicio',
   menu: [
+    { kind: 'item', labelKey: 'layout.nav.home', iconClass: 'pi pi-home', path: 'inicio' },
     {
       kind: 'accordion',
       id: 'turno-movimientos',

@@ -150,6 +150,7 @@ export const es: AppDict = {
     },
     nav: {
       dashboard: 'Dashboard',
+      home: 'Inicio',
       account: 'Gestionar cuenta',
       empty: 'Seleccioná un módulo desde la barra superior.',
       sections: {
@@ -2420,6 +2421,35 @@ export const es: AppDict = {
         title: 'Error al cargar',
         desc: 'No pudimos traer la configuración de la empresa.',
       },
+    },
+  },
+  turnoInicio: {
+    title: 'Inicio',
+    subtitle: 'Resumen de horas planeadas vs ejecutadas',
+    loading: 'Cargando analítica…',
+    error: 'No se pudo cargar la analítica',
+    empty: 'Sin datos en el rango seleccionado',
+    kpis: {
+      horasPlaneadas: 'Horas planeadas',
+      horasEjecutadas: 'Horas ejecutadas',
+      cumplimiento: 'Cumplimiento',
+      desviacion: 'Desviación',
+    },
+    charts: {
+      jornada: 'Horas por jornada',
+      tendencia: 'Tendencia de horas',
+    },
+    series: {
+      planeadas: 'Planeadas',
+      ejecutadas: 'Ejecutadas',
+      diurnas: 'Diurnas',
+      nocturnas: 'Nocturnas',
+    },
+    ranges: {
+      esteMes: 'Este mes',
+      mesPasado: 'Mes pasado',
+      ultimosTresMeses: 'Últimos 3 meses',
+      esteAnio: 'Este año',
     },
   },
 };

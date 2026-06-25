@@ -150,6 +150,7 @@ export const en: AppDict = {
     },
     nav: {
       dashboard: 'Dashboard',
+      home: 'Home',
       account: 'Manage account',
       empty: 'Pick a module from the top bar.',
       sections: {
@@ -2358,6 +2359,35 @@ export const en: AppDict = {
         title: 'Load failed',
         desc: 'We could not fetch the company settings.',
       },
+    },
+  },
+  turnoInicio: {
+    title: 'Home',
+    subtitle: 'Planned vs executed hours overview',
+    loading: 'Loading analytics…',
+    error: 'Could not load analytics',
+    empty: 'No data for the selected range',
+    kpis: {
+      horasPlaneadas: 'Planned hours',
+      horasEjecutadas: 'Executed hours',
+      cumplimiento: 'Compliance',
+      desviacion: 'Deviation',
+    },
+    charts: {
+      jornada: 'Hours by shift',
+      tendencia: 'Hours trend',
+    },
+    series: {
+      planeadas: 'Planned',
+      ejecutadas: 'Executed',
+      diurnas: 'Day',
+      nocturnas: 'Night',
+    },
+    ranges: {
+      esteMes: 'This month',
+      mesPasado: 'Last month',
+      ultimosTresMeses: 'Last 3 months',
+      esteAnio: 'This year',
     },
   },
 };
