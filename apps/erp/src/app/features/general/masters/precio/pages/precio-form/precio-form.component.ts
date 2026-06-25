@@ -7,7 +7,13 @@ import { InputTextModule } from 'primeng/inputtext';
 import { DatePickerModule } from 'primeng/datepicker';
 import { CheckboxModule } from 'primeng/checkbox';
 import { FieldErrorComponent } from '@reddoc/ui';
-import { FormErrorService, I18nService, TenantService, ToastService } from '@reddoc/core';
+import {
+  FormErrorService,
+  I18nService,
+  TenantService,
+  ToastService,
+  startOfToday,
+} from '@reddoc/core';
 import { BreadcrumbComponent, type BreadcrumbItem } from '@reddoc/feature-base';
 import { ActiveModuleStore, currentModuleId, resolveModuleName } from '@erp/core/erp-modules';
 import type { AppDict } from '@erp/i18n';
@@ -76,7 +82,7 @@ export class PrecioFormComponent implements OnInit {
     nombre: ['', Validators.required],
     venta: [false],
     compra: [false],
-    fecha_vence: [null as Date | null],
+    fecha_vence: [startOfToday() as Date | null, Validators.required],
   });
 
   ngOnInit(): void {
