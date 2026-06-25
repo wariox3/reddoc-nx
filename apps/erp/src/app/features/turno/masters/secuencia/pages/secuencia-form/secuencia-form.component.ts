@@ -16,7 +16,7 @@ import {
   SECUENCIA_WEEKDAYS,
 } from '../../secuencia.constants';
 import { secuenciaToFormValue, formValueToPayload } from '../../secuencia.mapper';
-import { UppercaseDirective } from '../../uppercase.directive';
+import { UppercaseDirective } from '@erp/core/directives/uppercase.directive';
 
 /**
  * Formulario de alta/edición de secuencia.

@@ -62,6 +62,7 @@
             type="text"
             formControlName="prefijo"
             maxlength="10"
+            appUppercase
             fluid
           />
           <lib-field-error
@@ -191,6 +192,7 @@
             [showIcon]="true"
             appendTo="body"
             [fluid]="true"
+            [minDate]="form.controls.fecha_desde.value ?? undefined"
             [invalid]="
               (form.controls.fecha_hasta.invalid && form.controls.fecha_hasta.touched) ||
               (!!form.errors?.['rangoFechasInvalido'] &&
