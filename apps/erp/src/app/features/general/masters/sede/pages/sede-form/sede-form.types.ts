@@ -6,6 +6,5 @@ import type { ErpSelectOption } from '@erp/core/components/api-select/erp-api-se
  */
 export interface SedeFormRawValue {
   readonly nombre: string | null;
-  readonly codigo: string | null;
   readonly centro_costo: ErpSelectOption | null;
 }

@@ -9,7 +9,6 @@ import type { SedeFormRawValue } from './pages/sede-form/sede-form.types';
 export function sedeToFormValue(s: Sede): Partial<SedeFormRawValue> {
   return {
     nombre: s.nombre,
-    codigo: s.codigo,
     centro_costo:
       s.centro_costo != null ? { id: s.centro_costo, nombre: s.centro_costo_nombre ?? '' } : null,
   };
@@ -19,7 +18,6 @@ export function sedeToFormValue(s: Sede): Partial<SedeFormRawValue> {
 export function formValueToPayload(v: SedeFormRawValue): SedePayload {
   return {
     nombre: v.nombre ?? '',
-    codigo: v.codigo ?? '',
     centro_costo: v.centro_costo?.id ?? null,
   };
 }

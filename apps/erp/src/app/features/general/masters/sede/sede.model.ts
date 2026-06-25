@@ -15,6 +15,5 @@ export interface Sede {
 /** Write-model para crear/editar una sede. FK como id pelado. */
 export interface SedePayload {
   readonly nombre: string;
-  readonly codigo: string;
   readonly centro_costo: number | null;
 }
