@@ -1769,7 +1769,6 @@ export const en: AppDict = {
           fechaDesde: 'Start date',
           fechaHasta: 'End date',
           habilitadoTurno: 'Enable shift',
-          habilitadoTurnoHint: 'Allows scheduling shifts for this contract.',
           salario: 'Salary',
           aplicaAuxilioTransporte: 'Applies transport allowance',
           salarioIntegral: 'Integral salary',
@@ -1803,6 +1802,29 @@ export const en: AppDict = {
           editSuccess: { title: 'Contract updated', desc: 'Changes were saved successfully' },
           createError: { title: 'Create error', desc: 'Could not create the contract' },
           editError: { title: 'Save error', desc: 'Could not save the changes' },
+          loadError: { title: 'Load error', desc: 'Could not load the contract' },
+        },
+      },
+      detail: {
+        eyebrow: 'Contract',
+        sections: {
+          datos: 'Contract data',
+          remuneracion: 'Compensation',
+          seguridadSocial: 'Social security',
+        },
+        estado: {
+          activo: 'Active',
+          terminado: 'Terminated',
+        },
+        boolean: {
+          si: 'Yes',
+          no: 'No',
+        },
+        notFound: {
+          title: 'Contract not found',
+          desc: 'The contract you are looking for does not exist or was deleted.',
+        },
+        toasts: {
           loadError: { title: 'Load error', desc: 'Could not load the contract' },
         },
       },

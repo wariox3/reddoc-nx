@@ -1320,7 +1320,6 @@ export interface AppDict extends AuthTranslationsHost {
           fechaDesde: string;
           fechaHasta: string;
           habilitadoTurno: string;
-          habilitadoTurnoHint: string;
           salario: string;
           aplicaAuxilioTransporte: string;
           salarioIntegral: string;
@@ -1353,6 +1352,14 @@ export interface AppDict extends AuthTranslationsHost {
           editError: { title: string; desc: string };
           loadError: { title: string; desc: string };
         };
+      };
+      detail: {
+        eyebrow: string;
+        sections: { datos: string; remuneracion: string; seguridadSocial: string };
+        estado: { activo: string; terminado: string };
+        boolean: { si: string; no: string };
+        notFound: { title: string; desc: string };
+        toasts: { loadError: { title: string; desc: string } };
       };
     };
     facturaVenta: {

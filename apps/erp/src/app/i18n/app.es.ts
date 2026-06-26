@@ -1819,7 +1819,6 @@ export const es: AppDict = {
           fechaDesde: 'Fecha desde',
           fechaHasta: 'Fecha hasta',
           habilitadoTurno: 'Habilitar turno',
-          habilitadoTurnoHint: 'Permite programar turnos para este contrato.',
           salario: 'Salario',
           aplicaAuxilioTransporte: 'Aplica auxilio de transporte',
           salarioIntegral: 'Salario integral',
@@ -1853,6 +1852,29 @@ export const es: AppDict = {
           },
           createError: { title: 'Error al crear', desc: 'No se pudo crear el contrato' },
           editError: { title: 'Error al guardar', desc: 'No se pudieron guardar los cambios' },
+          loadError: { title: 'Error al cargar', desc: 'No se pudo cargar el contrato' },
+        },
+      },
+      detail: {
+        eyebrow: 'Contrato',
+        sections: {
+          datos: 'Datos del contrato',
+          remuneracion: 'Remuneración',
+          seguridadSocial: 'Seguridad social',
+        },
+        estado: {
+          activo: 'Activo',
+          terminado: 'Terminado',
+        },
+        boolean: {
+          si: 'Sí',
+          no: 'No',
+        },
+        notFound: {
+          title: 'Contrato no encontrado',
+          desc: 'El contrato que buscás no existe o fue eliminado.',
+        },
+        toasts: {
           loadError: { title: 'Error al cargar', desc: 'No se pudo cargar el contrato' },
         },
       },
