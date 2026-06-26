@@ -93,6 +93,10 @@
             {{ t().entities.activo.form.fields.marca }}
           </label>
           <input id="marca" pInputText type="text" formControlName="marca" maxlength="100" fluid />
+          <lib-field-error
+            [control]="form.controls.marca"
+            [messages]="{ maxlength: t().entities.activo.form.validation.maxLength }"
+          />
         </div>
 
         <!-- Serie -->
@@ -101,6 +105,10 @@
             {{ t().entities.activo.form.fields.serie }}
           </label>
           <input id="serie" pInputText type="text" formControlName="serie" maxlength="100" fluid />
+          <lib-field-error
+            [control]="form.controls.serie"
+            [messages]="{ maxlength: t().entities.activo.form.validation.maxLength }"
+          />
         </div>
 
         <!-- Modelo -->
@@ -115,6 +123,7 @@
             [maxFractionDigits]="0"
             [fluid]="true"
           />
+          <lib-field-error [control]="form.controls.modelo" />
         </div>
 
         <!-- Grupo de activo -->
@@ -194,6 +203,7 @@
             [maxFractionDigits]="0"
             [fluid]="true"
           />
+          <lib-field-error [control]="form.controls.duracion" />
         </div>
 
         <!-- Valor de compra -->
@@ -210,6 +220,7 @@
             prefix="$ "
             [fluid]="true"
           />
+          <lib-field-error [control]="form.controls.valor_compra" />
         </div>
 
         <!-- Depreciación inicial -->
@@ -226,6 +237,7 @@
             prefix="$ "
             [fluid]="true"
           />
+          <lib-field-error [control]="form.controls.depreciacion_inicial" />
         </div>
 
         <!-- Fecha de compra -->
