@@ -81,12 +81,14 @@
               {{ t().entities.turno.form.fields.horaInicio }}
             </label>
             <input id="hora_inicio" pInputText type="time" formControlName="hora_inicio" fluid />
+            <lib-field-error [control]="form.controls.hora_inicio" />
           </div>
           <div class="flex flex-col gap-1.5">
             <label for="hora_fin" class="turno-form__label">
               {{ t().entities.turno.form.fields.horaFin }}
             </label>
             <input id="hora_fin" pInputText type="time" formControlName="hora_fin" fluid />
+            <lib-field-error [control]="form.controls.hora_fin" />
           </div>
         </div>
 
@@ -106,6 +108,7 @@
               form.controls.color.value
             }}</span>
           </div>
+          <lib-field-error [control]="form.controls.color" />
         </div>
 
         <!-- Tipo de novedad -->
@@ -120,6 +123,7 @@
             [params]="tipoParams"
             [placeholder]="t().entities.turno.form.fields.novedadTipoPlaceholder"
           />
+          <lib-field-error [control]="form.controls.novedad_tipo" />
         </div>
 
         <!-- Horas / diurnas / nocturnas -->
@@ -129,6 +133,7 @@
               {{ t().entities.turno.form.fields.horas }}
             </label>
             <input id="horas" pInputText type="number" formControlName="horas" fluid />
+            <lib-field-error [control]="form.controls.horas" />
           </div>
           <div class="flex flex-col gap-1.5">
             <label for="horas_diurnas" class="turno-form__label">
@@ -141,6 +146,7 @@
               formControlName="horas_diurnas"
               fluid
             />
+            <lib-field-error [control]="form.controls.horas_diurnas" />
           </div>
           <div class="flex flex-col gap-1.5">
             <label for="horas_nocturnas" class="turno-form__label">
@@ -153,6 +159,7 @@
               formControlName="horas_nocturnas"
               fluid
             />
+            <lib-field-error [control]="form.controls.horas_nocturnas" />
           </div>
         </div>
 
