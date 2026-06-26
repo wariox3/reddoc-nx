@@ -1885,6 +1885,7 @@ export const es: AppDict = {
           detalles: 'Detalles',
         },
         labels: {
+          numero: 'Número',
           cliente: 'Cliente',
           fecha: 'Fecha',
           fechaVence: 'Fecha de vencimiento',
@@ -2191,6 +2192,7 @@ export const es: AppDict = {
           detalles: 'Detalles',
         },
         labels: {
+          numero: 'Número',
           contacto: 'Contacto',
           fecha: 'Fecha',
           sector: 'Sector',

@@ -22,6 +22,8 @@ export type { DocumentoDetalleImpuestoRead } from '@reddoc/core';
 
 /** Shape (parcial) de un documento de servicio leído desde la API en edición. */
 export interface ServicioDocumentoRead extends DocumentoReadBase {
+  /** Número (consecutivo) del documento que asigna el backend. */
+  readonly numero: string | null;
   readonly sector: number | null;
   /** Nombre del sector para etiquetar el selector al cargar en edición. */
   readonly sector_nombre?: string | null;

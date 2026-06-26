@@ -73,6 +73,10 @@
       </h2>
     </div>
     <dl class="grid grid-cols-1 gap-x-6 gap-y-3 px-5 py-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div class="flex flex-col gap-0.5">
+        <dt class="factura-venta-detail__label">{{ det.labels.numero }}</dt>
+        <dd class="factura-venta-detail__value">{{ c.numero || '—' }}</dd>
+      </div>
       @if (c.cliente) {
         <div class="flex flex-col gap-0.5 sm:col-span-2 lg:col-span-1">
           <dt class="factura-venta-detail__label">{{ det.labels.cliente }}</dt>

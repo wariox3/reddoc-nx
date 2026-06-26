@@ -33,6 +33,7 @@ import { AfectacionModalComponent } from '@erp/core/module-config/components/afe
 
 /** Cabecera legible del documento para la ficha (solo lo que trae `getById`). */
 interface CabeceraView {
+  readonly numero: string | null;
   readonly contacto: string | null;
   readonly fecha: Date | null;
   readonly sector: string | null;
@@ -257,6 +258,7 @@ export class ServicioDocumentoDetailComponent implements OnInit {
           const read = cabecera as ServicioDocumentoRead;
           const fv = servicioDocumentoToFormValue(read);
           this.cabecera.set({
+            numero: read.numero ?? null,
             contacto: fv.contacto?.nombre ?? read.contacto_nombre ?? null,
             fecha: fv.fecha ?? null,
             sector: fv.sector?.nombre ?? read.sector_nombre ?? null,

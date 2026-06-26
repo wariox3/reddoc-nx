@@ -1835,6 +1835,7 @@ export const en: AppDict = {
           detalles: 'Details',
         },
         labels: {
+          numero: 'Number',
           cliente: 'Customer',
           fecha: 'Date',
           fechaVence: 'Due date',
@@ -2141,6 +2142,7 @@ export const en: AppDict = {
           detalles: 'Details',
         },
         labels: {
+          numero: 'Number',
           contacto: 'Contact',
           fecha: 'Date',
           sector: 'Sector',

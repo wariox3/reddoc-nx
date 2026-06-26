@@ -32,6 +32,7 @@ import type { FacturaVentaRead } from '../../factura-venta.model';
 
 /** Cabecera legible de la factura para la ficha (solo lo que trae `getById`). */
 interface CabeceraView {
+  readonly numero: string | null;
   readonly cliente: string | null;
   readonly fecha: Date | null;
   readonly fechaVence: Date | null;
@@ -258,6 +259,7 @@ export class FacturaVentaDetailComponent implements OnInit {
           const read = cabecera as FacturaVentaRead;
           const fv = facturaVentaToFormValue(read);
           this.cabecera.set({
+            numero: read.numero ?? null,
             cliente: fv.contacto?.nombre ?? read.contacto_nombre ?? null,
             fecha: fv.fecha ?? null,
             fechaVence: fv.fecha_vence ?? null,

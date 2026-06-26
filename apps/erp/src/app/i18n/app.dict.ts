@@ -1363,6 +1363,7 @@ export interface AppDict extends AuthTranslationsHost {
       detail: {
         sections: { general: string; detalles: string };
         labels: {
+          numero: string;
           cliente: string;
           fecha: string;
           fechaVence: string;
@@ -1622,6 +1623,7 @@ export interface AppDict extends AuthTranslationsHost {
       detail: {
         sections: { general: string; detalles: string };
         labels: {
+          numero: string;
           contacto: string;
           fecha: string;
           sector: string;
