@@ -68,7 +68,16 @@
             {{ t().entities.secuencia.form.fields.dias }}
             <span class="ml-px text-red-500">*</span>
           </label>
-          <input id="dias" pInputText type="number" formControlName="dias" fluid />
+          <input
+            id="dias"
+            pInputText
+            type="number"
+            inputmode="numeric"
+            min="1"
+            step="1"
+            formControlName="dias"
+            fluid
+          />
           <lib-field-error
             [control]="form.controls.dias"
             [messages]="{ required: t().entities.secuencia.form.validation.required }"
