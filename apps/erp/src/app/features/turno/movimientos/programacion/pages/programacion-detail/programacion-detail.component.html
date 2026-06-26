@@ -95,8 +95,19 @@
       </div>
 
       <div class="px-5 py-5 max-[576px]:px-4 max-[576px]:py-4">
-        <app-programacion-grid [fechas]="gr.fechas" [filas]="gr.filas" />
+        <app-programacion-grid
+          [fechas]="gr.fechas"
+          [filas]="gr.filas"
+          (verEmpleados)="onVerEmpleados($event)"
+        />
       </div>
     </section>
   }
 }
+
+<!-- ── Modal: aplicar programación (agregar contrato al puesto) ──────────────── -->
+<app-programacion-aplicar-modal
+  [(visible)]="empleadosModalVisible"
+  [grupo]="empleadosGrupo()"
+  (applied)="onApplied()"
+/>

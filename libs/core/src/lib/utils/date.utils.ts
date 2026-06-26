@@ -55,3 +55,39 @@ export function fromHora(value: string | null | undefined): Date | null {
 export function daysBetween(a: Date, b: Date): number {
   return Math.round((b.getTime() - a.getTime()) / 86400000);
 }
+
+/**
+ * Inicial del día de la semana en español, indexada por `Date.getDay()`
+ * (0 = domingo … 6 = sábado). Miércoles usa `X` para no chocar con Martes (`M`).
+ */
+const INICIALES_DIA_SEMANA_ES = ['D', 'L', 'M', 'X', 'J', 'V', 'S'] as const;
+
+/** Día de un mes: su número y la inicial del día de la semana que le corresponde. */
+export interface DiaDelMes {
+  /** Número de día (1..N). */
+  readonly dia: number;
+  /** Inicial del día de la semana en español (`L M X J V S D`). */
+  readonly inicial: string;
+  /** `true` si cae sábado o domingo. */
+  readonly finDeSemana: boolean;
+}
+
+/**
+ * Días de un mes (`1..N`, según corresponda 28/29/30/31) con la inicial del día
+ * de la semana de cada fecha. `mes` es **1-based** (1 = enero).
+ *
+ * Ej. junio 2026 → `[{ dia: 1, inicial: 'L', finDeSemana: false }, … ]`.
+ */
+export function diasDelMes(anio: number, mes: number): DiaDelMes[] {
+  // `new Date(anio, mes, 0)` con `mes` 1-based es el último día de ese mes.
+  const totalDias = new Date(anio, mes, 0).getDate();
+  return Array.from({ length: totalDias }, (_, i) => {
+    const dia = i + 1;
+    const diaSemana = new Date(anio, mes - 1, dia).getDay();
+    return {
+      dia,
+      inicial: INICIALES_DIA_SEMANA_ES[diaSemana],
+      finDeSemana: diaSemana === 0 || diaSemana === 6,
+    };
+  });
+}

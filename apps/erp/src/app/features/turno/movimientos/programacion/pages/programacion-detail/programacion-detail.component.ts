@@ -13,7 +13,11 @@ import type {
   ProgramacionFecha,
   ProgramacionFila,
 } from '../../programacion.model';
-import { ProgramacionGridComponent } from '../../components/programacion-grid/programacion-grid.component';
+import {
+  ProgramacionGridComponent,
+  type ProgramacionGrupoRef,
+} from '../../components/programacion-grid/programacion-grid.component';
+import { ProgramacionAplicarModalComponent } from '../../components/programacion-aplicar-modal/programacion-aplicar-modal.component';
 
 /** Cabecera legible de la programación para la ficha. */
 interface CabeceraView {
@@ -67,7 +71,12 @@ function toProgramacionFecha(raw: unknown, index: number): ProgramacionFecha {
 @Component({
   selector: 'app-programacion-detail',
   standalone: true,
-  imports: [ButtonModule, BreadcrumbComponent, ProgramacionGridComponent],
+  imports: [
+    ButtonModule,
+    BreadcrumbComponent,
+    ProgramacionGridComponent,
+    ProgramacionAplicarModalComponent,
+  ],
   templateUrl: './programacion-detail.component.html',
   styleUrl: './programacion-detail.component.scss',
 })
@@ -88,6 +97,10 @@ export class ProgramacionDetailComponent implements OnInit {
   protected readonly grid = signal<GridView | null>(null);
   protected readonly isLoading = signal(true);
   protected readonly notFound = signal(false);
+
+  /** Modal de empleados del puesto (se abre desde el botón del grupo del grid). */
+  protected readonly empleadosModalVisible = signal(false);
+  protected readonly empleadosGrupo = signal<ProgramacionGrupoRef | null>(null);
 
   /** Migas: módulo Turno → listado de programaciones → registro abierto. */
   protected readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => {
@@ -120,6 +133,18 @@ export class ProgramacionDetailComponent implements OnInit {
     const slug = this.tenant.currentSlug();
     if (!slug) return;
     void this.router.navigate(['/t', slug, ...PROGRAMACION_LIST_PATH]);
+  }
+
+  /** Abre el modal de empleados del puesto emitido por el grid. */
+  protected onVerEmpleados(grupo: ProgramacionGrupoRef): void {
+    this.empleadosGrupo.set(grupo);
+    this.empleadosModalVisible.set(true);
+  }
+
+  /** Tras aplicar la programación, recarga el detalle para reflejar los cambios. */
+  protected onApplied(): void {
+    const id = Number(this.id());
+    if (Number.isFinite(id)) this.loadDetalle(id);
   }
 
   /** Fecha larga de la cabecera (`20 de junio de 2026`). */

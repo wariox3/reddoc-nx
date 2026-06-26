@@ -980,6 +980,28 @@ export const en: AppDict = {
             a: 'A',
           },
           empty: 'No rows to show.',
+          verEmpleados: 'View employees of this position',
+        },
+        empleadosModal: {
+          title: 'Add contract to position',
+          subtitle: 'Assign the employees for this position.',
+          placeholder: 'Under construction.',
+          contratoLabel: 'Contract',
+          contratoPlaceholder: 'Search contract…',
+          diasSection: 'Days of the month',
+          diaAria: 'Day',
+          aplicar: 'Apply',
+          close: 'Close',
+          toasts: {
+            success: {
+              title: 'Scheduling applied',
+              desc: 'The contract scheduling was applied to the position.',
+            },
+            error: {
+              title: 'Could not apply',
+              desc: 'An error occurred while applying the scheduling.',
+            },
+          },
         },
       },
     },

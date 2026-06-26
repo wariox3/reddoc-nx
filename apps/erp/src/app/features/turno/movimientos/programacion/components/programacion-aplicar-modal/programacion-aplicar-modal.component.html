@@ -1,0 +1,108 @@
+@let m = t().entities.programacion.detail.empleadosModal;
+
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [focusOnShow]="false"
+  [style]="{ width: '85rem' }"
+  [breakpoints]="{ '768px': '95vw' }"
+>
+  <ng-template pTemplate="header">
+    <div class="flex items-center gap-3">
+      <span
+        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-sky-50 text-sky-700"
+      >
+        <i class="pi pi-user-plus text-[1.05rem]"></i>
+      </span>
+      <div class="flex flex-col gap-[0.1rem]">
+        <h2 class="m-0 text-[1.02rem] font-bold leading-tight tracking-tight text-brand-text">
+          {{ m.title }}
+        </h2>
+        <p class="m-0 text-[0.75rem] text-brand-muted">
+          @if (grupo(); as g) {
+            @if (g.puestoNombre) {
+              {{ g.puestoId }} | {{ g.puestoNombre }}
+            } @else {
+              #{{ g.documentoDetalleId }}
+            }
+            <span class="mx-1 text-brand-muted/50">·</span>
+          }
+          <span class="capitalize">{{ periodo.etiqueta }}</span>
+        </p>
+      </div>
+    </div>
+  </ng-template>
+
+  <form [formGroup]="form" class="flex flex-col gap-5 pt-1">
+    <!-- ── Contrato ────────────────────────────────────────────────────────────── -->
+    <div class="flex flex-col gap-1.5 sm:w-1/2">
+      <label for="contrato" class="text-[0.78rem] font-medium text-brand-muted">
+        {{ m.contratoLabel }}
+      </label>
+      <app-contrato-autocomplete
+        inputId="contrato"
+        formControlName="contrato"
+        [placeholder]="m.contratoPlaceholder"
+      />
+    </div>
+
+    <!-- ── Días del mes ────────────────────────────────────────────────────────── -->
+    <div class="flex flex-col gap-2">
+      <span class="text-[0.78rem] font-medium text-brand-muted">{{ m.diasSection }}</span>
+
+      <div class="overflow-auto rounded-xl border border-[rgba(20,48,73,0.12)]">
+        <table class="aplicar-dias">
+          <thead>
+            <tr>
+              @for (d of dias; track d.dia) {
+                <th class="aplicar-dias__th" [class.aplicar-dias__th--finde]="d.finDeSemana">
+                  <span class="aplicar-dias__num">{{ d.dia }}</span>
+                  <span class="aplicar-dias__ini">{{ d.inicial }}</span>
+                </th>
+              }
+            </tr>
+          </thead>
+          <tbody formArrayName="dias">
+            <tr>
+              @for (d of dias; track d.dia; let i = $index) {
+                <td class="aplicar-dias__td" [class.aplicar-dias__td--finde]="d.finDeSemana">
+                  <input
+                    pInputText
+                    type="text"
+                    [formControlName]="i"
+                    class="aplicar-dias__input"
+                    [attr.aria-label]="m.diaAria + ' ' + d.dia + ' ' + d.inicial"
+                  />
+                </td>
+              }
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <div class="flex items-center justify-end gap-2">
+      <p-button
+        type="button"
+        [label]="m.close"
+        severity="secondary"
+        [outlined]="true"
+        (onClick)="onClose()"
+      />
+      <p-button
+        type="button"
+        [label]="m.aplicar"
+        icon="pi pi-check"
+        [loading]="isSubmitting()"
+        [disabled]="!puedeAplicar()"
+        (onClick)="onAplicar()"
+      />
+    </div>
+  </ng-template>
+</p-dialog>

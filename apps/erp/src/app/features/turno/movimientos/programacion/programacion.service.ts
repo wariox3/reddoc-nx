@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { BaseHttpService } from '@reddoc/core';
+import type { AplicarProgramacionPayload } from './programacion.model';
 
 /**
  * Servicio HTTP de programaciones (endpoints propios de turno).
@@ -25,5 +26,15 @@ export class ProgramacionService extends BaseHttpService {
    */
   getDetalle(documentoId: number): Observable<unknown> {
     return this.get<unknown>(`${this.resourcePath}detalle/`, { documento: documentoId });
+  }
+
+  /**
+   * Aplica la programación de un contrato a un puesto para un mes
+   * (`POST /turno/programacion/aplicar-programacion/`).
+   *
+   * TODO: tipar la respuesta cuando se confirme el shape.
+   */
+  aplicarProgramacion(payload: AplicarProgramacionPayload): Observable<unknown> {
+    return this.post<unknown>(`${this.resourcePath}aplicar-programacion/`, payload);
   }
 }

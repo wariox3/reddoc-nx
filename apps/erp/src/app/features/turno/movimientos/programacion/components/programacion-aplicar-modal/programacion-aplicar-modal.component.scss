@@ -1,0 +1,62 @@
+:host {
+  display: block;
+}
+
+.aplicar-dias {
+  border-collapse: collapse;
+  // Cada día ocupa el ancho del input + un poco de aire; la tabla decide su ancho.
+  width: max-content;
+  min-width: 100%;
+}
+
+// Header de día: número (arriba) + inicial del día de la semana (abajo, discreta),
+// sticky al hacer scroll vertical.
+.aplicar-dias__th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  min-width: 2.4rem;
+  padding: 0.35rem 0.25rem;
+  text-align: center;
+  background: #f8f9fa;
+  box-shadow: inset 0 -1px 0 rgba(20, 48, 73, 0.1);
+}
+
+.aplicar-dias__num {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--brand-text, #143049);
+}
+
+.aplicar-dias__ini {
+  display: block;
+  font-size: 0.58rem;
+  font-weight: 600;
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--brand-muted, #64748b);
+}
+
+.aplicar-dias__td {
+  padding: 0.3rem 0.25rem;
+  vertical-align: middle;
+}
+
+// Fin de semana (sáb/dom): tinte navy muy sutil para leer el ritmo del mes.
+.aplicar-dias__th--finde {
+  background: #eef1f4;
+}
+
+.aplicar-dias__td--finde {
+  background: rgba(20, 48, 73, 0.035);
+}
+
+// Input slim por día: centrado, sin robar ancho.
+.aplicar-dias__input {
+  width: 2.4rem;
+  padding: 0.25rem 0.3rem;
+  text-align: center;
+  font-size: 0.78rem;
+}

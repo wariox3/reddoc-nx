@@ -1,15 +1,24 @@
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, computed, inject, input, output } from '@angular/core';
 import { I18nService } from '@reddoc/core';
 import type { AppDict } from '@erp/i18n';
 import type { ProgramacionFecha, ProgramacionFila } from '../../programacion.model';
 
-/** Grupo de filas que comparten `documento_detalle_id` (sección de la tabla). */
+/** Grupo de filas que comparten `documento_detalle_id` — un puesto. */
 interface GrupoFilas {
   readonly documentoDetalleId: number;
   readonly puestoId: number | null;
   readonly puestoNombre: string | null;
-  readonly contratoNombre: string | null;
   readonly items: readonly ProgramacionFila[];
+}
+
+/**
+ * Identidad de un grupo (puesto) que el grid emite al pedir sus empleados.
+ * Lo consume el padre para abrir el modal correspondiente.
+ */
+export interface ProgramacionGrupoRef {
+  readonly documentoDetalleId: number;
+  readonly puestoId: number | null;
+  readonly puestoNombre: string | null;
 }
 
 /**
@@ -39,6 +48,9 @@ export class ProgramacionGridComponent {
   /** Filas del calendario (se agrupan por `documento_detalle_id`). */
   readonly filas = input.required<readonly ProgramacionFila[]>();
 
+  /** Pide ver los empleados de un grupo (puesto). El padre abre el modal. */
+  readonly verEmpleados = output<ProgramacionGrupoRef>();
+
   /** Filas agrupadas por `documento_detalle_id` para renderizar separadores. */
   protected readonly grupos = computed<readonly GrupoFilas[]>(() => {
     const result: GrupoFilas[] = [];
@@ -51,7 +63,6 @@ export class ProgramacionGridComponent {
           documentoDetalleId: fila.documento_detalle_id,
           puestoId: fila.puesto_id,
           puestoNombre: fila.puesto_nombre,
-          contratoNombre: fila.contrato_nombre,
           items: [fila],
         });
       }
@@ -61,19 +72,45 @@ export class ProgramacionGridComponent {
 
   /**
    * Columnas totales para el `colspan` de la fila de grupo y el empty state:
-   * 2 fijas izquierda (empleado, ct) + días + 4 fijas derecha (HD, HN, C, A).
+   * 2 fijas izquierda (empleado, ct) + días + 4 resumen (HD, HN, C, A) +
+   * 2 reservadas para opciones por fila.
    */
-  protected readonly colspan = computed(() => 2 + this.fechas().length + 4);
+  protected readonly colspan = computed(() => 2 + this.fechas().length + 4 + 2);
 
-  /** Valor visible de una celda de día (`fila.dias[clave]`), con fallback `—`. */
-  protected celda(fila: ProgramacionFila, clave: string): string {
-    const value = fila.dias[clave];
-    if (value === null || value === undefined || value === '') return '—';
-    if (typeof value === 'string' || typeof value === 'number') return String(value);
-    return '—';
+  /** Emite la identidad del puesto (la agrupación) para abrir el modal. */
+  protected onVerEmpleados(grupo: GrupoFilas): void {
+    this.verEmpleados.emit({
+      documentoDetalleId: grupo.documentoDetalleId,
+      puestoId: grupo.puestoId,
+      puestoNombre: grupo.puestoNombre,
+    });
   }
 
-  /** Normaliza un número/valor resumen a texto (`—` si viene vacío). */
+  /** Código del turno del día (`fila.dias[clave].turno_codigo`), con fallback `—`. */
+  protected celda(fila: ProgramacionFila, clave: string): string {
+    return fila.dias[clave]?.turno_codigo ?? '—';
+  }
+
+  /** `true` si el día es festivo (para resaltarlo sutilmente). */
+  protected esFestivo(fila: ProgramacionFila, clave: string): boolean {
+    return fila.dias[clave]?.festivo ?? false;
+  }
+
+  /** Total de horas diurnas de la fila (suma de los días). */
+  protected horasDiurnas(fila: ProgramacionFila): number {
+    return this.sumarHoras(fila, 'horas_diurnas');
+  }
+
+  /** Total de horas nocturnas de la fila (suma de los días). */
+  protected horasNocturnas(fila: ProgramacionFila): number {
+    return this.sumarHoras(fila, 'horas_nocturnas');
+  }
+
+  private sumarHoras(fila: ProgramacionFila, campo: 'horas_diurnas' | 'horas_nocturnas'): number {
+    return Object.values(fila.dias).reduce((acc, celda) => acc + (celda?.[campo] ?? 0), 0);
+  }
+
+  /** Normaliza un número resumen a texto (`—` si viene vacío). */
   protected resumen(value: number | null | undefined): string {
     return value === null || value === undefined ? '—' : String(value);
   }

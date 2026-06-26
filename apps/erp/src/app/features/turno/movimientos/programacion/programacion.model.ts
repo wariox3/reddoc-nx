@@ -75,11 +75,24 @@ export interface ProgramacionFecha {
 }
 
 /**
- * Fila del calendario (una línea de la programación).
- *
- * Los campos resumen por fila (`empleado_nombre`, `ct`, `hd`, `hn`, `c`, `a`) son
- * TENTATIVOS: no vienen en el ejemplo vacío. Se renderizan defensivamente (con
- * `—`) hasta confirmar el shape real.
+ * Celda de un día: el turno asignado (si hay) y sus horas. Las claves del mapa
+ * `dias` son las fechas ISO de `fechas` (`'2026-06-01'`).
+ */
+export interface ProgramacionDiaCelda {
+  readonly programacion_id: number;
+  readonly turno_id: number | null;
+  readonly turno_codigo: string | null;
+  readonly turno_nombre: string | null;
+  readonly horas: number;
+  readonly horas_diurnas: number;
+  readonly horas_nocturnas: number;
+  readonly festivo: boolean;
+}
+
+/**
+ * Fila del calendario: un **contrato** asignado a un puesto. Varias filas pueden
+ * compartir `documento_detalle_id` (el grid las agrupa por puesto); el
+ * `contrato_nombre` identifica cada fila dentro del grupo.
  */
 export interface ProgramacionFila {
   readonly documento_detalle_id: number;
@@ -87,14 +100,26 @@ export interface ProgramacionFila {
   readonly puesto_nombre: string | null;
   readonly contrato_id: number | null;
   readonly contrato_nombre: string | null;
-  /** Mapa día → contenido de la celda (clave = `ProgramacionFecha.clave`). */
-  readonly dias: Record<string, unknown>;
+  /** Mapa fecha ISO → celda del día (clave = `ProgramacionFecha.clave`). */
+  readonly dias: Record<string, ProgramacionDiaCelda | null>;
   readonly total_horas: number;
-  // ── Campos resumen tentativos (TODO: confirmar nombres reales) ──────────────
-  readonly empleado_nombre?: string | null;
-  readonly ct?: string | number | null;
-  readonly hd?: number | null;
-  readonly hn?: number | null;
-  readonly c?: number | null;
-  readonly a?: number | null;
+}
+
+/** Turno asignado a un día del mes en `aplicar-programacion`. */
+export interface DiaTurno {
+  readonly dia: number;
+  /** Código del turno escrito en la celda (`null` si el día queda sin turno). */
+  readonly turno_codigo: string | null;
+}
+
+/**
+ * Payload de `POST /turno/programacion/aplicar-programacion/`: aplica la
+ * programación de un contrato a un puesto (`documento_detalle_id`) para un mes.
+ */
+export interface AplicarProgramacionPayload {
+  readonly contrato_id: number;
+  readonly anio: number;
+  readonly mes: number;
+  readonly documento_detalle_id: number;
+  readonly dias: readonly DiaTurno[];
 }

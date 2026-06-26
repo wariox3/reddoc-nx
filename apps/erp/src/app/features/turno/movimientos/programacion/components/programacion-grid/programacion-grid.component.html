@@ -25,23 +25,35 @@
         <th class="programacion-grid__th programacion-grid__th--resumen w-10 text-center">
           {{ g.headers.a }}
         </th>
+        <!-- Columnas reservadas para opciones por fila (etiquetas pendientes). -->
+        <th class="programacion-grid__th programacion-grid__col-accion"></th>
+        <th class="programacion-grid__th programacion-grid__col-accion"></th>
       </tr>
     </thead>
 
     <tbody>
       @for (grupo of grupos(); track grupo.documentoDetalleId + '_' + $index) {
         <tr class="programacion-grid__group-row">
-          <td [attr.colspan]="colspan()" class="px-4 pt-4 pb-0">
-            <span class="programacion-grid__group-label">
-              @if (grupo.puestoNombre) {
-                {{ grupo.puestoId }} | {{ grupo.puestoNombre }}
-              } @else {
-                #{{ grupo.documentoDetalleId }}
-              }
-              @if (grupo.contratoNombre) {
-                · {{ grupo.contratoNombre }}
-              }
-            </span>
+          <td [attr.colspan]="colspan()" class="programacion-grid__group-cell">
+            <div class="flex items-center justify-between gap-3">
+              <span class="programacion-grid__group-label">
+                @if (grupo.puestoNombre) {
+                  {{ grupo.puestoId }} | {{ grupo.puestoNombre }}
+                } @else {
+                  #{{ grupo.documentoDetalleId }}
+                }
+              </span>
+
+              <button
+                type="button"
+                (click)="onVerEmpleados(grupo)"
+                [title]="g.verEmpleados"
+                [attr.aria-label]="g.verEmpleados"
+                class="pointer-events-auto flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent text-brand-muted transition-colors hover:bg-white/70 hover:text-sky-700"
+              >
+                <i class="pi pi-user text-[0.78rem]"></i>
+              </button>
+            </div>
           </td>
         </tr>
 
@@ -50,14 +62,15 @@
             <td
               class="programacion-grid__td programacion-grid__td--sticky-left font-medium text-brand-text"
             >
-              {{ fila.empleado_nombre || '—' }}
+              {{ fila.contrato_nombre || '—' }}
             </td>
-            <td class="programacion-grid__td w-10 text-center text-brand-muted tabular-nums">
-              {{ fila.ct ?? '—' }}
-            </td>
+            <td class="programacion-grid__td w-10 text-center text-brand-muted tabular-nums">—</td>
 
             @for (fecha of fechas(); track fecha.clave) {
-              <td class="programacion-grid__td programacion-grid__td--dia text-center tabular-nums">
+              <td
+                class="programacion-grid__td programacion-grid__td--dia text-center tabular-nums"
+                [class.programacion-grid__td--festivo]="esFestivo(fila, fecha.clave)"
+              >
                 {{ celda(fila, fecha.clave) }}
               </td>
             }
@@ -65,23 +78,27 @@
             <td
               class="programacion-grid__td programacion-grid__td--resumen w-10 text-center tabular-nums"
             >
-              {{ resumen(fila.hd) }}
+              {{ resumen(horasDiurnas(fila)) }}
             </td>
             <td
               class="programacion-grid__td programacion-grid__td--resumen w-10 text-center tabular-nums"
             >
-              {{ resumen(fila.hn) }}
+              {{ resumen(horasNocturnas(fila)) }}
             </td>
             <td
               class="programacion-grid__td programacion-grid__td--resumen w-10 text-center tabular-nums"
             >
-              {{ resumen(fila.c) }}
+              —
             </td>
             <td
               class="programacion-grid__td programacion-grid__td--resumen w-10 text-center tabular-nums"
             >
-              {{ resumen(fila.a) }}
+              —
             </td>
+
+            <!-- Celdas reservadas para opciones por fila (pendientes). -->
+            <td class="programacion-grid__td programacion-grid__col-accion"></td>
+            <td class="programacion-grid__td programacion-grid__col-accion"></td>
           </tr>
         }
       } @empty {

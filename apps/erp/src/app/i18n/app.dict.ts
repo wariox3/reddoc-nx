@@ -719,6 +719,22 @@ export interface AppDict extends AuthTranslationsHost {
             a: string;
           };
           empty: string;
+          verEmpleados: string;
+        };
+        empleadosModal: {
+          title: string;
+          subtitle: string;
+          placeholder: string;
+          contratoLabel: string;
+          contratoPlaceholder: string;
+          diasSection: string;
+          diaAria: string;
+          aplicar: string;
+          close: string;
+          toasts: {
+            success: { title: string; desc: string };
+            error: { title: string; desc: string };
+          };
         };
       };
     };

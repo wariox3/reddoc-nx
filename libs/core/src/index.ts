@@ -54,7 +54,9 @@ export {
   toHora,
   fromHora,
   daysBetween,
+  diasDelMes,
 } from './lib/utils/date.utils';
+export type { DiaDelMes } from './lib/utils/date.utils';
 export { formatCop, toFiniteNumber } from './lib/utils/currency.utils';
 export { redondearMoneda, calcularImpuestosLinea, calcularResumen } from './lib/calculo';
 export type { TasaImpuesto, ImpuestoLinea, LineaCalculo, ResumenDocumento } from './lib/calculo';

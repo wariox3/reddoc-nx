@@ -995,6 +995,28 @@ export const es: AppDict = {
             a: 'A',
           },
           empty: 'Sin filas para mostrar.',
+          verEmpleados: 'Ver empleados del puesto',
+        },
+        empleadosModal: {
+          title: 'Agregar contrato al puesto',
+          subtitle: 'Asigná los empleados de este puesto.',
+          placeholder: 'En construcción.',
+          contratoLabel: 'Contrato',
+          contratoPlaceholder: 'Buscar contrato…',
+          diasSection: 'Días del mes',
+          diaAria: 'Día',
+          aplicar: 'Aplicar',
+          close: 'Cerrar',
+          toasts: {
+            success: {
+              title: 'Programación aplicada',
+              desc: 'Se aplicó la programación del contrato al puesto.',
+            },
+            error: {
+              title: 'No se pudo aplicar',
+              desc: 'Ocurrió un error al aplicar la programación.',
+            },
+          },
         },
       },
     },
