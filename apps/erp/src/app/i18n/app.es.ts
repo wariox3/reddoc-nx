@@ -1818,6 +1818,8 @@ export const es: AppDict = {
           tiempo: 'Tiempo',
           fechaDesde: 'Fecha desde',
           fechaHasta: 'Fecha hasta',
+          habilitadoTurno: 'Habilitar turno',
+          habilitadoTurnoHint: 'Permite programar turnos para este contrato.',
           salario: 'Salario',
           aplicaAuxilioTransporte: 'Aplica auxilio de transporte',
           salarioIntegral: 'Salario integral',

@@ -1319,6 +1319,8 @@ export interface AppDict extends AuthTranslationsHost {
           tiempo: string;
           fechaDesde: string;
           fechaHasta: string;
+          habilitadoTurno: string;
+          habilitadoTurnoHint: string;
           salario: string;
           aplicaAuxilioTransporte: string;
           salarioIntegral: string;

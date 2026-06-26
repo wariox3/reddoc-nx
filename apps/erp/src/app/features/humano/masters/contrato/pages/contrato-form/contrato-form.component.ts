@@ -124,6 +124,8 @@ export class ContratoFormComponent implements OnInit {
     tiempo: this.fb.control<ErpSelectOption | null>(null, Validators.required),
     fecha_desde: this.fb.control<Date | null>(null, Validators.required),
     fecha_hasta: this.fb.control<Date | null>(null, Validators.required),
+    // Habilita que este contrato entre en la programación de turnos.
+    habilitado_turno: this.fb.control<boolean>(false),
     // Remuneración
     salario: this.fb.control<number | null>(null, Validators.required),
     auxilio_transporte: this.fb.control<boolean>(true),

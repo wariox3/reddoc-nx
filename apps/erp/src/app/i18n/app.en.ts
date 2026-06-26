@@ -1768,6 +1768,8 @@ export const en: AppDict = {
           tiempo: 'Time',
           fechaDesde: 'Start date',
           fechaHasta: 'End date',
+          habilitadoTurno: 'Enable shift',
+          habilitadoTurnoHint: 'Allows scheduling shifts for this contract.',
           salario: 'Salary',
           aplicaAuxilioTransporte: 'Applies transport allowance',
           salarioIntegral: 'Integral salary',
