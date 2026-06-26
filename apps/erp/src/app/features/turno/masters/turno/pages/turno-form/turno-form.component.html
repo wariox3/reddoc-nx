@@ -54,7 +54,15 @@
             {{ t().entities.turno.form.fields.codigo }}
             <span class="ml-px text-red-500">*</span>
           </label>
-          <input id="codigo" pInputText type="text" formControlName="codigo" maxlength="10" fluid />
+          <input
+            id="codigo"
+            pInputText
+            type="text"
+            formControlName="codigo"
+            appUppercase
+            maxlength="10"
+            fluid
+          />
           <lib-field-error
             [control]="form.controls.codigo"
             [messages]="{ required: t().entities.turno.form.validation.required }"

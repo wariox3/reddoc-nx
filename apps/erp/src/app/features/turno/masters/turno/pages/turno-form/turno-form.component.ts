@@ -13,6 +13,7 @@ import {
   type ErpSelectOption,
 } from '@erp/core/components/api-select/erp-api-select.component';
 import { SELECT_ENDPOINTS } from '@erp/core/data/select-endpoints';
+import { UppercaseDirective } from '@erp/core/directives/uppercase.directive';
 import type { AppDict } from '@erp/i18n';
 import { TurnoService } from '../../turno.service';
 import { TURNO_LIST_PATH } from '../../turno.constants';
@@ -39,6 +40,7 @@ import { turnoToFormValue, formValueToPayload } from '../../turno.mapper';
     CheckboxModule,
     FieldErrorComponent,
     ErpApiSelectComponent,
+    UppercaseDirective,
   ],
   templateUrl: './turno-form.component.html',
   styleUrl: './turno-form.component.scss',
