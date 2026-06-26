@@ -120,17 +120,31 @@
       </h2>
     </div>
     @if (monthDayCells().length) {
-      <div class="grid grid-cols-3 gap-3 px-5 py-4 sm:grid-cols-5 lg:grid-cols-7">
-        @for (cell of monthDayCells(); track cell.day) {
-          <div
-            class="flex flex-col items-center gap-0.5 rounded-lg border border-[rgba(20,48,73,0.08)] bg-slate-50 py-2"
-          >
-            <span class="text-[0.7rem] font-medium text-brand-muted">{{ cell.day }}</span>
-            <span class="font-mono text-[0.85rem] font-semibold text-brand-text">
-              {{ cell.value }}
-            </span>
-          </div>
-        }
+      <div class="overflow-x-auto px-5 py-4">
+        <table class="border-collapse text-[0.8rem]">
+          <thead>
+            <tr>
+              @for (cell of monthDayCells(); track cell.day) {
+                <th
+                  class="border-r border-b border-[rgba(20,48,73,0.08)] px-3 py-1.5 text-center font-medium tabular-nums text-brand-muted last:border-r-0"
+                >
+                  {{ cell.day }}
+                </th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              @for (cell of monthDayCells(); track cell.day) {
+                <td
+                  class="border-r border-[rgba(20,48,73,0.08)] px-3 py-1.5 text-center font-mono text-[0.82rem] font-semibold text-brand-text last:border-r-0"
+                >
+                  {{ cell.value }}
+                </td>
+              }
+            </tr>
+          </tbody>
+        </table>
       </div>
     } @else {
       <p class="m-0 px-5 py-4 text-[0.8rem] text-brand-muted">—</p>
@@ -150,14 +164,32 @@
           {{ t().entities.secuencia.detail.sections.diasSemana }}
         </h2>
       </div>
-      <dl class="grid grid-cols-2 gap-x-6 gap-y-3 px-5 py-4 sm:grid-cols-3">
-        @for (cell of weekdayCells(); track cell.labelKey) {
-          <div class="flex flex-col gap-0.5">
-            <dt class="secuencia-detail__label">{{ translate(cell.labelKey) }}</dt>
-            <dd class="secuencia-detail__value font-mono">{{ cell.value }}</dd>
-          </div>
-        }
-      </dl>
+      <div class="overflow-x-auto px-5 py-4">
+        <table class="border-collapse text-[0.8rem]">
+          <thead>
+            <tr>
+              @for (cell of weekdayCells(); track cell.labelKey) {
+                <th
+                  class="border-r border-b border-[rgba(20,48,73,0.08)] px-3 py-1.5 text-center font-medium text-brand-muted last:border-r-0"
+                >
+                  {{ translate(cell.labelKey) }}
+                </th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              @for (cell of weekdayCells(); track cell.labelKey) {
+                <td
+                  class="border-r border-[rgba(20,48,73,0.08)] px-3 py-1.5 text-center font-mono text-[0.82rem] font-semibold text-brand-text last:border-r-0"
+                >
+                  {{ cell.value }}
+                </td>
+              }
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </section>
   }
 }
