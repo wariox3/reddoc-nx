@@ -15,6 +15,7 @@ import {
   startOfToday,
 } from '@reddoc/core';
 import { BreadcrumbComponent, type BreadcrumbItem } from '@reddoc/feature-base';
+import { FieldErrorComponent } from '@reddoc/ui';
 import { ErpApiSelectComponent } from '@erp/core/components/api-select/erp-api-select.component';
 import { ErpApiAutocompleteComponent } from '@erp/core/components/api-autocomplete/erp-api-autocomplete.component';
 import { EmpleadoAutocompleteComponent } from '@erp/core/components/empleado-autocomplete/empleado-autocomplete.component';
@@ -59,6 +60,7 @@ import { contratoToFormValue, formValueToPayload } from '../../contrato.mapper';
     InputNumberModule,
     CheckboxModule,
     TextareaModule,
+    FieldErrorComponent,
     ErpApiSelectComponent,
     ErpApiAutocompleteComponent,
     EmpleadoAutocompleteComponent,
