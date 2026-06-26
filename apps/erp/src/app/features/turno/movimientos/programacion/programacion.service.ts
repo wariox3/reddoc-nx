@@ -1,55 +1,29 @@
 import { Injectable } from '@angular/core';
-import { Observable, forkJoin, map } from 'rxjs';
-import {
-  BaseHttpService,
-  buildListBody,
-  buildListParams,
-  type ListQuery,
-  type PaginatedResponse,
-} from '@reddoc/core';
-import type { Programacion } from './programacion.model';
+import { Observable } from 'rxjs';
+import { BaseHttpService } from '@reddoc/core';
 
 /**
- * Servicio HTTP de programaciones.
+ * Servicio HTTP de programaciones (endpoints propios de turno).
  *
- * Movimiento del módulo Turno (sección Movimientos). Vive como feature directo
- * (mismo patrón que camino B del enfoque híbrido — ver docs/architecture).
- *
- * Reutiliza `buildListBody` de `@reddoc/core` para enviar el body
- * `{ filtros, ordenamientos }`. La paginación va como query params
- * (`buildListParams`), que es donde el backend la lee.
+ * El **listado** y el **borrado** NO viven acá: la programación es una vista de
+ * los documentos de pedido servicio (tipo 35), así que el shell del listado
+ * reusa el `ENTITY_DATA_GATEWAY` del framework de documentos
+ * (ver `PROGRAMACION_DOCUMENT_CONFIG`). Este servicio queda para los endpoints
+ * específicos de turno que no cubre ese gateway.
  */
 @Injectable({ providedIn: 'root' })
 export class ProgramacionService extends BaseHttpService {
   private readonly resourcePath = '/turno/programacion/';
 
-  list(query: ListQuery): Observable<PaginatedResponse<Programacion>> {
-    return this.post<PaginatedResponse<Programacion>>(
-      this.resourcePath + 'lista/',
-      buildListBody(query),
-      buildListParams(query),
-    );
-  }
-
-  getById(id: number): Observable<Programacion> {
-    return this.get<Programacion>(`${this.resourcePath}${id}/`);
-  }
-
   /**
-   * Elimina una o varias programaciones.
-   * El backend no expone batch-delete, así que paralelizamos DELETEs
-   * individuales con `forkJoin`.
+   * Detalle de una programación por id del documento.
+   *
+   * `GET /turno/programacion/detalle/?documento=<id_del_documento>` — el
+   * `documento` es el id del documento de la fila (no el `documento_tipo_id`).
+   *
+   * TODO: tipar la respuesta cuando se confirme el shape.
    */
-  remove(ids: readonly number[]): Observable<void> {
-    if (ids.length === 0) {
-      // forkJoin con array vacío completa sin emitir; usamos un Observable que
-      // emite inmediatamente para mantener el contrato.
-      return new Observable<void>((subscriber) => {
-        subscriber.next();
-        subscriber.complete();
-      });
-    }
-    const deletions = ids.map((id) => this.delete<void>(`${this.resourcePath}${id}/`));
-    return forkJoin(deletions).pipe(map(() => undefined));
+  getDetalle(documentoId: number): Observable<unknown> {
+    return this.get<unknown>(`${this.resourcePath}detalle/`, { documento: documentoId });
   }
 }

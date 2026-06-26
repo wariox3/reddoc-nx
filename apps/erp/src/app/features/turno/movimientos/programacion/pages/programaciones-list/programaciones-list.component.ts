@@ -1,16 +1,14 @@
 import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { finalize } from 'rxjs';
 import {
-  FileDownloadService,
   FilterStorageService,
   I18nService,
   TenantService,
   ToastService,
-  buildFiltros,
-  buildOrdenamientos,
   quickSearchCondition,
   type FilterCondition,
   type ListQuery,
@@ -26,7 +24,7 @@ import {
   type RowActionInvokedEvent,
 } from '@reddoc/feature-base';
 import type { AppDict } from '@erp/i18n';
-import { ProgramacionService } from '../../programacion.service';
+import { ENTITY_DATA_GATEWAY } from '@erp/core/module-config';
 import type { Programacion } from '../../programacion.model';
 import {
   PROGRAMACIONES_COLUMNS,
@@ -34,7 +32,7 @@ import {
   PROGRAMACIONES_FILTERS_STORAGE_KEY,
   PROGRAMACIONES_QUICK_SEARCH_FIELD,
   PROGRAMACIONES_ROW_ACTIONS,
-  PROGRAMACIONES_TRAILING_ACTIONS,
+  PROGRAMACION_DOCUMENT_CONFIG,
 } from '../../programacion.constants';
 
 /**
@@ -42,11 +40,14 @@ import {
  *
  * Movimiento del módulo Turno (sección Movimientos, `features/turno/`).
  *
- * Feature directo que compone los building blocks compartidos
- * (`<lib-data-toolbar>` + `<lib-data-table>`) dentro de un wrapper `.card`.
- * No usa `EntityConfig` del framework configuracional.
- * Por ahora es un placeholder: shape vacío (solo `id`), sin formulario ni
- * detalle. Listo para sumar columnas/campos cuando se defina el contenido.
+ * Es una **vista recortada de los documentos de pedido servicio** (tipo 35).
+ * Mantiene su propio shell (camino B: `<lib-data-toolbar>` + `<lib-data-table>`),
+ * pero la data la trae el `ENTITY_DATA_GATEWAY` del framework de documentos
+ * (camino A) manejado por `PROGRAMACION_DOCUMENT_CONFIG`, en vez de un endpoint
+ * propio: así no se reimplementa `general/documento/lista/` ni la inyección del
+ * `documento_tipo_id`.
+ *
+ * Solo expone ver detalle y eliminar (sin crear/editar/exportar).
  */
 @Component({
   selector: 'app-programaciones-list',
@@ -64,16 +65,19 @@ import {
 })
 export class ProgramacionesListComponent {
   // ── Colaboradores ─────────────────────────────────────────────────────────
-  private readonly service = inject(ProgramacionService);
-  private readonly fileDownload = inject(FileDownloadService);
+  private readonly gateway = inject(ENTITY_DATA_GATEWAY);
   private readonly filterStorage = inject(FilterStorageService);
   private readonly tenant = inject(TenantService);
   private readonly toast = inject(ToastService);
   private readonly confirmation = inject(ConfirmationService);
+  private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly i18n = inject<I18nService<AppDict>>(I18nService);
 
   protected readonly t = this.i18n.t;
+
+  /** Config que conduce el gateway de documentos (pedido servicio, tipo 35). */
+  private readonly documentConfig = PROGRAMACION_DOCUMENT_CONFIG;
 
   // ── Estado ────────────────────────────────────────────────────────────────
   protected readonly items = signal<readonly Programacion[]>([]);
@@ -88,8 +92,6 @@ export class ProgramacionesListComponent {
     this.filterStorage.read(PROGRAMACIONES_FILTERS_STORAGE_KEY),
   );
   protected readonly filtersVisible = signal(false);
-
-  protected readonly isExportingExcel = signal(false);
 
   // ── Derivados ─────────────────────────────────────────────────────────────
   protected readonly hasSelection = computed(() => this.selectedRows().length > 0);
@@ -113,7 +115,6 @@ export class ProgramacionesListComponent {
   protected readonly columns = PROGRAMACIONES_COLUMNS;
   protected readonly filterFields = PROGRAMACIONES_FILTER_FIELDS;
   protected readonly rowActions = PROGRAMACIONES_ROW_ACTIONS;
-  protected readonly trailingActions = PROGRAMACIONES_TRAILING_ACTIONS;
 
   constructor() {
     this.loadList();
@@ -166,22 +167,13 @@ export class ProgramacionesListComponent {
   protected onRowAction(event: RowActionInvokedEvent): void {
     const programacion = event.row as Programacion;
     switch (event.actionId) {
+      case 'view':
+        this.navigateToDetail(programacion.id);
+        break;
       case 'delete':
         this.confirmRemove([programacion.id]);
         break;
     }
-  }
-
-  protected onToolbarAction(actionId: string): void {
-    switch (actionId) {
-      case 'export-excel':
-        this.exportExcel();
-        break;
-    }
-  }
-
-  protected onRefresh(): void {
-    this.loadList();
   }
 
   protected removeSelected(): void {
@@ -192,29 +184,16 @@ export class ProgramacionesListComponent {
 
   // ── Internos ──────────────────────────────────────────────────────────────
 
-  private exportExcel(): void {
-    if (this.isExportingExcel()) return;
-    this.isExportingExcel.set(true);
-    this.fileDownload
-      .download('/turno/programacion/excel/', {
-        method: 'POST',
-        body: {
-          filtros: buildFiltros(this.activeFilters()),
-          ordenamientos: buildOrdenamientos(this.sort()),
-        },
-        fallbackFilename: 'programaciones.xlsx',
-      })
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        finalize(() => this.isExportingExcel.set(false)),
-      )
-      .subscribe({
-        error: () =>
-          this.toast.error(
-            this.t().common.toasts.exportError.title,
-            this.t().common.toasts.exportError.desc,
-          ),
-      });
+  /**
+   * Navega al detalle de la programación.
+   *
+   * TODO: la ruta/página de detalle está pendiente (usará el endpoint
+   * `/turno/programacion/detalle/?documento=…` vía `ProgramacionService`).
+   */
+  private navigateToDetail(id: number): void {
+    const slug = this.tenant.currentSlug();
+    if (!slug) return;
+    this.router.navigate(['/t', slug, 'turno', 'programaciones', 'detalle', id]);
   }
 
   private loadList(): void {
@@ -231,16 +210,16 @@ export class ProgramacionesListComponent {
     };
 
     this.isLoading.set(true);
-    this.service
-      .list(query)
+    this.gateway
+      .list(this.documentConfig, query)
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         finalize(() => this.isLoading.set(false)),
       )
       .subscribe({
         next: (response) => {
-          this.items.set(response.results);
-          this.totalCount.set(response.count);
+          this.items.set(response.results as readonly Programacion[]);
+          this.totalCount.set(response.totalCount);
         },
         error: () => {
           this.items.set([]);
@@ -266,8 +245,8 @@ export class ProgramacionesListComponent {
   }
 
   private executeRemove(ids: readonly number[]): void {
-    this.service
-      .remove(ids)
+    this.gateway
+      .remove(this.documentConfig, ids)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {

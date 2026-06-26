@@ -1,14 +1,12 @@
 <lib-list-shell [breadcrumb]="breadcrumbItems()" [title]="t().entities.programacion.name">
   <lib-data-toolbar
     toolbar
-    [trailingActions]="trailingActions"
     [searchPlaceholderKey]="'entities.programacion.searchPlaceholder'"
     [searchValue]="searchValue()"
     [filtersEnabled]="true"
     [activeFiltersCount]="activeFilters().length"
     [deleteSelectedEnabled]="hasSelection()"
     [deleteSelectedCount]="selectedRows().length"
-    (actionInvoked)="onToolbarAction($event)"
     (filtersToggle)="openFilters()"
     (filtersClear)="clearFilters()"
     (deleteSelected)="removeSelected()"

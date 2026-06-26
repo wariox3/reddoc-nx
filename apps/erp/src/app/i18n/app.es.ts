@@ -956,9 +956,46 @@ export const es: AppDict = {
     },
     programacion: {
       name: 'Programación',
-      searchPlaceholder: 'Buscar…',
+      searchPlaceholder: 'Buscar por número…',
       columns: {
         id: 'ID',
+        numero: 'Número',
+        fecha: 'Fecha',
+        identificacion: 'Identificación',
+        contacto: 'Contacto',
+        horas: 'H',
+        horasDiurnas: 'HD',
+        horasNocturnas: 'HN',
+      },
+      detail: {
+        notFound: {
+          title: 'Programación no encontrada',
+          desc: 'No pudimos cargar el detalle. Es posible que ya no exista.',
+        },
+        sections: {
+          general: 'Información general',
+          detalle: 'Programación',
+        },
+        labels: {
+          numero: 'Número',
+          fecha: 'Fecha',
+          identificacion: 'Identificación',
+          contacto: 'Contacto',
+          horas: 'Horas',
+          horasDiurnas: 'Horas diurnas',
+          horasNocturnas: 'Horas nocturnas',
+        },
+        grid: {
+          headers: {
+            empleado: 'Empleado',
+            ct: 'CT',
+            hd: 'HD',
+            hn: 'HN',
+            c: 'C',
+            a: 'A',
+          },
+          empty: 'Sin filas para mostrar.',
+        },
       },
     },
     turno: {

@@ -17,4 +17,11 @@ export const PROGRAMACION_ROUTES: Route[] = [
         (m) => m.ProgramacionesListComponent,
       ),
   },
+  {
+    path: 'detalle/:id',
+    loadComponent: () =>
+      import('./pages/programacion-detail/programacion-detail.component').then(
+        (m) => m.ProgramacionDetailComponent,
+      ),
+  },
 ];

@@ -941,9 +941,46 @@ export const en: AppDict = {
     },
     programacion: {
       name: 'Scheduling',
-      searchPlaceholder: 'Search…',
+      searchPlaceholder: 'Search by number…',
       columns: {
         id: 'ID',
+        numero: 'Number',
+        fecha: 'Date',
+        identificacion: 'ID number',
+        contacto: 'Contact',
+        horas: 'H',
+        horasDiurnas: 'DH',
+        horasNocturnas: 'NH',
+      },
+      detail: {
+        notFound: {
+          title: 'Scheduling not found',
+          desc: 'We could not load the detail. It may no longer exist.',
+        },
+        sections: {
+          general: 'General information',
+          detalle: 'Scheduling',
+        },
+        labels: {
+          numero: 'Number',
+          fecha: 'Date',
+          identificacion: 'ID number',
+          contacto: 'Contact',
+          horas: 'Hours',
+          horasDiurnas: 'Day hours',
+          horasNocturnas: 'Night hours',
+        },
+        grid: {
+          headers: {
+            empleado: 'Employee',
+            ct: 'CT',
+            hd: 'HD',
+            hn: 'HN',
+            c: 'C',
+            a: 'A',
+          },
+          empty: 'No rows to show.',
+        },
       },
     },
     turno: {
