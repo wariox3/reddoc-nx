@@ -63,24 +63,27 @@ export class SecuenciaDetailComponent implements OnInit {
     return items;
   });
 
-  /** Celdas de días del mes con valor (oculta los días sin turno asignado). */
+  /**
+   * Celdas de los 31 días del mes (siempre completas). Los días sin turno
+   * asignado quedan con `value` nulo y el template los pinta como vacíos.
+   */
   protected readonly monthDayCells = computed(() => {
     const s = this.secuencia();
     if (!s) return [];
     return SECUENCIA_MONTH_DAYS.map((d) => ({
       day: d,
-      value: s[`dia_${d}` as keyof Secuencia] as string | null,
-    })).filter((cell) => !!cell.value);
+      value: (s[`dia_${d}` as keyof Secuencia] as string | null) || null,
+    }));
   });
 
-  /** Celdas de días de semana/festivos con valor. */
+  /** Celdas de los días de semana/festivos (siempre completas). */
   protected readonly weekdayCells = computed(() => {
     const s = this.secuencia();
     if (!s) return [];
     return SECUENCIA_WEEKDAYS.map((w) => ({
       labelKey: w.labelKey,
-      value: s[w.control as keyof Secuencia] as string | null,
-    })).filter((cell) => !!cell.value);
+      value: (s[w.control as keyof Secuencia] as string | null) || null,
+    }));
   });
 
   ngOnInit(): void {

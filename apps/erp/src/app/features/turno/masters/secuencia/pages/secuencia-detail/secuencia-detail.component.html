@@ -119,77 +119,83 @@
         {{ t().entities.secuencia.detail.sections.diasMes }}
       </h2>
     </div>
-    @if (monthDayCells().length) {
-      <div class="overflow-x-auto px-5 py-4">
-        <table class="border-collapse text-[0.8rem]">
-          <thead>
-            <tr>
-              @for (cell of monthDayCells(); track cell.day) {
-                <th
-                  class="border-r border-b border-[rgba(20,48,73,0.08)] px-3 py-1.5 text-center font-medium tabular-nums text-brand-muted last:border-r-0"
-                >
-                  {{ cell.day }}
-                </th>
-              }
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              @for (cell of monthDayCells(); track cell.day) {
-                <td
-                  class="border-r border-[rgba(20,48,73,0.08)] px-3 py-1.5 text-center font-mono text-[0.82rem] font-semibold text-brand-text last:border-r-0"
-                >
-                  {{ cell.value }}
-                </td>
-              }
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    } @else {
-      <p class="m-0 px-5 py-4 text-[0.8rem] text-brand-muted">—</p>
-    }
+    <div class="overflow-x-auto px-5 py-4">
+      <table class="w-full min-w-[60rem] table-fixed border-collapse">
+        <thead>
+          <tr>
+            @for (cell of monthDayCells(); track cell.day) {
+              <th
+                class="border-b border-[rgba(20,48,73,0.1)] px-1 pb-2 text-center text-[0.7rem] font-semibold tabular-nums text-brand-muted"
+              >
+                {{ cell.day }}
+              </th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            @for (cell of monthDayCells(); track cell.day) {
+              <td class="px-1 pt-2.5 text-center align-middle">
+                @if (cell.value) {
+                  <span
+                    class="inline-block rounded-md bg-[rgba(20,48,73,0.06)] px-2 py-0.5 font-mono text-[0.8rem] font-semibold text-brand-text"
+                  >
+                    {{ cell.value }}
+                  </span>
+                } @else {
+                  <span class="text-[0.9rem] text-[rgba(20,48,73,0.25)]">·</span>
+                }
+              </td>
+            }
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </section>
 
   <!-- ── Días de la semana ────────────────────────────────────────────────────── -->
-  @if (weekdayCells().length) {
-    <section class="overflow-hidden rounded-xl border border-[rgba(20,48,73,0.1)] bg-brand-surface">
-      <div class="flex items-center gap-3 border-b border-[rgba(20,48,73,0.08)] px-5 py-3.5">
-        <span
-          class="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-slate-100 text-brand-muted"
-        >
-          <i class="pi pi-clock text-[1rem]"></i>
-        </span>
-        <h2 class="m-0 text-[0.9rem] font-bold tracking-tight text-brand-text">
-          {{ t().entities.secuencia.detail.sections.diasSemana }}
-        </h2>
-      </div>
-      <div class="overflow-x-auto px-5 py-4">
-        <table class="border-collapse text-[0.8rem]">
-          <thead>
-            <tr>
-              @for (cell of weekdayCells(); track cell.labelKey) {
-                <th
-                  class="border-r border-b border-[rgba(20,48,73,0.08)] px-3 py-1.5 text-center font-medium text-brand-muted last:border-r-0"
-                >
-                  {{ translate(cell.labelKey) }}
-                </th>
-              }
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              @for (cell of weekdayCells(); track cell.labelKey) {
-                <td
-                  class="border-r border-[rgba(20,48,73,0.08)] px-3 py-1.5 text-center font-mono text-[0.82rem] font-semibold text-brand-text last:border-r-0"
-                >
-                  {{ cell.value }}
-                </td>
-              }
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-  }
+  <section class="overflow-hidden rounded-xl border border-[rgba(20,48,73,0.1)] bg-brand-surface">
+    <div class="flex items-center gap-3 border-b border-[rgba(20,48,73,0.08)] px-5 py-3.5">
+      <span
+        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-slate-100 text-brand-muted"
+      >
+        <i class="pi pi-clock text-[1rem]"></i>
+      </span>
+      <h2 class="m-0 text-[0.9rem] font-bold tracking-tight text-brand-text">
+        {{ t().entities.secuencia.detail.sections.diasSemana }}
+      </h2>
+    </div>
+    <div class="overflow-x-auto px-5 py-4">
+      <table class="w-full table-fixed border-collapse">
+        <thead>
+          <tr>
+            @for (cell of weekdayCells(); track cell.labelKey) {
+              <th
+                class="border-b border-[rgba(20,48,73,0.1)] px-2 pb-2 text-center text-[0.7rem] font-semibold leading-tight text-brand-muted"
+              >
+                {{ translate(cell.labelKey) }}
+              </th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            @for (cell of weekdayCells(); track cell.labelKey) {
+              <td class="px-2 pt-2.5 text-center align-middle">
+                @if (cell.value) {
+                  <span
+                    class="inline-block rounded-md bg-[rgba(20,48,73,0.06)] px-2 py-0.5 font-mono text-[0.8rem] font-semibold text-brand-text"
+                  >
+                    {{ cell.value }}
+                  </span>
+                } @else {
+                  <span class="text-[0.9rem] text-[rgba(20,48,73,0.25)]">·</span>
+                }
+              </td>
+            }
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
 }
