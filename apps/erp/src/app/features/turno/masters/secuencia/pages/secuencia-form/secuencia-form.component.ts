@@ -1,4 +1,6 @@
 import { Component, DestroyRef, type OnInit, computed, inject, input, signal } from '@angular/core';
+import { NgClass } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -17,6 +19,13 @@ import {
 } from '../../secuencia.constants';
 import { secuenciaToFormValue, formValueToPayload } from '../../secuencia.mapper';
 import { UppercaseDirective } from '@erp/core/directives/uppercase.directive';
+
+/** Item del error puntual del backend cuando un código de turno digitado no existe. */
+interface TurnoInexistente {
+  readonly campo: string;
+  readonly codigo: string;
+  readonly mensaje: string;
+}
 
 /**
  * Formulario de alta/edición de secuencia.
@@ -40,6 +49,7 @@ import { UppercaseDirective } from '@erp/core/directives/uppercase.directive';
     CheckboxModule,
     FieldErrorComponent,
     UppercaseDirective,
+    NgClass,
   ],
   templateUrl: './secuencia-form.component.html',
   styleUrl: './secuencia-form.component.scss',
@@ -126,6 +136,20 @@ export class SecuenciaFormComponent implements OnInit {
     domingo_festivo: [''],
   });
 
+  /**
+   * Celdas del grid (`dia_N` / día de semana) que el backend marcó porque su
+   * código de turno no existe → mensaje. Se usan para resaltar la celda y mostrar
+   * el detalle en su `title`. Se limpian al editar cualquier campo.
+   */
+  protected readonly turnoErrors = signal<ReadonlyMap<string, string>>(new Map());
+
+  constructor() {
+    // Al tocar cualquier celda, retira el resaltado de turnos inexistentes.
+    this.form.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => {
+      if (this.turnoErrors().size) this.turnoErrors.set(new Map());
+    });
+  }
+
   ngOnInit(): void {
     const id = this.id();
     if (id) this.loadSecuencia(Number(id));
@@ -152,9 +176,44 @@ export class SecuenciaFormComponent implements OnInit {
       error: (err: unknown) => {
         this.isSaving.set(false);
         const fail = id ? toasts.editError : toasts.createError;
+        if (this.handleTurnoErrors(err, fail.title)) return;
         this.formErrors.handle(this.form, err, fail.title);
       },
     });
+  }
+
+  /**
+   * Maneja el error puntual del backend de secuencia cuando uno o más códigos de
+   * turno digitados no existen:
+   * `{ detail: [...], errores: [{ campo, codigo, mensaje }] }`.
+   *
+   * Resalta las celdas afectadas (con su mensaje en el `title`) y muestra el
+   * `detail` en un toast. Devuelve `true` si el error tenía esta forma (y ya quedó
+   * manejado); `false` para que el caller siga con el manejo genérico.
+   */
+  private handleTurnoErrors(err: unknown, fallbackTitle: string): boolean {
+    if (!(err instanceof HttpErrorResponse)) return false;
+    const body = err.error as { detail?: unknown; errores?: unknown } | null;
+    if (!body || !Array.isArray(body.errores)) return false;
+
+    const map = new Map<string, string>();
+    for (const item of body.errores) {
+      if (
+        item &&
+        typeof item === 'object' &&
+        typeof (item as TurnoInexistente).campo === 'string'
+      ) {
+        const { campo, mensaje } = item as TurnoInexistente;
+        map.set(campo, mensaje ?? '');
+      }
+    }
+    if (map.size === 0) return false;
+
+    this.turnoErrors.set(map);
+    const detail =
+      Array.isArray(body.detail) && typeof body.detail[0] === 'string' ? body.detail[0] : undefined;
+    this.toast.error(fallbackTitle, detail);
+    return true;
   }
 
   protected onCancel(): void {

@@ -129,6 +129,8 @@
               appUppercase
               maxlength="10"
               class="text-center"
+              [ngClass]="{ '!border-red-400 !bg-red-50': turnoErrors().has('dia_' + d) }"
+              [attr.title]="turnoErrors().get('dia_' + d)"
               fluid
             />
           </div>
@@ -169,6 +171,8 @@
               [formControlName]="w.control"
               appUppercase
               maxlength="10"
+              [ngClass]="{ '!border-red-400 !bg-red-50': turnoErrors().has(w.control) }"
+              [attr.title]="turnoErrors().get(w.control)"
               fluid
             />
           </div>
