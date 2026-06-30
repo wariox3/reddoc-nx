@@ -18,7 +18,6 @@ import {
 import { ProgramacionService } from '../../programacion.service';
 import { PROGRAMACION_LIST_PATH } from '../../programacion.constants';
 import type {
-  ProgramacionDetalleRead,
   ProgramacionDetalleResponse,
   ProgramacionFecha,
   ProgramacionFila,
@@ -46,36 +45,16 @@ interface GridView {
   readonly filas: readonly ProgramacionFila[];
 }
 
-/**
- * Normaliza una entrada cruda de `fechas` a `{ clave, etiqueta }`.
- *
- * TENTATIVO: el backend manda `fechas` vacío en el ejemplo. Tolera string ISO
- * (`'2026-06-01'`) u objeto (`{ fecha | clave | dia, dia | etiqueta }`); se ajusta
- * cuando se confirme el shape real.
- */
-function diaInfo(isoDate: string): { inicial: string; finDeSemana: boolean } {
-  const date = fromIsoDate(isoDate);
-  if (!date) return { inicial: '', finDeSemana: false };
-  const dow = date.getDay();
-  return { inicial: INICIALES_DIA_SEMANA_ES[dow], finDeSemana: dow === 0 || dow === 6 };
-}
-
-function toProgramacionFecha(raw: unknown, index: number): ProgramacionFecha {
-  if (typeof raw === 'string') {
-    const dia = raw.slice(8, 10).replace(/^0/, '');
-    const { inicial, finDeSemana } = diaInfo(raw);
-    return { clave: raw, etiqueta: dia || raw, inicial, finDeSemana };
-  }
-  if (raw && typeof raw === 'object') {
-    const obj = raw as Record<string, unknown>;
-    const clave = String(obj['fecha'] ?? obj['clave'] ?? obj['dia'] ?? index);
-    const etiqueta = String(obj['dia'] ?? obj['etiqueta'] ?? obj['fecha'] ?? index + 1);
-    const { inicial, finDeSemana } = clave.includes('-')
-      ? diaInfo(clave)
-      : { inicial: '', finDeSemana: false };
-    return { clave, etiqueta, inicial, finDeSemana };
-  }
-  return { clave: String(index), etiqueta: String(index + 1), inicial: '', finDeSemana: false };
+/** Convierte un string ISO `YYYY-MM-DD` a la columna normalizada del grid. */
+function toProgramacionFecha(iso: string, _index: number): ProgramacionFecha {
+  const date = fromIsoDate(iso);
+  const dow = date ? date.getDay() : 0;
+  return {
+    clave: iso,
+    etiqueta: iso.slice(8, 10).replace(/^0/, ''),
+    inicial: INICIALES_DIA_SEMANA_ES[dow],
+    finDeSemana: dow === 0 || dow === 6,
+  };
 }
 
 /**
@@ -184,12 +163,6 @@ export class ProgramacionDetailComponent implements OnInit {
     return date.toLocaleDateString('es-CO', { day: '2-digit', month: 'long', year: 'numeric' });
   }
 
-  /**
-   * Carga el detalle de la programación por el id del documento de la fila.
-   *
-   * El mapeo a `CabeceraView` es tentativo hasta confirmar el shape de la
-   * respuesta (logueado en consola).
-   */
   private cargarFestivos(anio: number, mes: number): void {
     this.festivoService
       .getDelMes(anio, mes)
@@ -206,19 +179,20 @@ export class ProgramacionDetailComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (detalle) => {
-          const read = detalle as ProgramacionDetalleRead;
-          const fecha = read.fecha ? new Date(read.fecha) : new Date();
-          this.cargarFestivos(fecha.getFullYear(), fecha.getMonth() + 1);
+          const res = detalle as ProgramacionDetalleResponse;
+          const now = new Date();
+          this.cargarFestivos(now.getFullYear(), now.getMonth() + 1);
+          // La respuesta real no incluye cabecera del documento; se muestra vacía.
           this.cabecera.set({
-            numero: read.numero ?? null,
-            fecha: read.fecha ? new Date(read.fecha) : null,
-            identificacion: read.tercero_numero_identificacion ?? null,
-            contacto: read.contacto_nombre ?? null,
-            horas: read.horas ?? null,
-            horasDiurnas: read.horas_diurnas ?? null,
-            horasNocturnas: read.horas_nocturnas ?? null,
+            numero: null,
+            fecha: null,
+            identificacion: null,
+            contacto: null,
+            horas: null,
+            horasDiurnas: null,
+            horasNocturnas: null,
           });
-          this.grid.set(this.parseGrid(detalle));
+          this.grid.set(this.parseGrid(res));
           this.isLoading.set(false);
         },
         error: () => {
@@ -232,17 +206,8 @@ export class ProgramacionDetailComponent implements OnInit {
       });
   }
 
-  /**
-   * Normaliza la respuesta cruda al `GridView` que consume `app-programacion-grid`.
-   * Defensivo: si `fechas`/`filas` no vienen como arreglos, cae a listas vacías
-   * (el grid muestra su estado vacío).
-   */
-  private parseGrid(detalle: unknown): GridView {
-    const raw = (detalle ?? {}) as Partial<ProgramacionDetalleResponse>;
-    const fechas = Array.isArray(raw.fechas)
-      ? raw.fechas.map((f, i) => toProgramacionFecha(f, i))
-      : [];
-    const filas = Array.isArray(raw.filas) ? (raw.filas as readonly ProgramacionFila[]) : [];
-    return { fechas, filas };
+  private parseGrid(res: ProgramacionDetalleResponse): GridView {
+    const fechas = res.fechas.map((f, i) => toProgramacionFecha(f, i));
+    return { fechas, filas: res.filas };
   }
 }

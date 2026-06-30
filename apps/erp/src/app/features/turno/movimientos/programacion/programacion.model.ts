@@ -23,50 +23,21 @@ export interface Programacion {
 }
 
 /**
- * Shape de lectura del detalle de una programación
- * (`GET /turno/programacion/detalle/?documento=…`).
+ * Respuesta de `GET /turno/programacion/detalle/?documento=<id>`.
  *
- * TENTATIVO: pendiente de confirmar contra la respuesta real (logueada en
- * consola por `ProgramacionDetailComponent`). Por ahora asume los mismos campos
- * de cabecera que la fila del listado; se ajusta cuando se confirme el shape.
- */
-export interface ProgramacionDetalleRead {
-  readonly id?: number;
-  readonly numero?: string;
-  readonly fecha?: string;
-  readonly tercero_numero_identificacion?: string;
-  readonly contacto_nombre?: string;
-  readonly horas?: number;
-  readonly horas_diurnas?: number;
-  readonly horas_nocturnas?: number;
-}
-
-/**
- * Respuesta del grid (calendario de turnos) del detalle de programación
- * (`GET /turno/programacion/detalle/?documento=<id>`).
- *
- * Es un calendario por documento: `fechas` define las columnas de día y `filas`
- * las líneas (agrupables por `documento_detalle_id`), cada una con su mapa `dias`
- * indexado por la clave de cada fecha.
- *
- * TENTATIVO: el ejemplo de respuesta viene casi vacío (`fechas: []`, `dias: {}`),
- * así que el shape exacto de `ProgramacionFecha`, las claves de `dias` y el origen
- * de `empleado/ct/HD/HN/C/A` están por confirmar con datos poblados (logueados en
- * consola por `ProgramacionDetailComponent`).
+ * Calendario por documento: `fechas` son las columnas (strings ISO `YYYY-MM-DD`)
+ * y `filas` las líneas agrupables por `documento_detalle_id`.
  */
 export interface ProgramacionDetalleResponse {
   readonly documento: number;
-  readonly fechas: readonly ProgramacionFecha[];
+  readonly fechas: readonly string[];
   readonly filas: readonly ProgramacionFila[];
 }
 
 /**
- * Entrada de columna de día del calendario.
- *
- * TENTATIVO: el backend manda `fechas` vacío en el ejemplo. El adapter
- * (`toProgramacionFecha`) tolera tanto un string ISO (`'2026-06-01'`) como un
- * objeto (`{ fecha, dia }`) y normaliza a `{ clave, etiqueta }`:
- *  - `clave`: índice usado para leer `fila.dias[clave]`.
+ * Columna de día del calendario, normalizada en el front a partir del string ISO
+ * que llega en `ProgramacionDetalleResponse.fechas`.
+ *  - `clave`: la fecha ISO original (`'2026-06-01'`) — índice para `fila.dias`.
  *  - `etiqueta`: número de día visible en el header (`1`..`31`).
  */
 export interface ProgramacionFecha {
@@ -96,6 +67,9 @@ export interface ProgramacionDiaCelda {
  * Fila del calendario: un **contrato** asignado a un puesto. Varias filas pueden
  * compartir `documento_detalle_id` (el grid las agrupa por puesto); el
  * `contrato_nombre` identifica cada fila dentro del grupo.
+ *
+ * `horas*` son las horas contratadas del puesto; `horas*_programadas` las que
+ * ya tienen turno asignado en el período.
  */
 export interface ProgramacionFila {
   readonly documento_detalle_id: number;
@@ -103,9 +77,14 @@ export interface ProgramacionFila {
   readonly puesto_nombre: string | null;
   readonly contrato_id: number | null;
   readonly contrato_nombre: string | null;
+  readonly horas: number;
+  readonly horas_diurnas: number;
+  readonly horas_nocturnas: number;
+  readonly horas_programadas: number;
+  readonly horas_diurnas_programadas: number;
+  readonly horas_nocturnas_programadas: number;
   /** Mapa fecha ISO → celda del día (clave = `ProgramacionFecha.clave`). */
   readonly dias: Record<string, ProgramacionDiaCelda | null>;
-  readonly total_horas: number;
 }
 
 /** Ítem de día en `crear-programacion`. `fecha` en formato ISO `YYYY-MM-DD`. */
