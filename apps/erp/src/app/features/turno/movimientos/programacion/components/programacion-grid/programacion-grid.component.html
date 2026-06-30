@@ -10,10 +10,12 @@
         <th class="programacion-grid__th w-10 text-center">{{ g.headers.ct }}</th>
         @for (fecha of fechas(); track fecha.clave) {
           <th
-            class="programacion-grid__th programacion-grid__th--dia text-center"
+            class="programacion-grid__th programacion-grid__th--dia"
+            [class.programacion-grid__th--finde]="fecha.finDeSemana"
             [class.programacion-grid__th--festivo]="festivoClaves().has(fecha.clave)"
           >
-            {{ fecha.etiqueta }}
+            <span class="programacion-grid__dia-num">{{ fecha.etiqueta }}</span>
+            <span class="programacion-grid__dia-ini">{{ fecha.inicial }}</span>
           </th>
         }
         <th class="programacion-grid__th programacion-grid__th--resumen w-10 text-center">
@@ -72,6 +74,7 @@
             @for (fecha of fechas(); track fecha.clave) {
               <td
                 class="programacion-grid__td programacion-grid__td--dia text-center tabular-nums"
+                [class.programacion-grid__td--finde]="fecha.finDeSemana"
                 [class.programacion-grid__td--festivo]="
                   esFestivo(fila, fecha.clave) || festivoClaves().has(fecha.clave)
                 "

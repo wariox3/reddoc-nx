@@ -2,7 +2,13 @@ import { Component, DestroyRef, type OnInit, computed, inject, input, signal } f
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
-import { I18nService, TenantService, ToastService } from '@reddoc/core';
+import {
+  I18nService,
+  INICIALES_DIA_SEMANA_ES,
+  TenantService,
+  ToastService,
+  fromIsoDate,
+} from '@reddoc/core';
 import { BreadcrumbComponent, type BreadcrumbItem } from '@reddoc/feature-base';
 import type { AppDict } from '@erp/i18n';
 import {
@@ -47,18 +53,29 @@ interface GridView {
  * (`'2026-06-01'`) u objeto (`{ fecha | clave | dia, dia | etiqueta }`); se ajusta
  * cuando se confirme el shape real.
  */
+function diaInfo(isoDate: string): { inicial: string; finDeSemana: boolean } {
+  const date = fromIsoDate(isoDate);
+  if (!date) return { inicial: '', finDeSemana: false };
+  const dow = date.getDay();
+  return { inicial: INICIALES_DIA_SEMANA_ES[dow], finDeSemana: dow === 0 || dow === 6 };
+}
+
 function toProgramacionFecha(raw: unknown, index: number): ProgramacionFecha {
   if (typeof raw === 'string') {
     const dia = raw.slice(8, 10).replace(/^0/, '');
-    return { clave: raw, etiqueta: dia || raw };
+    const { inicial, finDeSemana } = diaInfo(raw);
+    return { clave: raw, etiqueta: dia || raw, inicial, finDeSemana };
   }
   if (raw && typeof raw === 'object') {
     const obj = raw as Record<string, unknown>;
     const clave = String(obj['fecha'] ?? obj['clave'] ?? obj['dia'] ?? index);
     const etiqueta = String(obj['dia'] ?? obj['etiqueta'] ?? obj['fecha'] ?? index + 1);
-    return { clave, etiqueta };
+    const { inicial, finDeSemana } = clave.includes('-')
+      ? diaInfo(clave)
+      : { inicial: '', finDeSemana: false };
+    return { clave, etiqueta, inicial, finDeSemana };
   }
-  return { clave: String(index), etiqueta: String(index + 1) };
+  return { clave: String(index), etiqueta: String(index + 1), inicial: '', finDeSemana: false };
 }
 
 /**

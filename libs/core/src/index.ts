@@ -55,6 +55,7 @@ export {
   fromHora,
   daysBetween,
   diasDelMes,
+  INICIALES_DIA_SEMANA_ES,
 } from './lib/utils/date.utils';
 export type { DiaDelMes } from './lib/utils/date.utils';
 export { formatCop, toFiniteNumber } from './lib/utils/currency.utils';

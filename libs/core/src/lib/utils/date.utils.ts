@@ -60,7 +60,7 @@ export function daysBetween(a: Date, b: Date): number {
  * Inicial del día de la semana en español, indexada por `Date.getDay()`
  * (0 = domingo … 6 = sábado). Miércoles usa `X` para no chocar con Martes (`M`).
  */
-const INICIALES_DIA_SEMANA_ES = ['D', 'L', 'M', 'X', 'J', 'V', 'S'] as const;
+export const INICIALES_DIA_SEMANA_ES = ['D', 'L', 'M', 'X', 'J', 'V', 'S'] as const;
 
 /** Día de un mes: su número y la inicial del día de la semana que le corresponde. */
 export interface DiaDelMes {
