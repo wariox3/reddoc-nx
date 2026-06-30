@@ -729,7 +729,7 @@ export interface AppDict extends AuthTranslationsHost {
           contratoPlaceholder: string;
           secuenciaLabel: string;
           secuenciaPlaceholder: string;
-          secuenciaAplicar: string;
+          secuenciaCalcular: string;
           posicionLabel: string;
           diasSection: string;
           diaAria: string;

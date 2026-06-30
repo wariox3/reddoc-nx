@@ -990,7 +990,7 @@ export const en: AppDict = {
           contratoPlaceholder: 'Search contract…',
           secuenciaLabel: 'Sequence',
           secuenciaPlaceholder: 'Search sequence…',
-          secuenciaAplicar: 'Apply',
+          secuenciaCalcular: 'Calculate',
           posicionLabel: 'Initial position',
           diasSection: 'Days of the month',
           diaAria: 'Day',

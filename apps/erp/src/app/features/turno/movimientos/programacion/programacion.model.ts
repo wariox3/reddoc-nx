@@ -105,21 +105,20 @@ export interface ProgramacionFila {
   readonly total_horas: number;
 }
 
-/** Turno asignado a un día del mes en `aplicar-programacion`. */
-export interface DiaTurno {
-  readonly dia: number;
+/** Ítem de día en `crear-programacion`. `fecha` en formato ISO `YYYY-MM-DD`. */
+export interface ProgramacionItem {
+  readonly fecha: string;
   /** Código del turno escrito en la celda (`null` si el día queda sin turno). */
   readonly turno_codigo: string | null;
 }
 
 /**
- * Payload de `POST /turno/programacion/aplicar-programacion/`: aplica la
- * programación de un contrato a un puesto (`documento_detalle_id`) para un mes.
+ * Payload de `POST /turno/programacion/crear-programacion/`: crea la
+ * programación de un contrato en un puesto (`documento_detalle_id`) con un ítem
+ * por día (`fecha` + `turno_codigo`).
  */
-export interface AplicarProgramacionPayload {
+export interface CrearProgramacionPayload {
   readonly contrato_id: number;
-  readonly anio: number;
-  readonly mes: number;
   readonly documento_detalle_id: number;
-  readonly dias: readonly DiaTurno[];
+  readonly items: readonly ProgramacionItem[];
 }

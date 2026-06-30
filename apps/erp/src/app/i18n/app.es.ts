@@ -1005,7 +1005,7 @@ export const es: AppDict = {
           contratoPlaceholder: 'Buscar contrato…',
           secuenciaLabel: 'Secuencia',
           secuenciaPlaceholder: 'Buscar secuencia…',
-          secuenciaAplicar: 'Aplicar',
+          secuenciaCalcular: 'Calcular',
           posicionLabel: 'Posición inicial',
           diasSection: 'Días del mes',
           diaAria: 'Día',

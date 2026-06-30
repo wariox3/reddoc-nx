@@ -36,16 +36,17 @@ import {
   SecuenciaService,
   type SecuenciaMesCalculado,
 } from '@erp/features/turno/masters/secuencia/secuencia.service';
+import type { Secuencia } from '@erp/features/turno/masters/secuencia/secuencia.model';
 import type { ProgramacionGrupoRef } from '../programacion-grid/programacion-grid.component';
 import { ProgramacionService } from '../../programacion.service';
-import type { AplicarProgramacionPayload } from '../../programacion.model';
+import type { CrearProgramacionPayload } from '../../programacion.model';
 
 /**
  * Modal para **aplicar la programación de un contrato a un puesto**.
  *
  * Se abre desde el botón de cada banda de grupo del grid (un puesto =
  * `documento_detalle_id`). Permite elegir un contrato y poner el código de turno
- * de cada día del mes actual, y envía `POST .../aplicar-programacion`. Al éxito
+ * de cada día del mes actual, y envía `POST .../crear-programacion`. Al éxito
  * emite `applied` para que el padre refresque el grid.
  */
 @Component({
@@ -120,6 +121,9 @@ export class ProgramacionAplicarModalComponent {
   /** Festivos del mes del período actual (`/general/festivo/mes/`). */
   private readonly festivos = signal<readonly Festivo[]>([]);
 
+  /** Detalle completo de la secuencia elegida (`getById`). Aún sin UI. */
+  private readonly secuenciaDetalle = signal<Secuencia | null>(null);
+
   /**
    * Días del mes (1..N) que son festivos → su nombre, para resaltarlos en la
    * tabla y mostrar el nombre del festivo en el `title`. Filtra por el
@@ -171,6 +175,33 @@ export class ProgramacionAplicarModalComponent {
       this.form.reset();
       this.cargarFestivos();
     });
+
+    // Al elegir una secuencia, traer su detalle completo (getById).
+    this.form.controls.secuencia.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((sel) => this.cargarSecuenciaDetalle(sel));
+  }
+
+  /**
+   * Trae el detalle completo de la secuencia elegida
+   * (`GET /turno/secuencia/:id/`) y lo guarda. Por ahora solo se loguea; la UI
+   * se define en el próximo paso.
+   */
+  private cargarSecuenciaDetalle(sel: ErpSelectOption | null): void {
+    if (!sel) {
+      this.secuenciaDetalle.set(null);
+      return;
+    }
+    this.secuenciaService
+      .getById(sel.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (secuencia) => {
+          this.secuenciaDetalle.set(secuencia);
+          console.log('secuencia detalle', secuencia);
+        },
+        error: () => this.secuenciaDetalle.set(null),
+      });
   }
 
   /**
@@ -187,26 +218,31 @@ export class ProgramacionAplicarModalComponent {
       });
   }
 
-  /** Arma el payload y envía `POST aplicar-programacion`. */
+  /** Fecha ISO `YYYY-MM-DD` del día indicado dentro del período actual. */
+  private fechaIso(dia: number): string {
+    const mes = String(this.periodo.mes).padStart(2, '0');
+    const d = String(dia).padStart(2, '0');
+    return `${this.periodo.anio}-${mes}-${d}`;
+  }
+
+  /** Arma el payload y envía `POST crear-programacion`. */
   protected onAplicar(): void {
     const grupo = this.grupo();
     const contrato = this.form.controls.contrato.value;
     if (!grupo || !contrato || this.isSubmitting()) return;
 
-    const payload: AplicarProgramacionPayload = {
+    const payload: CrearProgramacionPayload = {
       contrato_id: contrato.id,
-      anio: this.periodo.anio,
-      mes: this.periodo.mes,
       documento_detalle_id: grupo.documentoDetalleId,
-      dias: this.diasArray.controls.map((control, i) => ({
-        dia: i + 1,
+      items: this.diasArray.controls.map((control, i) => ({
+        fecha: this.fechaIso(i + 1),
         turno_codigo: control.value.trim() || null,
       })),
     };
 
     this.isSubmitting.set(true);
     this.service
-      .aplicarProgramacion(payload)
+      .crearProgramacion(payload)
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         finalize(() => this.isSubmitting.set(false)),
