@@ -108,7 +108,9 @@
                 <th
                   class="aplicar-dias__th"
                   [class.aplicar-dias__th--finde]="d.finDeSemana"
-                  [class.aplicar-dias__th--festivo]="festivoPorDia().has(d.dia)"
+                  [class.aplicar-dias__th--festivo]="
+                    d.inicial === 'D' || festivoPorDia().has(d.dia)
+                  "
                   [class.aplicar-dias__th--error]="diasOcupados().has(d.dia)"
                   [attr.title]="festivoPorDia().get(d.dia)"
                 >
@@ -124,7 +126,9 @@
                 <td
                   class="aplicar-dias__td"
                   [class.aplicar-dias__td--finde]="d.finDeSemana"
-                  [class.aplicar-dias__td--festivo]="festivoPorDia().has(d.dia)"
+                  [class.aplicar-dias__td--festivo]="
+                    d.inicial === 'D' || festivoPorDia().has(d.dia)
+                  "
                   [class.aplicar-dias__td--error]="diasOcupados().has(d.dia)"
                 >
                   <input

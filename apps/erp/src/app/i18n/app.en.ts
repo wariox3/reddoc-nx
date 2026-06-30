@@ -995,7 +995,7 @@ export const en: AppDict = {
           diasSection: 'Days of the month',
           diaAria: 'Day',
           diaOcupadoTitle: 'A schedule already exists for this day',
-          aplicar: 'Apply',
+          aplicar: 'Save',
           close: 'Close',
           toasts: {
             success: {

@@ -1010,7 +1010,7 @@ export const es: AppDict = {
           diasSection: 'Días del mes',
           diaAria: 'Día',
           diaOcupadoTitle: 'Ya existe programación para este día',
-          aplicar: 'Aplicar',
+          aplicar: 'Guardar',
           close: 'Cerrar',
           toasts: {
             success: {
