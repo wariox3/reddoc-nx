@@ -9,6 +9,37 @@ import {
 } from '@reddoc/core';
 import type { Secuencia, SecuenciaPayload } from './secuencia.model';
 
+/** Body de `POST /turno/secuencia/calcular-mes/`. */
+export interface SecuenciaCalcularMesPayload {
+  readonly secuencia_id: number;
+  readonly posicion_inicial: number;
+  readonly anio: number;
+  readonly mes: number;
+}
+
+/** Día calculado por `calcular-mes`. `fecha` en formato ISO `YYYY-MM-DD`. */
+export interface SecuenciaMesDia {
+  readonly dia: number;
+  readonly fecha: string;
+  readonly turno_codigo: string;
+  readonly turno_id: number;
+  readonly turno_nombre: string;
+  readonly horas: number;
+  readonly horas_diurnas: number;
+  readonly horas_nocturnas: number;
+  readonly festivo: boolean;
+}
+
+/** Respuesta de `POST /turno/secuencia/calcular-mes/`. */
+export interface SecuenciaMesCalculado {
+  readonly secuencia_id: number;
+  readonly anio: number;
+  readonly mes: number;
+  readonly posicion_inicial: number;
+  readonly ciclo_dias: number;
+  readonly dias: readonly SecuenciaMesDia[];
+}
+
 /**
  * Servicio HTTP de secuencias.
  *
@@ -36,6 +67,14 @@ export class SecuenciaService extends BaseHttpService {
 
   getById(id: number): Observable<Secuencia> {
     return this.get<Secuencia>(`${this.resourcePath}${id}/`);
+  }
+
+  /**
+   * Calcula los turnos de un mes a partir de una secuencia y una posición
+   * inicial (`POST /turno/secuencia/calcular-mes/`).
+   */
+  calcularMes(payload: SecuenciaCalcularMesPayload): Observable<SecuenciaMesCalculado> {
+    return this.post<SecuenciaMesCalculado>(`${this.resourcePath}calcular-mes/`, payload);
   }
 
   create(payload: SecuenciaPayload): Observable<Secuencia> {

@@ -32,6 +32,10 @@ import {
   FestivoService,
   type Festivo,
 } from '@erp/features/general/masters/festivo/festivo.service';
+import {
+  SecuenciaService,
+  type SecuenciaMesCalculado,
+} from '@erp/features/turno/masters/secuencia/secuencia.service';
 import type { ProgramacionGrupoRef } from '../programacion-grid/programacion-grid.component';
 import { ProgramacionService } from '../../programacion.service';
 import type { AplicarProgramacionPayload } from '../../programacion.model';
@@ -62,6 +66,7 @@ export class ProgramacionAplicarModalComponent {
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly service = inject(ProgramacionService);
   private readonly festivoService = inject(FestivoService);
+  private readonly secuenciaService = inject(SecuenciaService);
   private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly i18n = inject<I18nService<AppDict>>(I18nService);
@@ -102,6 +107,7 @@ export class ProgramacionAplicarModalComponent {
   protected readonly form = this.fb.group({
     contrato: this.fb.control<ContratoOption | null>(null),
     secuencia: this.fb.control<ErpSelectOption | null>(null),
+    posicionInicial: this.fb.control<number | null>(null),
     dias: this.fb.array(this.dias.map(() => this.fb.control(''))),
   });
 
@@ -142,6 +148,20 @@ export class ProgramacionAplicarModalComponent {
   /** Solo se puede aplicar con un contrato elegido y sin envío en curso. */
   protected readonly puedeAplicar = computed(
     () => this.contratoValue() !== null && !this.isSubmitting(),
+  );
+
+  protected readonly isCalculating = signal(false);
+
+  private readonly secuenciaValue = toSignal(this.form.controls.secuencia.valueChanges, {
+    initialValue: this.form.controls.secuencia.value,
+  });
+  private readonly posicionValue = toSignal(this.form.controls.posicionInicial.valueChanges, {
+    initialValue: this.form.controls.posicionInicial.value,
+  });
+
+  /** Para calcular: secuencia elegida + posición inicial válida y sin cálculo en curso. */
+  protected readonly puedeCalcular = computed(
+    () => this.secuenciaValue() !== null && this.posicionValue() != null && !this.isCalculating(),
   );
 
   constructor() {
@@ -205,9 +225,40 @@ export class ProgramacionAplicarModalComponent {
       });
   }
 
-  /** Pendiente por implementar: acción del botón "Aplicar" junto a la secuencia. */
+  /**
+   * Calcula los turnos del mes a partir de la secuencia y la posición inicial
+   * (`POST /turno/secuencia/calcular-mes/`) y vuelca cada `turno_codigo` en el
+   * input del día correspondiente de la tabla.
+   */
   protected onAplicarSecuencia(): void {
-    // TODO: definir comportamiento.
+    const secuencia = this.form.controls.secuencia.value;
+    const posicionInicial = this.form.controls.posicionInicial.value;
+    if (!secuencia || posicionInicial == null || this.isCalculating()) return;
+
+    this.isCalculating.set(true);
+    this.secuenciaService
+      .calcularMes({
+        secuencia_id: secuencia.id,
+        posicion_inicial: posicionInicial,
+        anio: this.periodo.anio,
+        mes: this.periodo.mes,
+      })
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.isCalculating.set(false)),
+      )
+      .subscribe({
+        next: (res) => this.volcarCalculo(res),
+        error: (err) => console.error('Error al calcular el mes de la secuencia', err),
+      });
+  }
+
+  /** Escribe el `turno_codigo` de cada día calculado en su input de la tabla. */
+  private volcarCalculo(res: SecuenciaMesCalculado): void {
+    const controls = this.diasArray.controls;
+    for (const d of res.dias) {
+      controls[d.dia - 1]?.setValue(d.turno_codigo);
+    }
   }
 
   protected onClose(): void {

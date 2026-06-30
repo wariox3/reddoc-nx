@@ -63,10 +63,26 @@
         />
       </div>
 
+      <div class="flex flex-col gap-1.5">
+        <label for="posicion_inicial" class="text-[0.78rem] font-medium text-brand-muted">
+          {{ m.posicionLabel }}
+        </label>
+        <input
+          pInputText
+          id="posicion_inicial"
+          type="number"
+          min="1"
+          formControlName="posicionInicial"
+          class="w-20"
+        />
+      </div>
+
       <p-button
         type="button"
         [label]="m.secuenciaAplicar"
         icon="pi pi-check"
+        [loading]="isCalculating()"
+        [disabled]="!puedeCalcular()"
         (onClick)="onAplicarSecuencia()"
       />
     </div>

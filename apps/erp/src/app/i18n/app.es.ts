@@ -1006,6 +1006,7 @@ export const es: AppDict = {
           secuenciaLabel: 'Secuencia',
           secuenciaPlaceholder: 'Buscar secuencia…',
           secuenciaAplicar: 'Aplicar',
+          posicionLabel: 'Posición inicial',
           diasSection: 'Días del mes',
           diaAria: 'Día',
           aplicar: 'Aplicar',

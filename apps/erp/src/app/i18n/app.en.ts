@@ -991,6 +991,7 @@ export const en: AppDict = {
           secuenciaLabel: 'Sequence',
           secuenciaPlaceholder: 'Search sequence…',
           secuenciaAplicar: 'Apply',
+          posicionLabel: 'Initial position',
           diasSection: 'Days of the month',
           diaAria: 'Day',
           aplicar: 'Apply',
