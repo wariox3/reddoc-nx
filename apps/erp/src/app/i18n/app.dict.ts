@@ -727,6 +727,9 @@ export interface AppDict extends AuthTranslationsHost {
           placeholder: string;
           contratoLabel: string;
           contratoPlaceholder: string;
+          secuenciaLabel: string;
+          secuenciaPlaceholder: string;
+          secuenciaAplicar: string;
           diasSection: string;
           diaAria: string;
           aplicar: string;
@@ -751,6 +754,7 @@ export interface AppDict extends AuthTranslationsHost {
         horasDiurnas: string;
         horasNocturnas: string;
         color: string;
+        descanso: string;
         estado: string;
       };
       form: {
@@ -769,6 +773,7 @@ export interface AppDict extends AuthTranslationsHost {
           color: string;
           novedadTipo: string;
           novedadTipoPlaceholder: string;
+          descanso: string;
           estadoInactivo: string;
         };
         validation: { required: string };

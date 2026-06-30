@@ -171,16 +171,25 @@
           </div>
         </div>
 
-        <!-- Inactivo -->
-        <label
-          for="estado_inactivo"
-          class="flex cursor-pointer items-center gap-2 self-end pb-2 sm:col-span-2"
-        >
-          <p-checkbox inputId="estado_inactivo" formControlName="estado_inactivo" [binary]="true" />
-          <span class="text-[0.85rem] text-brand-text">
-            {{ t().entities.turno.form.fields.estadoInactivo }}
-          </span>
-        </label>
+        <!-- Descanso + Inactivo -->
+        <div class="flex items-center gap-5 self-end pb-2 sm:col-span-2">
+          <label for="descanso" class="flex cursor-pointer items-center gap-2">
+            <p-checkbox inputId="descanso" formControlName="descanso" [binary]="true" />
+            <span class="text-[0.85rem] text-brand-text">
+              {{ t().entities.turno.form.fields.descanso }}
+            </span>
+          </label>
+          <label for="estado_inactivo" class="flex cursor-pointer items-center gap-2">
+            <p-checkbox
+              inputId="estado_inactivo"
+              formControlName="estado_inactivo"
+              [binary]="true"
+            />
+            <span class="text-[0.85rem] text-brand-text">
+              {{ t().entities.turno.form.fields.estadoInactivo }}
+            </span>
+          </label>
+        </div>
       </div>
     </div>
   </section>

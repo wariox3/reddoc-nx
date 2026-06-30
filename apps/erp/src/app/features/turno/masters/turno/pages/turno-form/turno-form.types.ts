@@ -20,5 +20,6 @@ export interface TurnoFormRawValue {
   /** Hex del picker nativo — siempre presente (el control nunca queda vacío). */
   color: string;
   novedad_tipo: ErpSelectOption | null;
+  descanso: boolean;
   estado_inactivo: boolean;
 }

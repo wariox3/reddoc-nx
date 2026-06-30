@@ -55,6 +55,15 @@
     </span>
 
     <div detailHeaderSubtitle class="flex flex-wrap items-center gap-2">
+      <!-- Pill de descanso -->
+      @if (turno.descanso) {
+        <span
+          class="inline-flex w-fit items-center gap-1.5 rounded-full bg-sky-50 px-2.5 py-[0.15rem] text-[0.7rem] font-semibold text-sky-700"
+        >
+          <span class="h-1.5 w-1.5 rounded-full bg-sky-500"></span>
+          {{ t().entities.turno.form.fields.descanso }}
+        </span>
+      }
       <!-- Pill de estado -->
       @if (turno.estado_inactivo) {
         <span

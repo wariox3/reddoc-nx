@@ -93,6 +93,7 @@ export class TurnoFormComponent implements OnInit {
     horas_nocturnas: this.fb.control<number | null>(null),
     color: this.fb.control('#143049', { nonNullable: true }),
     novedad_tipo: this.fb.control<ErpSelectOption | null>(null),
+    descanso: this.fb.control(false, { nonNullable: true }),
     estado_inactivo: this.fb.control(false, { nonNullable: true }),
   });
 

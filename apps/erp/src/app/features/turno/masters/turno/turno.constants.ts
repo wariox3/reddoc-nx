@@ -41,7 +41,13 @@ export const TURNOS_COLUMNS: readonly ColumnDef[] = [
     type: 'number',
     align: 'right',
   },
-  { field: 'color', headerKey: 'entities.turno.columns.color', type: 'text' },
+  {
+    field: 'descanso',
+    headerKey: 'entities.turno.columns.descanso',
+    type: 'boolean',
+    width: '90px',
+    align: 'center',
+  },
   {
     field: 'estado_inactivo',
     headerKey: 'entities.turno.columns.estado',
@@ -68,6 +74,7 @@ export const TURNOS_FILTER_FIELDS: readonly FilterField[] = [
     displayNameKey: 'entities.turno.columns.horasNocturnas',
     type: 'number',
   },
+  { name: 'descanso', displayNameKey: 'entities.turno.columns.descanso', type: 'boolean' },
   { name: 'estado_inactivo', displayNameKey: 'entities.turno.columns.estado', type: 'boolean' },
 ];
 

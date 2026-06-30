@@ -22,6 +22,7 @@ export function turnoToFormValue(t: Turno): Partial<TurnoFormRawValue> {
     color: t.color ?? DEFAULT_COLOR,
     novedad_tipo:
       t.novedad_tipo != null ? { id: t.novedad_tipo, nombre: t.novedad_tipo_nombre ?? '' } : null,
+    descanso: t.descanso,
     estado_inactivo: t.estado_inactivo,
   };
 }
@@ -39,6 +40,7 @@ export function formValueToPayload(v: TurnoFormRawValue): TurnoPayload {
     horas_nocturnas: v.horas_nocturnas ?? 0,
     color: v.color || null,
     novedad_tipo: v.novedad_tipo?.id ?? null,
+    descanso: v.descanso ?? false,
     estado_inactivo: v.estado_inactivo,
   };
 }

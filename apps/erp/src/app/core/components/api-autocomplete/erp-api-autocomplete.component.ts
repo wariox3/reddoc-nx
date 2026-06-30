@@ -119,8 +119,9 @@ export class ErpApiAutocompleteComponent implements ControlValueAccessor {
 
   onSearch(event: AutoCompleteCompleteEvent): void {
     const query = event.query?.trim() ?? '';
+    const params = query ? { ...this.params(), [this.searchParam()]: query } : this.params();
     this.dataService
-      .fetchOptions(this.endpoint(), { ...this.params(), [this.searchParam()]: query })
+      .fetchOptions(this.endpoint(), params)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (options) => this.suggestions.set(options),

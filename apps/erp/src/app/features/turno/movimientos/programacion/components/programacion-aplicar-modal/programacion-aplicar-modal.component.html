@@ -38,15 +38,37 @@
   </ng-template>
 
   <form [formGroup]="form" class="flex flex-col gap-5 pt-1">
-    <!-- ── Contrato ────────────────────────────────────────────────────────────── -->
-    <div class="flex flex-col gap-1.5 sm:w-1/2">
-      <label for="contrato" class="text-[0.78rem] font-medium text-brand-muted">
-        {{ m.contratoLabel }}
-      </label>
-      <app-contrato-autocomplete
-        inputId="contrato"
-        formControlName="contrato"
-        [placeholder]="m.contratoPlaceholder"
+    <!-- ── Contrato + secuencia ──────────────────────────────────────────────────── -->
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-end">
+      <div class="flex flex-col gap-1.5 sm:flex-1">
+        <label for="contrato" class="text-[0.78rem] font-medium text-brand-muted">
+          {{ m.contratoLabel }}
+        </label>
+        <app-contrato-autocomplete
+          inputId="contrato"
+          formControlName="contrato"
+          [placeholder]="m.contratoPlaceholder"
+        />
+      </div>
+
+      <div class="flex flex-col gap-1.5 sm:flex-1">
+        <label for="secuencia" class="text-[0.78rem] font-medium text-brand-muted">
+          {{ m.secuenciaLabel }}
+        </label>
+        <app-api-autocomplete
+          inputId="secuencia"
+          formControlName="secuencia"
+          [endpoint]="secuenciaEndpoint"
+          [minLength]="0"
+          [placeholder]="m.secuenciaPlaceholder"
+        />
+      </div>
+
+      <p-button
+        type="button"
+        [label]="m.secuenciaAplicar"
+        icon="pi pi-check"
+        (onClick)="onAplicarSecuencia()"
       />
     </div>
 

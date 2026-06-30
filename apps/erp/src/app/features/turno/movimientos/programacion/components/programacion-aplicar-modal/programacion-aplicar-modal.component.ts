@@ -26,6 +26,8 @@ import {
   ContratoAutocompleteComponent,
   type ContratoOption,
 } from '@erp/core/components/contrato-autocomplete/contrato-autocomplete.component';
+import { ErpApiAutocompleteComponent } from '@erp/core/components/api-autocomplete/erp-api-autocomplete.component';
+import type { ErpSelectOption } from '@erp/core/data/erp-select-data.service';
 import type { ProgramacionGrupoRef } from '../programacion-grid/programacion-grid.component';
 import { ProgramacionService } from '../../programacion.service';
 import type { AplicarProgramacionPayload } from '../../programacion.model';
@@ -47,6 +49,7 @@ import type { AplicarProgramacionPayload } from '../../programacion.model';
     ButtonModule,
     InputTextModule,
     ContratoAutocompleteComponent,
+    ErpApiAutocompleteComponent,
   ],
   templateUrl: './programacion-aplicar-modal.component.html',
   styleUrl: './programacion-aplicar-modal.component.scss',
@@ -87,9 +90,13 @@ export class ProgramacionAplicarModalComponent {
    */
   protected readonly dias = diasDelMes(this.periodo.anio, this.periodo.mes);
 
+  /** Endpoint `seleccionar` de secuencias para el `<app-api-autocomplete>`. */
+  protected readonly secuenciaEndpoint = '/turno/secuencia/seleccionar/';
+
   /** Form: contrato elegido + un input de día (texto/código de turno) por día del mes. */
   protected readonly form = this.fb.group({
     contrato: this.fb.control<ContratoOption | null>(null),
+    secuencia: this.fb.control<ErpSelectOption | null>(null),
     dias: this.fb.array(this.dias.map(() => this.fb.control(''))),
   });
 
@@ -155,6 +162,11 @@ export class ProgramacionAplicarModalComponent {
           this.toast.error(ts.title, ts.desc);
         },
       });
+  }
+
+  /** Pendiente por implementar: acción del botón "Aplicar" junto a la secuencia. */
+  protected onAplicarSecuencia(): void {
+    // TODO: definir comportamiento.
   }
 
   protected onClose(): void {

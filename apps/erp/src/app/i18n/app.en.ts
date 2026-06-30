@@ -988,6 +988,9 @@ export const en: AppDict = {
           placeholder: 'Under construction.',
           contratoLabel: 'Contract',
           contratoPlaceholder: 'Search contract…',
+          secuenciaLabel: 'Sequence',
+          secuenciaPlaceholder: 'Search sequence…',
+          secuenciaAplicar: 'Apply',
           diasSection: 'Days of the month',
           diaAria: 'Day',
           aplicar: 'Apply',
@@ -1018,6 +1021,7 @@ export const en: AppDict = {
         horasDiurnas: 'Day hours',
         horasNocturnas: 'Night hours',
         color: 'Color',
+        descanso: 'Rest day',
         estado: 'Inactive',
       },
       form: {
@@ -1036,6 +1040,7 @@ export const en: AppDict = {
           color: 'Color',
           novedadTipo: 'Event type',
           novedadTipoPlaceholder: 'Select…',
+          descanso: 'Rest day',
           estadoInactivo: 'Inactive',
         },
         validation: {

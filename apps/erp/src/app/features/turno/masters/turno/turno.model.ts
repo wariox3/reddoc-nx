@@ -21,6 +21,7 @@ export interface Turno {
   readonly color: string | null;
   readonly novedad_tipo: number | null;
   readonly novedad_tipo_nombre: string | null;
+  readonly descanso: boolean;
   readonly estado_inactivo: boolean;
 }
 
@@ -35,5 +36,6 @@ export interface TurnoPayload {
   horas_nocturnas: number | null;
   color: string | null;
   novedad_tipo: number | null;
+  descanso: boolean;
   estado_inactivo: boolean;
 }

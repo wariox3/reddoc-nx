@@ -24,8 +24,8 @@ export const TURNO_MODULE: ErpModuleDescriptor = {
       groups: [
         {
           items: [
-            { labelKey: 'entities.soporte.name', path: 'soportes' },
             { labelKey: 'entities.programacion.name', path: 'programaciones' },
+            { labelKey: 'entities.soporte.name', path: 'soportes' },
           ],
         },
       ],
@@ -40,9 +40,9 @@ export const TURNO_MODULE: ErpModuleDescriptor = {
         {
           items: [
             { labelKey: 'entities.puesto.name', path: 'puestos' },
-            { labelKey: 'entities.programador.name', path: 'programadores' },
-            { labelKey: 'entities.secuencia.name', path: 'secuencias' },
             { labelKey: 'entities.turno.name', path: 'turnos' },
+            { labelKey: 'entities.secuencia.name', path: 'secuencias' },
+            { labelKey: 'entities.programador.name', path: 'programadores' },
           ],
         },
       ],
