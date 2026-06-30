@@ -28,6 +28,10 @@ import {
 } from '@erp/core/components/contrato-autocomplete/contrato-autocomplete.component';
 import { ErpApiAutocompleteComponent } from '@erp/core/components/api-autocomplete/erp-api-autocomplete.component';
 import type { ErpSelectOption } from '@erp/core/data/erp-select-data.service';
+import {
+  FestivoService,
+  type Festivo,
+} from '@erp/features/general/masters/festivo/festivo.service';
 import type { ProgramacionGrupoRef } from '../programacion-grid/programacion-grid.component';
 import { ProgramacionService } from '../../programacion.service';
 import type { AplicarProgramacionPayload } from '../../programacion.model';
@@ -57,6 +61,7 @@ import type { AplicarProgramacionPayload } from '../../programacion.model';
 export class ProgramacionAplicarModalComponent {
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly service = inject(ProgramacionService);
+  private readonly festivoService = inject(FestivoService);
   private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly i18n = inject<I18nService<AppDict>>(I18nService);
@@ -106,6 +111,26 @@ export class ProgramacionAplicarModalComponent {
 
   protected readonly isSubmitting = signal(false);
 
+  /** Festivos del mes del período actual (`/general/festivo/mes/`). */
+  private readonly festivos = signal<readonly Festivo[]>([]);
+
+  /**
+   * Días del mes (1..N) que son festivos → su nombre, para resaltarlos en la
+   * tabla y mostrar el nombre del festivo en el `title`. Filtra por el
+   * `anio`/`mes` del período parseando la `fecha` ISO `YYYY-MM-DD`.
+   */
+  protected readonly festivoPorDia = computed<ReadonlyMap<number, string>>(() => {
+    const mapa = new Map<number, string>();
+    for (const f of this.festivos()) {
+      const [anio, mes, dia] = f.fecha.split('-').map(Number);
+      if (anio !== this.periodo.anio || mes !== this.periodo.mes) continue;
+      // Si el festivo cae sábado, no se marca como festivo (queda como fin de semana).
+      if (new Date(anio, mes - 1, dia).getDay() === 6) continue;
+      mapa.set(dia, f.nombre);
+    }
+    return mapa;
+  });
+
   /**
    * Contrato elegido como señal (el valor del form no lo es). Sin esto el
    * `computed` de habilitación no reaccionaría a la selección.
@@ -122,8 +147,24 @@ export class ProgramacionAplicarModalComponent {
   constructor() {
     // Form limpio cada vez que se abre (puede abrirse para otro puesto).
     effect(() => {
-      if (this.visible()) this.form.reset();
+      if (!this.visible()) return;
+      this.form.reset();
+      this.cargarFestivos();
     });
+  }
+
+  /**
+   * Trae los festivos del mes del período actual
+   * (`GET /general/festivo/mes/?anio=&mes=`) para resaltarlos en la tabla.
+   */
+  private cargarFestivos(): void {
+    this.festivoService
+      .getDelMes(this.periodo.anio, this.periodo.mes)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (festivos) => this.festivos.set(festivos),
+        error: () => this.festivos.set([]),
+      });
   }
 
   /** Arma el payload y envía `POST aplicar-programacion`. */

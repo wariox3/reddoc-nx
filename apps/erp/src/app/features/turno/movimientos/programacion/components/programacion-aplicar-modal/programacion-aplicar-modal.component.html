@@ -80,7 +80,12 @@
           <thead>
             <tr>
               @for (d of dias; track d.dia) {
-                <th class="aplicar-dias__th" [class.aplicar-dias__th--finde]="d.finDeSemana">
+                <th
+                  class="aplicar-dias__th"
+                  [class.aplicar-dias__th--finde]="d.finDeSemana"
+                  [class.aplicar-dias__th--festivo]="festivoPorDia().has(d.dia)"
+                  [attr.title]="festivoPorDia().get(d.dia)"
+                >
                   <span class="aplicar-dias__num">{{ d.dia }}</span>
                   <span class="aplicar-dias__ini">{{ d.inicial }}</span>
                 </th>
@@ -90,7 +95,11 @@
           <tbody formArrayName="dias">
             <tr>
               @for (d of dias; track d.dia; let i = $index) {
-                <td class="aplicar-dias__td" [class.aplicar-dias__td--finde]="d.finDeSemana">
+                <td
+                  class="aplicar-dias__td"
+                  [class.aplicar-dias__td--finde]="d.finDeSemana"
+                  [class.aplicar-dias__td--festivo]="festivoPorDia().has(d.dia)"
+                >
                   <input
                     pInputText
                     type="text"
