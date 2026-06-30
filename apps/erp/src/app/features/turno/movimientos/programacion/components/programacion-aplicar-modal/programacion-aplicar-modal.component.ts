@@ -126,8 +126,22 @@ export class ProgramacionAplicarModalComponent {
   /** Festivos del mes del período actual (`/general/festivo/mes/`). */
   private readonly festivos = signal<readonly Festivo[]>([]);
 
-  /** Detalle completo de la secuencia elegida (`getById`). Aún sin UI. */
+  /** Detalle completo de la secuencia elegida (`getById`). */
   private readonly secuenciaDetalle = signal<Secuencia | null>(null);
+
+  /** Posiciones activas de la secuencia (1..dias), para el picker visual. */
+  protected readonly posicionesSecuencia = computed<readonly { pos: number; codigo: string }[]>(
+    () => {
+      const s = this.secuenciaDetalle();
+      if (!s || !s.dias) return [];
+      const result: { pos: number; codigo: string }[] = [];
+      for (let i = 1; i <= s.dias; i++) {
+        const codigo = s[`dia_${i}` as keyof Secuencia] as string | null;
+        if (codigo !== null) result.push({ pos: i, codigo });
+      }
+      return result;
+    },
+  );
 
   /**
    * Días del mes que ya tienen programación (devueltos por el backend al fallar
@@ -171,7 +185,7 @@ export class ProgramacionAplicarModalComponent {
   private readonly secuenciaValue = toSignal(this.form.controls.secuencia.valueChanges, {
     initialValue: this.form.controls.secuencia.value,
   });
-  private readonly posicionValue = toSignal(this.form.controls.posicionInicial.valueChanges, {
+  protected readonly posicionValue = toSignal(this.form.controls.posicionInicial.valueChanges, {
     initialValue: this.form.controls.posicionInicial.value,
   });
 
@@ -333,6 +347,11 @@ export class ProgramacionAplicarModalComponent {
     for (const d of res.dias) {
       controls[d.dia - 1]?.setValue(d.turno_codigo);
     }
+  }
+
+  /** Selecciona una posición inicial haciendo clic en el picker de la secuencia. */
+  protected onSeleccionarPosicion(pos: number): void {
+    this.form.controls.posicionInicial.setValue(pos);
   }
 
   protected onClose(): void {
