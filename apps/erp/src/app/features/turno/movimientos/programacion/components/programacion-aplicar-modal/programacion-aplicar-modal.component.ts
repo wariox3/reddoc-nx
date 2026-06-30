@@ -10,6 +10,7 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { HttpErrorResponse } from '@angular/common/http';
 import {
   FormArray,
   FormControl,
@@ -39,7 +40,11 @@ import {
 import type { Secuencia } from '@erp/features/turno/masters/secuencia/secuencia.model';
 import type { ProgramacionGrupoRef } from '../programacion-grid/programacion-grid.component';
 import { ProgramacionService } from '../../programacion.service';
-import type { CrearProgramacionPayload } from '../../programacion.model';
+import type {
+  CrearProgramacionPayload,
+  CrearProgramacionConflicto,
+  ProgramacionExistente,
+} from '../../programacion.model';
 
 /**
  * Modal para **aplicar la programación de un contrato a un puesto**.
@@ -125,6 +130,13 @@ export class ProgramacionAplicarModalComponent {
   private readonly secuenciaDetalle = signal<Secuencia | null>(null);
 
   /**
+   * Días del mes que ya tienen programación (devueltos por el backend al fallar
+   * `crear-programacion`). Se usan para resaltar las columnas en conflicto; el
+   * valor guarda el día existente (turno ya programado) por si se muestra luego.
+   */
+  protected readonly diasOcupados = signal<ReadonlyMap<number, ProgramacionExistente>>(new Map());
+
+  /**
    * Días del mes (1..N) que son festivos → su nombre, para resaltarlos en la
    * tabla y mostrar el nombre del festivo en el `title`. Filtra por el
    * `anio`/`mes` del período parseando la `fecha` ISO `YYYY-MM-DD`.
@@ -180,12 +192,16 @@ export class ProgramacionAplicarModalComponent {
     this.form.controls.secuencia.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((sel) => this.cargarSecuenciaDetalle(sel));
+
+    // Al tocar cualquier campo, retira el resaltado de días ya programados.
+    this.form.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      if (this.diasOcupados().size) this.diasOcupados.set(new Map());
+    });
   }
 
   /**
    * Trae el detalle completo de la secuencia elegida
-   * (`GET /turno/secuencia/:id/`) y lo guarda. Por ahora solo se loguea; la UI
-   * se define en el próximo paso.
+   * (`GET /turno/secuencia/:id/`) y lo guarda para uso posterior.
    */
   private cargarSecuenciaDetalle(sel: ErpSelectOption | null): void {
     if (!sel) {
@@ -196,10 +212,7 @@ export class ProgramacionAplicarModalComponent {
       .getById(sel.id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (secuencia) => {
-          this.secuenciaDetalle.set(secuencia);
-          console.log('secuencia detalle', secuencia);
-        },
+        next: (secuencia) => this.secuenciaDetalle.set(secuencia),
         error: () => this.secuenciaDetalle.set(null),
       });
   }
@@ -254,11 +267,36 @@ export class ProgramacionAplicarModalComponent {
           this.applied.emit();
           this.visible.set(false);
         },
-        error: () => {
+        error: (err: unknown) => {
           const ts = this.t().entities.programacion.detail.empleadosModal.toasts.error;
+          if (this.handleProgramacionExistente(err, ts.title)) return;
           this.toast.error(ts.title, ts.desc);
         },
       });
+  }
+
+  /**
+   * Maneja el 400 de `crear-programacion` cuando ya existe programación para una
+   * o más fechas (`{ detail, existentes: [{ fecha, … }] }`): resalta las columnas
+   * de esos días y muestra el `detail` en un toast. Devuelve `true` si el error
+   * tenía esta forma (ya manejado); `false` para que el caller siga con el toast
+   * genérico.
+   */
+  private handleProgramacionExistente(err: unknown, fallbackTitle: string): boolean {
+    if (!(err instanceof HttpErrorResponse)) return false;
+    const body = err.error as Partial<CrearProgramacionConflicto> | null;
+    if (!body || !Array.isArray(body.existentes)) return false;
+
+    const mapa = new Map<number, ProgramacionExistente>();
+    for (const e of body.existentes) {
+      const [anio, mes, dia] = e.fecha.split('-').map(Number);
+      if (anio === this.periodo.anio && mes === this.periodo.mes) mapa.set(dia, e);
+    }
+    if (mapa.size === 0) return false;
+
+    this.diasOcupados.set(mapa);
+    this.toast.error(fallbackTitle, body.detail);
+    return true;
   }
 
   /**

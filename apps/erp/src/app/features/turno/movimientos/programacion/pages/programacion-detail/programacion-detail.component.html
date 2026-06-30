@@ -98,7 +98,7 @@
         <app-programacion-grid
           [fechas]="gr.fechas"
           [filas]="gr.filas"
-          (verEmpleados)="onVerEmpleados($event)"
+          (verEmpleados)="onAplicarProgramacion($event)"
         />
       </div>
     </section>
@@ -107,7 +107,7 @@
 
 <!-- ── Modal: aplicar programación (agregar contrato al puesto) ──────────────── -->
 <app-programacion-aplicar-modal
-  [(visible)]="empleadosModalVisible"
-  [grupo]="empleadosGrupo()"
+  [(visible)]="aplicarModalVisible"
+  [grupo]="aplicarGrupo()"
   (applied)="onApplied()"
 />

@@ -1009,6 +1009,7 @@ export const es: AppDict = {
           posicionLabel: 'Posición inicial',
           diasSection: 'Días del mes',
           diaAria: 'Día',
+          diaOcupadoTitle: 'Ya existe programación para este día',
           aplicar: 'Aplicar',
           close: 'Cerrar',
           toasts: {

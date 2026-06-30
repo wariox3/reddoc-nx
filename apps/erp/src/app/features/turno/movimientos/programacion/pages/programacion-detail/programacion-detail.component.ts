@@ -98,9 +98,9 @@ export class ProgramacionDetailComponent implements OnInit {
   protected readonly isLoading = signal(true);
   protected readonly notFound = signal(false);
 
-  /** Modal de empleados del puesto (se abre desde el botón del grupo del grid). */
-  protected readonly empleadosModalVisible = signal(false);
-  protected readonly empleadosGrupo = signal<ProgramacionGrupoRef | null>(null);
+  /** Modal de aplicar programación (se abre desde el botón del grupo del grid). */
+  protected readonly aplicarModalVisible = signal(false);
+  protected readonly aplicarGrupo = signal<ProgramacionGrupoRef | null>(null);
 
   /** Migas: módulo Turno → listado de programaciones → registro abierto. */
   protected readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => {
@@ -135,10 +135,10 @@ export class ProgramacionDetailComponent implements OnInit {
     void this.router.navigate(['/t', slug, ...PROGRAMACION_LIST_PATH]);
   }
 
-  /** Abre el modal de empleados del puesto emitido por el grid. */
-  protected onVerEmpleados(grupo: ProgramacionGrupoRef): void {
-    this.empleadosGrupo.set(grupo);
-    this.empleadosModalVisible.set(true);
+  /** Abre el modal de aplicar programación emitido por el grid. */
+  protected onAplicarProgramacion(grupo: ProgramacionGrupoRef): void {
+    this.aplicarGrupo.set(grupo);
+    this.aplicarModalVisible.set(true);
   }
 
   /** Tras aplicar la programación, recarga el detalle para reflejar los cambios. */
@@ -165,7 +165,6 @@ export class ProgramacionDetailComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (detalle) => {
-          console.log('[programacion-detail] detalle?documento=' + id + ':', detalle);
           const read = detalle as ProgramacionDetalleRead;
           this.cabecera.set({
             numero: read.numero ?? null,

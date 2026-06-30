@@ -994,6 +994,7 @@ export const en: AppDict = {
           posicionLabel: 'Initial position',
           diasSection: 'Days of the month',
           diaAria: 'Day',
+          diaOcupadoTitle: 'A schedule already exists for this day',
           aplicar: 'Apply',
           close: 'Close',
           toasts: {

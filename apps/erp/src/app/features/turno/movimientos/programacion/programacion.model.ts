@@ -122,3 +122,18 @@ export interface CrearProgramacionPayload {
   readonly documento_detalle_id: number;
   readonly items: readonly ProgramacionItem[];
 }
+
+/** Día que ya tiene programación (item de `existentes` en el conflicto 400). */
+export interface ProgramacionExistente extends ProgramacionDiaCelda {
+  /** Fecha del día en formato ISO `YYYY-MM-DD`. */
+  readonly fecha: string;
+}
+
+/**
+ * Body del 400 de `crear-programacion` cuando ya existe programación para una o
+ * más fechas del puesto: `detail` (mensaje) + `existentes` (días en conflicto).
+ */
+export interface CrearProgramacionConflicto {
+  readonly detail: string;
+  readonly existentes: readonly ProgramacionExistente[];
+}
