@@ -80,6 +80,22 @@ export class ProgramacionGridComponent {
    */
   protected readonly colspan = computed(() => 2 + this.fechas().length + 4 + 2);
 
+  protected horasDiurnasGrupo(grupo: GrupoFilas): number {
+    return grupo.items.reduce((s, f) => s + f.horas_diurnas, 0);
+  }
+
+  protected horasNocturnasGrupo(grupo: GrupoFilas): number {
+    return grupo.items.reduce((s, f) => s + f.horas_nocturnas, 0);
+  }
+
+  protected horasGrupo(grupo: GrupoFilas): number {
+    return grupo.items.reduce((s, f) => s + f.horas, 0);
+  }
+
+  protected horasProgramadasGrupo(grupo: GrupoFilas): number {
+    return grupo.items.reduce((s, f) => s + f.horas_programadas, 0);
+  }
+
   /** Emite la identidad del puesto (la agrupación) para abrir el modal. */
   protected onVerEmpleados(grupo: GrupoFilas): void {
     this.verEmpleados.emit({

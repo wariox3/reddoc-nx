@@ -172,3 +172,43 @@
   white-space: nowrap;
   line-height: 1;
 }
+
+// Pills de stats inline (H_D, H_N) dentro de la banda de grupo.
+.programacion-grid__group-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.66rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  padding: 0.1rem 0.45rem;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+.programacion-grid__group-stat--dia {
+  background: rgba(146, 64, 14, 0.09);
+  color: #92400e;
+}
+
+.programacion-grid__group-stat--noche {
+  background: rgba(30, 64, 175, 0.09);
+  color: #1e40af;
+}
+
+// Separador visual entre pills y total.
+.programacion-grid__group-sep {
+  display: inline-block;
+  width: 1px;
+  height: 0.85rem;
+  background: rgba(20, 48, 73, 0.15);
+}
+
+// Total horas programadas / contratadas.
+.programacion-grid__group-total {
+  font-size: 0.68rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: rgba(20, 48, 73, 0.5);
+  white-space: nowrap;
+}

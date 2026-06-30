@@ -39,8 +39,9 @@
     <tbody>
       @for (grupo of grupos(); track grupo.documentoDetalleId + '_' + $index) {
         <tr class="programacion-grid__group-row">
-          <td [attr.colspan]="colspan()" class="programacion-grid__group-cell">
-            <div class="flex items-center justify-between gap-3">
+          <!-- Banda principal: puesto + stats a la derecha -->
+          <td [attr.colspan]="colspan() - 1" class="programacion-grid__group-cell">
+            <div class="flex items-center gap-3">
               <span class="programacion-grid__group-label">
                 @if (grupo.puestoNombre) {
                   {{ grupo.puestoId }} | {{ grupo.puestoNombre }}
@@ -48,17 +49,33 @@
                   #{{ grupo.documentoDetalleId }}
                 }
               </span>
-
-              <button
-                type="button"
-                (click)="onVerEmpleados(grupo)"
-                [title]="g.verEmpleados"
-                [attr.aria-label]="g.verEmpleados"
-                class="pointer-events-auto flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent text-brand-muted transition-colors hover:bg-white/70 hover:text-sky-700"
-              >
-                <i class="pi pi-user text-[0.78rem]"></i>
-              </button>
+              <div class="ml-auto flex shrink-0 items-center gap-2">
+                <span class="programacion-grid__group-stat programacion-grid__group-stat--dia">
+                  <i class="pi pi-sun text-[0.58rem]"></i>
+                  {{ horasDiurnasGrupo(grupo) }} h
+                </span>
+                <span class="programacion-grid__group-stat programacion-grid__group-stat--noche">
+                  <i class="pi pi-moon text-[0.58rem]"></i>
+                  {{ horasNocturnasGrupo(grupo) }} h
+                </span>
+                <span class="programacion-grid__group-sep"></span>
+                <span class="programacion-grid__group-total">
+                  {{ horasProgramadasGrupo(grupo) }}&thinsp;/&thinsp;{{ horasGrupo(grupo) }}&nbsp;h
+                </span>
+              </div>
             </div>
+          </td>
+          <!-- Columna de acción: botón al final -->
+          <td class="programacion-grid__group-cell programacion-grid__col-accion">
+            <button
+              type="button"
+              (click)="onVerEmpleados(grupo)"
+              [title]="g.verEmpleados"
+              [attr.aria-label]="g.verEmpleados"
+              class="pointer-events-auto flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent text-brand-muted transition-colors hover:bg-white/70 hover:text-sky-700"
+            >
+              <i class="pi pi-user text-[0.78rem]"></i>
+            </button>
           </td>
         </tr>
 
