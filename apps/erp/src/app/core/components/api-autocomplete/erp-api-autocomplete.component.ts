@@ -22,8 +22,8 @@ import { ErpSelectDataService, ErpSelectOption } from '@erp/core/data/erp-select
       [inputId]="inputId()"
       [ngModel]="value()"
       (onSelect)="onValueChange($event.value)"
-      (onClear)="onValueChange(null)"
-      (onBlur)="onTouchedFn()"
+      (onClear)="onCleared()"
+      (onBlur)="onBlurred()"
       [suggestions]="suggestions()"
       (completeMethod)="onSearch($event)"
       (onFocus)="onFocusInput()"
@@ -73,6 +73,12 @@ export class ErpApiAutocompleteComponent implements ControlValueAccessor {
   private onChangeFn: (value: ErpSelectOption | null) => void = () => undefined;
   onTouchedFn: () => void = () => undefined;
   private skipNextFocus = false;
+  private focused = false;
+  private reopenTimer?: ReturnType<typeof setTimeout>;
+
+  constructor() {
+    this.destroyRef.onDestroy(() => clearTimeout(this.reopenTimer));
+  }
 
   writeValue(value: ErpSelectOption | null): void {
     this.value.set(value ?? null);
@@ -96,7 +102,33 @@ export class ErpApiAutocompleteComponent implements ControlValueAccessor {
     if (next !== null) this.skipNextFocus = true;
   }
 
+  /**
+   * Al vaciar el input (borrar el texto o el botón "x"), PrimeNG **no** dispara
+   * la búsqueda: emite `onClear` y agenda cerrar el panel en `delay/2`. Para que
+   * vuelva a verse la lista completa, relanzamos una búsqueda con query vacío
+   * (`source` ≠ `'input'`, así PrimeNG no la descarta) *después* de ese cierre
+   * interno. Reusa su maquinaria: marca `loading`, emite `completeMethod('')`
+   * (→ `onSearch` pide `/seleccionar/` sin `search`) y reabre el panel solo.
+   */
+  onCleared(): void {
+    this.onValueChange(null);
+    clearTimeout(this.reopenTimer);
+    this.reopenTimer = setTimeout(
+      () => {
+        if (this.focused) this.ac?.search(undefined, '', 'reopen');
+      },
+      this.delay() / 2 + 60,
+    );
+  }
+
+  onBlurred(): void {
+    this.focused = false;
+    clearTimeout(this.reopenTimer);
+    this.onTouchedFn();
+  }
+
   onFocusInput(): void {
+    this.focused = true;
     if (this.skipNextFocus) {
       this.skipNextFocus = false;
       return;
