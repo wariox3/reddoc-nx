@@ -82,7 +82,7 @@
           />
         </div>
 
-        <!-- Hora inicio + Hora fin -->
+        <!-- Hora inicio + Hora fin | Horas / diurnas / nocturnas -->
         <div class="grid grid-cols-2 gap-x-4">
           <div class="flex flex-col gap-1.5">
             <label for="hora_inicio" class="turno-form__label">
@@ -99,43 +99,7 @@
             <lib-field-error [control]="form.controls.hora_fin" />
           </div>
         </div>
-
-        <!-- Color -->
-        <div class="flex flex-col gap-1.5">
-          <label for="color" class="turno-form__label">
-            {{ t().entities.turno.form.fields.color }}
-          </label>
-          <div class="flex items-center gap-3">
-            <input
-              id="color"
-              type="color"
-              formControlName="color"
-              class="h-10 w-14 cursor-pointer rounded-md border border-[rgba(20,48,73,0.2)] bg-brand-surface p-1"
-            />
-            <span class="font-mono text-[0.85rem] text-brand-muted">{{
-              form.controls.color.value
-            }}</span>
-          </div>
-          <lib-field-error [control]="form.controls.color" />
-        </div>
-
-        <!-- Tipo de novedad -->
-        <div class="flex flex-col gap-1.5">
-          <label for="novedad_tipo" class="turno-form__label">
-            {{ t().entities.turno.form.fields.novedadTipo }}
-          </label>
-          <app-api-select
-            inputId="novedad_tipo"
-            formControlName="novedad_tipo"
-            [endpoint]="novedadTipoEndpoint"
-            [params]="tipoParams"
-            [placeholder]="t().entities.turno.form.fields.novedadTipoPlaceholder"
-          />
-          <lib-field-error [control]="form.controls.novedad_tipo" />
-        </div>
-
-        <!-- Horas / diurnas / nocturnas -->
-        <div class="grid grid-cols-3 gap-x-4 sm:col-span-2">
+        <div class="grid grid-cols-3 gap-x-3">
           <div class="flex flex-col gap-1.5">
             <label for="horas" class="turno-form__label">
               {{ t().entities.turno.form.fields.horas }}
@@ -169,6 +133,40 @@
             />
             <lib-field-error [control]="form.controls.horas_nocturnas" />
           </div>
+        </div>
+
+        <!-- Tipo de novedad -->
+        <div class="flex flex-col gap-1.5">
+          <label for="novedad_tipo" class="turno-form__label">
+            {{ t().entities.turno.form.fields.novedadTipo }}
+          </label>
+          <app-api-select
+            inputId="novedad_tipo"
+            formControlName="novedad_tipo"
+            [endpoint]="novedadTipoEndpoint"
+            [params]="tipoParams"
+            [placeholder]="t().entities.turno.form.fields.novedadTipoPlaceholder"
+          />
+          <lib-field-error [control]="form.controls.novedad_tipo" />
+        </div>
+
+        <!-- Color -->
+        <div class="flex flex-col gap-1.5">
+          <label for="color" class="turno-form__label">
+            {{ t().entities.turno.form.fields.color }}
+          </label>
+          <div class="flex items-center gap-3">
+            <input
+              id="color"
+              type="color"
+              formControlName="color"
+              class="h-10 w-14 cursor-pointer rounded-md border border-[rgba(20,48,73,0.2)] bg-brand-surface p-1"
+            />
+            <span class="font-mono text-[0.85rem] text-brand-muted">{{
+              form.controls.color.value
+            }}</span>
+          </div>
+          <lib-field-error [control]="form.controls.color" />
         </div>
 
         <!-- Descanso + Inactivo -->
