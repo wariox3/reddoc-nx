@@ -5,6 +5,10 @@ import { ButtonModule } from 'primeng/button';
 import { I18nService, TenantService, ToastService } from '@reddoc/core';
 import { BreadcrumbComponent, type BreadcrumbItem } from '@reddoc/feature-base';
 import type { AppDict } from '@erp/i18n';
+import {
+  FestivoService,
+  type Festivo,
+} from '@erp/features/general/masters/festivo/festivo.service';
 import { ProgramacionService } from '../../programacion.service';
 import { PROGRAMACION_LIST_PATH } from '../../programacion.constants';
 import type {
@@ -82,6 +86,7 @@ function toProgramacionFecha(raw: unknown, index: number): ProgramacionFecha {
 })
 export class ProgramacionDetailComponent implements OnInit {
   private readonly service = inject(ProgramacionService);
+  private readonly festivoService = inject(FestivoService);
   private readonly tenant = inject(TenantService);
   private readonly router = inject(Router);
   private readonly toast = inject(ToastService);
@@ -101,6 +106,15 @@ export class ProgramacionDetailComponent implements OnInit {
   /** Modal de aplicar programación (se abre desde el botón del grupo del grid). */
   protected readonly aplicarModalVisible = signal(false);
   protected readonly aplicarGrupo = signal<ProgramacionGrupoRef | null>(null);
+
+  private readonly festivos = signal<readonly Festivo[]>([]);
+
+  /** Set de fechas ISO festivas del período — para resaltar columnas en el grid. */
+  protected readonly festivoClaves = computed<ReadonlySet<string>>(() => {
+    const set = new Set<string>();
+    for (const f of this.festivos()) set.add(f.fecha);
+    return set;
+  });
 
   /** Migas: módulo Turno → listado de programaciones → registro abierto. */
   protected readonly breadcrumbItems = computed<readonly BreadcrumbItem[]>(() => {
@@ -159,6 +173,16 @@ export class ProgramacionDetailComponent implements OnInit {
    * El mapeo a `CabeceraView` es tentativo hasta confirmar el shape de la
    * respuesta (logueado en consola).
    */
+  private cargarFestivos(anio: number, mes: number): void {
+    this.festivoService
+      .getDelMes(anio, mes)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (list) => this.festivos.set(list),
+        error: () => this.festivos.set([]),
+      });
+  }
+
   private loadDetalle(id: number): void {
     this.service
       .getDetalle(id)
@@ -166,6 +190,8 @@ export class ProgramacionDetailComponent implements OnInit {
       .subscribe({
         next: (detalle) => {
           const read = detalle as ProgramacionDetalleRead;
+          const fecha = read.fecha ? new Date(read.fecha) : new Date();
+          this.cargarFestivos(fecha.getFullYear(), fecha.getMonth() + 1);
           this.cabecera.set({
             numero: read.numero ?? null,
             fecha: read.fecha ? new Date(read.fecha) : null,

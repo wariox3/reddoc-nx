@@ -48,6 +48,9 @@ export class ProgramacionGridComponent {
   /** Filas del calendario (se agrupan por `documento_detalle_id`). */
   readonly filas = input.required<readonly ProgramacionFila[]>();
 
+  /** Claves ISO de fechas festivas — se resaltan en headers y celdas de día. */
+  readonly festivoClaves = input<ReadonlySet<string>>(new Set());
+
   /** Pide ver los empleados de un grupo (puesto). El padre abre el modal. */
   readonly verEmpleados = output<ProgramacionGrupoRef>();
 

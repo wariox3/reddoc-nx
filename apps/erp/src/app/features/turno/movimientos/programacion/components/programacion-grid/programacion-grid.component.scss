@@ -64,15 +64,23 @@
   min-width: 2rem;
   padding-left: 0.35rem;
   padding-right: 0.35rem;
+  text-align: center;
 }
 
-// Día festivo: tinte ámbar muy sutil para distinguirlo del resto del mes.
+// Día festivo en header: fondo rojo suave + borde inferior, igual que el modal.
+.programacion-grid__th--festivo {
+  background: #fdeaea;
+  box-shadow: inset 0 -1px 0 rgba(190, 18, 60, 0.25);
+  color: #be123c;
+}
+
+// Día festivo en celda: tinte rojo suave, mismo color que el header festivo.
 .programacion-grid__td--festivo {
-  background: rgba(217, 119, 6, 0.08);
+  background: rgba(190, 18, 60, 0.06);
 }
 
 .programacion-grid__row:hover .programacion-grid__td--festivo {
-  background: rgba(217, 119, 6, 0.12);
+  background: rgba(190, 18, 60, 0.1);
 }
 
 // Columnas resumen (HD · HN · C · A): banda sky tenue, como cierre de la tabla.

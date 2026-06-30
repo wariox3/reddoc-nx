@@ -9,7 +9,10 @@
         </th>
         <th class="programacion-grid__th w-10 text-center">{{ g.headers.ct }}</th>
         @for (fecha of fechas(); track fecha.clave) {
-          <th class="programacion-grid__th programacion-grid__th--dia text-center">
+          <th
+            class="programacion-grid__th programacion-grid__th--dia text-center"
+            [class.programacion-grid__th--festivo]="festivoClaves().has(fecha.clave)"
+          >
             {{ fecha.etiqueta }}
           </th>
         }
@@ -69,7 +72,9 @@
             @for (fecha of fechas(); track fecha.clave) {
               <td
                 class="programacion-grid__td programacion-grid__td--dia text-center tabular-nums"
-                [class.programacion-grid__td--festivo]="esFestivo(fila, fecha.clave)"
+                [class.programacion-grid__td--festivo]="
+                  esFestivo(fila, fecha.clave) || festivoClaves().has(fecha.clave)
+                "
               >
                 {{ celda(fila, fecha.clave) }}
               </td>
