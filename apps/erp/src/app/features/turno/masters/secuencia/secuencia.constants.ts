@@ -48,7 +48,6 @@ export const SECUENCIAS_COLUMNS: readonly ColumnDef[] = [
     align: 'right',
   },
   { field: 'nombre', headerKey: 'entities.secuencia.columns.nombre', type: 'text' },
-  { field: 'horas', headerKey: 'entities.secuencia.columns.horas', type: 'number', align: 'right' },
   { field: 'dias', headerKey: 'entities.secuencia.columns.dias', type: 'number', align: 'right' },
   {
     field: 'homologar',
