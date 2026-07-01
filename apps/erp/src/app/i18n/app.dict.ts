@@ -751,7 +751,6 @@ export interface AppDict extends AuthTranslationsHost {
           diasSection: string;
           cargandoDias: string;
           diaAria: string;
-          diaOcupadoTitle: string;
           aplicar: string;
           close: string;
           toasts: {

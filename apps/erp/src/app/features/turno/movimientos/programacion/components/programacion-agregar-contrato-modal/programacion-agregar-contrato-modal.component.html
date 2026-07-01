@@ -100,8 +100,8 @@
                     [class.aplicar-dias__th--festivo]="
                       d.inicial === 'D' || festivoPorDia().has(d.dia)
                     "
-                    [class.aplicar-dias__th--error]="diasOcupados().has(d.dia)"
-                    [attr.title]="festivoPorDia().get(d.dia)"
+                    [class.aplicar-dias__th--error]="celdasError().has(d.dia)"
+                    [attr.title]="errorDia(d.dia) ?? festivoPorDia().get(d.dia)"
                   >
                     <span class="aplicar-dias__num">{{ d.dia }}</span>
                     <span class="aplicar-dias__ini">{{ d.inicial }}</span>
@@ -117,7 +117,7 @@
                     [class.aplicar-dias__td--festivo]="
                       d.inicial === 'D' || festivoPorDia().has(d.dia)
                     "
-                    [class.aplicar-dias__td--error]="diasOcupados().has(d.dia)"
+                    [class.aplicar-dias__td--error]="celdasError().has(d.dia)"
                   >
                     <input
                       pInputText
@@ -126,7 +126,7 @@
                       [formControlName]="i"
                       class="aplicar-dias__input"
                       [attr.aria-label]="m.diaAria + ' ' + d.dia + ' ' + d.inicial"
-                      [attr.title]="diasOcupados().has(d.dia) ? m.diaOcupadoTitle : null"
+                      [attr.title]="errorDia(d.dia)"
                     />
                   </td>
                 }

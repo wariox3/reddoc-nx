@@ -143,17 +143,28 @@ export interface EliminarProgramacionPayload {
   readonly documento_detalle_id: number;
 }
 
-/** Día que ya tiene programación (item de `existentes` en el conflicto 400). */
-export interface ProgramacionExistente extends ProgramacionDiaCelda {
-  /** Fecha del día en formato ISO `YYYY-MM-DD`. */
+/**
+ * Error a nivel de **celda (día)** devuelto por crear/actualizar-programacion.
+ * Anclado por `fecha` (identidad del ítem del payload). `codigo` es el motivo
+ * máquina (`turno_inexistente`, `dia_ocupado`, …) para que el front pueda
+ * ramificar sin parsear texto; `mensaje` es el detalle por celda (tooltip).
+ */
+export interface ProgramacionErrorItem {
+  /** Fecha del día en conflicto, ISO `YYYY-MM-DD` (matchea el ítem enviado). */
   readonly fecha: string;
+  /** Código de turno que causó el error (el que escribió el usuario), o `null`. */
+  readonly turno_codigo: string | null;
+  /** Motivo máquina del error (ej. `turno_inexistente`, `dia_ocupado`). */
+  readonly codigo: string;
+  /** Mensaje legible por celda. */
+  readonly mensaje: string;
 }
 
 /**
- * Body del 400 de `crear-programacion` cuando ya existe programación para una o
- * más fechas del puesto: `detail` (mensaje) + `existentes` (días en conflicto).
+ * Body del 400 de crear/actualizar-programacion: `detail` (resumen para el toast)
+ * + `errores` (una entrada por celda en conflicto, anclada por `fecha`).
  */
-export interface CrearProgramacionConflicto {
+export interface ProgramacionErroresResponse {
   readonly detail: string;
-  readonly existentes: readonly ProgramacionExistente[];
+  readonly errores: readonly ProgramacionErrorItem[];
 }

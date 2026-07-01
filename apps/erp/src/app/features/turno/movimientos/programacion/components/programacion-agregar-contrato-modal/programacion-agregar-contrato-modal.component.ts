@@ -38,8 +38,7 @@ import type {
 import { ProgramacionService } from '../../programacion.service';
 import type {
   CrearProgramacionPayload,
-  CrearProgramacionConflicto,
-  ProgramacionExistente,
+  ProgramacionErroresResponse,
 } from '../../programacion.model';
 import { ProgramacionPeriodoStore } from './programacion-periodo.store';
 import { ProgramacionSecuenciaPickerComponent } from './programacion-secuencia-picker.component';
@@ -129,11 +128,16 @@ export class ProgramacionAgregarContratoModalComponent {
   protected readonly isSubmitting = signal(false);
 
   /**
-   * Días del mes que ya tienen programación (devueltos por el backend al fallar
-   * `crear-programacion`). Se usan para resaltar las columnas en conflicto; el
-   * valor guarda el día existente (turno ya programado) por si se muestra luego.
+   * Casillas (día → mensaje) en error tras crear/actualizar. Se alimentan del
+   * `errores` del 400 (anclado por `fecha`) y resaltan la columna con su tooltip
+   * hasta que el usuario corrige la casilla.
    */
-  protected readonly diasOcupados = signal<ReadonlyMap<number, ProgramacionExistente>>(new Map());
+  protected readonly celdasError = signal<ReadonlyMap<number, string>>(new Map());
+
+  /** Mensaje de error de la casilla del día (tooltip), o `null` si no tiene. */
+  protected errorDia(dia: number): string | null {
+    return this.celdasError().get(dia) ?? null;
+  }
 
   /**
    * Contrato elegido como señal (el valor del form no lo es). Sin esto el
@@ -207,9 +211,9 @@ export class ProgramacionAgregarContratoModalComponent {
       }
     });
 
-    // Al tocar cualquier campo, retira el resaltado de días ya programados.
+    // Al tocar cualquier campo, retira el resaltado de casillas en error.
     this.form.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-      if (this.diasOcupados().size) this.diasOcupados.set(new Map());
+      if (this.celdasError().size) this.celdasError.set(new Map());
     });
   }
 
@@ -264,34 +268,34 @@ export class ProgramacionAgregarContratoModalComponent {
         },
         error: (err: unknown) => {
           const ts = this.t().entities.programacion.detail.empleadosModal.toasts.error;
-          if (this.handleProgramacionExistente(err, ts.title)) return;
+          if (this.handleErroresProgramacion(err, ts.title)) return;
           this.toast.error(ts.title, ts.desc);
         },
       });
   }
 
   /**
-   * Maneja el 400 de `crear-programacion` cuando ya existe programación para una
-   * o más fechas (`{ detail, existentes: [{ fecha, … }] }`): resalta las columnas
-   * de esos días y muestra el `detail` en un toast. Devuelve `true` si el error
-   * tenía esta forma (ya manejado); `false` para que el caller siga con el toast
-   * genérico.
+   * Maneja el 400 normalizado de crear/actualizar-programacion
+   * (`{ detail, errores: [{ fecha, codigo, mensaje, … }] }`): resalta las casillas
+   * de los días con error (con su `mensaje` como tooltip) y muestra el `detail` en
+   * un toast. Devuelve `true` si el error tenía esta forma (ya manejado); `false`
+   * para que el caller siga con el toast genérico.
    */
-  private handleProgramacionExistente(err: unknown, fallbackTitle: string): boolean {
+  private handleErroresProgramacion(err: unknown, fallbackTitle: string): boolean {
     if (!(err instanceof HttpErrorResponse)) return false;
-    const body = err.error as Partial<CrearProgramacionConflicto> | null;
-    if (!body || !Array.isArray(body.existentes)) return false;
+    const body = err.error as Partial<ProgramacionErroresResponse> | null;
+    if (!body || !Array.isArray(body.errores)) return false;
 
     const p = this.periodo();
     if (!p) return false;
-    const mapa = new Map<number, ProgramacionExistente>();
-    for (const e of body.existentes) {
+    const mapa = new Map<number, string>();
+    for (const e of body.errores) {
       const [anio, mes, dia] = e.fecha.split('-').map(Number);
-      if (anio === p.anio && mes === p.mes) mapa.set(dia, e);
+      if (anio === p.anio && mes === p.mes) mapa.set(dia, e.mensaje);
     }
     if (mapa.size === 0) return false;
 
-    this.diasOcupados.set(mapa);
+    this.celdasError.set(mapa);
     this.toast.error(fallbackTitle, body.detail);
     return true;
   }

@@ -1018,7 +1018,6 @@ export const en: AppDict = {
           diasSection: 'Days of the month',
           cargandoDias: 'Loading period…',
           diaAria: 'Day',
-          diaOcupadoTitle: 'A schedule already exists for this day',
           aplicar: 'Save',
           close: 'Close',
           toasts: {
