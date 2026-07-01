@@ -28,6 +28,7 @@ import {
   type ContratoOption,
 } from '@erp/core/components/contrato-autocomplete/contrato-autocomplete.component';
 import { ErpApiAutocompleteComponent } from '@erp/core/components/api-autocomplete/erp-api-autocomplete.component';
+import { UppercaseDirective } from '@erp/core/directives/uppercase.directive';
 import type { ErpSelectOption } from '@erp/core/data/erp-select-data.service';
 import type { SecuenciaMesCalculado } from '@erp/features/turno/masters/secuencia/secuencia.service';
 import type { ProgramacionGrupoRef } from '../programacion-grid/programacion-grid.component';
@@ -60,6 +61,7 @@ import { ProgramacionSecuenciaPickerComponent } from './programacion-secuencia-p
     ContratoAutocompleteComponent,
     ErpApiAutocompleteComponent,
     ProgramacionSecuenciaPickerComponent,
+    UppercaseDirective,
   ],
   templateUrl: './programacion-agregar-contrato-modal.component.html',
   styleUrl: './programacion-agregar-contrato-modal.component.scss',
