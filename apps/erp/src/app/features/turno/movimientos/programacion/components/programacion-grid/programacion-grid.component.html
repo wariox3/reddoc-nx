@@ -112,14 +112,7 @@
             </td>
 
             @for (fecha of fechas(); track fecha.clave) {
-              <td
-                class="programacion-grid__td programacion-grid__td--dia text-center tabular-nums"
-                [class.programacion-grid__td--festivo]="
-                  fecha.inicial === 'D' ||
-                  esFestivo(fila, fecha.clave) ||
-                  festivoClaves().has(fecha.clave)
-                "
-              >
+              <td class="programacion-grid__td programacion-grid__td--dia text-center tabular-nums">
                 {{ celda(fila, fecha.clave) }}
               </td>
             }

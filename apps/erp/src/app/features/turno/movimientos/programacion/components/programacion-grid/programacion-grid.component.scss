@@ -100,15 +100,6 @@
   }
 }
 
-// Día festivo en celda: tinte rojo suave, mismo color que el header festivo.
-.programacion-grid__td--festivo {
-  background: rgba(190, 18, 60, 0.06);
-}
-
-.programacion-grid__row:hover .programacion-grid__td--festivo {
-  background: rgba(190, 18, 60, 0.1);
-}
-
 // Columnas resumen (HD · HN · C · A): banda sky tenue, como cierre de la tabla.
 .programacion-grid__th--resumen,
 .programacion-grid__td--resumen {

@@ -152,11 +152,6 @@ export class ProgramacionGridComponent {
     return fila.dias[clave]?.turno_codigo ?? '—';
   }
 
-  /** `true` si el día es festivo (para resaltarlo sutilmente). */
-  protected esFestivo(fila: ProgramacionFila, clave: string): boolean {
-    return fila.dias[clave]?.festivo ?? false;
-  }
-
   /** Total de horas diurnas de la fila (suma de los días). */
   protected horasDiurnas(fila: ProgramacionFila): number {
     return this.sumarHoras(fila, 'horas_diurnas');
