@@ -979,6 +979,11 @@ export const en: AppDict = {
             c: 'C',
             a: 'A',
           },
+          stats: {
+            diurnas: 'Day hours contracted / scheduled',
+            nocturnas: 'Night hours contracted / scheduled',
+            total: 'Total hours contracted / scheduled',
+          },
           empty: 'No rows to show.',
           verEmpleados: 'View employees of this position',
         },

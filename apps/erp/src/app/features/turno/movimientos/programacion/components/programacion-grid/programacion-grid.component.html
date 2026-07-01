@@ -60,17 +60,23 @@
                 </span>
               }
               <div class="ml-auto flex shrink-0 items-center gap-2">
-                <span class="programacion-grid__group-stat programacion-grid__group-stat--dia">
+                <span
+                  class="programacion-grid__group-stat programacion-grid__group-stat--dia"
+                  [title]="g.stats.diurnas"
+                >
                   <i class="pi pi-sun text-[0.58rem]"></i>
-                  {{ horasDiurnasGrupo(grupo) }} h
+                  {{ grupo.horasDiurnas }}&thinsp;/&thinsp;{{ grupo.horasDiurnasProgramadas }}
                 </span>
-                <span class="programacion-grid__group-stat programacion-grid__group-stat--noche">
+                <span
+                  class="programacion-grid__group-stat programacion-grid__group-stat--noche"
+                  [title]="g.stats.nocturnas"
+                >
                   <i class="pi pi-moon text-[0.58rem]"></i>
-                  {{ horasNocturnasGrupo(grupo) }} h
+                  {{ grupo.horasNocturnas }}&thinsp;/&thinsp;{{ grupo.horasNocturnasProgramadas }}
                 </span>
                 <span class="programacion-grid__group-sep"></span>
-                <span class="programacion-grid__group-total">
-                  {{ horasProgramadasGrupo(grupo) }}&thinsp;/&thinsp;{{ horasGrupo(grupo) }}&nbsp;h
+                <span class="programacion-grid__group-total" [title]="g.stats.total">
+                  {{ grupo.horas }}&thinsp;/&thinsp;{{ grupo.horasProgramadas }}&nbsp;h
                 </span>
               </div>
             </div>

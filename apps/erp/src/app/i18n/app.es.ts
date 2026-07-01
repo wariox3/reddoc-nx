@@ -994,6 +994,11 @@ export const es: AppDict = {
             c: 'C',
             a: 'A',
           },
+          stats: {
+            diurnas: 'Horas diurnas contratadas / programadas',
+            nocturnas: 'Horas nocturnas contratadas / programadas',
+            total: 'Horas totales contratadas / programadas',
+          },
           empty: 'Sin filas para mostrar.',
           verEmpleados: 'Ver empleados del puesto',
         },

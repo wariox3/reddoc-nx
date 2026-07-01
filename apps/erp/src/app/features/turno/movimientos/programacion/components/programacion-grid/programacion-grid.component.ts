@@ -11,6 +11,17 @@ interface GrupoFilas {
   readonly modalidadNombre: string | null;
   /** Franja horaria del puesto ya formateada (`HH:mm - HH:mm`), o `null`. */
   readonly horario: string | null;
+  /**
+   * Horas del puesto, **ya calculadas por el backend** (contratadas y
+   * programadas, total/diurnas/nocturnas). Vienen agregadas por puesto e
+   * idénticas en cada fila del grupo, así que se toman de la primera —no se suman.
+   */
+  readonly horas: number;
+  readonly horasDiurnas: number;
+  readonly horasNocturnas: number;
+  readonly horasProgramadas: number;
+  readonly horasDiurnasProgramadas: number;
+  readonly horasNocturnasProgramadas: number;
   readonly items: readonly ProgramacionFila[];
 }
 
@@ -84,6 +95,12 @@ export class ProgramacionGridComponent {
           puestoNombre: fila.puesto_nombre,
           modalidadNombre: fila.modalidad_nombre,
           horario: formatHorario(fila.hora_desde, fila.hora_hasta),
+          horas: fila.horas,
+          horasDiurnas: fila.horas_diurnas,
+          horasNocturnas: fila.horas_nocturnas,
+          horasProgramadas: fila.horas_programadas,
+          horasDiurnasProgramadas: fila.horas_diurnas_programadas,
+          horasNocturnasProgramadas: fila.horas_nocturnas_programadas,
           items: [fila],
         });
       }
@@ -97,22 +114,6 @@ export class ProgramacionGridComponent {
    * 2 reservadas para opciones por fila.
    */
   protected readonly colspan = computed(() => 2 + this.fechas().length + 4 + 2);
-
-  protected horasDiurnasGrupo(grupo: GrupoFilas): number {
-    return grupo.items.reduce((s, f) => s + f.horas_diurnas, 0);
-  }
-
-  protected horasNocturnasGrupo(grupo: GrupoFilas): number {
-    return grupo.items.reduce((s, f) => s + f.horas_nocturnas, 0);
-  }
-
-  protected horasGrupo(grupo: GrupoFilas): number {
-    return grupo.items.reduce((s, f) => s + f.horas, 0);
-  }
-
-  protected horasProgramadasGrupo(grupo: GrupoFilas): number {
-    return grupo.items.reduce((s, f) => s + f.horas_programadas, 0);
-  }
 
   /** Emite la identidad del puesto (la agrupación) para abrir el modal. */
   protected onVerEmpleados(grupo: GrupoFilas): void {

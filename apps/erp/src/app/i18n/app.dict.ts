@@ -718,6 +718,11 @@ export interface AppDict extends AuthTranslationsHost {
             c: string;
             a: string;
           };
+          stats: {
+            diurnas: string;
+            nocturnas: string;
+            total: string;
+          };
           empty: string;
           verEmpleados: string;
         };
