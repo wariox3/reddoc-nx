@@ -55,7 +55,7 @@ import type {
  * emite `applied` para que el padre refresque el grid.
  */
 @Component({
-  selector: 'app-programacion-aplicar-modal',
+  selector: 'app-programacion-agregar-contrato-modal',
   standalone: true,
   imports: [
     ReactiveFormsModule,
@@ -65,10 +65,10 @@ import type {
     ContratoAutocompleteComponent,
     ErpApiAutocompleteComponent,
   ],
-  templateUrl: './programacion-aplicar-modal.component.html',
-  styleUrl: './programacion-aplicar-modal.component.scss',
+  templateUrl: './programacion-agregar-contrato-modal.component.html',
+  styleUrl: './programacion-agregar-contrato-modal.component.scss',
 })
-export class ProgramacionAplicarModalComponent {
+export class ProgramacionAgregarContratoModalComponent {
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly service = inject(ProgramacionService);
   private readonly festivoService = inject(FestivoService);

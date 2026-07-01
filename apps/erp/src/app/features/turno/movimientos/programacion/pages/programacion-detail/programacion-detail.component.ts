@@ -27,7 +27,7 @@ import {
   ProgramacionGridComponent,
   type ProgramacionGrupoRef,
 } from '../../components/programacion-grid/programacion-grid.component';
-import { ProgramacionAplicarModalComponent } from '../../components/programacion-aplicar-modal/programacion-aplicar-modal.component';
+import { ProgramacionAgregarContratoModalComponent } from '../../components/programacion-agregar-contrato-modal/programacion-agregar-contrato-modal.component';
 
 /** Cabecera legible de la programación para la ficha. */
 interface CabeceraView {
@@ -76,7 +76,7 @@ function toProgramacionFecha(iso: string, _index: number): ProgramacionFecha {
     ButtonModule,
     BreadcrumbComponent,
     ProgramacionGridComponent,
-    ProgramacionAplicarModalComponent,
+    ProgramacionAgregarContratoModalComponent,
   ],
   templateUrl: './programacion-detail.component.html',
   styleUrl: './programacion-detail.component.scss',
@@ -100,9 +100,9 @@ export class ProgramacionDetailComponent implements OnInit {
   protected readonly isLoading = signal(true);
   protected readonly notFound = signal(false);
 
-  /** Modal de aplicar programación (se abre desde el botón del grupo del grid). */
-  protected readonly aplicarModalVisible = signal(false);
-  protected readonly aplicarGrupo = signal<ProgramacionGrupoRef | null>(null);
+  /** Modal de agregar contrato al puesto (se abre desde el botón del grupo del grid). */
+  protected readonly agregarContratoVisible = signal(false);
+  protected readonly agregarContratoGrupo = signal<ProgramacionGrupoRef | null>(null);
 
   private readonly festivos = signal<readonly Festivo[]>([]);
 
@@ -146,10 +146,10 @@ export class ProgramacionDetailComponent implements OnInit {
     void this.router.navigate(['/t', slug, ...PROGRAMACION_LIST_PATH]);
   }
 
-  /** Abre el modal de aplicar programación emitido por el grid. */
-  protected onAplicarProgramacion(grupo: ProgramacionGrupoRef): void {
-    this.aplicarGrupo.set(grupo);
-    this.aplicarModalVisible.set(true);
+  /** Abre el modal de agregar contrato al puesto emitido por el grid. */
+  protected onAgregarContrato(grupo: ProgramacionGrupoRef): void {
+    this.agregarContratoGrupo.set(grupo);
+    this.agregarContratoVisible.set(true);
   }
 
   /** Tras aplicar la programación, recarga el detalle para reflejar los cambios. */

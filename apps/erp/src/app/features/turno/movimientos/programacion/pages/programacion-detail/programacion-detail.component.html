@@ -99,16 +99,16 @@
           [fechas]="gr.fechas"
           [filas]="gr.filas"
           [festivoClaves]="festivoClaves()"
-          (verEmpleados)="onAplicarProgramacion($event)"
+          (verEmpleados)="onAgregarContrato($event)"
         />
       </div>
     </section>
   }
 }
 
-<!-- ── Modal: aplicar programación (agregar contrato al puesto) ──────────────── -->
-<app-programacion-aplicar-modal
-  [(visible)]="aplicarModalVisible"
-  [grupo]="aplicarGrupo()"
+<!-- ── Modal: agregar contrato al puesto ─────────────────────────────────────── -->
+<app-programacion-agregar-contrato-modal
+  [(visible)]="agregarContratoVisible"
+  [grupo]="agregarContratoGrupo()"
   (applied)="onApplied()"
 />
