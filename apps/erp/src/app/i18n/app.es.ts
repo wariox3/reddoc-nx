@@ -2166,6 +2166,35 @@ export const es: AppDict = {
         },
       },
     },
+    regenerarHoras: {
+      name: 'Regenerar horas',
+      description:
+        'Este proceso recalcula las horas contratadas y programadas (total, diurnas y nocturnas) de las líneas de documento del período elegido. Úsalo cuando las horas de la programación se vean desactualizadas.',
+      periodoLabel: 'Período',
+      run: 'Regenerar',
+      confirm: {
+        header: '¿Regenerar horas?',
+        message:
+          'Se recalcularán las horas de todas las líneas de documento del período elegido. La operación puede tardar unos segundos.',
+        accept: 'Regenerar',
+        cancel: 'Cancelar',
+      },
+      result: {
+        successTitle: 'Recálculo completado',
+        successDesc: 'Las horas se regeneraron correctamente.',
+        updatedLabel: 'Líneas actualizadas',
+      },
+      toasts: {
+        success: {
+          title: 'Recálculo completado',
+          desc: 'Las horas se regeneraron correctamente.',
+        },
+        error: {
+          title: 'No se pudo regenerar',
+          desc: 'Ocurrió un error al recalcular las horas. Intentá de nuevo.',
+        },
+      },
+    },
     servicioDocumento: {
       form: {
         createTitle: 'Nuevo documento de servicio',

@@ -1595,6 +1595,27 @@ export interface AppDict extends AuthTranslationsHost {
         error: { title: string; desc: string };
       };
     };
+    regenerarHoras: {
+      name: string;
+      description: string;
+      periodoLabel: string;
+      run: string;
+      confirm: {
+        header: string;
+        message: string;
+        accept: string;
+        cancel: string;
+      };
+      result: {
+        successTitle: string;
+        successDesc: string;
+        updatedLabel: string;
+      };
+      toasts: {
+        success: { title: string; desc: string };
+        error: { title: string; desc: string };
+      };
+    };
     servicioDocumento: {
       form: {
         createTitle: string;

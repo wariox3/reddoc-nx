@@ -2116,6 +2116,35 @@ export const en: AppDict = {
         },
       },
     },
+    regenerarHoras: {
+      name: 'Regenerate hours',
+      description:
+        'This process recalculates the contracted and scheduled hours (total, day and night) of the document lines for the selected period. Use it when the schedule hours look outdated.',
+      periodoLabel: 'Period',
+      run: 'Regenerate',
+      confirm: {
+        header: 'Regenerate hours?',
+        message:
+          'The hours of all document lines for the selected period will be recalculated. This may take a few seconds.',
+        accept: 'Regenerate',
+        cancel: 'Cancel',
+      },
+      result: {
+        successTitle: 'Recalculation complete',
+        successDesc: 'The hours were regenerated successfully.',
+        updatedLabel: 'Updated lines',
+      },
+      toasts: {
+        success: {
+          title: 'Recalculation complete',
+          desc: 'The hours were regenerated successfully.',
+        },
+        error: {
+          title: 'Could not regenerate',
+          desc: 'An error occurred while recalculating the hours. Please try again.',
+        },
+      },
+    },
     servicioDocumento: {
       form: {
         createTitle: 'New service document',

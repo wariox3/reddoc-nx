@@ -47,5 +47,17 @@ export const TURNO_MODULE: ErpModuleDescriptor = {
         },
       ],
     },
+    {
+      kind: 'accordion',
+      id: 'turno-proceso',
+      labelKey: 'layout.nav.sections.process',
+      iconClass: 'pi pi-sync',
+      defaultExpanded: false,
+      groups: [
+        {
+          items: [{ labelKey: 'entities.regenerarHoras.name', path: 'proceso/regenerar-horas' }],
+        },
+      ],
+    },
   ],
 };

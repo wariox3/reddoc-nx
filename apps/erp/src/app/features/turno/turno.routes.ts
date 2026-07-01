@@ -55,6 +55,13 @@ export const TURNO_ROUTES: Route[] = [
         loadChildren: () =>
           import('./masters/turno/turno.routes').then((m) => m.TURNO_MASTER_ROUTES),
       },
+      {
+        path: 'proceso/regenerar-horas',
+        loadChildren: () =>
+          import('./proceso/regenerar-horas/regenerar-horas.routes').then(
+            (m) => m.REGENERAR_HORAS_ROUTES,
+          ),
+      },
     ],
   },
 ];
