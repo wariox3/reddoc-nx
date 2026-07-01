@@ -97,6 +97,17 @@ export interface ProgramacionFila {
   readonly dias: Record<string, ProgramacionDiaCelda | null>;
 }
 
+/**
+ * Lectura **mínima** de la línea de documento (pedido servicio) que el modal de
+ * agregar contrato necesita: solo `fecha_desde`, de la que deriva el período
+ * (mes/año) a programar. Se lee vía `DocumentoDetalleService.obtenerPorId` con
+ * este tipo por llamada — así no se acopla al modelo completo de `venta/`.
+ */
+export interface ProgramacionLineaRead {
+  /** Fecha de inicio de la línea (ISO `YYYY-MM-DD`); define el período. */
+  readonly fecha_desde: string | null;
+}
+
 /** Ítem de día en `crear-programacion`. `fecha` en formato ISO `YYYY-MM-DD`. */
 export interface ProgramacionItem {
   readonly fecha: string;

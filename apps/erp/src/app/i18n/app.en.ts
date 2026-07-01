@@ -993,6 +993,7 @@ export const en: AppDict = {
           secuenciaCalcular: 'Calculate',
           posicionLabel: 'Initial position',
           diasSection: 'Days of the month',
+          cargandoDias: 'Loading period…',
           diaAria: 'Day',
           diaOcupadoTitle: 'A schedule already exists for this day',
           aplicar: 'Save',

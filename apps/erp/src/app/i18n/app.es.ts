@@ -1008,6 +1008,7 @@ export const es: AppDict = {
           secuenciaCalcular: 'Calcular',
           posicionLabel: 'Posición inicial',
           diasSection: 'Días del mes',
+          cargandoDias: 'Cargando el período…',
           diaAria: 'Día',
           diaOcupadoTitle: 'Ya existe programación para este día',
           aplicar: 'Guardar',

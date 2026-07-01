@@ -31,7 +31,9 @@
             }
             <span class="mx-1 text-brand-muted/50">·</span>
           }
-          <span class="capitalize">{{ periodo.etiqueta }}</span>
+          @if (periodo(); as p) {
+            <span class="capitalize">{{ p.etiqueta }}</span>
+          }
         </p>
       </div>
     </div>
@@ -101,49 +103,58 @@
     <div class="flex flex-col gap-2">
       <span class="text-[0.78rem] font-medium text-brand-muted">{{ m.diasSection }}</span>
 
-      <div class="overflow-hidden rounded-xl border border-[rgba(20,48,73,0.12)]">
-        <table class="aplicar-dias">
-          <thead>
-            <tr>
-              @for (d of dias; track d.dia) {
-                <th
-                  class="aplicar-dias__th"
-                  [class.aplicar-dias__th--festivo]="
-                    d.inicial === 'D' || festivoPorDia().has(d.dia)
-                  "
-                  [class.aplicar-dias__th--error]="diasOcupados().has(d.dia)"
-                  [attr.title]="festivoPorDia().get(d.dia)"
-                >
-                  <span class="aplicar-dias__num">{{ d.dia }}</span>
-                  <span class="aplicar-dias__ini">{{ d.inicial }}</span>
-                </th>
-              }
-            </tr>
-          </thead>
-          <tbody formArrayName="dias">
-            <tr>
-              @for (d of dias; track d.dia; let i = $index) {
-                <td
-                  class="aplicar-dias__td"
-                  [class.aplicar-dias__td--festivo]="
-                    d.inicial === 'D' || festivoPorDia().has(d.dia)
-                  "
-                  [class.aplicar-dias__td--error]="diasOcupados().has(d.dia)"
-                >
-                  <input
-                    pInputText
-                    type="text"
-                    [formControlName]="i"
-                    class="aplicar-dias__input"
-                    [attr.aria-label]="m.diaAria + ' ' + d.dia + ' ' + d.inicial"
-                    [attr.title]="diasOcupados().has(d.dia) ? m.diaOcupadoTitle : null"
-                  />
-                </td>
-              }
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      @if (cargandoPeriodo()) {
+        <div
+          class="flex items-center justify-center gap-2 rounded-xl border border-[rgba(20,48,73,0.12)] px-4 py-8 text-sm text-brand-muted"
+        >
+          <i class="pi pi-spinner pi-spin"></i>
+          <span>{{ m.cargandoDias }}</span>
+        </div>
+      } @else if (dias().length) {
+        <div class="overflow-hidden rounded-xl border border-[rgba(20,48,73,0.12)]">
+          <table class="aplicar-dias">
+            <thead>
+              <tr>
+                @for (d of dias(); track d.dia) {
+                  <th
+                    class="aplicar-dias__th"
+                    [class.aplicar-dias__th--festivo]="
+                      d.inicial === 'D' || festivoPorDia().has(d.dia)
+                    "
+                    [class.aplicar-dias__th--error]="diasOcupados().has(d.dia)"
+                    [attr.title]="festivoPorDia().get(d.dia)"
+                  >
+                    <span class="aplicar-dias__num">{{ d.dia }}</span>
+                    <span class="aplicar-dias__ini">{{ d.inicial }}</span>
+                  </th>
+                }
+              </tr>
+            </thead>
+            <tbody formArrayName="dias">
+              <tr>
+                @for (d of dias(); track d.dia; let i = $index) {
+                  <td
+                    class="aplicar-dias__td"
+                    [class.aplicar-dias__td--festivo]="
+                      d.inicial === 'D' || festivoPorDia().has(d.dia)
+                    "
+                    [class.aplicar-dias__td--error]="diasOcupados().has(d.dia)"
+                  >
+                    <input
+                      pInputText
+                      type="text"
+                      [formControlName]="i"
+                      class="aplicar-dias__input"
+                      [attr.aria-label]="m.diaAria + ' ' + d.dia + ' ' + d.inicial"
+                      [attr.title]="diasOcupados().has(d.dia) ? m.diaOcupadoTitle : null"
+                    />
+                  </td>
+                }
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      }
     </div>
   </form>
 
