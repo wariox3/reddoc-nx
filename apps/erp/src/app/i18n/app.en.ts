@@ -1018,6 +1018,8 @@ export const en: AppDict = {
           diasSection: 'Days of the month',
           cargandoDias: 'Loading period…',
           diaAria: 'Day',
+          conflictoDia: 'The employee already has a shift that day in another position.',
+          conflictoAviso: 'Some days have a shift in more than one position.',
           aplicar: 'Save',
           close: 'Close',
           toasts: {

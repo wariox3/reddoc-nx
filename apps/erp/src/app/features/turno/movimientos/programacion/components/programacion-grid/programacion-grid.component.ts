@@ -59,22 +59,14 @@ export interface ProgramacionFilaRef {
 }
 
 /**
- * Datos que el grid emite al pedir **editar** la programación de un contrato en un
- * puesto. Incluye el puesto (para reabrir el modal en el mismo período), el
- * contrato ya asignado y el mapa `fecha ISO → código de turno` actual, para que el
- * modal pre-llene los inputs de día sin tener que volver a pedir el detalle.
+ * Identidad de un **contrato** que el grid emite al pedir editar su programación.
+ * La edición ya no es por puesto: el modal lista todas las líneas del contrato
+ * (una por puesto) partiendo de este id, así que basta con identificarlo.
  */
-export interface ProgramacionEdicionRef {
-  readonly documentoDetalleId: number;
-  readonly puestoId: number | null;
-  readonly puestoNombre: string | null;
-  readonly contrato: {
-    readonly id: number;
-    readonly nombre: string;
-    readonly numeroIdentificacion: string;
-  };
-  /** Turno actual por día (`fecha ISO → turno_codigo`), para pre-llenar el modal. */
-  readonly dias: Readonly<Record<string, string | null>>;
+export interface ProgramacionContratoRef {
+  readonly id: number;
+  readonly nombre: string;
+  readonly numeroIdentificacion: string;
 }
 
 /**
@@ -113,8 +105,8 @@ export class ProgramacionGridComponent {
   /** Pide eliminar la programación de un contrato (fila). El padre confirma y borra. */
   readonly eliminarContrato = output<ProgramacionFilaRef>();
 
-  /** Pide editar la programación de un contrato (fila). El padre abre el modal. */
-  readonly editarContrato = output<ProgramacionEdicionRef>();
+  /** Pide editar la programación de un contrato. El padre abre el modal multi-puesto. */
+  readonly editarContrato = output<ProgramacionContratoRef>();
 
   /** Filas agrupadas por `documento_detalle_id` para renderizar separadores. */
   protected readonly grupos = computed<readonly GrupoFilas[]>(() => {
@@ -160,26 +152,15 @@ export class ProgramacionGridComponent {
   }
 
   /**
-   * Emite la fila (contrato) para que el padre reabra el modal en modo edición.
-   * Adjunta el turno actual de cada día (`fecha ISO → turno_codigo`) para
-   * pre-llenar los inputs sin recargar el detalle.
+   * Emite la identidad del contrato para que el padre abra el modal de edición.
+   * El modal reúne todas las líneas del contrato (una por puesto) desde el detalle.
    */
-  protected onEditar(grupo: GrupoFilas, fila: ProgramacionFila): void {
+  protected onEditar(fila: ProgramacionFila): void {
     if (fila.contrato_id == null) return;
-    const dias: Record<string, string | null> = {};
-    for (const [fecha, celda] of Object.entries(fila.dias)) {
-      dias[fecha] = celda?.turno_codigo ?? null;
-    }
     this.editarContrato.emit({
-      documentoDetalleId: grupo.documentoDetalleId,
-      puestoId: grupo.puestoId,
-      puestoNombre: grupo.puestoNombre,
-      contrato: {
-        id: fila.contrato_id,
-        nombre: fila.contrato_contacto_nombre_corto ?? '',
-        numeroIdentificacion: fila.contrato_contacto_numero_identificacion ?? '',
-      },
-      dias,
+      id: fila.contrato_id,
+      nombre: fila.contrato_contacto_nombre_corto ?? '',
+      numeroIdentificacion: fila.contrato_contacto_numero_identificacion ?? '',
     });
   }
 

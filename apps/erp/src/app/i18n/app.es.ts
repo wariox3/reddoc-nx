@@ -1033,6 +1033,8 @@ export const es: AppDict = {
           diasSection: 'Días del mes',
           cargandoDias: 'Cargando el período…',
           diaAria: 'Día',
+          conflictoDia: 'El empleado ya tiene un turno ese día en otro puesto.',
+          conflictoAviso: 'Hay días con turno en más de un puesto.',
           aplicar: 'Guardar',
           close: 'Cerrar',
           toasts: {

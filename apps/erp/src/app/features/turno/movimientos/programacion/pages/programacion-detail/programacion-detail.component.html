@@ -112,7 +112,16 @@
 <app-programacion-agregar-contrato-modal
   [(visible)]="agregarContratoVisible"
   [grupo]="agregarContratoGrupo()"
-  [edicion]="edicionContrato()"
+  (applied)="onApplied()"
+/>
+
+<!-- ── Modal: editar la programación de un contrato (multi-puesto) ────────────── -->
+<app-programacion-editar-contrato-modal
+  [(visible)]="editarContratoVisible"
+  [contrato]="edicionContrato()"
+  [fechas]="grid()?.fechas ?? []"
+  [filas]="edicionFilas()"
+  [festivoClaves]="festivoClaves()"
   (applied)="onApplied()"
 />
 

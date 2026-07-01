@@ -31,10 +31,7 @@ import { ErpApiAutocompleteComponent } from '@erp/core/components/api-autocomple
 import { UppercaseDirective } from '@erp/core/directives/uppercase.directive';
 import type { ErpSelectOption } from '@erp/core/data/erp-select-data.service';
 import type { SecuenciaMesCalculado } from '@erp/features/turno/masters/secuencia/secuencia.service';
-import type {
-  ProgramacionEdicionRef,
-  ProgramacionGrupoRef,
-} from '../programacion-grid/programacion-grid.component';
+import type { ProgramacionGrupoRef } from '../programacion-grid/programacion-grid.component';
 import { ProgramacionService } from '../../programacion.service';
 import type {
   CrearProgramacionPayload,
@@ -83,16 +80,6 @@ export class ProgramacionAgregarContratoModalComponent {
 
   /** Puesto sobre el que se aplica (emitido por el grid). */
   readonly grupo = input<ProgramacionGrupoRef | null>(null);
-
-  /**
-   * Contrato en edición. `null` → modo agregar (form limpio). Distinto de `null`
-   * → modo edición: el contrato queda pre-seleccionado y bloqueado, y los inputs
-   * de día se pre-llenan con su programación actual.
-   */
-  readonly edicion = input<ProgramacionEdicionRef | null>(null);
-
-  /** Modo edición cuando llega una fila para editar; alterna título y guardado. */
-  protected readonly esEdicion = computed(() => this.edicion() !== null);
 
   /** Se emite tras aplicar con éxito; el padre recarga el detalle/grid. */
   readonly applied = output<void>();
@@ -169,8 +156,7 @@ export class ProgramacionAgregarContratoModalComponent {
     });
 
     // Al abrir (puede ser para otro puesto): form limpio y período recargado
-    // desde la línea del documento (deriva mes + festivos en el store). En modo
-    // edición, pre-selecciona el contrato y lo bloquea (no se cambia al editar).
+    // desde la línea del documento (deriva mes + festivos en el store).
     effect(() => {
       if (!this.visible()) return;
       this.form.reset();
@@ -181,33 +167,6 @@ export class ProgramacionAgregarContratoModalComponent {
           const ts = this.t().common.toasts.loadError;
           this.toast.error(ts.title, ts.desc);
         });
-      }
-      const ed = this.edicion();
-      const contratoCtrl = this.form.controls.contrato;
-      if (ed) {
-        contratoCtrl.setValue({
-          id: ed.contrato.id,
-          nombre: ed.contrato.nombre,
-          numero_identificacion: ed.contrato.numeroIdentificacion,
-        });
-        contratoCtrl.disable();
-      } else {
-        contratoCtrl.enable();
-      }
-    });
-
-    // En modo edición, pre-llena los inputs de día con la programación actual una
-    // vez que el período resolvió y el FormArray se reconstruyó. Depende de
-    // `dias()` para correr **después** del effect que reconstruye el array.
-    effect(() => {
-      const ed = this.edicion();
-      const periodo = this.periodo();
-      const total = this.dias().length;
-      if (!this.visible() || !ed || !periodo || total === 0) return;
-      const controls = this.diasArray.controls;
-      for (let i = 0; i < total; i++) {
-        const fecha = toIsoDate(new Date(periodo.anio, periodo.mes - 1, i + 1));
-        controls[i]?.setValue(ed.dias[fecha] ?? '', { emitEvent: false });
       }
     });
 
@@ -228,12 +187,7 @@ export class ProgramacionAgregarContratoModalComponent {
     }
   }
 
-  /**
-   * Guarda la programación del contrato: `crear-programacion` en modo agregar o
-   * `actualizar-programacion` en edición. El payload es idéntico (contrato +
-   * `documento_detalle_id` + un ítem por día); solo cambia el endpoint. En edición
-   * el contrato viene de un control deshabilitado, cuyo `value` se conserva.
-   */
+  /** Arma el payload y envía `POST crear-programacion`. */
   protected onAplicar(): void {
     const grupo = this.grupo();
     const periodo = this.periodo();
@@ -249,12 +203,9 @@ export class ProgramacionAgregarContratoModalComponent {
       })),
     };
 
-    const request$ = this.esEdicion()
-      ? this.service.actualizarProgramacion(payload)
-      : this.service.crearProgramacion(payload);
-
     this.isSubmitting.set(true);
-    request$
+    this.service
+      .crearProgramacion(payload)
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         finalize(() => this.isSubmitting.set(false)),

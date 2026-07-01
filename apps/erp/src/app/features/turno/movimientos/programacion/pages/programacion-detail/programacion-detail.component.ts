@@ -27,11 +27,12 @@ import type {
 } from '../../programacion.model';
 import {
   ProgramacionGridComponent,
-  type ProgramacionEdicionRef,
+  type ProgramacionContratoRef,
   type ProgramacionFilaRef,
   type ProgramacionGrupoRef,
 } from '../../components/programacion-grid/programacion-grid.component';
 import { ProgramacionAgregarContratoModalComponent } from '../../components/programacion-agregar-contrato-modal/programacion-agregar-contrato-modal.component';
+import { ProgramacionEditarContratoModalComponent } from '../../components/programacion-editar-contrato-modal/programacion-editar-contrato-modal.component';
 
 /** Cabecera legible de la programación para la ficha. */
 interface CabeceraView {
@@ -82,6 +83,7 @@ function toProgramacionFecha(iso: string, _index: number): ProgramacionFecha {
     BreadcrumbComponent,
     ProgramacionGridComponent,
     ProgramacionAgregarContratoModalComponent,
+    ProgramacionEditarContratoModalComponent,
   ],
   templateUrl: './programacion-detail.component.html',
   styleUrl: './programacion-detail.component.scss',
@@ -111,11 +113,21 @@ export class ProgramacionDetailComponent implements OnInit {
   protected readonly agregarContratoVisible = signal(false);
   protected readonly agregarContratoGrupo = signal<ProgramacionGrupoRef | null>(null);
 
+  /** Modal de editar la programación de un contrato (se abre desde la fila del grid). */
+  protected readonly editarContratoVisible = signal(false);
+  protected readonly edicionContrato = signal<ProgramacionContratoRef | null>(null);
+
   /**
-   * Contrato en edición (reusa el mismo modal en modo edición). `null` cuando el
-   * modal se abre para agregar; se limpia al abrir en modo agregar.
+   * Filas del contrato en edición (una por puesto), filtradas del grid ya cargado.
+   * El modal de edición las lista para modificarlas todas a la vez. Comparten las
+   * mismas `fechas` (mismo mes de la programación).
    */
-  protected readonly edicionContrato = signal<ProgramacionEdicionRef | null>(null);
+  protected readonly edicionFilas = computed<readonly ProgramacionFila[]>(() => {
+    const contrato = this.edicionContrato();
+    const grid = this.grid();
+    if (!contrato || !grid) return [];
+    return grid.filas.filter((f) => f.contrato_id === contrato.id);
+  });
 
   private readonly festivos = signal<readonly Festivo[]>([]);
 
@@ -161,20 +173,14 @@ export class ProgramacionDetailComponent implements OnInit {
 
   /** Abre el modal de agregar contrato al puesto emitido por el grid. */
   protected onAgregarContrato(grupo: ProgramacionGrupoRef): void {
-    this.edicionContrato.set(null);
     this.agregarContratoGrupo.set(grupo);
     this.agregarContratoVisible.set(true);
   }
 
-  /** Reabre el modal en modo edición con el contrato y sus turnos actuales. */
-  protected onEditarContrato(ref: ProgramacionEdicionRef): void {
+  /** Abre el modal de edición con todas las líneas (puestos) del contrato. */
+  protected onEditarContrato(ref: ProgramacionContratoRef): void {
     this.edicionContrato.set(ref);
-    this.agregarContratoGrupo.set({
-      documentoDetalleId: ref.documentoDetalleId,
-      puestoId: ref.puestoId,
-      puestoNombre: ref.puestoNombre,
-    });
-    this.agregarContratoVisible.set(true);
+    this.editarContratoVisible.set(true);
   }
 
   /** Confirma y elimina la programación del contrato (fila) emitida por el grid. */
