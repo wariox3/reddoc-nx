@@ -712,12 +712,13 @@ export interface AppDict extends AuthTranslationsHost {
         grid: {
           headers: {
             empleado: string;
-            ct: string;
             hd: string;
             hn: string;
             c: string;
             a: string;
           };
+          /** Abreviatura del contrato en la meta-línea bajo el nombre (`Cont. 2`). */
+          contratoAbrev: string;
           stats: {
             diurnas: string;
             nocturnas: string;

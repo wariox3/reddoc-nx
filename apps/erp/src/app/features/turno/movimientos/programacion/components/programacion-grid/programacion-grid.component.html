@@ -7,7 +7,6 @@
         <th class="programacion-grid__th programacion-grid__th--sticky-left">
           {{ g.headers.empleado }}
         </th>
-        <th class="programacion-grid__th w-10 text-center">{{ g.headers.ct }}</th>
         @for (fecha of fechas(); track fecha.clave) {
           <th
             class="programacion-grid__th programacion-grid__th--dia"
@@ -101,14 +100,10 @@
               <span class="block font-medium">{{
                 fila.contrato_contacto_nombre_corto || '—'
               }}</span>
-              @if (fila.contrato_contacto_numero_identificacion) {
-                <span class="block text-[0.68rem] text-brand-muted tabular-nums">
-                  {{ fila.contrato_contacto_numero_identificacion }}
-                </span>
+              @let meta = metaLinea(fila, g.contratoAbrev);
+              @if (meta) {
+                <span class="block text-[0.68rem] text-brand-muted tabular-nums">{{ meta }}</span>
               }
-            </td>
-            <td class="programacion-grid__td w-10 text-center text-brand-muted tabular-nums">
-              {{ fila.contrato_id ?? '—' }}
             </td>
 
             @for (fecha of fechas(); track fecha.clave) {

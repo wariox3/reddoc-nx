@@ -123,10 +123,10 @@ export class ProgramacionGridComponent {
 
   /**
    * Columnas totales para el `colspan` de la fila de grupo y el empty state:
-   * 2 fijas izquierda (empleado, ct) + días + 4 resumen (HD, HN, C, A) +
+   * 1 fija izquierda (empleado) + días + 4 resumen (HD, HN, C, A) +
    * 2 reservadas para opciones por fila.
    */
-  protected readonly colspan = computed(() => 2 + this.fechas().length + 4 + 2);
+  protected readonly colspan = computed(() => 1 + this.fechas().length + 4 + 2);
 
   /** Emite la identidad del puesto (la agrupación) para abrir el modal. */
   protected onVerEmpleados(grupo: GrupoFilas): void {
@@ -145,6 +145,22 @@ export class ProgramacionGridComponent {
       contratoId: fila.contrato_id,
       contratoNombre: fila.contrato_contacto_nombre_corto,
     });
+  }
+
+  /**
+   * Meta-línea bajo el nombre: número de identificación y, si el contrato tiene
+   * id, su código abreviado (`1182932839 - Cont. 2`). Devuelve `''` cuando no hay
+   * ningún dato, para que la plantilla omita el `<span>`.
+   */
+  protected metaLinea(fila: ProgramacionFila, contratoAbrev: string): string {
+    const partes: string[] = [];
+    if (fila.contrato_contacto_numero_identificacion) {
+      partes.push(fila.contrato_contacto_numero_identificacion);
+    }
+    if (fila.contrato_id !== null) {
+      partes.push(`${contratoAbrev} ${fila.contrato_id}`);
+    }
+    return partes.join(' - ');
   }
 
   /** Código del turno del día (`fila.dias[clave].turno_codigo`), con fallback `—`. */

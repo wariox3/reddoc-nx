@@ -988,12 +988,12 @@ export const es: AppDict = {
         grid: {
           headers: {
             empleado: 'Empleado',
-            ct: 'CT',
             hd: 'HD',
             hn: 'HN',
             c: 'C',
             a: 'A',
           },
+          contratoAbrev: 'Cont.',
           stats: {
             diurnas: 'Horas diurnas contratadas / programadas',
             nocturnas: 'Horas nocturnas contratadas / programadas',
