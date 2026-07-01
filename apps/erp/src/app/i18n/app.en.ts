@@ -1006,6 +1006,7 @@ export const en: AppDict = {
         },
         empleadosModal: {
           title: 'Add contract to position',
+          editTitle: 'Edit contract scheduling',
           subtitle: 'Assign the employees for this position.',
           placeholder: 'Under construction.',
           contratoLabel: 'Contract',

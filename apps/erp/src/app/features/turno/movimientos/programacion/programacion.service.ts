@@ -1,7 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { BaseHttpService } from '@reddoc/core';
-import type { CrearProgramacionPayload, EliminarProgramacionPayload } from './programacion.model';
+import type {
+  ActualizarProgramacionPayload,
+  CrearProgramacionPayload,
+  EliminarProgramacionPayload,
+} from './programacion.model';
 
 /**
  * Servicio HTTP de programaciones (endpoints propios de turno).
@@ -36,6 +40,17 @@ export class ProgramacionService extends BaseHttpService {
    */
   crearProgramacion(payload: CrearProgramacionPayload): Observable<unknown> {
     return this.post<unknown>(`${this.resourcePath}crear-programacion/`, payload);
+  }
+
+  /**
+   * Reprograma los turnos de un contrato ya asignado a un puesto
+   * (`POST /turno/programacion/actualizar-programacion/`). Mismo payload que crear;
+   * el backend sobrescribe los días existentes de ese contrato.
+   *
+   * TODO: tipar la respuesta cuando se confirme el shape.
+   */
+  actualizarProgramacion(payload: ActualizarProgramacionPayload): Observable<unknown> {
+    return this.post<unknown>(`${this.resourcePath}actualizar-programacion/`, payload);
   }
 
   /**

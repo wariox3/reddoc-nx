@@ -27,6 +27,7 @@ import type {
 } from '../../programacion.model';
 import {
   ProgramacionGridComponent,
+  type ProgramacionEdicionRef,
   type ProgramacionFilaRef,
   type ProgramacionGrupoRef,
 } from '../../components/programacion-grid/programacion-grid.component';
@@ -110,6 +111,12 @@ export class ProgramacionDetailComponent implements OnInit {
   protected readonly agregarContratoVisible = signal(false);
   protected readonly agregarContratoGrupo = signal<ProgramacionGrupoRef | null>(null);
 
+  /**
+   * Contrato en edición (reusa el mismo modal en modo edición). `null` cuando el
+   * modal se abre para agregar; se limpia al abrir en modo agregar.
+   */
+  protected readonly edicionContrato = signal<ProgramacionEdicionRef | null>(null);
+
   private readonly festivos = signal<readonly Festivo[]>([]);
 
   /** Set de fechas ISO festivas del período — para resaltar columnas en el grid. */
@@ -154,7 +161,19 @@ export class ProgramacionDetailComponent implements OnInit {
 
   /** Abre el modal de agregar contrato al puesto emitido por el grid. */
   protected onAgregarContrato(grupo: ProgramacionGrupoRef): void {
+    this.edicionContrato.set(null);
     this.agregarContratoGrupo.set(grupo);
+    this.agregarContratoVisible.set(true);
+  }
+
+  /** Reabre el modal en modo edición con el contrato y sus turnos actuales. */
+  protected onEditarContrato(ref: ProgramacionEdicionRef): void {
+    this.edicionContrato.set(ref);
+    this.agregarContratoGrupo.set({
+      documentoDetalleId: ref.documentoDetalleId,
+      puestoId: ref.puestoId,
+      puestoNombre: ref.puestoNombre,
+    });
     this.agregarContratoVisible.set(true);
   }
 

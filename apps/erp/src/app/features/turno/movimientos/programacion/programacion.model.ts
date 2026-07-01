@@ -127,6 +127,14 @@ export interface CrearProgramacionPayload {
 }
 
 /**
+ * Payload de `POST /turno/programacion/actualizar-programacion/`: reprograma los
+ * turnos de un contrato ya asignado a un puesto. Mismo shape que la creación
+ * (contrato + `documento_detalle_id` + un ítem por día); el backend sobrescribe
+ * los días existentes en vez de responder con conflicto.
+ */
+export type ActualizarProgramacionPayload = CrearProgramacionPayload;
+
+/**
  * Payload de `POST /turno/programacion/eliminar-programacion/`: borra la
  * programación (mes de turnos) de un contrato en un puesto (`documento_detalle_id`).
  */

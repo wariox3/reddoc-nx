@@ -16,11 +16,15 @@
       <span
         class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-sky-50 text-sky-700"
       >
-        <i class="pi pi-user-plus text-[1.05rem]"></i>
+        <i
+          class="pi text-[1.05rem]"
+          [class.pi-pencil]="esEdicion()"
+          [class.pi-user-plus]="!esEdicion()"
+        ></i>
       </span>
       <div class="flex flex-col gap-[0.1rem]">
         <h2 class="m-0 text-[1.02rem] font-bold leading-tight tracking-tight text-brand-text">
-          {{ m.title }}
+          {{ esEdicion() ? m.editTitle : m.title }}
         </h2>
         <p class="m-0 text-[0.75rem] text-brand-muted">
           @if (grupo(); as g) {

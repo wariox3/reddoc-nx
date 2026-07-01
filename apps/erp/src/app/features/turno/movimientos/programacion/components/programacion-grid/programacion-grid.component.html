@@ -134,12 +134,12 @@
             </td>
 
             <!-- Acciones por fila: editar + eliminar la programación del contrato.
-                 Siempre visibles (ancho de celda ya reservado).
-                 Editar es solo visual por ahora (sin acción). -->
+                 Siempre visibles (ancho de celda ya reservado). -->
             <td class="programacion-grid__td programacion-grid__col-accion">
               @if (fila.contrato_id !== null) {
                 <button
                   type="button"
+                  (click)="onEditar(grupo, fila)"
                   [title]="g.editar"
                   [attr.aria-label]="g.editar"
                   class="programacion-grid__row-action programacion-grid__row-action--editar"
