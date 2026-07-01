@@ -29,11 +29,7 @@ import {
 } from '@erp/core/components/contrato-autocomplete/contrato-autocomplete.component';
 import { ErpApiAutocompleteComponent } from '@erp/core/components/api-autocomplete/erp-api-autocomplete.component';
 import type { ErpSelectOption } from '@erp/core/data/erp-select-data.service';
-import {
-  SecuenciaService,
-  type SecuenciaMesCalculado,
-} from '@erp/features/turno/masters/secuencia/secuencia.service';
-import type { Secuencia } from '@erp/features/turno/masters/secuencia/secuencia.model';
+import type { SecuenciaMesCalculado } from '@erp/features/turno/masters/secuencia/secuencia.service';
 import type { ProgramacionGrupoRef } from '../programacion-grid/programacion-grid.component';
 import { ProgramacionService } from '../../programacion.service';
 import type {
@@ -42,6 +38,7 @@ import type {
   ProgramacionExistente,
 } from '../../programacion.model';
 import { ProgramacionPeriodoStore } from './programacion-periodo.store';
+import { ProgramacionSecuenciaPickerComponent } from './programacion-secuencia-picker.component';
 
 /**
  * Modal para **aplicar la programación de un contrato a un puesto**.
@@ -62,6 +59,7 @@ import { ProgramacionPeriodoStore } from './programacion-periodo.store';
     InputTextModule,
     ContratoAutocompleteComponent,
     ErpApiAutocompleteComponent,
+    ProgramacionSecuenciaPickerComponent,
   ],
   templateUrl: './programacion-agregar-contrato-modal.component.html',
   styleUrl: './programacion-agregar-contrato-modal.component.scss',
@@ -70,7 +68,6 @@ import { ProgramacionPeriodoStore } from './programacion-periodo.store';
 export class ProgramacionAgregarContratoModalComponent {
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly service = inject(ProgramacionService);
-  private readonly secuenciaService = inject(SecuenciaService);
   private readonly periodoStore = inject(ProgramacionPeriodoStore);
   private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
@@ -107,7 +104,6 @@ export class ProgramacionAgregarContratoModalComponent {
   protected readonly form = this.fb.group({
     contrato: this.fb.control<ContratoOption | null>(null),
     secuencia: this.fb.control<ErpSelectOption | null>(null),
-    posicionInicial: this.fb.control<number | null>(null),
     dias: this.fb.array<FormControl<string>>([]),
   });
 
@@ -116,23 +112,6 @@ export class ProgramacionAgregarContratoModalComponent {
   }
 
   protected readonly isSubmitting = signal(false);
-
-  /** Detalle completo de la secuencia elegida (`getById`). */
-  private readonly secuenciaDetalle = signal<Secuencia | null>(null);
-
-  /** Posiciones activas de la secuencia (1..dias), para el picker visual. */
-  protected readonly posicionesSecuencia = computed<readonly { pos: number; codigo: string }[]>(
-    () => {
-      const s = this.secuenciaDetalle();
-      if (!s || !s.dias) return [];
-      const result: { pos: number; codigo: string }[] = [];
-      for (let i = 1; i <= s.dias; i++) {
-        const codigo = s[`dia_${i}` as keyof Secuencia] as string | null;
-        if (codigo !== null) result.push({ pos: i, codigo });
-      }
-      return result;
-    },
-  );
 
   /**
    * Días del mes que ya tienen programación (devueltos por el backend al fallar
@@ -154,23 +133,10 @@ export class ProgramacionAgregarContratoModalComponent {
     () => this.periodo() !== null && this.contratoValue() !== null && !this.isSubmitting(),
   );
 
-  protected readonly isCalculating = signal(false);
-
-  private readonly secuenciaValue = toSignal(this.form.controls.secuencia.valueChanges, {
+  /** Secuencia elegida como señal, para pasarla al picker de secuencia (hijo). */
+  protected readonly secuenciaValue = toSignal(this.form.controls.secuencia.valueChanges, {
     initialValue: this.form.controls.secuencia.value,
   });
-  protected readonly posicionValue = toSignal(this.form.controls.posicionInicial.valueChanges, {
-    initialValue: this.form.controls.posicionInicial.value,
-  });
-
-  /** Para calcular: período resuelto + secuencia + posición inicial válida y sin cálculo en curso. */
-  protected readonly puedeCalcular = computed(
-    () =>
-      this.periodo() !== null &&
-      this.secuenciaValue() !== null &&
-      this.posicionValue() != null &&
-      !this.isCalculating(),
-  );
 
   constructor() {
     // Reconstruye el FormArray de días cuando cambia el período (cada mes tiene
@@ -198,11 +164,6 @@ export class ProgramacionAgregarContratoModalComponent {
       }
     });
 
-    // Al elegir una secuencia, traer su detalle completo (getById).
-    this.form.controls.secuencia.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((sel) => this.cargarSecuenciaDetalle(sel));
-
     // Al tocar cualquier campo, retira el resaltado de días ya programados.
     this.form.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       if (this.diasOcupados().size) this.diasOcupados.set(new Map());
@@ -210,21 +171,14 @@ export class ProgramacionAgregarContratoModalComponent {
   }
 
   /**
-   * Trae el detalle completo de la secuencia elegida
-   * (`GET /turno/secuencia/:id/`) y lo guarda para uso posterior.
+   * Vuelca en los inputs de día los `turno_codigo` calculados por el picker de
+   * secuencia (evento `calculado`).
    */
-  private cargarSecuenciaDetalle(sel: ErpSelectOption | null): void {
-    if (!sel) {
-      this.secuenciaDetalle.set(null);
-      return;
+  protected onSecuenciaCalculada(res: SecuenciaMesCalculado): void {
+    const controls = this.diasArray.controls;
+    for (const d of res.dias) {
+      controls[d.dia - 1]?.setValue(d.turno_codigo);
     }
-    this.secuenciaService
-      .getById(sel.id)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (secuencia) => this.secuenciaDetalle.set(secuencia),
-        error: () => this.secuenciaDetalle.set(null),
-      });
   }
 
   /** Arma el payload y envía `POST crear-programacion`. */
@@ -289,48 +243,6 @@ export class ProgramacionAgregarContratoModalComponent {
     this.diasOcupados.set(mapa);
     this.toast.error(fallbackTitle, body.detail);
     return true;
-  }
-
-  /**
-   * Calcula los turnos del mes a partir de la secuencia y la posición inicial
-   * (`POST /turno/secuencia/calcular-mes/`) y vuelca cada `turno_codigo` en el
-   * input del día correspondiente de la tabla.
-   */
-  protected onAplicarSecuencia(): void {
-    const secuencia = this.form.controls.secuencia.value;
-    const posicionInicial = this.form.controls.posicionInicial.value;
-    const periodo = this.periodo();
-    if (!secuencia || posicionInicial == null || !periodo || this.isCalculating()) return;
-
-    this.isCalculating.set(true);
-    this.secuenciaService
-      .calcularMes({
-        secuencia_id: secuencia.id,
-        posicion_inicial: posicionInicial,
-        anio: periodo.anio,
-        mes: periodo.mes,
-      })
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        finalize(() => this.isCalculating.set(false)),
-      )
-      .subscribe({
-        next: (res) => this.volcarCalculo(res),
-        error: (err) => console.error('Error al calcular el mes de la secuencia', err),
-      });
-  }
-
-  /** Escribe el `turno_codigo` de cada día calculado en su input de la tabla. */
-  private volcarCalculo(res: SecuenciaMesCalculado): void {
-    const controls = this.diasArray.controls;
-    for (const d of res.dias) {
-      controls[d.dia - 1]?.setValue(d.turno_codigo);
-    }
-  }
-
-  /** Selecciona una posición inicial haciendo clic en el picker de la secuencia. */
-  protected onSeleccionarPosicion(pos: number): void {
-    this.form.controls.posicionInicial.setValue(pos);
   }
 
   protected onClose(): void {
