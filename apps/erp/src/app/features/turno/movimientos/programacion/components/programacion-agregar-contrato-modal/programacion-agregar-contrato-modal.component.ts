@@ -21,8 +21,7 @@ import { finalize } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
-import { I18nService, ToastService, anioMesDeIso, diasDelMes } from '@reddoc/core';
-import { DocumentoDetalleService } from '@erp/core/module-config';
+import { I18nService, ToastService, toIsoDate } from '@reddoc/core';
 import type { AppDict } from '@erp/i18n';
 import {
   ContratoAutocompleteComponent,
@@ -30,10 +29,6 @@ import {
 } from '@erp/core/components/contrato-autocomplete/contrato-autocomplete.component';
 import { ErpApiAutocompleteComponent } from '@erp/core/components/api-autocomplete/erp-api-autocomplete.component';
 import type { ErpSelectOption } from '@erp/core/data/erp-select-data.service';
-import {
-  FestivoService,
-  type Festivo,
-} from '@erp/features/general/masters/festivo/festivo.service';
 import {
   SecuenciaService,
   type SecuenciaMesCalculado,
@@ -45,15 +40,16 @@ import type {
   CrearProgramacionPayload,
   CrearProgramacionConflicto,
   ProgramacionExistente,
-  ProgramacionLineaRead,
 } from '../../programacion.model';
+import { ProgramacionPeriodoStore } from './programacion-periodo.store';
 
 /**
  * Modal para **aplicar la programación de un contrato a un puesto**.
  *
  * Se abre desde el botón de cada banda de grupo del grid (un puesto =
- * `documento_detalle_id`). Permite elegir un contrato y poner el código de turno
- * de cada día del mes actual, y envía `POST .../crear-programacion`. Al éxito
+ * `documento_detalle_id`). El período (mes) a programar lo deriva de la línea del
+ * documento (ver `ProgramacionPeriodoStore`); permite elegir un contrato y poner
+ * el código de turno de cada día, y envía `POST .../crear-programacion`. Al éxito
  * emite `applied` para que el padre refresque el grid.
  */
 @Component({
@@ -69,13 +65,13 @@ import type {
   ],
   templateUrl: './programacion-agregar-contrato-modal.component.html',
   styleUrl: './programacion-agregar-contrato-modal.component.scss',
+  providers: [ProgramacionPeriodoStore],
 })
 export class ProgramacionAgregarContratoModalComponent {
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly service = inject(ProgramacionService);
-  private readonly detalleService = inject(DocumentoDetalleService);
-  private readonly festivoService = inject(FestivoService);
   private readonly secuenciaService = inject(SecuenciaService);
+  private readonly periodoStore = inject(ProgramacionPeriodoStore);
   private readonly toast = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly i18n = inject<I18nService<AppDict>>(I18nService);
@@ -91,36 +87,22 @@ export class ProgramacionAgregarContratoModalComponent {
   readonly applied = output<void>();
 
   /**
-   * Período (mes/año) a programar. Se **deriva de la línea del documento** (su
-   * `fecha_desde`) al abrir el modal — no del mes actual. `null` mientras carga o
-   * si la línea no trae fecha. `etiqueta` es el nombre del mes + año del header.
+   * Período/días/festivos viven en el store (deriva el mes de la línea del
+   * documento). Se re-exponen como alias para que el template los consuma sin
+   * conocer el store.
    */
-  protected readonly periodo = signal<{
-    readonly anio: number;
-    readonly mes: number;
-    readonly etiqueta: string;
-  } | null>(null);
-
-  /** `true` mientras se resuelve el período (carga de la línea de documento). */
-  protected readonly cargandoPeriodo = signal(false);
-
-  /**
-   * Días del período (1..N) con la inicial del día de la semana (`1 L`, `2 M`,
-   * `3 X`…). Define las columnas del header y la cantidad de inputs. Vacío
-   * mientras no hay período resuelto.
-   */
-  protected readonly dias = computed(() => {
-    const p = this.periodo();
-    return p ? diasDelMes(p.anio, p.mes) : [];
-  });
+  protected readonly periodo = this.periodoStore.periodo;
+  protected readonly cargandoPeriodo = this.periodoStore.cargando;
+  protected readonly dias = this.periodoStore.dias;
+  protected readonly festivoPorDia = this.periodoStore.festivoPorDia;
 
   /** Endpoint `seleccionar` de secuencias para el `<app-api-autocomplete>`. */
   protected readonly secuenciaEndpoint = '/turno/secuencia/seleccionar/';
 
   /**
    * Form: contrato elegido + un input de día (texto/código de turno) por día del
-   * mes. El `FormArray` de días arranca vacío y se reconstruye al resolver el
-   * período (`rebuildDiasArray`), ya que cada mes tiene distinto número de días.
+   * mes. El `FormArray` de días arranca vacío y un `effect` lo reconstruye cuando
+   * cambian los `dias()` del período, ya que cada mes tiene distinto número de días.
    */
   protected readonly form = this.fb.group({
     contrato: this.fb.control<ContratoOption | null>(null),
@@ -134,9 +116,6 @@ export class ProgramacionAgregarContratoModalComponent {
   }
 
   protected readonly isSubmitting = signal(false);
-
-  /** Festivos del mes del período actual (`/general/festivo/mes/`). */
-  private readonly festivos = signal<readonly Festivo[]>([]);
 
   /** Detalle completo de la secuencia elegida (`getById`). */
   private readonly secuenciaDetalle = signal<Secuencia | null>(null);
@@ -161,25 +140,6 @@ export class ProgramacionAgregarContratoModalComponent {
    * valor guarda el día existente (turno ya programado) por si se muestra luego.
    */
   protected readonly diasOcupados = signal<ReadonlyMap<number, ProgramacionExistente>>(new Map());
-
-  /**
-   * Días del mes (1..N) que son festivos → su nombre, para resaltarlos en la
-   * tabla y mostrar el nombre del festivo en el `title`. Filtra por el
-   * `anio`/`mes` del período parseando la `fecha` ISO `YYYY-MM-DD`.
-   */
-  protected readonly festivoPorDia = computed<ReadonlyMap<number, string>>(() => {
-    const mapa = new Map<number, string>();
-    const p = this.periodo();
-    if (!p) return mapa;
-    for (const f of this.festivos()) {
-      const [anio, mes, dia] = f.fecha.split('-').map(Number);
-      if (anio !== p.anio || mes !== p.mes) continue;
-      // Si el festivo cae sábado, no se marca como festivo (queda como fin de semana).
-      if (new Date(anio, mes - 1, dia).getDay() === 6) continue;
-      mapa.set(dia, f.nombre);
-    }
-    return mapa;
-  });
 
   /**
    * Contrato elegido como señal (el valor del form no lo es). Sin esto el
@@ -213,13 +173,29 @@ export class ProgramacionAgregarContratoModalComponent {
   );
 
   constructor() {
-    // Form limpio cada vez que se abre (puede abrirse para otro puesto). Se
-    // limpia el período previo y se carga el de la línea (deriva mes/festivos).
+    // Reconstruye el FormArray de días cuando cambia el período (cada mes tiene
+    // distinto número de días). `emitEvent: false` para no disparar el
+    // `valueChanges` que limpia los días ocupados.
+    effect(() => {
+      const total = this.dias().length;
+      const arr = this.diasArray;
+      arr.clear({ emitEvent: false });
+      for (let i = 0; i < total; i++) arr.push(this.fb.control(''), { emitEvent: false });
+    });
+
+    // Al abrir (puede ser para otro puesto): form limpio y período recargado
+    // desde la línea del documento (deriva mes + festivos en el store).
     effect(() => {
       if (!this.visible()) return;
       this.form.reset();
-      this.periodo.set(null);
-      this.cargarDetalleLinea();
+      this.periodoStore.reset();
+      const grupo = this.grupo();
+      if (grupo) {
+        this.periodoStore.cargarDesdeLinea(grupo.documentoDetalleId, () => {
+          const ts = this.t().common.toasts.loadError;
+          this.toast.error(ts.title, ts.desc);
+        });
+      }
     });
 
     // Al elegir una secuencia, traer su detalle completo (getById).
@@ -251,85 +227,6 @@ export class ProgramacionAgregarContratoModalComponent {
       });
   }
 
-  /**
-   * Carga la línea de documento del puesto (`documento_detalle_id`) para derivar
-   * el **período** a programar de su `fecha_desde`. Al resolver, fija `periodo`,
-   * reconstruye el `FormArray` de días y trae los festivos de ese mes.
-   */
-  private cargarDetalleLinea(): void {
-    const grupo = this.grupo();
-    if (!grupo) return;
-
-    this.cargandoPeriodo.set(true);
-    this.detalleService
-      .obtenerPorId<ProgramacionLineaRead>(grupo.documentoDetalleId)
-      .pipe(
-        takeUntilDestroyed(this.destroyRef),
-        finalize(() => this.cargandoPeriodo.set(false)),
-      )
-      .subscribe({
-        next: (linea) => {
-          const ym = anioMesDeIso(linea.fecha_desde);
-          if (!ym) {
-            this.periodo.set(null);
-            return;
-          }
-          this.periodo.set({
-            ...ym,
-            etiqueta: new Date(ym.anio, ym.mes - 1, 1).toLocaleDateString('es-CO', {
-              month: 'long',
-              year: 'numeric',
-            }),
-          });
-          this.rebuildDiasArray();
-          this.cargarFestivos();
-        },
-        error: () => {
-          this.periodo.set(null);
-          const ts = this.t().common.toasts.loadError;
-          this.toast.error(ts.title, ts.desc);
-        },
-      });
-  }
-
-  /**
-   * Sincroniza el `FormArray` de días con el período actual: lo vacía y crea un
-   * control de texto por día del mes. `emitEvent: false` para no disparar el
-   * `valueChanges` que limpia los días ocupados.
-   */
-  private rebuildDiasArray(): void {
-    const arr = this.form.controls.dias;
-    arr.clear({ emitEvent: false });
-    const total = this.dias().length;
-    for (let i = 0; i < total; i++) arr.push(this.fb.control(''), { emitEvent: false });
-  }
-
-  /**
-   * Trae los festivos del mes del período (`GET /general/festivo/mes/?anio=&mes=`)
-   * para resaltarlos en la tabla. Sin período resuelto, no consulta.
-   */
-  private cargarFestivos(): void {
-    const p = this.periodo();
-    if (!p) {
-      this.festivos.set([]);
-      return;
-    }
-    this.festivoService
-      .getDelMes(p.anio, p.mes)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (festivos) => this.festivos.set(festivos),
-        error: () => this.festivos.set([]),
-      });
-  }
-
-  /** Fecha ISO `YYYY-MM-DD` del día indicado dentro del período dado. */
-  private fechaIso(periodo: { readonly anio: number; readonly mes: number }, dia: number): string {
-    const mes = String(periodo.mes).padStart(2, '0');
-    const d = String(dia).padStart(2, '0');
-    return `${periodo.anio}-${mes}-${d}`;
-  }
-
   /** Arma el payload y envía `POST crear-programacion`. */
   protected onAplicar(): void {
     const grupo = this.grupo();
@@ -341,7 +238,7 @@ export class ProgramacionAgregarContratoModalComponent {
       contrato_id: contrato.id,
       documento_detalle_id: grupo.documentoDetalleId,
       items: this.diasArray.controls.map((control, i) => ({
-        fecha: this.fechaIso(periodo, i + 1),
+        fecha: toIsoDate(new Date(periodo.anio, periodo.mes - 1, i + 1)),
         turno_codigo: control.value.trim() || null,
       })),
     };
