@@ -66,17 +66,27 @@ export interface ProgramacionDiaCelda {
 /**
  * Fila del calendario: un **contrato** asignado a un puesto. Varias filas pueden
  * compartir `documento_detalle_id` (el grid las agrupa por puesto); el
- * `contrato_nombre` identifica cada fila dentro del grupo.
+ * `contrato_contacto_nombre_corto` identifica cada fila dentro del grupo.
  *
  * `horas*` son las horas contratadas del puesto; `horas*_programadas` las que
  * ya tienen turno asignado en el período.
  */
 export interface ProgramacionFila {
   readonly documento_detalle_id: number;
+  /** Detalle del documento afectado (origen del puesto); informativo. */
+  readonly documento_detalle_afectado_id: number | null;
   readonly puesto_id: number | null;
   readonly puesto_nombre: string | null;
+  /** Modalidad del puesto (ej. `SIN ARMA`). */
+  readonly modalidad_nombre: string | null;
+  /** Franja horaria del puesto en formato `HH:mm:ss`. */
+  readonly hora_desde: string | null;
+  readonly hora_hasta: string | null;
   readonly contrato_id: number | null;
-  readonly contrato_nombre: string | null;
+  /** Contacto del contrato asignado (empleado). */
+  readonly contrato_contacto_id: number | null;
+  readonly contrato_contacto_nombre_corto: string | null;
+  readonly contrato_contacto_numero_identificacion: string | null;
   readonly horas: number;
   readonly horas_diurnas: number;
   readonly horas_nocturnas: number;

@@ -85,20 +85,8 @@
   color: var(--brand-muted, #64748b);
 }
 
-// Fin de semana: tinte navy muy sutil.
-.programacion-grid__th--finde {
-  background: #eef1f4;
-}
-
-.programacion-grid__td--finde {
-  background: rgba(20, 48, 73, 0.035);
-}
-
-.programacion-grid__row:hover .programacion-grid__td--finde {
-  background: rgba(20, 48, 73, 0.055);
-}
-
 // Día festivo en header: fondo rojo suave + borde inferior, igual que el modal.
+// El domingo se trata como festivo (sin tinte de fin de semana en el sábado).
 .programacion-grid__th--festivo {
   background: #fdeaea;
   box-shadow: inset 0 -1px 0 rgba(190, 18, 60, 0.25);
@@ -171,6 +159,29 @@
   color: rgba(20, 48, 73, 0.45);
   white-space: nowrap;
   line-height: 1;
+}
+
+// Chip informativo del puesto en la banda de grupo.
+// Base = modalidad: etiqueta neutra (tinte navy), lee como clasificación/estructura.
+.programacion-grid__group-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.64rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  padding: 0.1rem 0.45rem;
+  border-radius: 9999px;
+  background: rgba(20, 48, 73, 0.07);
+  color: rgba(20, 48, 73, 0.6);
+  white-space: nowrap;
+}
+
+// Horario: tinte teal apagado (concepto "tiempo/agenda"). Distinto del ámbar
+// (diurnas) y el azul-índigo (nocturnas) para no confundir la franja con las horas.
+.programacion-grid__group-chip--horario {
+  background: rgba(15, 118, 110, 0.09);
+  color: #0f766e;
 }
 
 // Pills de stats inline (H_D, H_N) dentro de la banda de grupo.

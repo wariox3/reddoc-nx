@@ -11,8 +11,9 @@
         @for (fecha of fechas(); track fecha.clave) {
           <th
             class="programacion-grid__th programacion-grid__th--dia"
-            [class.programacion-grid__th--finde]="fecha.finDeSemana"
-            [class.programacion-grid__th--festivo]="festivoClaves().has(fecha.clave)"
+            [class.programacion-grid__th--festivo]="
+              fecha.inicial === 'D' || festivoClaves().has(fecha.clave)
+            "
           >
             <span class="programacion-grid__dia-num">{{ fecha.etiqueta }}</span>
             <span class="programacion-grid__dia-ini">{{ fecha.inicial }}</span>
@@ -49,6 +50,15 @@
                   #{{ grupo.documentoDetalleId }}
                 }
               </span>
+              @if (grupo.modalidadNombre) {
+                <span class="programacion-grid__group-chip">{{ grupo.modalidadNombre }}</span>
+              }
+              @if (grupo.horario) {
+                <span class="programacion-grid__group-chip programacion-grid__group-chip--horario">
+                  <i class="pi pi-clock text-[0.58rem]"></i>
+                  {{ grupo.horario }}
+                </span>
+              }
               <div class="ml-auto flex shrink-0 items-center gap-2">
                 <span class="programacion-grid__group-stat programacion-grid__group-stat--dia">
                   <i class="pi pi-sun text-[0.58rem]"></i>
@@ -81,19 +91,27 @@
 
         @for (fila of grupo.items; track fila.documento_detalle_id + '_' + $index) {
           <tr class="programacion-grid__row">
-            <td
-              class="programacion-grid__td programacion-grid__td--sticky-left font-medium text-brand-text"
-            >
-              {{ fila.contrato_nombre || '—' }}
+            <td class="programacion-grid__td programacion-grid__td--sticky-left text-brand-text">
+              <span class="block font-medium">{{
+                fila.contrato_contacto_nombre_corto || '—'
+              }}</span>
+              @if (fila.contrato_contacto_numero_identificacion) {
+                <span class="block text-[0.68rem] text-brand-muted tabular-nums">
+                  {{ fila.contrato_contacto_numero_identificacion }}
+                </span>
+              }
             </td>
-            <td class="programacion-grid__td w-10 text-center text-brand-muted tabular-nums">—</td>
+            <td class="programacion-grid__td w-10 text-center text-brand-muted tabular-nums">
+              {{ fila.contrato_id ?? '—' }}
+            </td>
 
             @for (fecha of fechas(); track fecha.clave) {
               <td
                 class="programacion-grid__td programacion-grid__td--dia text-center tabular-nums"
-                [class.programacion-grid__td--finde]="fecha.finDeSemana"
                 [class.programacion-grid__td--festivo]="
-                  esFestivo(fila, fecha.clave) || festivoClaves().has(fecha.clave)
+                  fecha.inicial === 'D' ||
+                  esFestivo(fila, fecha.clave) ||
+                  festivoClaves().has(fecha.clave)
                 "
               >
                 {{ celda(fila, fecha.clave) }}

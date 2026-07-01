@@ -56,6 +56,25 @@ export function daysBetween(a: Date, b: Date): number {
   return Math.round((b.getTime() - a.getTime()) / 86400000);
 }
 
+/** Año y mes (1-based) extraídos de una fecha ISO `yyyy-MM-dd`. */
+export interface AnioMes {
+  readonly anio: number;
+  readonly mes: number;
+}
+
+/**
+ * Extrae `{ anio, mes }` (mes 1-based) de una fecha ISO `yyyy-MM-dd`, sin pasar
+ * por `Date` (evita corrimientos de zona). Retorna `null` si el string es vacío
+ * o no tiene año/mes válidos.
+ */
+export function anioMesDeIso(iso: string | null | undefined): AnioMes | null {
+  if (!iso) return null;
+  const anio = Number(iso.slice(0, 4));
+  const mes = Number(iso.slice(5, 7));
+  if (!Number.isFinite(anio) || !Number.isFinite(mes) || mes < 1 || mes > 12) return null;
+  return { anio, mes };
+}
+
 /**
  * Inicial del día de la semana en español, indexada por `Date.getDay()`
  * (0 = domingo … 6 = sábado). Miércoles usa `X` para no chocar con Martes (`M`).

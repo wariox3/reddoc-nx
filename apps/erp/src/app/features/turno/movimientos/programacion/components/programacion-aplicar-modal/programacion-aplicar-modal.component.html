@@ -108,7 +108,6 @@
               @for (d of dias; track d.dia) {
                 <th
                   class="aplicar-dias__th"
-                  [class.aplicar-dias__th--finde]="d.finDeSemana"
                   [class.aplicar-dias__th--festivo]="
                     d.inicial === 'D' || festivoPorDia().has(d.dia)
                   "
@@ -126,7 +125,6 @@
               @for (d of dias; track d.dia; let i = $index) {
                 <td
                   class="aplicar-dias__td"
-                  [class.aplicar-dias__td--finde]="d.finDeSemana"
                   [class.aplicar-dias__td--festivo]="
                     d.inicial === 'D' || festivoPorDia().has(d.dia)
                   "

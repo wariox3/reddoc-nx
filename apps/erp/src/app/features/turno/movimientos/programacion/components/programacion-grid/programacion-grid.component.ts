@@ -8,7 +8,23 @@ interface GrupoFilas {
   readonly documentoDetalleId: number;
   readonly puestoId: number | null;
   readonly puestoNombre: string | null;
+  readonly modalidadNombre: string | null;
+  /** Franja horaria del puesto ya formateada (`HH:mm - HH:mm`), o `null`. */
+  readonly horario: string | null;
   readonly items: readonly ProgramacionFila[];
+}
+
+/** `HH:mm:ss` → `HH:mm`; `null` si el valor no viene o no es válido. */
+function horaCorta(hora: string | null): string | null {
+  return hora && hora.length >= 5 ? hora.slice(0, 5) : null;
+}
+
+/** Franja `hora_desde`–`hora_hasta` formateada, o `null` si falta algún extremo. */
+function formatHorario(desde: string | null, hasta: string | null): string | null {
+  const d = horaCorta(desde);
+  const h = horaCorta(hasta);
+  if (!d || !h) return null;
+  return `${d} - ${h}`;
 }
 
 /**
@@ -66,6 +82,8 @@ export class ProgramacionGridComponent {
           documentoDetalleId: fila.documento_detalle_id,
           puestoId: fila.puesto_id,
           puestoNombre: fila.puesto_nombre,
+          modalidadNombre: fila.modalidad_nombre,
+          horario: formatHorario(fila.hora_desde, fila.hora_hasta),
           items: [fila],
         });
       }

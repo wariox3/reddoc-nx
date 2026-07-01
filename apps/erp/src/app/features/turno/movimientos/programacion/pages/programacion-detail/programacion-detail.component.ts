@@ -7,6 +7,7 @@ import {
   INICIALES_DIA_SEMANA_ES,
   TenantService,
   ToastService,
+  anioMesDeIso,
   fromIsoDate,
 } from '@reddoc/core';
 import { BreadcrumbComponent, type BreadcrumbItem } from '@reddoc/feature-base';
@@ -163,6 +164,20 @@ export class ProgramacionDetailComponent implements OnInit {
     return date.toLocaleDateString('es-CO', { day: '2-digit', month: 'long', year: 'numeric' });
   }
 
+  /**
+   * Carga los festivos del período que muestra el grid, derivando año y mes de la
+   * primera fecha ISO (`YYYY-MM-DD`). Sin esto, el mes de "hoy" no coincide con el
+   * de la programación y no se resalta ningún festivo.
+   */
+  private cargarFestivosDelPeriodo(fechas: readonly string[]): void {
+    const periodo = anioMesDeIso(fechas[0]);
+    if (!periodo) {
+      this.festivos.set([]);
+      return;
+    }
+    this.cargarFestivos(periodo.anio, periodo.mes);
+  }
+
   private cargarFestivos(anio: number, mes: number): void {
     this.festivoService
       .getDelMes(anio, mes)
@@ -180,8 +195,7 @@ export class ProgramacionDetailComponent implements OnInit {
       .subscribe({
         next: (detalle) => {
           const res = detalle as ProgramacionDetalleResponse;
-          const now = new Date();
-          this.cargarFestivos(now.getFullYear(), now.getMonth() + 1);
+          this.cargarFestivosDelPeriodo(res.fechas);
           // La respuesta real no incluye cabecera del documento; se muestra vacía.
           this.cabecera.set({
             numero: null,
