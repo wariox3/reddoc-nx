@@ -71,7 +71,7 @@ export class TurnoInicioComponent implements OnInit {
     { id: 'ultimosTresMeses', labelKey: 'ultimosTresMeses' },
     { id: 'esteAnio', labelKey: 'esteAnio' },
   ];
-  protected readonly selectedPreset = signal<RangePreset>('esteAnio');
+  protected readonly selectedPreset = signal<RangePreset>('esteMes');
 
   /** Paleta derivada del tema (con fallback al brand navy/sky). */
   private readonly palette = this.readThemePalette();
