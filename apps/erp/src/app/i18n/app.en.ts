@@ -986,6 +986,23 @@ export const en: AppDict = {
           },
           empty: 'No rows to show.',
           verEmpleados: 'View employees of this position',
+          editar: 'Edit contract scheduling',
+          eliminar: 'Delete contract scheduling',
+        },
+        eliminar: {
+          confirmHeader: 'Delete scheduling?',
+          confirmMessage:
+            'The scheduling for {nombre} in this position will be deleted. This action cannot be undone.',
+          toasts: {
+            success: {
+              title: 'Scheduling deleted',
+              desc: 'The contract scheduling was removed from the position.',
+            },
+            error: {
+              title: 'Could not delete',
+              desc: 'An error occurred while deleting the scheduling.',
+            },
+          },
         },
         empleadosModal: {
           title: 'Add contract to position',

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { BaseHttpService } from '@reddoc/core';
-import type { CrearProgramacionPayload } from './programacion.model';
+import type { CrearProgramacionPayload, EliminarProgramacionPayload } from './programacion.model';
 
 /**
  * Servicio HTTP de programaciones (endpoints propios de turno).
@@ -36,5 +36,16 @@ export class ProgramacionService extends BaseHttpService {
    */
   crearProgramacion(payload: CrearProgramacionPayload): Observable<unknown> {
     return this.post<unknown>(`${this.resourcePath}crear-programacion/`, payload);
+  }
+
+  /**
+   * Elimina la programación de un contrato en un puesto
+   * (`POST /turno/programacion/eliminar-programacion/`). Borra el mes de turnos
+   * de ese contrato en el `documento_detalle_id`.
+   *
+   * TODO: tipar la respuesta cuando se confirme el shape.
+   */
+  eliminarProgramacion(payload: EliminarProgramacionPayload): Observable<unknown> {
+    return this.post<unknown>(`${this.resourcePath}eliminar-programacion/`, payload);
   }
 }

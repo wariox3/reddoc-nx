@@ -1001,6 +1001,23 @@ export const es: AppDict = {
           },
           empty: 'Sin filas para mostrar.',
           verEmpleados: 'Ver empleados del puesto',
+          editar: 'Editar programación del contrato',
+          eliminar: 'Eliminar programación del contrato',
+        },
+        eliminar: {
+          confirmHeader: '¿Eliminar programación?',
+          confirmMessage:
+            'Se eliminará la programación de {nombre} en este puesto. Esta acción no se puede deshacer.',
+          toasts: {
+            success: {
+              title: 'Programación eliminada',
+              desc: 'Se eliminó la programación del contrato en el puesto.',
+            },
+            error: {
+              title: 'No se pudo eliminar',
+              desc: 'Ocurrió un error al eliminar la programación.',
+            },
+          },
         },
         empleadosModal: {
           title: 'Agregar contrato al puesto',

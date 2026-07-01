@@ -145,9 +145,34 @@
               —
             </td>
 
-            <!-- Celdas reservadas para opciones por fila (pendientes). -->
-            <td class="programacion-grid__td programacion-grid__col-accion"></td>
-            <td class="programacion-grid__td programacion-grid__col-accion"></td>
+            <!-- Acciones por fila: editar + eliminar la programación del contrato.
+                 Siempre visibles (ancho de celda ya reservado).
+                 Editar es solo visual por ahora (sin acción). -->
+            <td class="programacion-grid__td programacion-grid__col-accion">
+              @if (fila.contrato_id !== null) {
+                <button
+                  type="button"
+                  [title]="g.editar"
+                  [attr.aria-label]="g.editar"
+                  class="programacion-grid__row-action programacion-grid__row-action--editar"
+                >
+                  <i class="pi pi-pencil text-[0.72rem]"></i>
+                </button>
+              }
+            </td>
+            <td class="programacion-grid__td programacion-grid__col-accion">
+              @if (fila.contrato_id !== null) {
+                <button
+                  type="button"
+                  (click)="onEliminar(fila)"
+                  [title]="g.eliminar"
+                  [attr.aria-label]="g.eliminar"
+                  class="programacion-grid__row-action programacion-grid__row-action--eliminar"
+                >
+                  <i class="pi pi-trash text-[0.72rem]"></i>
+                </button>
+              }
+            </td>
           </tr>
         }
       } @empty {

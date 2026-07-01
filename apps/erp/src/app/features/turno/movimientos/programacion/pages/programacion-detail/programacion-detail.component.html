@@ -100,6 +100,7 @@
           [filas]="gr.filas"
           [festivoClaves]="festivoClaves()"
           (verEmpleados)="onAgregarContrato($event)"
+          (eliminarContrato)="onEliminarContrato($event)"
         />
       </div>
     </section>
@@ -112,3 +113,6 @@
   [grupo]="agregarContratoGrupo()"
   (applied)="onApplied()"
 />
+
+<!-- ── Confirmación de borrado de la programación de un contrato ──────────────── -->
+<p-confirmDialog />

@@ -126,6 +126,15 @@ export interface CrearProgramacionPayload {
   readonly items: readonly ProgramacionItem[];
 }
 
+/**
+ * Payload de `POST /turno/programacion/eliminar-programacion/`: borra la
+ * programación (mes de turnos) de un contrato en un puesto (`documento_detalle_id`).
+ */
+export interface EliminarProgramacionPayload {
+  readonly contrato_id: number;
+  readonly documento_detalle_id: number;
+}
+
 /** Día que ya tiene programación (item de `existentes` en el conflicto 400). */
 export interface ProgramacionExistente extends ProgramacionDiaCelda {
   /** Fecha del día en formato ISO `YYYY-MM-DD`. */

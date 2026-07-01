@@ -125,13 +125,50 @@
 }
 
 // Columnas reservadas para opciones por fila. Slim: ancho fijo angosto y padding
-// mínimo para no robar espacio; alcanza para un futuro botón-ícono compacto.
+// mínimo para que los dos botones (editar · eliminar) queden juntos.
 .programacion-grid__col-accion {
-  width: 2rem;
-  min-width: 2rem;
-  padding-left: 0.3rem;
-  padding-right: 0.3rem;
+  width: 1.75rem;
+  min-width: 1.75rem;
+  padding-left: 0.05rem;
+  padding-right: 0.05rem;
   text-align: center;
+}
+
+// Acciones por fila (editar · eliminar). Botón-ícono compacto, mismo lenguaje que
+// el botón de la banda de grupo. Siempre visibles: ícono en tono muted en reposo
+// para no gritar, y el hover tiñe el chip (neutro/destructivo).
+.programacion-grid__row-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.65rem;
+  height: 1.65rem;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--brand-muted, #64748b);
+  cursor: pointer;
+  transition:
+    background-color 0.12s ease,
+    color 0.12s ease;
+}
+
+// Editar (primer botón): un respiro a la izquierda para separarlo de la columna
+// de resumen contigua.
+.programacion-grid__row-action--editar {
+  margin-left: 0.4rem;
+}
+
+// Editar: hover neutro (tinte navy) + ícono acento, como el botón del grupo.
+.programacion-grid__row-action--editar:hover {
+  background: rgba(20, 48, 73, 0.06);
+  color: #0369a1;
+}
+
+// Eliminar: hover destructivo, mismo rojo que los festivos del grid.
+.programacion-grid__row-action--eliminar:hover {
+  background: rgba(190, 18, 60, 0.08);
+  color: #be123c;
 }
 
 // Fila separadora de grupo por documento_detalle_id.

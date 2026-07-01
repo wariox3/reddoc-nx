@@ -49,6 +49,16 @@ export interface ProgramacionGrupoRef {
 }
 
 /**
+ * Identidad de una **fila** (contrato en un puesto) que el grid emite al pedir
+ * eliminar su programación. Lo consume el padre para confirmar el borrado.
+ */
+export interface ProgramacionFilaRef {
+  readonly documentoDetalleId: number;
+  readonly contratoId: number;
+  readonly contratoNombre: string | null;
+}
+
+/**
  * Grid (calendario de turnos) del detalle de programación — **presentacional**.
  *
  * Componente dedicado a este movimiento (no reutiliza la tabla de venta, solo su
@@ -80,6 +90,9 @@ export class ProgramacionGridComponent {
 
   /** Pide ver los empleados de un grupo (puesto). El padre abre el modal. */
   readonly verEmpleados = output<ProgramacionGrupoRef>();
+
+  /** Pide eliminar la programación de un contrato (fila). El padre confirma y borra. */
+  readonly eliminarContrato = output<ProgramacionFilaRef>();
 
   /** Filas agrupadas por `documento_detalle_id` para renderizar separadores. */
   protected readonly grupos = computed<readonly GrupoFilas[]>(() => {
@@ -121,6 +134,16 @@ export class ProgramacionGridComponent {
       documentoDetalleId: grupo.documentoDetalleId,
       puestoId: grupo.puestoId,
       puestoNombre: grupo.puestoNombre,
+    });
+  }
+
+  /** Emite la fila (contrato) para que el padre confirme y elimine su programación. */
+  protected onEliminar(fila: ProgramacionFila): void {
+    if (fila.contrato_id == null) return;
+    this.eliminarContrato.emit({
+      documentoDetalleId: fila.documento_detalle_id,
+      contratoId: fila.contrato_id,
+      contratoNombre: fila.contrato_contacto_nombre_corto,
     });
   }
 

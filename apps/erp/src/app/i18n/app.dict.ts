@@ -725,6 +725,16 @@ export interface AppDict extends AuthTranslationsHost {
           };
           empty: string;
           verEmpleados: string;
+          editar: string;
+          eliminar: string;
+        };
+        eliminar: {
+          confirmHeader: string;
+          confirmMessage: string;
+          toasts: {
+            success: { title: string; desc: string };
+            error: { title: string; desc: string };
+          };
         };
         empleadosModal: {
           title: string;

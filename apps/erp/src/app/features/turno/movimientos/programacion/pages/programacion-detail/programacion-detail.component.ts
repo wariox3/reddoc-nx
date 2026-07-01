@@ -2,6 +2,8 @@ import { Component, DestroyRef, type OnInit, computed, inject, input, signal } f
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationService } from 'primeng/api';
 import {
   I18nService,
   INICIALES_DIA_SEMANA_ES,
@@ -25,6 +27,7 @@ import type {
 } from '../../programacion.model';
 import {
   ProgramacionGridComponent,
+  type ProgramacionFilaRef,
   type ProgramacionGrupoRef,
 } from '../../components/programacion-grid/programacion-grid.component';
 import { ProgramacionAgregarContratoModalComponent } from '../../components/programacion-agregar-contrato-modal/programacion-agregar-contrato-modal.component';
@@ -74,12 +77,14 @@ function toProgramacionFecha(iso: string, _index: number): ProgramacionFecha {
   standalone: true,
   imports: [
     ButtonModule,
+    ConfirmDialogModule,
     BreadcrumbComponent,
     ProgramacionGridComponent,
     ProgramacionAgregarContratoModalComponent,
   ],
   templateUrl: './programacion-detail.component.html',
   styleUrl: './programacion-detail.component.scss',
+  providers: [ConfirmationService],
 })
 export class ProgramacionDetailComponent implements OnInit {
   private readonly service = inject(ProgramacionService);
@@ -87,6 +92,7 @@ export class ProgramacionDetailComponent implements OnInit {
   private readonly tenant = inject(TenantService);
   private readonly router = inject(Router);
   private readonly toast = inject(ToastService);
+  private readonly confirmation = inject(ConfirmationService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly i18n = inject<I18nService<AppDict>>(I18nService);
 
@@ -150,6 +156,37 @@ export class ProgramacionDetailComponent implements OnInit {
   protected onAgregarContrato(grupo: ProgramacionGrupoRef): void {
     this.agregarContratoGrupo.set(grupo);
     this.agregarContratoVisible.set(true);
+  }
+
+  /** Confirma y elimina la programación del contrato (fila) emitida por el grid. */
+  protected onEliminarContrato(ref: ProgramacionFilaRef): void {
+    const el = this.t().entities.programacion.detail.eliminar;
+    this.confirmation.confirm({
+      header: el.confirmHeader,
+      message: el.confirmMessage.replace('{nombre}', ref.contratoNombre ?? '—'),
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: this.t().common.actions.delete,
+      rejectLabel: this.t().common.actions.cancel,
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: () => this.eliminarProgramacion(ref),
+    });
+  }
+
+  private eliminarProgramacion(ref: ProgramacionFilaRef): void {
+    const el = this.t().entities.programacion.detail.eliminar;
+    this.service
+      .eliminarProgramacion({
+        contrato_id: ref.contratoId,
+        documento_detalle_id: ref.documentoDetalleId,
+      })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.toast.success(el.toasts.success.title, el.toasts.success.desc);
+          this.onApplied();
+        },
+        error: () => this.toast.error(el.toasts.error.title, el.toasts.error.desc),
+      });
   }
 
   /** Tras aplicar la programación, recarga el detalle para reflejar los cambios. */
